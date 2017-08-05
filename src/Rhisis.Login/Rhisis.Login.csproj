@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+    <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
   </ItemGroup>
 
 </Project>
