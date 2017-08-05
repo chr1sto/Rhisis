@@ -6,6 +6,7 @@ namespace Rhisis.World
     {
         private static void Main(string[] args)
         {
+            throw new NotImplementedException();
         }
     }
 }
