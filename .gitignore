@@ -240,8 +240,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
-
-binary/data/maps
-binary/data/res
-binary/tools
 dist/
