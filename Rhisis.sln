@@ -1,21 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CC42CC8A-A3BC-4913-90A0-1AF2213A870F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{4DB760CF-B8F8-44F5-A674-6FBD19961D8C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.travis.yml = .travis.yml
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Login", "src\Rhisis.Login\Rhisis.Login.csproj", "{7064124A-C71A-4A0F-8A94-31A93F0F9F35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Core", "src\Rhisis.Core\Rhisis.Core.csproj", "{8E25C9DB-9DE2-4198-83A0-1F37CAEC14A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Core", "src\Rhisis.Core\Rhisis.Core.csproj", "{8E25C9DB-9DE2-4198-83A0-1F37CAEC14A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Cluster", "src\Rhisis.Cluster\Rhisis.Cluster.csproj", "{FBE66FAC-A0D2-41C4-BF57-ABA3515DBCFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Cluster", "src\Rhisis.Cluster\Rhisis.Cluster.csproj", "{FBE66FAC-A0D2-41C4-BF57-ABA3515DBCFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.World", "src\Rhisis.World\Rhisis.World.csproj", "{90EC02CB-0215-402D-8813-F5DF2D3C040F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.World", "src\Rhisis.World\Rhisis.World.csproj", "{90EC02CB-0215-402D-8813-F5DF2D3C040F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Database", "src\Rhisis.Database\Rhisis.Database.csproj", "{BCEBC9E7-33D1-48D6-9760-8EB582FF631B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Database", "src\Rhisis.Database\Rhisis.Database.csproj", "{BCEBC9E7-33D1-48D6-9760-8EB582FF631B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
