@@ -1,12 +1,11 @@
-﻿using System;
-
-namespace Rhisis.Login
+﻿namespace Rhisis.Login
 {
     public static class Program
     {
         private static void Main(string[] args)
         {
-            throw new NotImplementedException();
+            using (var server = new LoginServer())
+                server.Start();
         }
     }
 }
