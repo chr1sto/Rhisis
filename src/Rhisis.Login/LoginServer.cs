@@ -8,6 +8,9 @@ namespace Rhisis.Login
     public sealed class LoginServer : NetServer<LoginClient>
     {
         private static readonly string LoginConfigFile = "config/login.json";
+        private static readonly string DatabaseConfigFile = "config/database.json";
+
+        private DatabaseConfiguration _databaseConfiguration;
 
         public LoginConfiguration LoginConfiguration { get; private set; }
 
@@ -41,6 +44,8 @@ namespace Rhisis.Login
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+
+            this._databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
         }
     }
 }
