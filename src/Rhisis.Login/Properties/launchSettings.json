@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Rhisis.Login": {
+      "commandName": "Project",
+      "workingDirectory": "../../bin"
+    }
+  }
+}

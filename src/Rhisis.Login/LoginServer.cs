@@ -1,10 +1,14 @@
 ﻿using Ether.Network;
+using Rhisis.Core.Structures.Configuration;
 using System;
+using System.IO;
 
 namespace Rhisis.Login
 {
     public sealed class LoginServer : NetServer<LoginClient>
     {
+        private static readonly string LoginConfigFile = "config/login.json";
+
         public LoginServer()
         {
             Console.Title = "Rhisis - Login Server";
