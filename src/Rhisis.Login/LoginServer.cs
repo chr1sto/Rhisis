@@ -1,5 +1,6 @@
 ﻿using Ether.Network;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Configuration;
 using System;
 
@@ -9,9 +10,7 @@ namespace Rhisis.Login
     {
         private static readonly string LoginConfigFile = "config/login.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
-
-        private DatabaseConfiguration _databaseConfiguration;
-
+        
         public LoginConfiguration LoginConfiguration { get; private set; }
 
         public LoginServer()
@@ -22,6 +21,8 @@ namespace Rhisis.Login
 
         protected override void Initialize()
         {
+            this.InitializeDatabase();
+
             Console.WriteLine("Server running state: {0}", this.IsRunning);
         }
 
@@ -44,8 +45,11 @@ namespace Rhisis.Login
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+        }
 
-            this._databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
+        private void InitializeDatabase()
+        {
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
         }
     }
 }
