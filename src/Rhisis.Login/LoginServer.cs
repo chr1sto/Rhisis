@@ -1,8 +1,11 @@
 ﻿using Ether.Network;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
+using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using System;
+using Ether.Network.Packets;
+using System.Collections.Generic;
 
 namespace Rhisis.Login
 {
@@ -16,11 +19,13 @@ namespace Rhisis.Login
         public LoginServer()
         {
             Console.Title = "Rhisis - Login Server";
+            Logger.Initialize();
             this.LoadConfiguration();
         }
 
         protected override void Initialize()
         {
+            FFPacketHandler<LoginClient>.Initialize();
             this.InitializeDatabase();
 
             Console.WriteLine("Server running state: {0}", this.IsRunning);
@@ -29,11 +34,17 @@ namespace Rhisis.Login
         protected override void OnClientConnected(LoginClient connection)
         {
             Console.WriteLine("New client connected: {0}", connection.Id);
+            connection.SendWelcomePacket();
         }
 
         protected override void OnClientDisconnected(LoginClient connection)
         {
             Console.WriteLine("Client {0} disconnected.", connection.Id);
+        }
+
+        protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
+        {
+            return FFPacket.SplitPackets(buffer);
         }
 
         private void LoadConfiguration()

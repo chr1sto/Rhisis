@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Rhisis.Core.IO
 {
@@ -23,7 +24,9 @@ namespace Rhisis.Core.IO
         /// </summary>
         public static void Initialize()
         {
-            // TODO: Initialize streams
+#if !NET45
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
         }
 
         /// <summary>
