@@ -3,12 +3,26 @@ using Ether.Network.Packets;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
+using Rhisis.Core.Structures.Configuration;
 using System;
 
 namespace Rhisis.Login
 {
     public sealed class LoginClient : NetConnection
     {
+        private readonly int _sessionId;
+        private LoginConfiguration _loginConfig;
+
+        public LoginClient()
+        {
+            this._sessionId = 0;
+        }
+
+        public void InitializeClient(LoginConfiguration configuration)
+        {
+            this._loginConfig = configuration;
+            this.SendWelcomePacket();
+        }
 
         // DEBUG
         public void SendWelcomePacket()
@@ -16,7 +30,7 @@ namespace Rhisis.Login
             using (var packet = new FFPacket())
             {
                 packet.WriteHeader(PacketType.WELCOME);
-                packet.Write(0);
+                packet.Write(this._sessionId);
 
                 this.Send(packet);
             }
@@ -33,17 +47,16 @@ namespace Rhisis.Login
                 return;
             }
 
-            if (!FFPacketHandler<LoginClient>.Invoke(this, pak))
-            {
-                // Unknow or unimplemented packet
-            }
+            var packetHeaderNumber = packet.Read<uint>();
 
+            if (!FFPacketHandler<LoginClient>.Invoke(this, pak, packetHeaderNumber))
+                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
         }
 
         [FFIncomingPacket(PacketType.CERTIFY)]
         public void OnLogin(FFPacket packet)
         {
-            var certify = new CertifyPacket(packet);
+            var certify = new CertifyPacket(packet, this._loginConfig.PasswordEncryption, this._loginConfig.EncryptionKey);
 
             Logger.Debug("BuildDate: {0}", certify.BuildData);
             Logger.Debug("Username: {0}", certify.Username);

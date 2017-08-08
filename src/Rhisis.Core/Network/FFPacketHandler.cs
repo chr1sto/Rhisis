@@ -33,11 +33,10 @@ namespace Rhisis.Core.Network
             }
         }
 
-        public static bool Invoke(T invoker, FFPacket packet)
+        public static bool Invoke(T invoker, FFPacket packet, uint packetHeaderNumber)
         {
             try
             {
-                var packetHeaderNumber = packet.Read<uint>();
                 var packetHeader = (PacketType)packetHeaderNumber;
 
                 if (!_handlers.ContainsKey(packetHeader))
