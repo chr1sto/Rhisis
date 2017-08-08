@@ -9,6 +9,7 @@ namespace Rhisis.Login
 {
     public sealed class LoginClient : NetConnection
     {
+
         // DEBUG
         public void SendWelcomePacket()
         {
@@ -25,8 +26,18 @@ namespace Rhisis.Login
         {
             var pak = packet as FFPacket;
             var packetHeader = new PacketHeader(pak);
-            
-            FFPacketHandler<LoginClient>.Invoke(this, pak);
+
+            if (!FFPacket.VerifyPacketHeader(packetHeader))
+            {
+                Logger.Warning("Invalid packet header: {0}", packetHeader.Header);
+                return;
+            }
+
+            if (!FFPacketHandler<LoginClient>.Invoke(this, pak))
+            {
+                // Unknow or unimplemented packet
+            }
+
         }
 
         [FFIncomingPacket(PacketType.CERTIFY)]

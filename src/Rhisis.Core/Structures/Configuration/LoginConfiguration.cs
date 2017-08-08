@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Configuration
 {
@@ -19,12 +20,14 @@ namespace Rhisis.Core.Structures.Configuration
         /// Gets or sets the value if we check the account verification.
         /// </summary>
         [DataMember(Name = "accountVerification")]
+        [DefaultValue(true)]
         public bool AccountVerification { get; set; }
 
         /// <summary>
         /// Gets or sets the value if the login password is encrypted or not.
         /// </summary>
         [DataMember(Name = "passwordEncryption")]
+        [DefaultValue(true)]
         public bool PasswordEncryption { get; set; }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Core.IO;
+using Rhisis.Core.Network.Packets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,8 @@ namespace Rhisis.Core.Network
     /// </summary>
     public class FFPacket : NetPacketBase
     {
+        private static readonly byte FlyFFPacketHeader = 0x5E;
+
         private uint _header;
         private short _mergedPacketCount;
 
@@ -37,7 +40,7 @@ namespace Rhisis.Core.Network
         public FFPacket()
             : base()
         {
-            this.Write<byte>(0x5E);
+            this.Write(FlyFFPacketHeader);
             this.Write(0);
         }
 
@@ -218,6 +221,16 @@ namespace Rhisis.Core.Network
             }
 
             return packets;
+        }
+
+        public static bool VerifyPacketHeader(PacketHeader packetHeader)
+        {
+            if (packetHeader.Header != FlyFFPacketHeader)
+                return false;
+
+
+
+            return true;
         }
     }
 }
