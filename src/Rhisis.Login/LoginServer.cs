@@ -6,6 +6,7 @@ using Rhisis.Core.Structures.Configuration;
 using System;
 using Ether.Network.Packets;
 using System.Collections.Generic;
+using Rhisis.Database;
 
 namespace Rhisis.Login
 {
@@ -61,6 +62,10 @@ namespace Rhisis.Login
         private void InitializeDatabase()
         {
             var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
+
+            
+
+
         }
     }
 }
