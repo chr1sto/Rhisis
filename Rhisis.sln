@@ -25,6 +25,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.World", "src\Rhisis.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Database", "src\Rhisis.Database\Rhisis.Database.csproj", "{BCEBC9E7-33D1-48D6-9760-8EB582FF631B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{696B755D-111E-4A7D-8AB8-AD4CA07E9213}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Core.Test", "test\Rhisis.Core.Test\Rhisis.Core.Test.csproj", "{F02CEA01-3C7D-44EA-8662-7E922868C26C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,10 @@ Global
 		{BCEBC9E7-33D1-48D6-9760-8EB582FF631B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCEBC9E7-33D1-48D6-9760-8EB582FF631B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCEBC9E7-33D1-48D6-9760-8EB582FF631B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F02CEA01-3C7D-44EA-8662-7E922868C26C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F02CEA01-3C7D-44EA-8662-7E922868C26C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F02CEA01-3C7D-44EA-8662-7E922868C26C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F02CEA01-3C7D-44EA-8662-7E922868C26C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,5 +69,6 @@ Global
 		{FBE66FAC-A0D2-41C4-BF57-ABA3515DBCFA} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
 		{90EC02CB-0215-402D-8813-F5DF2D3C040F} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
 		{BCEBC9E7-33D1-48D6-9760-8EB582FF631B} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
+		{F02CEA01-3C7D-44EA-8662-7E922868C26C} = {696B755D-111E-4A7D-8AB8-AD4CA07E9213}
 	EndGlobalSection
 EndGlobal
