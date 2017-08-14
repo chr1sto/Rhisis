@@ -46,6 +46,7 @@ namespace Rhisis.Core.IO
         /// <param name="args"></param>
         public static void Debug(string format, params object[] args)
         {
+            // DEBUG configuration only
 #if DEBUG
             Write(LoggerType.Debug, string.Format(format, args));
 #endif

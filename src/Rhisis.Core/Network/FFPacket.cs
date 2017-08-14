@@ -14,8 +14,7 @@ namespace Rhisis.Core.Network
     public class FFPacket : NetPacketBase
     {
         private static readonly byte FlyFFPacketHeader = 0x5E;
-
-        private uint _header;
+        
         private short _mergedPacketCount;
 
         /// <summary>
@@ -38,7 +37,6 @@ namespace Rhisis.Core.Network
         /// Creates a new FFPacket in write-only mode.
         /// </summary>
         public FFPacket()
-            : base()
         {
             this.Write(FlyFFPacketHeader);
             this.Write(0);
@@ -69,8 +67,7 @@ namespace Rhisis.Core.Network
         /// <param name="packetHeader">FFPacket header</param>
         public void WriteHeader(object packetHeader)
         {
-            this._header = (uint)packetHeader;
-            this.Write(this._header);
+            this.Write((uint)packetHeader);
         }
 
         /// <summary>

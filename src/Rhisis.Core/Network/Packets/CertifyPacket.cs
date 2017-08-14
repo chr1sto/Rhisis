@@ -1,11 +1,12 @@
 ﻿using Rhisis.Core.Cryptography;
 using Rhisis.Core.Helpers;
+using System;
 using System.Linq;
 using System.Text;
 
 namespace Rhisis.Core.Network.Packets
 {
-    public struct CertifyPacket
+    public struct CertifyPacket : IEquatable<CertifyPacket>
     {
         public string BuildData;
         public string Username;
@@ -25,6 +26,13 @@ namespace Rhisis.Core.Network.Packets
             }
             else
                 this.Password = packet.Read<string>();
+        }
+
+        public bool Equals(CertifyPacket other)
+        {
+            return this.BuildData == other.BuildData &&
+                this.Username == other.Username &&
+                this.Password == other.Password;
         }
     }
 }

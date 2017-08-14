@@ -1,8 +1,6 @@
 ﻿using Rhisis.Database.Contexts;
 using Rhisis.Database.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.Database
 {
@@ -49,9 +47,16 @@ namespace Rhisis.Database
 
             switch (Configuration.Provider)
             {
-                case DatabaseProvider.MsSQL: return new MsSQLContext(Configuration);
-                case DatabaseProvider.MySQL: return new MySQLContext(Configuration);
-                default: return new MySQLContext(Configuration);
+                case DatabaseProvider.MsSQL:
+                    return new MsSQLContext(Configuration);
+
+                case DatabaseProvider.SQLite:
+                case DatabaseProvider.PostgreSQL:
+                    throw new NotImplementedException();
+
+                case DatabaseProvider.MySQL:
+                default:
+                    return new MySQLContext(Configuration);
             }
         }
     }

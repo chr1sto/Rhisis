@@ -23,13 +23,4 @@ namespace Rhisis.Database
         [DataMember(Name = "provider")]
         public DatabaseProvider Provider { get; set; }
     }
-
-    public enum DatabaseProvider
-    {
-        Unknown = 0,
-        MySQL,
-        MsSQL,
-        PostgreSQL,
-        SQLite,
-    }
 }
