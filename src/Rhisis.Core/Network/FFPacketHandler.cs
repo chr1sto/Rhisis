@@ -1,11 +1,9 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Core.Exceptions;
+﻿using Rhisis.Core.Exceptions;
 using Rhisis.Core.Network.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Rhisis.Core.Network
 {
@@ -33,23 +31,20 @@ namespace Rhisis.Core.Network
             }
         }
 
-        public static bool Invoke(T invoker, FFPacket packet, uint packetHeaderNumber)
+        public static void Invoke(T invoker, FFPacket packet, uint packetHeaderNumber)
         {
+            var packetHeader = (PacketType)packetHeaderNumber;
+
+            if (!_handlers.ContainsKey(packetHeader))
+                throw new KeyNotFoundException();
             try
             {
-                var packetHeader = (PacketType)packetHeaderNumber;
-
-                if (!_handlers.ContainsKey(packetHeader))
-                    throw new KeyNotFoundException();
-                
                 _handlers[packetHeader]?.Invoke(invoker, packet);
             }
-            catch
+            catch (Exception e)
             {
-                return false;
+                throw new RhisisPacketException($"An error occured during the execution of packet handler: {packetHeader}", e);
             }
-
-            return true;
         }
     }
 }

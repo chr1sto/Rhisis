@@ -225,7 +225,7 @@ namespace Rhisis.Core.Network
             if (packetHeader.Header != FlyFFPacketHeader)
                 return false;
 
-
+            // TODO: Check hash
 
             return true;
         }

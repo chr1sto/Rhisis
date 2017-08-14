@@ -7,6 +7,7 @@ namespace Rhisis.Login.ISC
     {
         public override void HandleMessage(NetPacketBase packet)
         {
+            // Nothing to do yet.
         }
     }
 }

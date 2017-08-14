@@ -6,18 +6,16 @@ namespace Rhisis.Login.ISC
 {
     public sealed class InterServer : NetServer<InterClient>
     {
-        private readonly string _interPassword;
-
         public InterServer(InterServerConfiguration configuration)
         {
             this.Configuration.Host = configuration.Host;
             this.Configuration.Port = configuration.Port;
             this.Configuration.MaximumNumberOfConnections = 100;
-            this._interPassword = configuration.Password;
         }
 
         protected override void Initialize()
         {
+            // Nothing to do yet.
         }
 
         protected override void OnClientConnected(InterClient connection)

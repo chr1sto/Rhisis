@@ -41,7 +41,7 @@ namespace Rhisis.Login
         protected override void OnClientConnected(LoginClient connection)
         {
             Logger.Info("New client connected: {0}", connection.Id);
-            connection.InitializeClient(this.LoginConfiguration);
+            connection.InitializeClient(this);
         }
 
         protected override void OnClientDisconnected(LoginClient connection)

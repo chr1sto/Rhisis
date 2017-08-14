@@ -8,10 +8,12 @@ namespace Rhisis.Core.Network.Packets
 {
     public struct CertifyPacket : IEquatable<CertifyPacket>
     {
-        public string BuildData;
-        public string Username;
-        public string Password;
-        
+        public string BuildData { get; private set; }
+
+        public string Username { get; private set; }
+
+        public string Password { get; private set; }
+
         public CertifyPacket(FFPacket packet, bool encryptPassword, string encryptionKey)
         {
             this.BuildData = packet.Read<string>();
