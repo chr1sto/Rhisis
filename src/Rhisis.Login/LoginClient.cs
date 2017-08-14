@@ -4,36 +4,25 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Login.Packets;
 using System;
 
 namespace Rhisis.Login
 {
     public sealed class LoginClient : NetConnection
     {
-        private readonly int _sessionId;
+        private readonly uint _sessionId;
         private LoginConfiguration _loginConfig;
 
         public LoginClient()
         {
-            this._sessionId = 0;
+            this._sessionId = (uint)(new Random().Next(0, int.MaxValue));
         }
 
         public void InitializeClient(LoginConfiguration configuration)
         {
             this._loginConfig = configuration;
-            this.SendWelcomePacket();
-        }
-
-        // DEBUG
-        public void SendWelcomePacket()
-        {
-            using (var packet = new FFPacket())
-            {
-                packet.WriteHeader(PacketType.WELCOME);
-                packet.Write(this._sessionId);
-
-                this.Send(packet);
-            }
+            PacketFactory.SendWelcome(this, this._sessionId);
         }
 
         public override void HandleMessage(NetPacketBase packet)

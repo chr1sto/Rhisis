@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Rhisis.Database.Structures;
 
 namespace Rhisis.Database
 {
@@ -8,8 +9,8 @@ namespace Rhisis.Database
         /// Gets the <see cref="DatabaseContext"/> configuration.
         /// </summary>
         protected DatabaseConfiguration Configuration { get; private set; }
-        
-        // TODO: add repository pattern and DbSets
+
+        public DbSet<User> Users { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/> instance.
