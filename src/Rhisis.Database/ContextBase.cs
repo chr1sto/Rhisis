@@ -6,6 +6,8 @@ namespace Rhisis.Database
     {
         protected DatabaseConfiguration Configuration { get; private set; }
 
+
+
         // TODO: add repository pattern and DbSets
 
         protected DatabaseContext(DatabaseConfiguration configuration)
@@ -16,6 +18,10 @@ namespace Rhisis.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
         }
+
+        public abstract bool DatabaseExists();
+
+        public abstract bool CreateDatabase();
 
         public abstract void Migrate();
     }

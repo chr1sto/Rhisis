@@ -63,9 +63,21 @@ namespace Rhisis.Login
         {
             var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
 
-            
+            DatabaseService.Configure(databaseConfiguration);
 
+            using (var dbContext = DatabaseService.GetContext())
+            {
+                var exists = dbContext.DatabaseExists();
 
+                Console.WriteLine("Database exists: {0}", exists);
+
+                if (!exists)
+                    dbContext.CreateDatabase();
+
+                exists = dbContext.DatabaseExists();
+
+                Console.WriteLine("Database exists: {0}", exists);
+            }
         }
     }
 }

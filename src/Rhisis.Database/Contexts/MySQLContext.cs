@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Rhisis.Database.Contexts
 {
@@ -14,9 +16,19 @@ namespace Rhisis.Database.Contexts
         {
         }
 
+        public override bool CreateDatabase()
+        {
+            return this.Database.EnsureCreated();
+        }
+
+        public override bool DatabaseExists()
+        {
+            return (this.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+        }
+
         public override void Migrate()
         {
-            throw new NotImplementedException();
+            this.Database.Migrate();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,6 +40,7 @@ namespace Rhisis.Database.Contexts
                 this.Configuration.Database);
 
             optionsBuilder.UseMySql(connectionString);
+            base.OnConfiguring(optionsBuilder);
         }
     }
 }
