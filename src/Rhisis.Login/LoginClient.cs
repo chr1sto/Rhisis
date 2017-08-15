@@ -97,7 +97,7 @@ namespace Rhisis.Login
                     return;
                 }
 
-                PacketFactory.SendServerList(this);
+                PacketFactory.SendServerList(this, user.Username, this._loginServer.ClustersConnected);
             }
         }
     }
