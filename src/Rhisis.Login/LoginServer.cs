@@ -2,12 +2,15 @@
 using Ether.Network.Packets;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
+using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
+using Rhisis.Login.ISC;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Rhisis.Login
 {
@@ -15,8 +18,12 @@ namespace Rhisis.Login
     {
         private static readonly string LoginConfigFile = "config/login.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
+
+        private InterServer _interServer;
         
         public LoginConfiguration LoginConfiguration { get; private set; }
+
+        public IEnumerable<ClusterServerInfo> ClustersConnected => this._interServer?.Clusters;
 
         public LoginServer()
         {
@@ -35,6 +42,13 @@ namespace Rhisis.Login
             if (!DatabaseService.GetContext().DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
+            Task.Run(() =>
+            {
+                this._interServer = new InterServer(this.LoginConfiguration.InterServer);
+
+                this._interServer.Start();
+            });
+
             Logger.Info("Rhisis login server is up");
         }
 
@@ -52,6 +66,14 @@ namespace Rhisis.Login
         protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
         {
             return FFPacket.SplitPackets(buffer);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            this._interServer.Stop();
+            this._interServer.Dispose();
+
+            base.Dispose(disposing);
         }
 
         private void LoadConfiguration()
