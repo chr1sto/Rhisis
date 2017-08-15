@@ -34,7 +34,10 @@ namespace Rhisis.Login.ISC
 
         protected override void OnClientDisconnected(InterClient connection)
         {
-            Logger.Info("Server '{0}' disconnected from InterServer.", connection.ServerInfo.Name);
+            if (string.IsNullOrEmpty(connection.ServerInfo?.Name))
+                Logger.Info("Unknow server disconnected from InterServer.");
+            else
+                Logger.Info("Server '{0}' disconnected from InterServer.", connection.ServerInfo.Name);
         }
 
         internal bool HasClusterWithId(int id)
