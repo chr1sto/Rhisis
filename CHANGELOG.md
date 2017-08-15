@@ -8,14 +8,21 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ### Added
 
-...
+[Core]
+- Configuration structures
+- Rijndael cryptography algorithm
+- Custom exceptions
+- Logger
+- FlyFF Network packet handler
+- Inter-Server structures and packet headers
 
-### Changed
+[Database]
+- Multi-DB support (MySQL and MsSQL)
 
-...
+[Login]
+- Inter-Server authentication process
+- Client authentication process
+- Send server list to connected client
 
-### Removed
-
-...
 
 ## [Released]
