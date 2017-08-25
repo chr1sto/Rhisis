@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Cryptography;
+﻿using Ether.Network.Packets;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.Helpers;
 using System;
 using System.Linq;
@@ -14,14 +15,15 @@ namespace Rhisis.Core.Network.Packets
 
         public string Password { get; private set; }
 
-        public CertifyPacket(FFPacket packet, bool encryptPassword, string encryptionKey)
+        public CertifyPacket(NetPacketBase packet, bool encryptPassword, string encryptionKey)
         {
+            var ffPacket = packet as FFPacket;
             this.BuildData = packet.Read<string>();
             this.Username = packet.Read<string>();
 
             if (encryptPassword)
             {
-                byte[] passwordData = packet.ReadBytes(16 * 42);
+                byte[] passwordData = ffPacket.ReadBytes(16 * 42);
                 var key = Encoding.ASCII.GetBytes(encryptionKey).Concat(Enumerable.Repeat((byte)0, 5).ToArray()).ToArray();
 
                 this.Password = Rijndael.DecryptData(passwordData, key).Trim('\0');

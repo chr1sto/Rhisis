@@ -34,7 +34,7 @@ namespace Rhisis.Login
 
         protected override void Initialize()
         {
-            FFPacketHandler<LoginClient>.Initialize();
+            PacketHandler<LoginClient>.Initialize();
             
             var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
 

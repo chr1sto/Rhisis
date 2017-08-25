@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network.Packets;
 using System;
@@ -220,14 +221,17 @@ namespace Rhisis.Core.Network
             return packets;
         }
 
-        public static bool VerifyPacketHeader(PacketHeader packetHeader)
+        public static bool VerifyPacketHeader(PacketHeader packetHeader, int sessionKey)
         {
             if (packetHeader.Header != FlyFFPacketHeader)
                 return false;
 
+            var crc = new Crc32();
+            int lengthHash = ~(BitConverter.ToInt32(crc.ComputeChecksumBytes(BitConverter.GetBytes(packetHeader.Length)), 0) ^ sessionKey);
+            int dataHash = ~(BitConverter.ToInt32(crc.ComputeChecksumBytes(packetHeader.Data), 0) ^ sessionKey);
             // TODO: Check hash
 
-            return true;
+            return packetHeader.HashData == dataHash && packetHeader.HashLength == lengthHash;
         }
     }
 }

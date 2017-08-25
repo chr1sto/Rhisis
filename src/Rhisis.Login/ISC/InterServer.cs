@@ -1,6 +1,7 @@
 ﻿using Ether.Network;
 using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
+using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Rhisis.Login.ISC
 
         protected override void Initialize()
         {
+            PacketHandler<InterClient>.Initialize();
             Logger.Info("Inter-Server is up.");
         }
 

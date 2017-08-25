@@ -1,11 +1,14 @@
 ﻿using Ether.Network;
 using Ether.Network.Packets;
+using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
 using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
+using Rhisis.Core.Network;
 using Rhisis.Login.ISC.Packets;
 using System;
+using System.Collections.Generic;
 
 namespace Rhisis.Login.ISC
 {
@@ -29,22 +32,33 @@ namespace Rhisis.Login.ISC
 
             try
             {
-                var packetHeader = (InterPacketType)packetHeaderNumber;
-
-                switch (packetHeader)
-                {
-                    case InterPacketType.AUTHENTICATE:
-                        this.OnAuthenticate(packet);
-                        break;
-                    default: throw new NotImplementedException();
-                }
+                PacketHandler<InterClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
             }
-            catch
+            catch (KeyNotFoundException)
             {
                 Logger.Warning("Unknown inter-server packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
             }
+            catch (RhisisPacketException packetException)
+            {
+                Logger.Error(packetException.Message);
+#if DEBUG
+                Logger.Debug("STACK TRACE");
+                Logger.Debug(packetException.InnerException?.StackTrace);
+#endif
+            }
+
+            try
+            {
+                var packetHeader = (InterPacketType)packetHeaderNumber;
+
+                
+            }
+            catch
+            {
+            }
         }
 
+        [PacketHandler(InterPacketType.AUTHENTICATE)]
         private void OnAuthenticate(NetPacketBase packet)
         {
             var id = packet.Read<int>();

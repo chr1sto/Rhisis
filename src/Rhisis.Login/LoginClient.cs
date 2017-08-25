@@ -4,7 +4,6 @@ using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Structures;
 using Rhisis.Login.Packets;
@@ -35,7 +34,7 @@ namespace Rhisis.Login
             var pak = packet as FFPacket;
             var packetHeader = new PacketHeader(pak);
 
-            if (!FFPacket.VerifyPacketHeader(packetHeader))
+            if (!FFPacket.VerifyPacketHeader(packetHeader, (int)this._sessionId))
             {
                 Logger.Warning("Invalid header for packet: {0}", packetHeader.Header);
                 return;
@@ -45,7 +44,7 @@ namespace Rhisis.Login
 
             try
             {
-                FFPacketHandler<LoginClient>.Invoke(this, pak, packetHeaderNumber);
+                PacketHandler<LoginClient>.Invoke(this, pak, (PacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {
@@ -61,11 +60,11 @@ namespace Rhisis.Login
             }
         }
 
-        [FFIncomingPacket(PacketType.CERTIFY)]
-        public void OnLogin(FFPacket packet)
+        [PacketHandler(PacketType.CERTIFY)]
+        public void OnLogin(NetPacketBase packet)
         {
             var certify = new CertifyPacket(packet,
-                this._loginServer.LoginConfiguration.PasswordEncryption, 
+                this._loginServer.LoginConfiguration.PasswordEncryption,
                 this._loginServer.LoginConfiguration.EncryptionKey);
 
             if (certify.BuildData != this._loginServer.LoginConfiguration.BuildVersion)
