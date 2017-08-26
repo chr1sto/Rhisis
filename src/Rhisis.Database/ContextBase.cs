@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Rhisis.Database.Structures;
 
 namespace Rhisis.Database
@@ -34,17 +36,26 @@ namespace Rhisis.Database
         /// Creates the database.
         /// </summary>
         /// <returns></returns>
-        public abstract bool CreateDatabase();
+        public virtual bool CreateDatabase()
+        {
+            return this.Database.EnsureCreated();
+        }
 
         /// <summary>
         /// Check if the database exists.
         /// </summary>
         /// <returns></returns>
-        public abstract bool DatabaseExists();
+        public virtual bool DatabaseExists()
+        {
+            return (this.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+        }
 
         /// <summary>
         /// Processes the database migration.
         /// </summary>
-        public abstract void Migrate();
+        public virtual void Migrate()
+        {
+            this.Database.Migrate();
+        }
     }
 }

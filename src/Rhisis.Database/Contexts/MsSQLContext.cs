@@ -24,32 +24,6 @@ namespace Rhisis.Database.Contexts
         }
 
         /// <summary>
-        /// Creates the database.
-        /// </summary>
-        /// <returns></returns>
-        public override bool CreateDatabase()
-        {
-            return this.Database.EnsureCreated();
-        }
-
-        /// <summary>
-        /// Check if the database exists.
-        /// </summary>
-        /// <returns></returns>
-        public override bool DatabaseExists()
-        {
-            return (this.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
-        }
-
-        /// <summary>
-        /// Processes the database migration.
-        /// </summary>
-        public override void Migrate()
-        {
-            this.Database.Migrate();
-        }
-
-        /// <summary>
         /// Called when the configuration of the DbContext has begun.
         /// </summary>
         /// <param name="optionsBuilder"></param>

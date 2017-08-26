@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Rhisis.Database.Contexts
 {
@@ -21,32 +19,6 @@ namespace Rhisis.Database.Contexts
         public MySQLContext(DatabaseConfiguration configuration) 
             : base(configuration)
         {
-        }
-
-        /// <summary>
-        /// Creates the database.
-        /// </summary>
-        /// <returns></returns>
-        public override bool CreateDatabase()
-        {
-            return this.Database.EnsureCreated();
-        }
-
-        /// <summary>
-        /// Check if the database exists.
-        /// </summary>
-        /// <returns></returns>
-        public override bool DatabaseExists()
-        {
-            return (this.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
-        }
-
-        /// <summary>
-        /// Processes the database migration.
-        /// </summary>
-        public override void Migrate()
-        {
-            this.Database.Migrate();
         }
 
         /// <summary>
