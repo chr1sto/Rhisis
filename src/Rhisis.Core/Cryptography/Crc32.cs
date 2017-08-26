@@ -2,17 +2,17 @@
 
 namespace Rhisis.Core.Cryptography
 {
-    public class Crc32
+    public static class Crc32
     {
-        private uint[] _table;
+        private static readonly uint[] _table;
 
-        public Crc32()
+        static Crc32()
         {
-            this._table = new uint[256];
+            _table = new uint[256];
             uint poly = 0xedb88320;
             uint temp = 0;
 
-            for (uint i = 0; i < this._table.Length; ++i)
+            for (uint i = 0; i < _table.Length; ++i)
             {
                 temp = i;
 
@@ -28,20 +28,20 @@ namespace Rhisis.Core.Cryptography
             }
         }
 
-        public uint ComputeChecksum(byte[] bytes)
+        public static uint ComputeChecksum(byte[] bytes)
         {
             uint crc = 0xffffffff;
 
             for (int i = 0; i < bytes.Length; ++i)
             {
                 var index = (byte)(((crc) & 0xff) ^ bytes[i]);
-                crc = ((crc >> 8) ^ this._table[index]);
+                crc = ((crc >> 8) ^ _table[index]);
             }
 
             return ~crc;
         }
 
-        public byte[] ComputeChecksumBytes(byte[] bytes)
+        public static byte[] ComputeChecksumBytes(byte[] bytes)
         {
             return BitConverter.GetBytes(ComputeChecksum(bytes));
         }

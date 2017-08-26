@@ -221,15 +221,19 @@ namespace Rhisis.Core.Network
             return packets;
         }
 
+        /// <summary>
+        /// Verify the packet header hash.
+        /// </summary>
+        /// <param name="packetHeader">Packet header</param>
+        /// <param name="sessionKey">Client session key</param>
+        /// <returns></returns>
         public static bool VerifyPacketHeader(PacketHeader packetHeader, int sessionKey)
         {
             if (packetHeader.Header != FlyFFPacketHeader)
                 return false;
-
-            var crc = new Crc32();
-            int lengthHash = ~(BitConverter.ToInt32(crc.ComputeChecksumBytes(BitConverter.GetBytes(packetHeader.Length)), 0) ^ sessionKey);
-            int dataHash = ~(BitConverter.ToInt32(crc.ComputeChecksumBytes(packetHeader.Data), 0) ^ sessionKey);
-            // TODO: Check hash
+            
+            int lengthHash = ~(BitConverter.ToInt32(Crc32.ComputeChecksumBytes(BitConverter.GetBytes(packetHeader.Length)), 0) ^ sessionKey);
+            int dataHash = ~(BitConverter.ToInt32(Crc32.ComputeChecksumBytes(packetHeader.Data), 0) ^ sessionKey);
 
             return packetHeader.HashData == dataHash && packetHeader.HashLength == lengthHash;
         }
