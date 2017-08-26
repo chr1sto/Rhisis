@@ -46,16 +46,6 @@ namespace Rhisis.Login.ISC
                 Logger.Debug(packetException.InnerException?.StackTrace);
 #endif
             }
-
-            try
-            {
-                var packetHeader = (InterPacketType)packetHeaderNumber;
-
-                
-            }
-            catch
-            {
-            }
         }
 
         [PacketHandler(InterPacketType.AUTHENTICATE)]

@@ -6,7 +6,8 @@ namespace Rhisis.Cluster
     {
         private static void Main(string[] args)
         {
-            throw new NotImplementedException();
+            using (var server = new ClusterServer())
+                server.Start();
         }
     }
 }

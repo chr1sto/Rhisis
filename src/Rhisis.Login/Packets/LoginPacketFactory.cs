@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Rhisis.Login.Packets
 {
-    public static class PacketFactory
+    public static class LoginPacketFactory
     {
         public static void SendWelcome(LoginClient client, uint sessionId)
         {

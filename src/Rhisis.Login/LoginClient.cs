@@ -26,7 +26,7 @@ namespace Rhisis.Login
         public void InitializeClient(LoginServer loginServer)
         {
             this._loginServer = loginServer;
-            PacketFactory.SendWelcome(this, this._sessionId);
+            LoginPacketFactory.SendWelcome(this, this._sessionId);
         }
 
         public override void HandleMessage(NetPacketBase packet)
@@ -70,7 +70,7 @@ namespace Rhisis.Login
             if (certify.BuildData != this._loginServer.LoginConfiguration.BuildVersion)
             {
                 Logger.Info($"User '{certify.Username}' logged in with bad build version.");
-                PacketFactory.SendLoginError(this, ErrorType.CERT_GENERAL);
+                LoginPacketFactory.SendLoginError(this, ErrorType.CERT_GENERAL);
                 this.Dispose();
                 this._loginServer.DisconnectClient(this.Id);
                 return;
@@ -83,7 +83,7 @@ namespace Rhisis.Login
                 if (user == null)
                 {
                     Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad username)");
-                    PacketFactory.SendLoginError(this, ErrorType.FLYFF_ACCOUNT);
+                    LoginPacketFactory.SendLoginError(this, ErrorType.FLYFF_ACCOUNT);
                     this._loginServer.DisconnectClient(this.Id);
                     return;
                 }
@@ -91,12 +91,12 @@ namespace Rhisis.Login
                 if (!user.Password.Equals(certify.Password, StringComparison.OrdinalIgnoreCase))
                 {
                     Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad password)");
-                    PacketFactory.SendLoginError(this, ErrorType.FLYFF_PASSWORD);
+                    LoginPacketFactory.SendLoginError(this, ErrorType.FLYFF_PASSWORD);
                     this._loginServer.DisconnectClient(this.Id);
                     return;
                 }
 
-                PacketFactory.SendServerList(this, user.Username, this._loginServer.ClustersConnected);
+                LoginPacketFactory.SendServerList(this, user.Username, this._loginServer.ClustersConnected);
             }
         }
     }
