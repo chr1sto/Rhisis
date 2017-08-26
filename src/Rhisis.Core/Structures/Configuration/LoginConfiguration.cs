@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Configuration
 {
+    /// <summary>
+    /// Reprensents the Login server configuration structure.
+    /// </summary>
     [DataContract]
     public class LoginConfiguration : BaseConfiguration
     {
