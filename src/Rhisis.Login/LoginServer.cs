@@ -2,12 +2,12 @@
 using Ether.Network.Packets;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
-using Rhisis.Core.ISC.Structures;
+using Rhisis.Core.IPC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
-using Rhisis.Login.ISC;
+using Rhisis.Login.IPC;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ namespace Rhisis.Login
         private static readonly string LoginConfigFile = "config/login.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
 
-        private InterServer _interServer;
+        private IPCServer _interServer;
         
         public LoginConfiguration LoginConfiguration { get; private set; }
 
@@ -44,7 +44,7 @@ namespace Rhisis.Login
 
             Task.Run(() =>
             {
-                this._interServer = new InterServer(this.LoginConfiguration.InterServer);
+                this._interServer = new IPCServer(this.LoginConfiguration.InterServer);
 
                 this._interServer.Start();
             });

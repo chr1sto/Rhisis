@@ -1,11 +1,11 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.ISC.Packets;
+using Rhisis.Core.IPC.Packets;
 
-namespace Rhisis.Login.ISC.Packets
+namespace Rhisis.Login.IPC.Packets
 {
     public static partial class PacketFactory
     {
-        public static void SendWelcome(InterClient client)
+        public static void SendWelcome(IPCClient client)
         {
             using (var packet = new NetPacket())
             {
@@ -15,7 +15,7 @@ namespace Rhisis.Login.ISC.Packets
             }
         }
 
-        public static void SendAuthenticationResult(InterClient client, InterServerError error)
+        public static void SendAuthenticationResult(IPCClient client, InterServerError error)
         {
             using (var packet = new NetPacket())
             {

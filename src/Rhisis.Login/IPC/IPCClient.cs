@@ -2,25 +2,25 @@
 using Ether.Network.Packets;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
-using Rhisis.Core.ISC;
-using Rhisis.Core.ISC.Packets;
-using Rhisis.Core.ISC.Structures;
+using Rhisis.Core.IPC;
+using Rhisis.Core.IPC.Packets;
+using Rhisis.Core.IPC.Structures;
 using Rhisis.Core.Network;
-using Rhisis.Login.ISC.Packets;
+using Rhisis.Login.IPC.Packets;
 using System;
 using System.Collections.Generic;
 
-namespace Rhisis.Login.ISC
+namespace Rhisis.Login.IPC
 {
-    public sealed class InterClient : NetConnection
+    public sealed class IPCClient : NetConnection
     {
-        private InterServer _server;
+        private IPCServer _server;
 
         public InterServerType Type { get; private set; }
 
         public BaseServerInfo ServerInfo { get; private set; }
 
-        public void Initialize(InterServer server)
+        public void Initialize(IPCServer server)
         {
             this._server = server;
             PacketFactory.SendWelcome(this);
@@ -32,7 +32,7 @@ namespace Rhisis.Login.ISC
 
             try
             {
-                PacketHandler<InterClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
+                PacketHandler<IPCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Rhisis.Core.ISC.Structures
+namespace Rhisis.Core.IPC.Structures
 {
     public class ClusterServerInfo : BaseServerInfo
     {

@@ -1,18 +1,18 @@
 ﻿using Ether.Network;
 using Rhisis.Core.IO;
-using Rhisis.Core.ISC.Structures;
+using Rhisis.Core.IPC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Login.ISC
+namespace Rhisis.Login.IPC
 {
-    public sealed class InterServer : NetServer<InterClient>
+    public sealed class IPCServer : NetServer<IPCClient>
     {
         public IList<ClusterServerInfo> Clusters { get; private set; }
 
-        public InterServer(InterServerConfiguration configuration)
+        public IPCServer(InterServerConfiguration configuration)
         {
             this.Clusters = new List<ClusterServerInfo>();
             this.Configuration.Host = configuration.Host;
@@ -24,17 +24,17 @@ namespace Rhisis.Login.ISC
 
         protected override void Initialize()
         {
-            PacketHandler<InterClient>.Initialize();
-            Logger.Info("Inter-Server is up.");
+            PacketHandler<IPCClient>.Initialize();
+            Logger.Info("InterServer is up.");
         }
 
-        protected override void OnClientConnected(InterClient connection)
+        protected override void OnClientConnected(IPCClient connection)
         {
             Logger.Info("A new server is connected to the InterServer.");
             connection.Initialize(this);
         }
 
-        protected override void OnClientDisconnected(InterClient connection)
+        protected override void OnClientDisconnected(IPCClient connection)
         {
             if (string.IsNullOrEmpty(connection.ServerInfo?.Name))
                 Logger.Info("Unknow server disconnected from InterServer.");
