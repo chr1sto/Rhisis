@@ -15,9 +15,7 @@ namespace Rhisis.Login.IPC
     public sealed class IPCClient : NetConnection
     {
         private IPCServer _server;
-
-        public InterServerType Type { get; private set; }
-
+        
         public BaseServerInfo ServerInfo { get; private set; }
 
         public void Initialize(IPCServer server)
@@ -57,8 +55,6 @@ namespace Rhisis.Login.IPC
             var type = packet.Read<byte>();
             var interServerType = (InterServerType)type;
 
-            this.ServerInfo = new BaseServerInfo(id, host, name);
-
             if (interServerType == InterServerType.Cluster)
             {
                 if (this._server.HasClusterWithId(id))
@@ -68,7 +64,9 @@ namespace Rhisis.Login.IPC
                     this._server.DisconnectClient(this.Id);
                 }
 
-                this._server.Clusters.Add(new ClusterServerInfo(id, host, name));
+                this.ServerInfo = new ClusterServerInfo(id, host, name);
+
+                this._server.Clusters.Add(this.ServerInfo as ClusterServerInfo);
                 PacketFactory.SendAuthenticationResult(this, InterServerError.AUTH_SUCCESS);
                 Logger.Info("Cluster Server '{0}' connected to InterServer.", name);
             }
@@ -94,8 +92,9 @@ namespace Rhisis.Login.IPC
                     PacketFactory.SendAuthenticationResult(this, InterServerError.AUTH_FAILED_WORLD_EXISTS);
                     this._server.DisconnectClient(this.Id);
                 }
-                
-                cluster.Worlds.Add(new WorldServerInfo(id, host, name));
+
+                this.ServerInfo = new WorldServerInfo(id, host, name);
+                cluster.Worlds.Add(this.ServerInfo as WorldServerInfo);
                 PacketFactory.SendAuthenticationResult(this, InterServerError.AUTH_SUCCESS);
                 Logger.Info("World Server '{0}' connected to Cluster '{1}'.", name, cluster.Name);
             }

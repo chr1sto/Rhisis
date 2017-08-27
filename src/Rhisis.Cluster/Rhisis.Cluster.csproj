@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="InterServer\" />
-  </ItemGroup>
-
 </Project>

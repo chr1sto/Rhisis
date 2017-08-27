@@ -42,15 +42,15 @@ namespace Rhisis.Core.Structures.Configuration
         /// <summary>
         /// Gets or sets the Inter-Server configuration.
         /// </summary>
-        [DataMember(Name = "interServer")]
-        public InterServerConfiguration InterServer { get; set; }
+        [DataMember(Name = "ipc")]
+        public IPCConfiguration IPC { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="LoginConfiguration"/> instance.
         /// </summary>
         public LoginConfiguration()
         {
-            this.InterServer = new InterServerConfiguration();
+            this.IPC = new IPCConfiguration();
         }
     }
 }

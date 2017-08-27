@@ -6,12 +6,12 @@ namespace Rhisis.Core.Structures.Configuration
     /// Represents the Inter-Server configuration structure.
     /// </summary>
     [DataContract]
-    public class InterServerConfiguration : BaseConfiguration
+    public class IPCConfiguration : BaseConfiguration
     {
         /// <summary>
         /// Get or sets the Inter-Server password.
         /// </summary>
-        [DataMember(Name = "interPassword")]
+        [DataMember(Name = "password")]
         public string Password { get; set; }
     }
 }

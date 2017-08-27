@@ -12,7 +12,7 @@ namespace Rhisis.Login.IPC
     {
         public IList<ClusterServerInfo> Clusters { get; private set; }
 
-        public IPCServer(InterServerConfiguration configuration)
+        public IPCServer(IPCConfiguration configuration)
         {
             this.Clusters = new List<ClusterServerInfo>();
             this.Configuration.Host = configuration.Host;
@@ -30,7 +30,6 @@ namespace Rhisis.Login.IPC
 
         protected override void OnClientConnected(IPCClient connection)
         {
-            Logger.Info("A new server is connected to the InterServer.");
             connection.Initialize(this);
         }
 
@@ -39,7 +38,10 @@ namespace Rhisis.Login.IPC
             if (string.IsNullOrEmpty(connection.ServerInfo?.Name))
                 Logger.Info("Unknow server disconnected from InterServer.");
             else
+            {
                 Logger.Info("Server '{0}' disconnected from InterServer.", connection.ServerInfo.Name);
+                this.Clusters.Remove(connection.ServerInfo as ClusterServerInfo);
+            }
         }
 
         internal bool HasClusterWithId(int id)
