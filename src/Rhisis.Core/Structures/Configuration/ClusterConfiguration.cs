@@ -15,7 +15,7 @@ namespace Rhisis.Core.Structures.Configuration
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the cluster server name.s
+        /// Gets or sets the cluster server name.
         /// </summary>
         [DataMember(Name = "name")]
         public string Name { get; set; }

@@ -6,7 +6,8 @@ namespace Rhisis.World
     {
         private static void Main(string[] args)
         {
-            throw new NotImplementedException();
+            using (var server = new WorldServer())
+                server.Start();
         }
     }
 }
