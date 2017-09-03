@@ -16,6 +16,8 @@ namespace Rhisis.Login.IPC
     {
         private IPCServer _server;
         
+        public InterServerType Type { get; private set; }
+
         public BaseServerInfo ServerInfo { get; private set; }
 
         public void Initialize(IPCServer server)
@@ -46,16 +48,39 @@ namespace Rhisis.Login.IPC
             }
         }
 
-        [PacketHandler(InterPacketType.AUTHENTICATE)]
+        public void Disconnect()
+        {
+            if (this.Type == InterServerType.Cluster)
+            {
+                var clusterInfo = this.ServerInfo as ClusterServerInfo;
+
+                clusterInfo.Worlds.Clear();
+            }
+            else if (this.Type == InterServerType.World)
+            {
+                var worldInfo = this.GetServerInfo<WorldServerInfo>();
+                IPCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
+                var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
+
+                clusterInfo?.Worlds.Remove(worldInfo);
+            }
+        }
+
+        public T GetServerInfo<T>() where T : BaseServerInfo
+        {
+            return this.ServerInfo as T;
+        }
+
+        [PacketHandler(InterPacketType.Authentication)]
         private void OnAuthenticate(NetPacketBase packet)
         {
             var id = packet.Read<int>();
             var host = packet.Read<string>();
             var name = packet.Read<string>();
             var type = packet.Read<byte>();
-            var interServerType = (InterServerType)type;
+            this.Type = (InterServerType)type;
 
-            if (interServerType == InterServerType.Cluster)
+            if (this.Type == InterServerType.Cluster)
             {
                 if (this._server.HasClusterWithId(id))
                 {
@@ -66,14 +91,14 @@ namespace Rhisis.Login.IPC
 
                 this.ServerInfo = new ClusterServerInfo(id, host, name);
 
-                this._server.Clusters.Add(this.ServerInfo as ClusterServerInfo);
+                //this._server.Clusters.Add(this.ServerInfo as ClusterServerInfo);
                 PacketFactory.SendAuthenticationResult(this, InterServerError.AUTH_SUCCESS);
                 Logger.Info("Cluster Server '{0}' connected to InterServer.", name);
             }
-            else if (interServerType == InterServerType.World)
+            else if (this.Type == InterServerType.World)
             {
                 var clusterId = packet.Read<int>();
-                // TODO: read more informations about world server
+                // TODO: read more informations about world server if needed
 
                 if (!this._server.HasClusterWithId(clusterId))
                 {
@@ -83,20 +108,22 @@ namespace Rhisis.Login.IPC
                     this._server.DisconnectClient(this.Id);
                 }
 
-                ClusterServerInfo cluster = this._server.GetCluster(clusterId);
+                IPCClient cluster = this._server.GetCluster(clusterId);
+                var clusterInfo = cluster.GetServerInfo<ClusterServerInfo>();
 
                 if (this._server.HasWorldInCluster(clusterId, id))
                 {
                     // World already exists in cluster
-                    Logger.Warning("World Server '{0}' already exists in Cluster '{1}'", name, cluster.Name);
+                    Logger.Warning("World Server '{0}' already exists in Cluster '{1}'", name, clusterInfo.Name);
                     PacketFactory.SendAuthenticationResult(this, InterServerError.AUTH_FAILED_WORLD_EXISTS);
                     this._server.DisconnectClient(this.Id);
                 }
 
-                this.ServerInfo = new WorldServerInfo(id, host, name);
-                cluster.Worlds.Add(this.ServerInfo as WorldServerInfo);
+                this.ServerInfo = new WorldServerInfo(id, host, name, clusterId);
+                clusterInfo.Worlds.Add(this.ServerInfo as WorldServerInfo);
                 PacketFactory.SendAuthenticationResult(this, InterServerError.AUTH_SUCCESS);
-                Logger.Info("World Server '{0}' connected to Cluster '{1}'.", name, cluster.Name);
+                PacketFactory.SendWorldsToCluster(cluster, clusterInfo);
+                Logger.Info("World Server '{0}' connected to Cluster '{1}'.", name, clusterInfo.Name);
             }
             else
             {

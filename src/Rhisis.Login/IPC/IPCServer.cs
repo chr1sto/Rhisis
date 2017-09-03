@@ -1,5 +1,6 @@
 ﻿using Ether.Network;
 using Rhisis.Core.IO;
+using Rhisis.Core.IPC;
 using Rhisis.Core.IPC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
@@ -10,11 +11,12 @@ namespace Rhisis.Login.IPC
 {
     public sealed class IPCServer : NetServer<IPCClient>
     {
-        public IList<ClusterServerInfo> Clusters { get; private set; }
+        public IEnumerable<ClusterServerInfo> Clusters => from x in this.Clients
+                                                          where x.ServerInfo is ClusterServerInfo
+                                                          select x.ServerInfo as ClusterServerInfo;
 
         public IPCServer(IPCConfiguration configuration)
         {
-            this.Clusters = new List<ClusterServerInfo>();
             this.Configuration.Host = configuration.Host;
             this.Configuration.Port = configuration.Port;
             this.Configuration.MaximumNumberOfConnections = 100;
@@ -40,18 +42,21 @@ namespace Rhisis.Login.IPC
             else
             {
                 Logger.Info("Server '{0}' disconnected from InterServer.", connection.ServerInfo.Name);
-                this.Clusters.Remove(connection.ServerInfo as ClusterServerInfo);
+                connection.Disconnect();
             }
         }
 
         internal bool HasClusterWithId(int id)
         {
-            return this.Clusters.Any(x => x.Id == id);
+            return this.Clients.Any(x => x.ServerInfo is ClusterServerInfo && x.ServerInfo.Id == id);
         }
 
-        internal ClusterServerInfo GetCluster(int id)
+        internal IPCClient GetCluster(int id)
         {
-            return this.Clusters.FirstOrDefault(x => x.Id == id);
+            return (from x in this.Clients
+                    where x.ServerInfo is ClusterServerInfo
+                    where x.ServerInfo.Id == id
+                    select x).FirstOrDefault();
         }
 
         internal bool HasWorldInCluster(int clusterId, int worldId)
@@ -61,7 +66,19 @@ namespace Rhisis.Login.IPC
             if (cluster == null)
                 return false;
 
-            return cluster.Worlds.Any(x => x.Id == worldId);
+            var clusterInfo = cluster.GetServerInfo<ClusterServerInfo>();
+
+            return clusterInfo.Worlds.Any(x => x.Id == worldId);
+        }
+
+        internal IPCClient GetWorld(int parentClusterId, int worldId)
+        {
+            return (from x in this.Clients
+                    where x.Type == InterServerType.World
+                    let worldInfo = x.ServerInfo as WorldServerInfo
+                    where worldInfo.ParentClusterId == parentClusterId
+                    where worldInfo.Id == worldId
+                    select x).FirstOrDefault();
         }
     }
 }

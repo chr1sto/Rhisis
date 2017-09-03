@@ -12,7 +12,7 @@ namespace Rhisis.World.IPC
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)InterPacketType.AUTHENTICATE);
+                packet.Write((uint)InterPacketType.Authentication);
                 packet.Write(worldConfiguration.Id);
                 packet.Write(worldConfiguration.Host);
                 packet.Write(worldConfiguration.Name);

@@ -2,8 +2,9 @@
 {
     public enum InterPacketType : uint
     {
-        WELCOME = 0x01,
-        AUTHENTICATE = 0x02,
-        AUTHENTICATION_RESULT = 0x03,
+        Welcome = 0x01,
+        Authentication = 0x02,
+        AuthenticationResult = 0x03,
+        UpdateClusterWorldsList = 0x04,
     }
 }

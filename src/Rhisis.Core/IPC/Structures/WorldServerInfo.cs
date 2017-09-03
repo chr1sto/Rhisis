@@ -2,9 +2,12 @@
 {
     public class WorldServerInfo : BaseServerInfo
     {
-        public WorldServerInfo(int id, string host, string name)
+        public int ParentClusterId { get; private set; }
+
+        public WorldServerInfo(int id, string host, string name, int parentClusterId)
             : base(id, host, name)
         {
+            this.ParentClusterId = parentClusterId;
         }
     }
 }

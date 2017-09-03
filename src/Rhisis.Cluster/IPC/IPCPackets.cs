@@ -18,7 +18,7 @@ namespace Rhisis.Cluster.IPC
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)InterPacketType.AUTHENTICATE);
+                packet.Write((uint)InterPacketType.Authentication);
                 packet.Write(id);
                 packet.Write(host);
                 packet.Write(name);

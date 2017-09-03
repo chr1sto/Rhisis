@@ -52,13 +52,13 @@ namespace Rhisis.World.IPC
             Logger.Info("Disconnected from Inter-Server.");
         }
 
-        [PacketHandler(InterPacketType.WELCOME)]
+        [PacketHandler(InterPacketType.Welcome)]
         public void OnWelcome(NetPacketBase packet)
         {
             IPCPackets.SendAuthentication(this, this._worldConfiguration);
         }
 
-        [PacketHandler(InterPacketType.AUTHENTICATION_RESULT)]
+        [PacketHandler(InterPacketType.AuthenticationResult)]
         public void OnAuthenticationResult(NetPacketBase packet)
         {
             var authenticationResult = packet.Read<uint>();

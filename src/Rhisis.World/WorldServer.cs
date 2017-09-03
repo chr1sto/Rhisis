@@ -45,7 +45,7 @@ namespace Rhisis.World
             _client = new IPCClient(this.WorldConfiguration);
             _client.Connect();
 
-            Logger.Info("Rhisis cluster server is up");
+            Logger.Info("Rhisis world server is up");
         }
 
         protected override void OnClientConnected(WorldClient connection)

@@ -1,7 +1,5 @@
 ﻿using Ether.Network;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Ether.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Network;
@@ -60,13 +58,13 @@ namespace Rhisis.Cluster.IPC
             Logger.Info("Disconnected from InterServer.");
         }
 
-        [PacketHandler(InterPacketType.WELCOME)]
+        [PacketHandler(InterPacketType.Welcome)]
         public void OnWelcome(NetPacketBase packet)
         {
             IPCPackets.SendAuthentication(this, this._configuration.Id, this._configuration.Host, this._configuration.Name);
         }
 
-        [PacketHandler(InterPacketType.AUTHENTICATION_RESULT)]
+        [PacketHandler(InterPacketType.AuthenticationResult)]
         public void OnAuthenticationResult(NetPacketBase packet)
         {
             var authenticationResult = packet.Read<uint>();
