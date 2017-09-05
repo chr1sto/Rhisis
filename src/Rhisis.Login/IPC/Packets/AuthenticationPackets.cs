@@ -27,24 +27,5 @@ namespace Rhisis.Login.IPC.Packets
                 client.Send(packet);
             }
         }
-
-        public static void SendWorldsToCluster(NetConnection clusterClient, ClusterServerInfo clusterServerInfo)
-        {
-            using (var packet = new NetPacket())
-            {
-                packet.Write((uint)InterPacketType.UpdateClusterWorldsList);
-                packet.Write(clusterServerInfo.Worlds.Count);
-
-                foreach (WorldServerInfo world in clusterServerInfo.Worlds)
-                {
-                    packet.Write(world.Id);
-                    packet.Write(world.Host);
-                    packet.Write(world.Name);
-                    // TODO: add more world informations if needed
-                }
-
-                clusterClient.Send(packet);
-            }
-        }
     }
 }

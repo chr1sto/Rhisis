@@ -122,7 +122,6 @@ namespace Rhisis.Login.IPC
                 this.ServerInfo = new WorldServerInfo(id, host, name, clusterId);
                 clusterInfo.Worlds.Add(this.ServerInfo as WorldServerInfo);
                 PacketFactory.SendAuthenticationResult(this, InterServerError.AUTH_SUCCESS);
-                PacketFactory.SendWorldsToCluster(cluster, clusterInfo);
                 Logger.Info("World Server '{0}' connected to Cluster '{1}'.", name, clusterInfo.Name);
             }
             else

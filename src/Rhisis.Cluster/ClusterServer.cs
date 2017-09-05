@@ -50,6 +50,7 @@ namespace Rhisis.Cluster
         protected override void OnClientConnected(ClusterClient connection)
         {
             Logger.Info("New client connected: {0}", connection.Id);
+            connection.InitializeClient();
         }
 
         protected override void OnClientDisconnected(ClusterClient connection)
