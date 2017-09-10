@@ -1,11 +1,11 @@
 ﻿using Ether.Network;
 using Ether.Network.Packets;
-using Rhisis.Core.IPC;
-using Rhisis.Core.IPC.Packets;
+using Rhisis.Core.ISC;
+using Rhisis.Core.ISC.Packets;
 
-namespace Rhisis.Cluster.IPC
+namespace Rhisis.Cluster.ISC
 {
-    public static class IPCPackets
+    public static class ISCPackets
     {
         /// <summary>
         /// Send an authentication request to the IPCServer

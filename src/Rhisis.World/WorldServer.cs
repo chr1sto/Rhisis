@@ -7,7 +7,7 @@ using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
-using Rhisis.World.IPC;
+using Rhisis.World.ISC;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
 
@@ -18,9 +18,9 @@ namespace Rhisis.World
         private static readonly string WorldConfigFile = "config/world.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
 
-        private static IPCClient _client;
+        private static ISCClient _client;
 
-        public static IPCClient Client => _client;
+        public static ISCClient Client => _client;
 
         public WorldConfiguration WorldConfiguration { get; private set; }
 
@@ -34,7 +34,7 @@ namespace Rhisis.World
         protected override void Initialize()
         {
             PacketHandler<WorldClient>.Initialize();
-            PacketHandler<IPCClient>.Initialize();
+            PacketHandler<ISCClient>.Initialize();
 
             var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
 
@@ -42,7 +42,7 @@ namespace Rhisis.World
             if (!DatabaseService.GetContext().DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
-            _client = new IPCClient(this.WorldConfiguration);
+            _client = new ISCClient(this.WorldConfiguration);
             _client.Connect();
 
             Logger.Info("Rhisis world server is up");

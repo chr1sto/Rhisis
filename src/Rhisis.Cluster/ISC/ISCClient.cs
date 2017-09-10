@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using Ether.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Network;
-using Rhisis.Core.IPC.Packets;
+using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.IO;
 using Rhisis.Core.Exceptions;
 
-namespace Rhisis.Cluster.IPC
+namespace Rhisis.Cluster.ISC
 {
-    public sealed class IPCClient : NetClient
+    public sealed class ISCClient : NetClient
     {
         private ClusterConfiguration _configuration;
 
         /// <summary>
-        /// Creates a new <see cref="IPCClient"/> instance.
+        /// Creates a new <see cref="ISCClient"/> instance.
         /// </summary>
         /// <param name="configuration">Cluster Server configuration</param>
-        public IPCClient(ClusterConfiguration configuration) 
+        public ISCClient(ClusterConfiguration configuration) 
             : base(configuration.IPC.Host, configuration.IPC.Port, 1024)
         {
             this._configuration = configuration;
@@ -33,7 +33,7 @@ namespace Rhisis.Cluster.IPC
 
             try
             {
-                PacketHandler<IPCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
+                PacketHandler<ISCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {
@@ -61,7 +61,7 @@ namespace Rhisis.Cluster.IPC
         [PacketHandler(InterPacketType.Welcome)]
         public void OnWelcome(NetPacketBase packet)
         {
-            IPCPackets.SendAuthentication(this, this._configuration.Id, this._configuration.Host, this._configuration.Name);
+            ISCPackets.SendAuthentication(this, this._configuration.Id, this._configuration.Host, this._configuration.Name);
         }
 
         [PacketHandler(InterPacketType.AuthenticationResult)]

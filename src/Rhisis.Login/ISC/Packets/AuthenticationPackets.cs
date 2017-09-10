@@ -1,9 +1,9 @@
 ﻿using Ether.Network;
 using Ether.Network.Packets;
-using Rhisis.Core.IPC.Packets;
-using Rhisis.Core.IPC.Structures;
+using Rhisis.Core.ISC.Packets;
+using Rhisis.Core.ISC.Structures;
 
-namespace Rhisis.Login.IPC.Packets
+namespace Rhisis.Login.ISC.Packets
 {
     public static partial class PacketFactory
     {

@@ -1,12 +1,12 @@
 ﻿using Ether.Network;
 using Ether.Network.Packets;
-using Rhisis.Core.IPC;
-using Rhisis.Core.IPC.Packets;
+using Rhisis.Core.ISC;
+using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.Structures.Configuration;
 
-namespace Rhisis.World.IPC
+namespace Rhisis.World.ISC
 {
-    public static class IPCPackets
+    public static class ISCPackets
     {
         public static void SendAuthentication(INetClient connection, WorldConfiguration worldConfiguration)
         {

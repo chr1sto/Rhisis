@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Core.IPC.Packets
+﻿namespace Rhisis.Core.ISC.Packets
 {
     public enum InterPacketType : uint
     {

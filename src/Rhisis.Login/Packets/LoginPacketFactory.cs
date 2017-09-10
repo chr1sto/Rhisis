@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.IPC.Structures;
+﻿using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using System.Collections.Generic;

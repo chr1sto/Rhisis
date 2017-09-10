@@ -7,15 +7,15 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.IPC.Packets;
+using Rhisis.Core.ISC.Packets;
 
-namespace Rhisis.World.IPC
+namespace Rhisis.World.ISC
 {
-    public sealed class IPCClient : NetClient
+    public sealed class ISCClient : NetClient
     {
         private WorldConfiguration _worldConfiguration;
 
-        public IPCClient(WorldConfiguration worldConfiguration) 
+        public ISCClient(WorldConfiguration worldConfiguration) 
             : base(worldConfiguration.IPC.Host, worldConfiguration.IPC.Port, 1024)
         {
             this._worldConfiguration = worldConfiguration;
@@ -27,7 +27,7 @@ namespace Rhisis.World.IPC
 
             try
             {
-                PacketHandler<IPCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
+                PacketHandler<ISCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {
@@ -55,7 +55,7 @@ namespace Rhisis.World.IPC
         [PacketHandler(InterPacketType.Welcome)]
         public void OnWelcome(NetPacketBase packet)
         {
-            IPCPackets.SendAuthentication(this, this._worldConfiguration);
+            ISCPackets.SendAuthentication(this, this._worldConfiguration);
         }
 
         [PacketHandler(InterPacketType.AuthenticationResult)]

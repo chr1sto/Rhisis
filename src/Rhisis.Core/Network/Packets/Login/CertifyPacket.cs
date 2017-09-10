@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace Rhisis.Core.Network.Packets
+namespace Rhisis.Core.Network.Packets.Login
 {
     public struct CertifyPacket : IEquatable<CertifyPacket>
     {

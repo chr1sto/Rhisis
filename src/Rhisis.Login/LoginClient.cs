@@ -4,6 +4,7 @@ using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
+using Rhisis.Core.Network.Packets.Login;
 using Rhisis.Database;
 using Rhisis.Database.Structures;
 using Rhisis.Login.Packets;
@@ -40,7 +41,6 @@ namespace Rhisis.Login
                 return;
             }
 
-            var directPlayID = packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
             var packetHeaderNumber = packet.Read<uint>();
 
             try

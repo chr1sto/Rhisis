@@ -8,7 +8,7 @@ namespace Rhisis.Core.IO
     /// </summary>
     public static class Logger
     {
-        private enum LoggerType
+        private enum LogType
         {
             Info,
             Debug,
@@ -36,7 +36,7 @@ namespace Rhisis.Core.IO
         /// <param name="args">parameters</param>
         public static void Info(string format, params object[] args)
         {
-            Write(LoggerType.Info, string.Format(format, args));
+            Write(LogType.Info, string.Format(format, args));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Rhisis.Core.IO
         {
             // DEBUG configuration only
 #if DEBUG
-            Write(LoggerType.Debug, string.Format(format, args));
+            Write(LogType.Debug, string.Format(format, args));
 #endif
         }
 
@@ -59,7 +59,7 @@ namespace Rhisis.Core.IO
         /// <param name="args">parameters</param>
         public static void Warning(string format, params object[] args)
         {
-            Write(LoggerType.Warning, string.Format(format, args));
+            Write(LogType.Warning, string.Format(format, args));
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Rhisis.Core.IO
         /// <param name="args">parameters</param>
         public static void Error(string format, params object[] args)
         {
-            Write(LoggerType.Error, string.Format(format, args));
+            Write(LogType.Error, string.Format(format, args));
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Rhisis.Core.IO
         /// <param name="args">parameters</param>
         public static void Loading(string format, params object[] args)
         {
-            Write(LoggerType.Loading, string.Format(format, args));
+            Write(LogType.Loading, string.Format(format, args));
         }
 
         /// <summary>
@@ -87,29 +87,29 @@ namespace Rhisis.Core.IO
         /// </summary>
         /// <param name="type">Log type</param>
         /// <param name="text">Text</param>
-        private static void Write(LoggerType type, string text)
+        private static void Write(LogType type, string text)
         {
             lock (syncRoot)
             {
                 switch (type)
                 {
-                    case LoggerType.Info:
+                    case LogType.Info:
                         SetTag(type.ToString(), ConsoleColor.Green);
                         Console.WriteLine(text);
                         break;
-                    case LoggerType.Debug:
+                    case LogType.Debug:
                         SetTag(type.ToString(), ConsoleColor.Blue);
                         Console.WriteLine(text);
                         break;
-                    case LoggerType.Warning:
+                    case LogType.Warning:
                         SetTag(type.ToString(), ConsoleColor.Yellow);
                         Console.WriteLine(text);
                         break;
-                    case LoggerType.Error:
+                    case LogType.Error:
                         SetTag(type.ToString(), ConsoleColor.Red);
                         Console.WriteLine(text);
                         break;
-                    case LoggerType.Loading:
+                    case LogType.Loading:
                         SetTag(type.ToString(), ConsoleColor.DarkMagenta);
                         Console.Write(text);
                         break;

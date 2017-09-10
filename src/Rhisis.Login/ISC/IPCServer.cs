@@ -1,21 +1,21 @@
 ﻿using Ether.Network;
 using Rhisis.Core.IO;
-using Rhisis.Core.IPC;
-using Rhisis.Core.IPC.Structures;
+using Rhisis.Core.ISC;
+using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Login.IPC
+namespace Rhisis.Login.ISC
 {
-    public sealed class IPCServer : NetServer<IPCClient>
+    public sealed class ISCServer : NetServer<ISCClient>
     {
         public IEnumerable<ClusterServerInfo> Clusters => from x in this.Clients
                                                           where x.ServerInfo is ClusterServerInfo
                                                           select x.ServerInfo as ClusterServerInfo;
 
-        public IPCServer(IPCConfiguration configuration)
+        public ISCServer(IPCConfiguration configuration)
         {
             this.Configuration.Host = configuration.Host;
             this.Configuration.Port = configuration.Port;
@@ -26,16 +26,16 @@ namespace Rhisis.Login.IPC
 
         protected override void Initialize()
         {
-            PacketHandler<IPCClient>.Initialize();
+            PacketHandler<ISCClient>.Initialize();
             Logger.Info("InterServer is up.");
         }
 
-        protected override void OnClientConnected(IPCClient connection)
+        protected override void OnClientConnected(ISCClient connection)
         {
             connection.Initialize(this);
         }
 
-        protected override void OnClientDisconnected(IPCClient connection)
+        protected override void OnClientDisconnected(ISCClient connection)
         {
             if (string.IsNullOrEmpty(connection.ServerInfo?.Name))
                 Logger.Info("Unknow server disconnected from InterServer.");
@@ -51,7 +51,7 @@ namespace Rhisis.Login.IPC
             return this.Clients.Any(x => x.ServerInfo is ClusterServerInfo && x.ServerInfo.Id == id);
         }
 
-        internal IPCClient GetCluster(int id)
+        internal ISCClient GetCluster(int id)
         {
             return (from x in this.Clients
                     where x.ServerInfo is ClusterServerInfo
@@ -71,7 +71,7 @@ namespace Rhisis.Login.IPC
             return clusterInfo.Worlds.Any(x => x.Id == worldId);
         }
 
-        internal IPCClient GetWorld(int parentClusterId, int worldId)
+        internal ISCClient GetWorld(int parentClusterId, int worldId)
         {
             return (from x in this.Clients
                     where x.Type == InterServerType.World

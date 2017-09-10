@@ -36,7 +36,7 @@ namespace Rhisis.Cluster
                 return;
             }
 
-            packet.Position = 17;
+            var directPlayID = packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
             var packetHeaderNumber = packet.Read<uint>();
 
             try

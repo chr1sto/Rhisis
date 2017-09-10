@@ -1,6 +1,6 @@
 ﻿using Ether.Network;
 using Ether.Network.Packets;
-using Rhisis.Cluster.IPC;
+using Rhisis.Cluster.ISC;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
@@ -17,9 +17,9 @@ namespace Rhisis.Cluster
         private static readonly string ClusterConfigFile = "config/cluster.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
 
-        private static IPCClient _client;
+        private static ISCClient _client;
 
-        public static IPCClient InterClient => _client;
+        public static ISCClient InterClient => _client;
 
         public ClusterConfiguration ClusterConfiguration { get; private set; }
 
@@ -33,7 +33,7 @@ namespace Rhisis.Cluster
         protected override void Initialize()
         {
             PacketHandler<ClusterClient>.Initialize();
-            PacketHandler<IPCClient>.Initialize();
+            PacketHandler<ISCClient>.Initialize();
 
             var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
 
@@ -41,7 +41,7 @@ namespace Rhisis.Cluster
             if (!DatabaseService.GetContext().DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
-            _client = new IPCClient(this.ClusterConfiguration);
+            _client = new ISCClient(this.ClusterConfiguration);
             _client.Connect();
 
             Logger.Info("Rhisis cluster server is up");

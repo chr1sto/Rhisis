@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Core.IPC
+﻿namespace Rhisis.Core.ISC
 {
     public enum InterServerType
     {

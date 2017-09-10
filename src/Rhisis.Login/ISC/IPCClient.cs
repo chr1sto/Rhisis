@@ -2,25 +2,25 @@
 using Ether.Network.Packets;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
-using Rhisis.Core.IPC;
-using Rhisis.Core.IPC.Packets;
-using Rhisis.Core.IPC.Structures;
+using Rhisis.Core.ISC;
+using Rhisis.Core.ISC.Packets;
+using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
-using Rhisis.Login.IPC.Packets;
+using Rhisis.Login.ISC.Packets;
 using System;
 using System.Collections.Generic;
 
-namespace Rhisis.Login.IPC
+namespace Rhisis.Login.ISC
 {
-    public sealed class IPCClient : NetConnection
+    public sealed class ISCClient : NetConnection
     {
-        private IPCServer _server;
+        private ISCServer _server;
         
         public InterServerType Type { get; private set; }
 
         public BaseServerInfo ServerInfo { get; private set; }
 
-        public void Initialize(IPCServer server)
+        public void Initialize(ISCServer server)
         {
             this._server = server;
             PacketFactory.SendWelcome(this);
@@ -32,7 +32,7 @@ namespace Rhisis.Login.IPC
 
             try
             {
-                PacketHandler<IPCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
+                PacketHandler<ISCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {
@@ -59,7 +59,7 @@ namespace Rhisis.Login.IPC
             else if (this.Type == InterServerType.World)
             {
                 var worldInfo = this.GetServerInfo<WorldServerInfo>();
-                IPCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
+                ISCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
                 var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
 
                 clusterInfo?.Worlds.Remove(worldInfo);
@@ -108,7 +108,7 @@ namespace Rhisis.Login.IPC
                     this._server.DisconnectClient(this.Id);
                 }
 
-                IPCClient cluster = this._server.GetCluster(clusterId);
+                ISCClient cluster = this._server.GetCluster(clusterId);
                 var clusterInfo = cluster.GetServerInfo<ClusterServerInfo>();
 
                 if (this._server.HasWorldInCluster(clusterId, id))
