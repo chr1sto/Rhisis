@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CC42CC8A-A3BC-4913-90A0-1AF2213A870F}"
 EndProject
@@ -27,13 +27,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Database", "src\Rhis
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{696B755D-111E-4A7D-8AB8-AD4CA07E9213}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Core.Test", "test\Rhisis.Core.Test\Rhisis.Core.Test.csproj", "{F02CEA01-3C7D-44EA-8662-7E922868C26C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Core.Test", "test\Rhisis.Core.Test\Rhisis.Core.Test.csproj", "{F02CEA01-3C7D-44EA-8662-7E922868C26C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Database.Test", "test\Rhisis.Database.Test\Rhisis.Database.Test.csproj", "{FEB2159B-A891-4129-9E4A-76063E5AD05A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Database.Test", "test\Rhisis.Database.Test\Rhisis.Database.Test.csproj", "{FEB2159B-A891-4129-9E4A-76063E5AD05A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{33862335-9BF3-4985-81B2-4136B4CAB46C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Updater", "src\tools\Rhisis.Updater\Rhisis.Updater.csproj", "{6E2360A3-DCBA-454A-A593-D14D1072BDD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.CLI", "src\tools\Rhisis.CLI\Rhisis.CLI.csproj", "{7845D6A8-4B5B-4DBF-9991-628488BF6ACA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,10 +69,10 @@ Global
 		{FEB2159B-A891-4129-9E4A-76063E5AD05A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEB2159B-A891-4129-9E4A-76063E5AD05A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEB2159B-A891-4129-9E4A-76063E5AD05A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E2360A3-DCBA-454A-A593-D14D1072BDD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E2360A3-DCBA-454A-A593-D14D1072BDD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E2360A3-DCBA-454A-A593-D14D1072BDD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E2360A3-DCBA-454A-A593-D14D1072BDD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7845D6A8-4B5B-4DBF-9991-628488BF6ACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7845D6A8-4B5B-4DBF-9991-628488BF6ACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7845D6A8-4B5B-4DBF-9991-628488BF6ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7845D6A8-4B5B-4DBF-9991-628488BF6ACA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +86,9 @@ Global
 		{F02CEA01-3C7D-44EA-8662-7E922868C26C} = {696B755D-111E-4A7D-8AB8-AD4CA07E9213}
 		{FEB2159B-A891-4129-9E4A-76063E5AD05A} = {696B755D-111E-4A7D-8AB8-AD4CA07E9213}
 		{33862335-9BF3-4985-81B2-4136B4CAB46C} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
-		{6E2360A3-DCBA-454A-A593-D14D1072BDD9} = {33862335-9BF3-4985-81B2-4136B4CAB46C}
+		{7845D6A8-4B5B-4DBF-9991-628488BF6ACA} = {33862335-9BF3-4985-81B2-4136B4CAB46C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B573C179-78E3-4F7B-8CFB-289754036BBA}
 	EndGlobalSection
 EndGlobal
