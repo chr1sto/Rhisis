@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-using Rhisis.CLI.Interfaces;
-using System;
+﻿using Rhisis.CLI.Interfaces;
 
 namespace Rhisis.CLI.Commands
 {
@@ -19,11 +17,8 @@ namespace Rhisis.CLI.Commands
         /// <summary>
         /// Execute the command logic.
         /// </summary>
-        /// <param name="command"></param>
-        public void Execute(CommandLineApplication command)
+        public void Execute()
         {
-            command.Description = this.Description;
-            command.HelpOption("-?|-h|--help");
         }
     }
 }

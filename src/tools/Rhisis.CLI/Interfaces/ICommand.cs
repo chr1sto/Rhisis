@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-
-namespace Rhisis.CLI.Interfaces
+﻿namespace Rhisis.CLI.Interfaces
 {
     /// <summary>
     /// Describes the behavior of a Rhisis CLI command.
@@ -21,6 +19,6 @@ namespace Rhisis.CLI.Interfaces
         /// Executes the command logic.
         /// </summary>
         /// <param name="command">Command</param>
-        void Execute(CommandLineApplication command);
+        void Execute();
     }
 }

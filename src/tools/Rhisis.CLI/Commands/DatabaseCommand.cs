@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-using Rhisis.CLI.Interfaces;
+﻿using Rhisis.CLI.Interfaces;
 using System;
 
 namespace Rhisis.CLI.Commands
@@ -22,37 +21,9 @@ namespace Rhisis.CLI.Commands
         /// <summary>
         /// Executes the command logic.
         /// </summary>
-        /// <param name="command"></param>
-        public void Execute(CommandLineApplication command)
+        public void Execute()
         {
-            var initializeCommand = command.Argument(InitializeCommandName, "Creates and initialize the database");
-            var updateCommand = command.Argument(UpdateCommandName, "Updates the database structure without data loss.");
-            var configurationOption = command.Option("-c|--configuration", "Specify the database configuration file.", CommandOptionType.SingleValue);
-
-            command.Description = this.Description;
-            command.HelpOption("-?|-h|--help");
-            
-            command.OnExecute(() =>
-            {
-                if (InitializeCommandName.Equals(initializeCommand.Value, StringComparison.OrdinalIgnoreCase))
-                    this.ProcessInitialize(configurationOption);
-                else if (UpdateCommandName.Equals(updateCommand.Value, StringComparison.OrdinalIgnoreCase))
-                    this.ProcessUpdate(configurationOption);
-                else
-                    command.ShowHelp();
-                
-                return 0;
-            });
-        }
-
-        private void ProcessInitialize(CommandOption option)
-        {
-            Console.WriteLine("Process 'Initialize' command with opton: {0}", option.Value());
-        }
-
-        private void ProcessUpdate(CommandOption option)
-        {
-            Console.WriteLine("Process 'Update' command with opton: {0}", option.Value());
+            throw new NotImplementedException();
         }
     }
 }
