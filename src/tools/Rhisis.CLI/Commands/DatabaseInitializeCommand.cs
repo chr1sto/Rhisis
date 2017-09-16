@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Rhisis.CLI.Interfaces;
+using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using System;
+using System.IO;
 
 namespace Rhisis.CLI.Commands
 {
@@ -30,13 +32,26 @@ namespace Rhisis.CLI.Commands
 
             command.OnExecute(() =>
             {
-                string databaseConfiguration = opt.HasValue() ? opt.Value() : "config/database.json";
+                string databaseConfigurationFile = opt.HasValue() ? opt.Value() : "config/database.json";
 
-                DatabaseService.Configure(null);
-                using (var rhisisDbContext = DatabaseService.GetContext())
+                try
                 {
-                    if (!rhisisDbContext.DatabaseExists())
-                        rhisisDbContext.CreateDatabase();
+                    if (!File.Exists(databaseConfigurationFile))
+                        throw new FileNotFoundException("Cannot find database configuration file", databaseConfigurationFile);
+
+                    var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationFile, true);
+
+                    DatabaseService.Configure(databaseConfiguration);
+                    using (var rhisisDbContext = DatabaseService.GetContext())
+                    {
+                        if (!rhisisDbContext.DatabaseExists())
+                            rhisisDbContext.CreateDatabase();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return -1;
                 }
 
                 return 0;

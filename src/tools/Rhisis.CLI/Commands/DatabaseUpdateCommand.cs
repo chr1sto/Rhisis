@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Rhisis.CLI.Interfaces;
+using Rhisis.Core.Helpers;
+using Rhisis.Database;
 using System;
 
 namespace Rhisis.CLI.Commands
@@ -29,11 +31,25 @@ namespace Rhisis.CLI.Commands
 
             command.OnExecute(() =>
             {
-                Console.WriteLine("Update command");
-                if (opt.HasValue())
+                string databaseConfigurationFile = opt.HasValue() ? opt.Value() : "config/database.json";
+
+                try
                 {
-                    Console.WriteLine("-> Option: {0}", opt.Value());
+                    var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationFile, true);
+
+                    DatabaseService.Configure(databaseConfiguration);
+                    using (var rhisisDbContext = DatabaseService.GetContext())
+                    {
+                        if (!rhisisDbContext.DatabaseExists())
+                            rhisisDbContext.Migrate();
+                    }
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return -1;
+                }
+
                 return 0;
             });
         }
