@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Rhisis.CLI.Interfaces;
+using Rhisis.Database;
 using System;
 
 namespace Rhisis.CLI.Commands
@@ -29,11 +30,15 @@ namespace Rhisis.CLI.Commands
 
             command.OnExecute(() =>
             {
-                Console.WriteLine("Initialize command");
-                if (opt.HasValue())
+                string databaseConfiguration = opt.HasValue() ? opt.Value() : "config/database.json";
+
+                DatabaseService.Configure(null);
+                using (var rhisisDbContext = DatabaseService.GetContext())
                 {
-                    Console.WriteLine("-> Option: {0}", opt.Value());
+                    if (!rhisisDbContext.DatabaseExists())
+                        rhisisDbContext.CreateDatabase();
                 }
+
                 return 0;
             });
         }
