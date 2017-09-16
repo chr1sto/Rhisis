@@ -13,7 +13,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 ## Details
 
 - Language: `C#` 7
-- Framework: `.NET Core 1.0.4`
+- Framework: `.NET Core 2.0.0`
 - Application type: `Console`
 - Database type: `MsSQL Express` or `MySQL`
 - Configuration files type: `JSON`
@@ -21,5 +21,28 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- [Ether.Network][ethernetwork]
 	- Entity Framework Core
 - Environment: Visual Studio 2017
+
+## Features
+
+### Common
+- Logger
+- Rijndael cryptography algorithm
+- Custom exceptions
+- Packet handler
+
+### Database
+- Multi-DB support (MySQL and MsSQL)
+
+### Login
+- Inter-Server authentication process (ISC)
+- Client authentication process
+- Send server list to connected client
+
+### Cluster
+- Inter-Server authentication (ISC)
+- Character list
+
+### World
+- Inter-Server authentication (ISC)
 
 [ethernetwork]: https://github.com/Eastrall/Ether.Network
