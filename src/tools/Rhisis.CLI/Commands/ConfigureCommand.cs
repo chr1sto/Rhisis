@@ -1,4 +1,6 @@
-﻿using Rhisis.CLI.Interfaces;
+﻿using Microsoft.Extensions.CommandLineUtils;
+using Rhisis.CLI.Interfaces;
+using System;
 
 namespace Rhisis.CLI.Commands
 {
@@ -17,8 +19,9 @@ namespace Rhisis.CLI.Commands
         /// <summary>
         /// Execute the command logic.
         /// </summary>
-        public void Execute()
+        public void Execute(CommandLineApplication command)
         {
+            throw new NotImplementedException();
         }
     }
 }

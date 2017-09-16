@@ -1,12 +1,15 @@
-﻿using Rhisis.CLI.Interfaces;
-using System;
+﻿using Microsoft.Extensions.CommandLineUtils;
+using Rhisis.CLI.Interfaces;
 
 namespace Rhisis.CLI.Commands
 {
     internal sealed class DatabaseCommand : ICommand
     {
-        private static readonly string InitializeCommandName = "initialize";
-        private static readonly string UpdateCommandName = "update";
+        private readonly ICommand[] _subCommands = new ICommand[]
+        {
+            new DatabaseInitializeCommand(),
+            new DatabaseUpdateCommand()
+        };
 
         /// <summary>
         /// Gets the command name.
@@ -21,9 +24,13 @@ namespace Rhisis.CLI.Commands
         /// <summary>
         /// Executes the command logic.
         /// </summary>
-        public void Execute()
+        public void Execute(CommandLineApplication command)
         {
-            throw new NotImplementedException();
+            command.HelpOption("-?|-h|--help");
+            command.Description = this.Description;
+
+            foreach (ICommand subCommand in this._subCommands)
+                command.Command(subCommand.Name, subCommand.Execute);            
         }
     }
 }
