@@ -15,7 +15,7 @@ namespace Rhisis.CLI
         private static readonly ICommand[] Commands = new ICommand[]
         {
             new DatabaseCommand(),
-            // new ConfigureCommand()
+            new ConfigureCommand()
         };
 
         public static void Main(string[] args)
@@ -23,7 +23,7 @@ namespace Rhisis.CLI
 #if DEBUG
             // DEBUG: The following command line intializes the database witht the "database.json" file as configuration.
             // DEBUG: Rhisis.CLI.exe database initialize --configuration database.json
-            args = BuildDebugArgs("database", "initialize", "--configuration", "database.json");
+            args = BuildDebugArgs("database", "update");
 #endif
 
             string appDescription = LoadResourceText("Rhisis.CLI.Resources.Description.txt");
@@ -51,6 +51,7 @@ namespace Rhisis.CLI
             }
 
 #if DEBUG
+            Console.WriteLine("Done.");
             Console.ReadLine();
 #endif
         }

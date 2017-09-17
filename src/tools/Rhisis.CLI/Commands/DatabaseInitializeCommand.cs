@@ -27,18 +27,13 @@ namespace Rhisis.CLI.Commands
         {
             command.HelpOption("-?|-h|--help");
             command.Description = this.Description;
-
             var opt = command.Option("-c|--configuration", "Sets the database configuration file.", CommandOptionType.SingleValue);
 
             command.OnExecute(() =>
             {
-                string databaseConfigurationFile = opt.HasValue() ? opt.Value() : "config/database.json";
-
                 try
                 {
-                    if (!File.Exists(databaseConfigurationFile))
-                        throw new FileNotFoundException("Cannot find database configuration file", databaseConfigurationFile);
-
+                    var databaseConfigurationFile = opt.HasValue() ? opt.Value() : "config/database.json";
                     var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationFile, true);
 
                     DatabaseService.Configure(databaseConfiguration);
@@ -47,6 +42,11 @@ namespace Rhisis.CLI.Commands
                         if (!rhisisDbContext.DatabaseExists())
                             rhisisDbContext.CreateDatabase();
                     }
+                }
+                catch (FileNotFoundException fileNotFound)
+                {
+                    Console.WriteLine($"{fileNotFound.Message} - {fileNotFound.FileName}");
+                    return -1;
                 }
                 catch (Exception e)
                 {

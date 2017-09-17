@@ -30,7 +30,7 @@ namespace Rhisis.CLI.Commands
             command.Description = this.Description;
 
             foreach (ICommand subCommand in this._subCommands)
-                command.Command(subCommand.Name, subCommand.Execute);            
+                command.Command(subCommand.Name, subCommand.Execute);
         }
     }
 }

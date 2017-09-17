@@ -14,6 +14,8 @@ namespace Rhisis.Database
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Character> Characters { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/> instance.
         /// </summary>
@@ -55,7 +57,16 @@ namespace Rhisis.Database
         /// </summary>
         public virtual void Migrate()
         {
-            this.Database.Migrate();
+            try
+            {
+                var databaseCreator = this.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+                databaseCreator.CreateTables();
+            }
+            catch { }
+            finally
+            {
+                this.Database.Migrate();
+            }
         }
     }
 }

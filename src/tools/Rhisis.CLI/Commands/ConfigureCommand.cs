@@ -21,7 +21,11 @@ namespace Rhisis.CLI.Commands
         /// </summary>
         public void Execute(CommandLineApplication command)
         {
-            throw new NotImplementedException();
+            command.OnExecute(() =>
+            {
+                Console.WriteLine("Configure Rhisis command.");
+                return 0;
+            });
         }
     }
 }

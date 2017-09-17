@@ -26,18 +26,31 @@ namespace Rhisis.Core.Network
 
         public static void Initialize()
         {
-            TypeInfo typeInfo = typeof(T).GetTypeInfo();
-            MethodInfo[] methodsInfo = typeInfo.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            IEnumerable<MethodHandler> methods = from x in methodsInfo
-                                                 let attribute = x.GetCustomAttribute<PacketHandlerAttribute>()
-                                                 where attribute != null
-                                                 select new MethodHandler(x, attribute);
+            var handlers = from type in typeof(T).Assembly.GetTypes()
+                           let typeInfo = type.GetTypeInfo()
+                           let methodsInfo = typeInfo.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                           let handler = (from x in methodsInfo
+                                          let attribute = x.GetCustomAttribute<PacketHandlerAttribute>()
+                                          where attribute != null
+                                          select new MethodHandler(x, attribute)).ToArray()
+                           select handler;
 
-            foreach (MethodHandler methodHandler in methods)
+            foreach (var handler in handlers)
             {
-                var action = methodHandler.Method.CreateDelegate(typeof(Action<T, NetPacketBase>)) as Action<T, NetPacketBase>;
+                foreach (var methodHandler in handler)
+                {
+                    ParameterInfo[] parameters = methodHandler.Method.GetParameters();
 
-                _handlers.Add(methodHandler.Attribute.Header, action);
+                    if (parameters.Count() < 2)
+                        continue;
+                    
+                    if (parameters.First().ParameterType != typeof(T))
+                        continue;
+
+                    var action = methodHandler.Method.CreateDelegate(typeof(Action<T, NetPacketBase>)) as Action<T, NetPacketBase>;
+
+                    _handlers.Add(methodHandler.Attribute.Header, action);
+                }
             }
         }
 

@@ -4,13 +4,10 @@ using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Network.Packets.Login;
-using Rhisis.Database;
-using Rhisis.Database.Structures;
+using Rhisis.Core.Structures.Configuration;
 using Rhisis.Login.Packets;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.Login
 {
@@ -18,6 +15,10 @@ namespace Rhisis.Login
     {
         private readonly uint _sessionId;
         private LoginServer _loginServer;
+
+        public LoginServer LoginSever => this._loginServer;
+
+        public LoginConfiguration Configuration => this._loginServer.LoginConfiguration;
 
         public LoginClient()
         {
@@ -61,44 +62,6 @@ namespace Rhisis.Login
             }
         }
 
-        [PacketHandler(PacketType.CERTIFY)]
-        public void OnLogin(NetPacketBase packet)
-        {
-            var certify = new CertifyPacket(packet,
-                this._loginServer.LoginConfiguration.PasswordEncryption,
-                this._loginServer.LoginConfiguration.EncryptionKey);
-
-            if (certify.BuildData != this._loginServer.LoginConfiguration.BuildVersion)
-            {
-                Logger.Info($"User '{certify.Username}' logged in with bad build version.");
-                LoginPacketFactory.SendLoginError(this, ErrorType.CERT_GENERAL);
-                this.Dispose();
-                this._loginServer.DisconnectClient(this.Id);
-                return;
-            }
-
-            using (var db = DatabaseService.GetContext())
-            {
-                User user = db.Users.FirstOrDefault(x => x.Username.Equals(certify.Username, StringComparison.OrdinalIgnoreCase));
-
-                if (user == null)
-                {
-                    Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad username)");
-                    LoginPacketFactory.SendLoginError(this, ErrorType.FLYFF_ACCOUNT);
-                    this._loginServer.DisconnectClient(this.Id);
-                    return;
-                }
-
-                if (!user.Password.Equals(certify.Password, StringComparison.OrdinalIgnoreCase))
-                {
-                    Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad password)");
-                    LoginPacketFactory.SendLoginError(this, ErrorType.FLYFF_PASSWORD);
-                    this._loginServer.DisconnectClient(this.Id);
-                    return;
-                }
-
-                LoginPacketFactory.SendServerList(this, user.Username, this._loginServer.ClustersConnected);
-            }
-        }
+        
     }
 }

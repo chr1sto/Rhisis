@@ -7,7 +7,6 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Exceptions;
 using System.Collections.Generic;
 using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Network.Packets.Cluster;
 
 namespace Rhisis.Cluster
 {
@@ -36,7 +35,7 @@ namespace Rhisis.Cluster
                 return;
             }
 
-            var directPlayID = packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
+            packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
             var packetHeaderNumber = packet.Read<uint>();
 
             try
@@ -55,23 +54,6 @@ namespace Rhisis.Cluster
                 Logger.Debug(packetException.InnerException?.StackTrace);
 #endif
             }
-        }
-
-        [PacketHandler(PacketType.PING)]
-        public void OnPing(NetPacketBase packet)
-        {
-            var pingPacket = new PingPacket(packet);
-
-            ClusterPacketFactory.SendPong(this, pingPacket.Time);
-        }
-
-        [PacketHandler(PacketType.GETPLAYERLIST)]
-        public void OnGetPlayerList(NetPacketBase packet)
-        {
-            var getPlayerListPacket = new GetPlayerListPacket(packet);
-            Logger.Info("GetPlayerList()");
-
-            ClusterPacketFactory.SendPlayerList(this, getPlayerListPacket.AuthenticationKey);
         }
     }
 }

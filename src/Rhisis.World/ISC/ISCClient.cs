@@ -1,7 +1,5 @@
 ﻿using Ether.Network;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Ether.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.IO;
@@ -14,6 +12,11 @@ namespace Rhisis.World.ISC
     public sealed class ISCClient : NetClient
     {
         private WorldConfiguration _worldConfiguration;
+
+        /// <summary>
+        /// Gets the world server's configuration.
+        /// </summary>
+        public WorldConfiguration Configuration => this._worldConfiguration;
 
         public ISCClient(WorldConfiguration worldConfiguration) 
             : base(worldConfiguration.IPC.Host, worldConfiguration.IPC.Port, 1024)
@@ -50,20 +53,6 @@ namespace Rhisis.World.ISC
         protected override void OnDisconnected()
         {
             Logger.Info("Disconnected from Inter-Server.");
-        }
-
-        [PacketHandler(InterPacketType.Welcome)]
-        public void OnWelcome(NetPacketBase packet)
-        {
-            ISCPackets.SendAuthentication(this, this._worldConfiguration);
-        }
-
-        [PacketHandler(InterPacketType.AuthenticationResult)]
-        public void OnAuthenticationResult(NetPacketBase packet)
-        {
-            var authenticationResult = packet.Read<uint>();
-
-            Logger.Debug("Authentication result: {0}", (InterServerError)authenticationResult);
         }
     }
 }

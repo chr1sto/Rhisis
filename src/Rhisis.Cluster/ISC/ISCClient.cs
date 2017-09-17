@@ -14,6 +14,11 @@ namespace Rhisis.Cluster.ISC
         private ClusterConfiguration _configuration;
 
         /// <summary>
+        /// Gets the cluster configuration.
+        /// </summary>
+        public ClusterConfiguration Configuration => this._configuration;
+
+        /// <summary>
         /// Creates a new <see cref="ISCClient"/> instance.
         /// </summary>
         /// <param name="configuration">Cluster Server configuration</param>
@@ -51,25 +56,12 @@ namespace Rhisis.Cluster.ISC
 
         protected override void OnConnected()
         {
+            // Nothing to do.
         }
 
         protected override void OnDisconnected()
         {
             Logger.Info("Disconnected from InterServer.");
-        }
-
-        [PacketHandler(InterPacketType.Welcome)]
-        public void OnWelcome(NetPacketBase packet)
-        {
-            ISCPackets.SendAuthentication(this, this._configuration.Id, this._configuration.Host, this._configuration.Name);
-        }
-
-        [PacketHandler(InterPacketType.AuthenticationResult)]
-        public void OnAuthenticationResult(NetPacketBase packet)
-        {
-            var authenticationResult = packet.Read<uint>();
-
-            Logger.Debug("Authentication result: {0}", (InterServerError)authenticationResult);
         }
     }
 }
