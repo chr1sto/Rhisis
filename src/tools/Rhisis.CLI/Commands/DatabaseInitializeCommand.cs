@@ -9,15 +9,18 @@ namespace Rhisis.CLI.Commands
 {
     internal sealed class DatabaseInitializeCommand : ICommand
     {
+        private static readonly string CommandName = "initialize";
+        private static readonly string CommandDescription = "Initialize the database.";
+
         /// <summary>
         /// Gets the command's name.
         /// </summary>
-        public string Name => "initialize";
+        public string Name => CommandName;
 
         /// <summary>
         /// Gets the command's description.
         /// </summary>
-        public string Description => "Initialize the database.";
+        public string Description => CommandDescription;
 
         /// <summary>
         /// Executes the command's logic.

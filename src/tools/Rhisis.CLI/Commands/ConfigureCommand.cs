@@ -6,15 +6,18 @@ namespace Rhisis.CLI.Commands
 {
     internal sealed class ConfigureCommand : ICommand
     {
+        private static readonly string CommandName = "configure";
+        private static readonly string CommandDescription = "Configure the Rhisis emulator.";
+
         /// <summary>
         /// Gets the command name.
         /// </summary>
-        public string Name => "configure";
+        public string Name => CommandName;
 
         /// <summary>
         /// Gets the command description.
         /// </summary>
-        public string Description => "Configure the Rhisis emulator.";
+        public string Description => CommandDescription;
 
         /// <summary>
         /// Execute the command logic.

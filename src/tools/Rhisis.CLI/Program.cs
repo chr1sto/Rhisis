@@ -4,11 +4,10 @@ using Rhisis.CLI.Interfaces;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace Rhisis.CLI
 {
-    public class Program
+    public static class Program
     {
         private static readonly Assembly CurrentAssembly = Assembly.GetEntryAssembly();
         private static readonly string Version = CurrentAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;

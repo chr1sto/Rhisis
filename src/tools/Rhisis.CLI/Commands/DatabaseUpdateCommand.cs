@@ -8,15 +8,18 @@ namespace Rhisis.CLI.Commands
 {
     internal sealed class DatabaseUpdateCommand : ICommand
     {
+        private static readonly string CommandName = "update";
+        private static readonly string CommandDescription = "Updates and migrates the database.";
+
         /// <summary>
         /// Gets the command's name.
         /// </summary>
-        public string Name => "update";
+        public string Name => CommandName;
 
         /// <summary>
         /// Gets the command's description.
         /// </summary>
-        public string Description => "Updates and migrates the database.";
+        public string Description => CommandDescription;
 
         /// <summary>
         /// Executes the command's logic.

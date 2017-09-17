@@ -5,6 +5,8 @@ namespace Rhisis.CLI.Commands
 {
     internal sealed class DatabaseCommand : ICommand
     {
+        private static readonly string CommandName = "database";
+        private static readonly string CommandDescription = "Database management";
         private readonly ICommand[] _subCommands = new ICommand[]
         {
             new DatabaseInitializeCommand(),
@@ -14,12 +16,12 @@ namespace Rhisis.CLI.Commands
         /// <summary>
         /// Gets the command name.
         /// </summary>
-        public string Name => "database";
+        public string Name => CommandName;
 
         /// <summary>
         /// Gets the command description.
         /// </summary>
-        public string Description => "Database management";
+        public string Description => CommandName;
 
         /// <summary>
         /// Executes the command logic.
