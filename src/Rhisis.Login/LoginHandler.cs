@@ -31,7 +31,7 @@ namespace Rhisis.Login
 
             using (var db = DatabaseService.GetContext())
             {
-                User user = db.Users.FirstOrDefault(x => x.Username.Equals(certify.Username, StringComparison.OrdinalIgnoreCase));
+                User user = db.UserRepository.Get(x => x.Username.Equals(certify.Username, StringComparison.OrdinalIgnoreCase));
 
                 if (user == null)
                 {

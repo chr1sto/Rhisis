@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Rhisis.Database.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Rhisis.Database.Structures
 {
-    public class Character
+    [Table("characters")]
+    public sealed class Character : IDatabaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -65,5 +65,12 @@ namespace Rhisis.Database.Structures
         public int StatPoints { get; set; }
         
         public int SkillPoints { get; set; }
+
+        public ICollection<Item> Items { get; set; }
+
+        public Character()
+        {
+            this.Items = new HashSet<Item>();
+        }
     }
 }

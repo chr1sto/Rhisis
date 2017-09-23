@@ -1,20 +1,52 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Rhisis.Database.Interfaces;
+using Rhisis.Database.Repositories;
 using Rhisis.Database.Structures;
 
 namespace Rhisis.Database
 {
     public abstract class DatabaseContext : DbContext
     {
+        private readonly IRepository<User> _users;
+        private readonly IRepository<Character> _characters;
+        private readonly IRepository<Item> _items;
+        
+        /// <summary>
+        /// Gets the <see cref="User"/> repository.
+        /// </summary>
+        public IRepository<User> UserRepository => this._users;
+
+        /// <summary>
+        /// Gets the <see cref="Character"/> repository.
+        /// </summary>
+        public IRepository<Character> CharacterRepository => this._characters;
+
+        /// <summary>
+        /// Gets the <see cref="Item"/> repository.
+        /// </summary>
+        //public IRepository<Item> ItemRepository => this._items;
+
         /// <summary>
         /// Gets the <see cref="DatabaseContext"/> configuration.
         /// </summary>
         protected DatabaseConfiguration Configuration { get; private set; }
 
-        public DbSet<User> Users { get; set; }
+        /// <summary>
+        /// Gets or sets the database users.
+        /// </summary>
+        internal DbSet<User> _Users { get; set; }
 
-        public DbSet<Character> Characters { get; set; }
+        /// <summary>
+        /// Gets or sets the database characters.
+        /// </summary>
+        internal DbSet<Character> _Characters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database items.
+        /// </summary>
+        //internal DbSet<Item> _Items { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/> instance.
@@ -22,6 +54,10 @@ namespace Rhisis.Database
         /// <param name="configuration"></param>
         protected DatabaseContext(DatabaseConfiguration configuration)
         {
+            this._users = new UserRepository(this);
+            this._characters = new CharacterRepository(this);
+            this._items = new ItemRepository(this);
+
             this.Configuration = configuration;
         }
 
