@@ -18,7 +18,10 @@ namespace Rhisis.Database.Repositories
 
         public T Create(T entity)
         {
-            throw new NotImplementedException();
+            this.Context.Set<T>().Add(entity);
+            this.Context.SaveChanges();
+
+            return entity;
         }
 
         public T Delete(T Entity)
@@ -38,6 +41,10 @@ namespace Rhisis.Database.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public int Count() => this.Context.Set<T>().Count();
+
+        public int Count(Func<T, bool> func) => this.Context.Set<T>().Count(func);
 
         protected virtual IQueryable<T> GetQueryable()
         {

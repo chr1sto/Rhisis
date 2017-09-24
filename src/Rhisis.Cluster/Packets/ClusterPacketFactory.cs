@@ -1,8 +1,10 @@
 ﻿using Ether.Network;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
+using Rhisis.Database.Structures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Rhisis.Cluster.Packets
@@ -31,13 +33,60 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendPlayerList(NetConnection client, int authenticationKey)
+        public static void SendError(NetConnection client, ErrorType error)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.ERROR);
+                packet.Write((int)error);
+
+                client.Send(packet);
+            }
+        }
+
+        public static void SendPlayerList(NetConnection client, int authenticationKey, IEnumerable<Character> characters)
         {
             using (var packet = new FFPacket())
             {
                 packet.WriteHeader(PacketType.PLAYER_LIST);
                 packet.Write(authenticationKey);
-                packet.Write(0); // player count
+
+                packet.Write(characters.Count()); // player count
+
+                foreach (var character in characters)
+                {
+                    packet.Write(character.Slot);
+                    packet.Write(1); // this number represents the selected character in the window
+                    packet.Write(character.MapId);
+                    packet.Write(0x0B + character.Gender); // Model id
+                    packet.Write(character.Name);
+                    packet.Write(character.PosX);
+                    packet.Write(character.PosY);
+                    packet.Write(character.PosZ);
+                    packet.Write(character.Id);
+                    packet.Write(0); // Party id
+                    packet.Write(0); // Guild id
+                    packet.Write(0); // War Id
+                    packet.Write(character.SkinSetId); // SkinSet Id
+                    packet.Write(character.HairId);
+                    packet.Write(character.HairColor);
+                    packet.Write(character.FaceId);
+                    packet.Write(character.Gender);
+                    packet.Write(character.ClassId);
+                    packet.Write(character.Level);
+                    packet.Write(0); // Job Level (Maybe master of hero ?)
+                    packet.Write(character.Strength);
+                    packet.Write(character.Stamina);
+                    packet.Write(character.Dexterity);
+                    packet.Write(character.Intelligence);
+                    packet.Write(0); // Mode ??
+                    packet.Write(character.Items.Count(i => i.ItemSlot > 42));
+
+                    foreach (var item in character.Items.Where(i => i.ItemSlot > 42))
+                        packet.Write(item.ItemId);
+                }
+
+                packet.Write(0); // Messenger?
 
                 client.Send(packet);
             }

@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace Rhisis.Database.Interfaces
 {
+    /// <summary>
+    /// Describes the repository behavior.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IRepository<T> where T : class, IDatabaseEntity
     {
         IEnumerable<T> GetAll();
@@ -19,5 +23,9 @@ namespace Rhisis.Database.Interfaces
         T Update(T entity);
 
         T Delete(T Entity);
+
+        int Count();
+
+        int Count(Func<T, bool> func);
     }
 }

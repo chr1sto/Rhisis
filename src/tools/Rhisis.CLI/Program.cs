@@ -22,7 +22,7 @@ namespace Rhisis.CLI
 #if DEBUG
             // DEBUG: The following command line intializes the database witht the "database.json" file as configuration.
             // DEBUG: Rhisis.CLI.exe database initialize --configuration database.json
-            args = BuildDebugArgs("database", "update");
+            args = BuildDebugArgs("database", "initialize");
 #endif
 
             string appDescription = LoadResourceText("Rhisis.CLI.Resources.Description.txt");

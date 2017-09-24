@@ -12,7 +12,7 @@ namespace Rhisis.Database.Structures
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
-        public int AccountId { get; set; }
+        public int UserId { get; set; }
 
         public string Name { get; set; }
         
@@ -66,8 +66,10 @@ namespace Rhisis.Database.Structures
         
         public int SkillPoints { get; set; }
 
-        public ICollection<Item> Items { get; set; }
+        public User User { get; set; }
 
+        public ICollection<Item> Items { get; set; }
+        
         public Character()
         {
             this.Items = new HashSet<Item>();

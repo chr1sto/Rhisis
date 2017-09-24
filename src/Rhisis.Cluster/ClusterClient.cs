@@ -13,15 +13,23 @@ namespace Rhisis.Cluster
     public sealed class ClusterClient : NetConnection
     {
         private readonly uint _sessionId;
+        private ClusterServer _clusterServer;
 
         public ClusterClient()
         {
             this._sessionId = (uint)(new Random().Next(0, int.MaxValue));
         }
 
-        public void InitializeClient()
+        public void InitializeClient(ClusterServer clusterServer)
         {
+            this._clusterServer = clusterServer;
             ClusterPacketFactory.SendWelcome(this, this._sessionId);
+        }
+
+        public void Disconnect()
+        {
+            this.Dispose();
+            this._clusterServer.DisconnectClient(this.Id);
         }
 
         public override void HandleMessage(NetPacketBase packet)

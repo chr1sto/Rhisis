@@ -2,6 +2,7 @@
 using Ether.Network.Packets;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
+using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
@@ -15,8 +16,8 @@ namespace Rhisis.Login
     {
         private readonly uint _sessionId;
         private LoginServer _loginServer;
-
-        public LoginServer LoginSever => this._loginServer;
+        
+        public IEnumerable<ClusterServerInfo> ClustersConnected => this._loginServer.ClustersConnected;
 
         public LoginConfiguration Configuration => this._loginServer.LoginConfiguration;
 
@@ -29,6 +30,12 @@ namespace Rhisis.Login
         {
             this._loginServer = loginServer;
             LoginPacketFactory.SendWelcome(this, this._sessionId);
+        }
+
+        public void Disconnect()
+        {
+            this.Dispose();
+            this._loginServer.DisconnectClient(this.Id);
         }
 
         public override void HandleMessage(NetPacketBase packet)
@@ -61,7 +68,5 @@ namespace Rhisis.Login
 #endif
             }
         }
-
-        
     }
 }

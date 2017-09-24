@@ -1,6 +1,5 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Core.Cryptography;
-using Rhisis.Core.Helpers;
 using System;
 using System.Linq;
 using System.Text;
@@ -9,7 +8,7 @@ namespace Rhisis.Core.Network.Packets.Login
 {
     public struct CertifyPacket : IEquatable<CertifyPacket>
     {
-        public string BuildData { get; private set; }
+        public string BuildVersion { get; private set; }
 
         public string Username { get; private set; }
 
@@ -18,7 +17,7 @@ namespace Rhisis.Core.Network.Packets.Login
         public CertifyPacket(NetPacketBase packet, bool encryptPassword, string encryptionKey)
         {
             var ffPacket = packet as FFPacket;
-            this.BuildData = packet.Read<string>();
+            this.BuildVersion = packet.Read<string>();
             this.Username = packet.Read<string>();
 
             if (encryptPassword)
@@ -34,7 +33,7 @@ namespace Rhisis.Core.Network.Packets.Login
 
         public bool Equals(CertifyPacket other)
         {
-            return this.BuildData == other.BuildData &&
+            return this.BuildVersion == other.BuildVersion &&
                 this.Username == other.Username &&
                 this.Password == other.Password;
         }

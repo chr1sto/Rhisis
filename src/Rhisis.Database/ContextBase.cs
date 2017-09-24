@@ -16,17 +16,17 @@ namespace Rhisis.Database
         /// <summary>
         /// Gets the <see cref="User"/> repository.
         /// </summary>
-        public IRepository<User> UserRepository => this._users;
+        public IRepository<User> Users => this._users;
 
         /// <summary>
         /// Gets the <see cref="Character"/> repository.
         /// </summary>
-        public IRepository<Character> CharacterRepository => this._characters;
+        public IRepository<Character> Characters => this._characters;
 
         /// <summary>
         /// Gets the <see cref="Item"/> repository.
         /// </summary>
-        //public IRepository<Item> ItemRepository => this._items;
+        public IRepository<Item> Items => this._items;
 
         /// <summary>
         /// Gets the <see cref="DatabaseContext"/> configuration.
@@ -46,7 +46,7 @@ namespace Rhisis.Database
         /// <summary>
         /// Gets or sets the database items.
         /// </summary>
-        //internal DbSet<Item> _Items { get; set; }
+        internal DbSet<Item> _Items { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/> instance.

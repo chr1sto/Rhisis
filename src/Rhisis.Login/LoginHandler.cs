@@ -16,28 +16,25 @@ namespace Rhisis.Login
         [PacketHandler(PacketType.CERTIFY)]
         public static void OnLogin(LoginClient client, NetPacketBase packet)
         {
-            var certify = new CertifyPacket(packet,
-                client.Configuration.PasswordEncryption,
-                client.Configuration.EncryptionKey);
+            var certify = new CertifyPacket(packet, client.Configuration.PasswordEncryption, client.Configuration.EncryptionKey);
 
-            if (certify.BuildData != client.Configuration.BuildVersion)
+            if (certify.BuildVersion != client.Configuration.BuildVersion)
             {
                 Logger.Info($"User '{certify.Username}' logged in with bad build version.");
                 LoginPacketFactory.SendLoginError(client, ErrorType.CERT_GENERAL);
-                client.Dispose();
-                client.LoginSever.DisconnectClient(client.Id);
+                client.Disconnect();
                 return;
             }
 
             using (var db = DatabaseService.GetContext())
             {
-                User user = db.UserRepository.Get(x => x.Username.Equals(certify.Username, StringComparison.OrdinalIgnoreCase));
+                User user = db.Users.Get(x => x.Username.Equals(certify.Username, StringComparison.OrdinalIgnoreCase));
 
                 if (user == null)
                 {
                     Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad username)");
                     LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_ACCOUNT);
-                    client.LoginSever.DisconnectClient(client.Id);
+                    client.Disconnect();
                     return;
                 }
 
@@ -45,11 +42,11 @@ namespace Rhisis.Login
                 {
                     Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad password)");
                     LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_PASSWORD);
-                    client.LoginSever.DisconnectClient(client.Id);
+                    client.Disconnect();
                     return;
                 }
 
-                LoginPacketFactory.SendServerList(client, user.Username, client.LoginSever.ClustersConnected);
+                LoginPacketFactory.SendServerList(client, user.Username, client.ClustersConnected);
             }
         }
     }

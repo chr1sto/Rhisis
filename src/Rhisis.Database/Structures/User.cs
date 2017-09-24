@@ -1,4 +1,6 @@
 ﻿using Rhisis.Database.Interfaces;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,5 +18,12 @@ namespace Rhisis.Database.Structures
         public string Password { get; set; }
 
         public int Authority { get; set; }
+
+        public ICollection<Character> Characters { get; set; }
+
+        public User()
+        {
+            this.Characters = new HashSet<Character>();
+        }
     }
 }

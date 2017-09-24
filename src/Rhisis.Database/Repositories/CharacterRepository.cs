@@ -14,6 +14,7 @@ namespace Rhisis.Database.Repositories
         protected override IQueryable<Character> GetQueryable()
         {
             return base.GetQueryable()
+                .Include(x => x.User)
                 .Include(x => x.Items);
         }
     }
