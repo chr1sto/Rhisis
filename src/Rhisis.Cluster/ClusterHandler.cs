@@ -64,7 +64,7 @@ namespace Rhisis.Cluster
                 if (character != null)
                 {
                     Logger.Info($"Character name '{createPlayerPacket.Name}' already exists.");
-                    ClusterPacketFactory.SendError(client, ErrorType.USER_EXISTS);
+                    ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
                     client.Disconnect();
                     return;
                 }
@@ -86,7 +86,7 @@ namespace Rhisis.Cluster
                     PosZ = 0f,
                     SkinSetId = createPlayerPacket.SkinSet,
                     HairColor = createPlayerPacket.HairColor,
-                    FaceId = createPlayerPacket.FaceId,
+                    FaceId = createPlayerPacket.HeadMesh,
                     HairId = createPlayerPacket.HairMeshId,
                     Level = 1,
                     Gold = 0,
@@ -102,6 +102,7 @@ namespace Rhisis.Cluster
                 db.Characters.Create(character);
 
                 Logger.Info($"User '{userAccount.Username} create character '{character.Name}'");
+                ClusterPacketFactory.SendPlayerList(client, createPlayerPacket.AuthenticationKey, userAccount.Characters);
             }
         }
 
@@ -110,7 +111,38 @@ namespace Rhisis.Cluster
         {
             var deletePlayerPacket = new DeletePlayerPacket(packet);
 
+            using (var db = DatabaseService.GetContext())
+            {
+                User userAccount = db.Users.Get(x => x.Username.Equals(deletePlayerPacket.Username, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(deletePlayerPacket.Password, StringComparison.OrdinalIgnoreCase));
 
+                if (userAccount == null)
+                {
+                    Logger.Warning($"User '{deletePlayerPacket.Username}' logged with invalid credentials.");
+                    client.Disconnect();
+                    return;
+                }
+
+                if (!string.Equals(deletePlayerPacket.Password, deletePlayerPacket.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
+                {
+                    Logger.Info($"Invalid password confirmation for user '{userAccount.Username}");
+                    ClusterPacketFactory.SendError(client, ErrorType.FLYFF_PASSWORD);
+                    client.Disconnect();
+                    return;
+                }
+                
+                Character character = db.Characters.Get(deletePlayerPacket.CharacterId);
+
+                if (character == null)
+                {
+                    Logger.Warning($"User '{userAccount.Username}' doesn't have any character with id '{deletePlayerPacket.CharacterId}'");
+                    ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
+                    client.Disconnect();
+                    return;
+                }
+
+                db.Characters.Delete(character);
+                ClusterPacketFactory.SendPlayerList(client, deletePlayerPacket.AuthenticationKey, userAccount.Characters);
+            }
         }
     }
 }

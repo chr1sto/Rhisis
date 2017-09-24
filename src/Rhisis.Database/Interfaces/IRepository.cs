@@ -22,7 +22,7 @@ namespace Rhisis.Database.Interfaces
 
         T Update(T entity);
 
-        T Delete(T Entity);
+        T Delete(T entity);
 
         int Count();
 

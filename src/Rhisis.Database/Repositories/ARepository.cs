@@ -24,9 +24,12 @@ namespace Rhisis.Database.Repositories
             return entity;
         }
 
-        public T Delete(T Entity)
+        public T Delete(T entity)
         {
-            throw new NotImplementedException();
+            this.Context.Set<T>().Remove(entity);
+            this.Context.SaveChanges();
+
+            return entity;
         }
 
         public T Get(int id) => this.GetQueryable().FirstOrDefault(x => x.Id == id);
