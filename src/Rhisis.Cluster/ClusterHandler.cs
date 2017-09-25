@@ -125,7 +125,6 @@ namespace Rhisis.Cluster
                 {
                     Logger.Info($"Invalid password confirmation for user '{userAccount.Username}");
                     ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
-                    //client.Disconnect();
                     return;
                 }
                 
@@ -135,13 +134,17 @@ namespace Rhisis.Cluster
                 {
                     Logger.Warning($"User '{userAccount.Username}' doesn't have any character with id '{deletePlayerPacket.CharacterId}'");
                     ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
-                    //client.Disconnect();
                     return;
                 }
 
                 db.Characters.Delete(character);
                 ClusterPacketFactory.SendPlayerList(client, deletePlayerPacket.AuthenticationKey, userAccount.Characters);
             }
+        }
+
+        [PacketHandler(PacketType.PRE_JOIN)]
+        public static void OnPreJoin(ClusterClient client, NetPacketBase packet)
+        {
         }
     }
 }

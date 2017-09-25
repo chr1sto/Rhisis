@@ -7,12 +7,19 @@ using Rhisis.Database;
 using Rhisis.Database.Structures;
 using Rhisis.Login.Packets;
 using System;
-using System.Linq;
 
 namespace Rhisis.Login
 {
     public static class LoginHandler
     {
+        [PacketHandler(PacketType.PING)]
+        public static void OnPing(LoginClient client, NetPacketBase packet)
+        {
+            var pingPacket = new PingPacket(packet);
+
+            LoginPacketFactory.SendPong(client, pingPacket.Time);
+        }
+
         [PacketHandler(PacketType.CERTIFY)]
         public static void OnLogin(LoginClient client, NetPacketBase packet)
         {
