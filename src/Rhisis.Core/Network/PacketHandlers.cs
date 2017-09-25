@@ -12,12 +12,12 @@ namespace Rhisis.Core.Network
     {
         private static readonly Dictionary<object, Action<T, NetPacketBase>> _handlers = new Dictionary<object, Action<T, NetPacketBase>>();
 
-        private struct MethodHandler
+        private struct PacketMethodHandler
         {
             public PacketHandlerAttribute Attribute;
             public MethodInfo Method;
 
-            public MethodHandler(MethodInfo method, PacketHandlerAttribute attribute)
+            public PacketMethodHandler(MethodInfo method, PacketHandlerAttribute attribute)
             {
                 this.Method = method;
                 this.Attribute = attribute;
@@ -32,7 +32,7 @@ namespace Rhisis.Core.Network
                            let handler = (from x in methodsInfo
                                           let attribute = x.GetCustomAttribute<PacketHandlerAttribute>()
                                           where attribute != null
-                                          select new MethodHandler(x, attribute)).ToArray()
+                                          select new PacketMethodHandler(x, attribute)).ToArray()
                            select handler;
 
             foreach (var handler in handlers)

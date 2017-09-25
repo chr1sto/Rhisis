@@ -4,13 +4,24 @@ using Rhisis.Database.Structures;
 
 namespace Rhisis.Database.Repositories
 {
+    /// <summary>
+    /// Item repository.
+    /// </summary>
     public sealed class ItemRepository : ARepository<Item>
     {
+        /// <summary>
+        /// Creates an initialize an <see cref="ItemRepository"/>.
+        /// </summary>
+        /// <param name="context"></param>
         public ItemRepository(DbContext context) 
             : base(context)
         {
         }
 
+        /// <summary>
+        /// Include other objects for each requests.
+        /// </summary>
+        /// <returns></returns>
         protected override IQueryable<Item> GetQueryable()
         {
             return base.GetQueryable()

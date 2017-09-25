@@ -65,7 +65,6 @@ namespace Rhisis.Cluster
                 {
                     Logger.Info($"Character name '{createPlayerPacket.Name}' already exists.");
                     ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
-                    client.Disconnect();
                     return;
                 }
 
@@ -125,8 +124,8 @@ namespace Rhisis.Cluster
                 if (!string.Equals(deletePlayerPacket.Password, deletePlayerPacket.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
                 {
                     Logger.Info($"Invalid password confirmation for user '{userAccount.Username}");
-                    ClusterPacketFactory.SendError(client, ErrorType.FLYFF_PASSWORD);
-                    client.Disconnect();
+                    ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
+                    //client.Disconnect();
                     return;
                 }
                 
@@ -136,7 +135,7 @@ namespace Rhisis.Cluster
                 {
                     Logger.Warning($"User '{userAccount.Username}' doesn't have any character with id '{deletePlayerPacket.CharacterId}'");
                     ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
-                    client.Disconnect();
+                    //client.Disconnect();
                     return;
                 }
 
