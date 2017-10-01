@@ -23,7 +23,7 @@ namespace Rhisis.Cluster.ISC
         /// </summary>
         /// <param name="configuration">Cluster Server configuration</param>
         public ISCClient(ClusterConfiguration configuration) 
-            : base(configuration.IPC.Host, configuration.IPC.Port, 1024)
+            : base(configuration.ISC.Host, configuration.ISC.Port, 1024)
         {
             this._configuration = configuration;
         }

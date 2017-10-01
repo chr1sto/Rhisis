@@ -23,15 +23,21 @@ namespace Rhisis.Core.Structures.Configuration
         /// <summary>
         /// Gets or sets the Inter-Server configuration.
         /// </summary>
-        [DataMember(Name = "ipc")]
-        public IPCConfiguration IPC { get; set; }
+        [DataMember(Name = "isc")]
+        public ISCConfiguration ISC { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default character configuration.
+        /// </summary>
+        [DataMember(Name = "defaultCharacter")]
+        public DefaultCharacter DefaultCharacter { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="ClusterConfiguration"/> instance.
         /// </summary>
         public ClusterConfiguration()
         {
-            this.IPC = new IPCConfiguration();
+            this.ISC = new ISCConfiguration();
         }
     }
 }

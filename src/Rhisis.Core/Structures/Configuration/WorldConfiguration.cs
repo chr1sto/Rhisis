@@ -37,8 +37,8 @@ namespace Rhisis.Core.Structures.Configuration
         /// <summary>
         /// Gets or sets the IPC configuration.
         /// </summary>
-        [DataMember(Name = "ipc")]
-        public IPCConfiguration IPC { get; set; }
+        [DataMember(Name = "isc")]
+        public ISCConfiguration ISC { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
@@ -46,7 +46,7 @@ namespace Rhisis.Core.Structures.Configuration
         public WorldConfiguration()
         {
             this.Systems = new Dictionary<string, bool>();
-            this.IPC = new IPCConfiguration();
+            this.ISC = new ISCConfiguration();
         }
     }
 }

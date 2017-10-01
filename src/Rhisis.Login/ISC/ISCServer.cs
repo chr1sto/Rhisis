@@ -15,7 +15,7 @@ namespace Rhisis.Login.ISC
                                                           where x.ServerInfo is ClusterServerInfo
                                                           select x.ServerInfo as ClusterServerInfo;
 
-        public ISCServer(IPCConfiguration configuration)
+        public ISCServer(ISCConfiguration configuration)
         {
             this.Configuration.Host = configuration.Host;
             this.Configuration.Port = configuration.Port;

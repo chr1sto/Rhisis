@@ -44,7 +44,7 @@ namespace Rhisis.Login
 
             Task.Run(() =>
             {
-                this._interServer = new ISCServer(this.LoginConfiguration.IPC);
+                this._interServer = new ISCServer(this.LoginConfiguration.ISC);
 
                 this._interServer.Start();
             });

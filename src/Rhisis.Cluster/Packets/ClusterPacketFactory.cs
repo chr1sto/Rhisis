@@ -67,7 +67,7 @@ namespace Rhisis.Cluster.Packets
                     packet.Write(0); // Party id
                     packet.Write(0); // Guild id
                     packet.Write(0); // War Id
-                    packet.Write(character.SkinSetId); // SkinSet Id
+                    packet.Write(character.SkinSetId);
                     packet.Write(character.HairId);
                     packet.Write(character.HairColor);
                     packet.Write(character.FaceId);

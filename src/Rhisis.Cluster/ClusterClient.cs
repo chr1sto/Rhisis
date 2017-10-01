@@ -7,6 +7,7 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Exceptions;
 using System.Collections.Generic;
 using Rhisis.Core.Network.Packets;
+using Rhisis.Core.Structures.Configuration;
 
 namespace Rhisis.Cluster
 {
@@ -14,6 +15,11 @@ namespace Rhisis.Cluster
     {
         private readonly uint _sessionId;
         private ClusterServer _clusterServer;
+
+        /// <summary>
+        /// Gets the cluster server's configuration.
+        /// </summary>
+        public ClusterConfiguration Configuration => this._clusterServer.ClusterConfiguration;
 
         public ClusterClient()
         {

@@ -19,7 +19,7 @@ namespace Rhisis.World.ISC
         public WorldConfiguration Configuration => this._worldConfiguration;
 
         public ISCClient(WorldConfiguration worldConfiguration) 
-            : base(worldConfiguration.IPC.Host, worldConfiguration.IPC.Port, 1024)
+            : base(worldConfiguration.ISC.Host, worldConfiguration.ISC.Port, 1024)
         {
             this._worldConfiguration = worldConfiguration;
         }

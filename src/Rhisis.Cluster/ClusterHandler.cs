@@ -4,6 +4,7 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.Cluster;
+using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Structures;
 using System;
@@ -68,35 +69,43 @@ namespace Rhisis.Cluster
                     return;
                 }
 
+                DefaultCharacter defaultCharacter = client.Configuration.DefaultCharacter;
+                DefaultStartItem defaultEquipment = createPlayerPacket.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
+
                 character = new Character()
                 {
                     UserId = userAccount.Id,
                     Name = createPlayerPacket.Name,
-                    Hp = 100,
-                    Mp = 100,
-                    Fp = 100,
-                    Strength = 15,
-                    Stamina = 15,
-                    Dexterity = 15,
-                    Intelligence = 15,
-                    MapId = 1,
-                    PosX = 0f,
-                    PosY = 0f,
-                    PosZ = 0f,
+                    Slot = createPlayerPacket.Slot,
                     SkinSetId = createPlayerPacket.SkinSet,
                     HairColor = createPlayerPacket.HairColor,
                     FaceId = createPlayerPacket.HeadMesh,
                     HairId = createPlayerPacket.HairMeshId,
-                    Level = 1,
-                    Gold = 0,
-                    Experience = 0,
                     BankCode = createPlayerPacket.BankPassword,
                     Gender = createPlayerPacket.Gender,
                     ClassId = createPlayerPacket.Job,
+                    Hp = 100,
+                    Mp = 100,
+                    Fp = 100,
+                    Strength = defaultCharacter.Strength,
+                    Stamina = defaultCharacter.Stamina,
+                    Dexterity = defaultCharacter.Dexterity,
+                    Intelligence = defaultCharacter.Intelligence,
+                    MapId = defaultCharacter.MapId,
+                    PosX = defaultCharacter.PosX,
+                    PosY = defaultCharacter.PosY,
+                    PosZ = defaultCharacter.PosZ,
+                    Level = defaultCharacter.Level,
+                    Gold = defaultCharacter.Gold,
                     StatPoints = 0,
                     SkillPoints = 0,
-                    Slot = createPlayerPacket.Slot,
+                    Experience = 0,
                 };
+
+                character.Items.Add(new Item(defaultEquipment.StartSuit, 44));
+                character.Items.Add(new Item(defaultEquipment.StartHand, 46));
+                character.Items.Add(new Item(defaultEquipment.StartShoes, 47));
+                character.Items.Add(new Item(defaultEquipment.StartWeapon, 52));
 
                 db.Characters.Create(character);
 

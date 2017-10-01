@@ -6,7 +6,7 @@ namespace Rhisis.Core.Structures.Configuration
     /// Represents the Inter-Server configuration structure.
     /// </summary>
     [DataContract]
-    public class IPCConfiguration : BaseConfiguration
+    public class ISCConfiguration : BaseConfiguration
     {
         /// <summary>
         /// Get or sets the Inter-Server password.
