@@ -91,5 +91,38 @@ namespace Rhisis.Cluster.Packets
                 client.Send(packet);
             }
         }
+
+        public static void SendLoginNumPad(NetConnection client, int loginProtectValue)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.LOGIN_PROTECT_NUMPAD);
+                packet.Write(loginProtectValue);
+
+                client.Send(packet);
+            }
+        }
+
+        public static void SendLoginProtect(NetConnection client, int loginProtectValue)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.LOGIN_PROTECT_CERT);
+                packet.Write(0);
+                packet.Write(loginProtectValue);
+
+                client.Send(packet);
+            }
+        }
+
+        public static void SendJoinWorld(NetConnection client)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.PRE_JOIN);
+
+                client.Send(packet);
+            }
+        }
     }
 }

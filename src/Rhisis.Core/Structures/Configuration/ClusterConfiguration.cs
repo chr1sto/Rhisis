@@ -21,6 +21,12 @@ namespace Rhisis.Core.Structures.Configuration
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the login protect state.
+        /// </summary>
+        [DataMember(Name = "enableLoginProtect")]
+        public bool EnableLoginProtect { get; set; }
+
+        /// <summary>
         /// Gets or sets the Inter-Server configuration.
         /// </summary>
         [DataMember(Name = "isc")]

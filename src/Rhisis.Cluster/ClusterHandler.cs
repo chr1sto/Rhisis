@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Cluster.Packets;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
@@ -40,6 +41,9 @@ namespace Rhisis.Cluster
                 }
 
                 ClusterPacketFactory.SendPlayerList(client, getPlayerListPacket.AuthenticationKey, dbUser.Characters);
+
+                if (client.Configuration.EnableLoginProtect)
+                    ClusterPacketFactory.SendLoginNumPad(client, RandomHelper.Random(0, 1000));
             }
         }
 
@@ -154,6 +158,35 @@ namespace Rhisis.Cluster
         [PacketHandler(PacketType.PRE_JOIN)]
         public static void OnPreJoin(ClusterClient client, NetPacketBase packet)
         {
+            if (client.Configuration.EnableLoginProtect)
+            {
+                var preJoinPacket = new PreJoinPacket(packet);
+
+                using (var db = DatabaseService.GetContext())
+                {
+                    Character selectedCharacter = db.Characters.Get(preJoinPacket.CharacterId);
+
+                    if (selectedCharacter == null)
+                    {
+                        Logger.Error("Cannot find character '{0}' with id {1} in database.", preJoinPacket.CharacterName, preJoinPacket.CharacterId);
+                        return;
+                    }
+
+                    if (!selectedCharacter.User.Username.Equals(preJoinPacket.Username, StringComparison.OrdinalIgnoreCase))
+                        return;
+
+                    if (selectedCharacter.BankCode != preJoinPacket.BankCode)
+                    {
+                        Logger.Error("Character '{0}' tried to connect with incorrect bank password.", selectedCharacter.Name);
+                        ClusterPacketFactory.SendLoginProtect(client, RandomHelper.Random(0, 1000));
+                        return;
+                    }
+
+                    ClusterPacketFactory.SendJoinWorld(client);
+                }
+            }
+            else
+                Logger.Warning("Simple authentication not implemented.");
         }
     }
 }

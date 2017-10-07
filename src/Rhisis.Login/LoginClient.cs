@@ -45,7 +45,7 @@ namespace Rhisis.Login
 
             if (!FFPacket.VerifyPacketHeader(packetHeader, (int)this._sessionId))
             {
-                Logger.Warning("Invalid header for packet: {0}", packetHeader.Header);
+                Logger.Warning("Invalid FlyFF header for packet: 0x{0}", packetHeader.Header.ToString("X2"));
                 return;
             }
 

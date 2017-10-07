@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Core.Exceptions;
+using Rhisis.Core.IO;
 using Rhisis.Core.Network.Packets;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,7 @@ namespace Rhisis.Core.Network
 
             try
             {
+                Logger.Debug("Received packet: {0}", packetHeader);
                 _handlers[packetHeader].Invoke(invoker, packet);
             }
             catch (Exception e)
