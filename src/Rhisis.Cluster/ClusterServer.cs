@@ -3,12 +3,14 @@ using Ether.Network.Packets;
 using Rhisis.Cluster.ISC;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
+using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Cluster
 {
@@ -16,20 +18,35 @@ namespace Rhisis.Cluster
     {
         private static readonly string ClusterConfigFile = "config/cluster.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
-
         private static ISCClient _client;
 
+        /// <summary>
+        /// Gets the InterClient.
+        /// </summary>
         public static ISCClient InterClient => _client;
 
+        /// <summary>
+        /// Gets the cluster server's configuration.
+        /// </summary>
         public ClusterConfiguration ClusterConfiguration { get; private set; }
 
+        /// <summary>
+        /// Gets the list of the connected world servers of this cluster.
+        /// </summary>
+        public IReadOnlyCollection<WorldServerInfo> Worlds => InterClient.Worlds as IReadOnlyCollection<WorldServerInfo>;
+
+        /// <summary>
+        /// Creates a new <see cref="ClusterServer"/> instance.
+        /// </summary>
         public ClusterServer()
         {
-            Console.Title = "Rhisis - Cluster Server";
             Logger.Initialize();
             this.LoadConfiguration();
         }
 
+        /// <summary>
+        /// Initialize the cluster server resources.
+        /// </summary>
         protected override void Initialize()
         {
             PacketHandler<ClusterClient>.Initialize();
@@ -47,22 +64,38 @@ namespace Rhisis.Cluster
             Logger.Info("Rhisis cluster server is up");
         }
 
+        /// <summary>
+        /// Fired when a client is connected to the cluster server.
+        /// </summary>
+        /// <param name="connection"></param>
         protected override void OnClientConnected(ClusterClient connection)
         {
             Logger.Info("New client connected: {0}", connection.Id);
             connection.InitializeClient(this);
         }
 
+        /// <summary>
+        /// Fired when a client disconnects from this cluster server.
+        /// </summary>
+        /// <param name="connection"></param>
         protected override void OnClientDisconnected(ClusterClient connection)
         {
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
 
+        /// <summary>
+        /// Split the incoming network data into flyff packets.
+        /// </summary>
+        /// <param name="buffer">Incoming buffer</param>
+        /// <returns></returns>
         protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
         {
             return FFPacket.SplitPackets(buffer);
         }
 
+        /// <summary>
+        /// Load the cluster server's configuration.
+        /// </summary>
         private void LoadConfiguration()
         {
             this.ClusterConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(ClusterConfigFile, true);

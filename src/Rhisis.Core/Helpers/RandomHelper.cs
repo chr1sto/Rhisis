@@ -37,5 +37,14 @@ namespace Rhisis.Core.Helpers
         {
             return (long)(min + Math.Floor(MersenneTwister.NextDouble() * (max - min + 1)));
         }
+
+        /// <summary>
+        /// Generates a session key.
+        /// </summary>
+        /// <returns></returns>
+        public static uint GenerateSessionKey()
+        {
+            return (uint)(new Random().Next(0, int.MaxValue));
+        }
     }
 }

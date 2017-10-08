@@ -64,7 +64,14 @@ namespace Rhisis.Login.ISC
                 ISCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
                 var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
 
-                clusterInfo?.Worlds.Remove(worldInfo);
+                if (clusterInfo == null)
+                {
+                    Logger.Warning("Cannot find parent cluster of world server : {0}", worldInfo.Name);
+                    return;
+                }
+
+                clusterInfo.Worlds.Remove(worldInfo);
+                PacketFactory.SendUpdateWorldList(cluster, clusterInfo.Worlds);
             }
         }
 

@@ -1,13 +1,16 @@
 ﻿using Ether.Network;
-using System;
 using Ether.Network.Packets;
 using Rhisis.Cluster.Packets;
-using Rhisis.Core.Network;
-using Rhisis.Core.IO;
 using Rhisis.Core.Exceptions;
-using System.Collections.Generic;
+using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
+using Rhisis.Core.ISC.Structures;
+using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Cluster
 {
@@ -21,23 +24,50 @@ namespace Rhisis.Cluster
         /// </summary>
         public ClusterConfiguration Configuration => this._clusterServer.ClusterConfiguration;
 
+        /// <summary>
+        /// Gets or sets the Login protect value.
+        /// </summary>
+        public int LoginProtectValue { get; set; }
+
+        /// <summary>
+        /// Creates a new <see cref="ClusterClient"/> instance.
+        /// </summary>
         public ClusterClient()
         {
-            this._sessionId = (uint)(new Random().Next(0, int.MaxValue));
+            this._sessionId = RandomHelper.GenerateSessionKey();
+            this.LoginProtectValue = new Random().Next(0, 1000);
         }
 
+        /// <summary>
+        /// Initialize the <see cref="ClusterClient"/>.
+        /// </summary>
+        /// <param name="clusterServer"></param>
         public void InitializeClient(ClusterServer clusterServer)
         {
             this._clusterServer = clusterServer;
             ClusterPacketFactory.SendWelcome(this, this._sessionId);
         }
 
+        /// <summary>
+        /// Disconnects the current <see cref="ClusterClient"/>.
+        /// </summary>
         public void Disconnect()
         {
             this.Dispose();
             this._clusterServer.DisconnectClient(this.Id);
         }
 
+        /// <summary>
+        /// Gets world server by his id.
+        /// </summary>
+        /// <param name="id">World Server id</param>
+        /// <returns></returns>
+        public WorldServerInfo GetWorldServerById(int id) => this._clusterServer.Worlds.FirstOrDefault(x => x.Id == id);
+
+        /// <summary>
+        /// Handle the incoming mesages.
+        /// </summary>
+        /// <param name="packet">Incoming packet</param>
         public override void HandleMessage(NetPacketBase packet)
         {
             var pak = packet as FFPacket;

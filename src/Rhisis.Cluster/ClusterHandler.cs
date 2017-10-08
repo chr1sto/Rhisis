@@ -2,6 +2,7 @@
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
+using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.Cluster;
@@ -26,6 +27,7 @@ namespace Rhisis.Cluster
         public static void OnGetPlayerList(ClusterClient client, NetPacketBase packet)
         {
             var getPlayerListPacket = new GetPlayerListPacket(packet);
+            WorldServerInfo selectedServer = client.GetWorldServerById(getPlayerListPacket.ServerId);
 
             // TODO: verification
 
@@ -42,8 +44,11 @@ namespace Rhisis.Cluster
 
                 ClusterPacketFactory.SendPlayerList(client, getPlayerListPacket.AuthenticationKey, dbUser.Characters);
 
+                if (selectedServer != null)
+                    ClusterPacketFactory.SendWorldAddress(client, selectedServer.Host);
+
                 if (client.Configuration.EnableLoginProtect)
-                    ClusterPacketFactory.SendLoginNumPad(client, RandomHelper.Random(0, 1000));
+                    ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
             }
         }
 
@@ -175,10 +180,12 @@ namespace Rhisis.Cluster
                     if (!selectedCharacter.User.Username.Equals(preJoinPacket.Username, StringComparison.OrdinalIgnoreCase))
                         return;
 
-                    if (selectedCharacter.BankCode != preJoinPacket.BankCode)
+                    int realBankCode = LoginProtect.GetNumPadToPassword(client.LoginProtectValue, preJoinPacket.BankCode);
+                    if (selectedCharacter.BankCode != realBankCode)
                     {
                         Logger.Error("Character '{0}' tried to connect with incorrect bank password.", selectedCharacter.Name);
-                        ClusterPacketFactory.SendLoginProtect(client, RandomHelper.Random(0, 1000));
+                        client.LoginProtectValue = new Random().Next(0, 1000);
+                        ClusterPacketFactory.SendLoginProtect(client, client.LoginProtectValue);
                         return;
                     }
 

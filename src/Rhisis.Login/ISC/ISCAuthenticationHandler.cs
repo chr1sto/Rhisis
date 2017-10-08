@@ -61,6 +61,7 @@ namespace Rhisis.Login.ISC
                 client.ServerInfo = new WorldServerInfo(id, host, name, clusterId);
                 clusterInfo.Worlds.Add(client.ServerInfo as WorldServerInfo);
                 PacketFactory.SendAuthenticationResult(client, InterServerError.AUTH_SUCCESS);
+                PacketFactory.SendUpdateWorldList(cluster, clusterInfo.Worlds);
                 Logger.Info("World Server '{0}' connected to Cluster '{1}'.", name, clusterInfo.Name);
             }
             else

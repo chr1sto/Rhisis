@@ -92,6 +92,17 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
+        public static void SendWorldAddress(NetConnection client, string address)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.CACHE_ADDR);
+                packet.Write(address);
+
+                client.Send(packet);
+            }
+        }
+
         public static void SendLoginNumPad(NetConnection client, int loginProtectValue)
         {
             using (var packet = new FFPacket())
