@@ -80,6 +80,15 @@ namespace Rhisis.World
         }
 
         /// <summary>
+        /// Fired when an error occurs.
+        /// </summary>
+        /// <param name="exception"></param>
+        protected override void OnError(Exception exception)
+        {
+            // TODO: handle
+        }
+
+        /// <summary>
         /// Split the incoming network data into flyff packets.
         /// </summary>
         /// <param name="buffer">Incoming buffer</param>

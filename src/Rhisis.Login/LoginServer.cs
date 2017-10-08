@@ -63,6 +63,11 @@ namespace Rhisis.Login
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
 
+        protected override void OnError(Exception exception)
+        {
+            // TODO: handle
+        }
+
         protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
         {
             return FFPacket.SplitPackets(buffer);

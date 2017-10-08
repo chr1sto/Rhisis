@@ -4,6 +4,7 @@ using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,6 +45,11 @@ namespace Rhisis.Login.ISC
                 Logger.Info("Server '{0}' disconnected from InterServer.", connection.ServerInfo.Name);
                 connection.Disconnect();
             }
+        }
+
+        protected override void OnError(Exception exception)
+        {
+            // TODO: handle
         }
 
         internal bool HasClusterWithId(int id)
