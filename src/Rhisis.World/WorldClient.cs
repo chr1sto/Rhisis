@@ -14,7 +14,7 @@ namespace Rhisis.World
     public sealed class WorldClient : NetConnection
     {
         private readonly uint _sessionId;
-        private WorldServer _worldServer;
+        //private WorldServer _worldServer;
 
         public WorldClient()
         {
@@ -23,7 +23,7 @@ namespace Rhisis.World
 
         public void InitializeClient(WorldServer worldServer)
         {
-            this._worldServer = worldServer;
+            //this._worldServer = worldServer;
             WorldPacketFactory.SendWelcome(this, this._sessionId);
         }
 

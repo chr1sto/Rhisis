@@ -11,7 +11,7 @@ namespace Rhisis.World.ISC
 {
     public sealed class ISCClient : NetClient
     {
-        private WorldConfiguration _worldConfiguration;
+        private readonly WorldConfiguration _worldConfiguration;
 
         /// <summary>
         /// Gets the world server's configuration.
@@ -48,6 +48,7 @@ namespace Rhisis.World.ISC
 
         protected override void OnConnected()
         {
+            // Nothing to do.
         }
 
         protected override void OnDisconnected()

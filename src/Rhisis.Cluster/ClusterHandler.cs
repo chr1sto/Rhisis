@@ -27,7 +27,7 @@ namespace Rhisis.Cluster
         public static void OnGetPlayerList(ClusterClient client, NetPacketBase packet)
         {
             var getPlayerListPacket = new GetPlayerListPacket(packet);
-            WorldServerInfo selectedServer = client.GetWorldServerById(getPlayerListPacket.ServerId);
+            WorldServerInfo selectedServer = ClusterServer.GetWorldServerById(getPlayerListPacket.ServerId);
 
             // TODO: verification
 

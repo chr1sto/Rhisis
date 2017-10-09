@@ -33,7 +33,7 @@ namespace Rhisis.Cluster
         /// <summary>
         /// Gets the list of the connected world servers of this cluster.
         /// </summary>
-        public IReadOnlyCollection<WorldServerInfo> Worlds => InterClient.Worlds as IReadOnlyCollection<WorldServerInfo>;
+        public static IReadOnlyCollection<WorldServerInfo> Worlds => InterClient.Worlds as IReadOnlyCollection<WorldServerInfo>;
 
         /// <summary>
         /// Creates a new <see cref="ClusterServer"/> instance.
@@ -115,5 +115,12 @@ namespace Rhisis.Cluster
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
         }
+
+        /// <summary>
+        /// Gets world server by his id.
+        /// </summary>
+        /// <param name="id">World Server id</param>
+        /// <returns></returns>
+        public static WorldServerInfo GetWorldServerById(int id) => Worlds.FirstOrDefault(x => x.Id == id);
     }
 }

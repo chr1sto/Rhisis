@@ -98,7 +98,10 @@ namespace Rhisis.Database
                 var databaseCreator = this.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
                 databaseCreator.CreateTables();
             }
-            catch { }
+            catch
+            {
+                // Nothing to do.
+            }
             finally
             {
                 this.Database.Migrate();

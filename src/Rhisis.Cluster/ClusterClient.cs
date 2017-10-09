@@ -58,13 +58,6 @@ namespace Rhisis.Cluster
         }
 
         /// <summary>
-        /// Gets world server by his id.
-        /// </summary>
-        /// <param name="id">World Server id</param>
-        /// <returns></returns>
-        public WorldServerInfo GetWorldServerById(int id) => this._clusterServer.Worlds.FirstOrDefault(x => x.Id == id);
-
-        /// <summary>
         /// Handle the incoming mesages.
         /// </summary>
         /// <param name="packet">Incoming packet</param>

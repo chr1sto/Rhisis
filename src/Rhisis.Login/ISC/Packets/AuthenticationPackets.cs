@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Rhisis.Login.ISC.Packets
 {
-    public static partial class PacketFactory
+    public static class PacketFactory
     {
         public static void SendWelcome(NetConnection client)
         {
