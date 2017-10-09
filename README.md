@@ -41,6 +41,10 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 ### Cluster
 - Inter-Server authentication (ISC)
 - Character list
+- Create character
+- Delete character
+- 2nd password verification
+- Pre join
 
 ### World
 - Inter-Server authentication (ISC)
