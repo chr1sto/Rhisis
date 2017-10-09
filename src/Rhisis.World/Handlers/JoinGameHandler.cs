@@ -1,6 +1,7 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
+using Rhisis.Core.Network.Packets.World;
 using System;
 
 namespace Rhisis.World.Handlers
@@ -10,7 +11,9 @@ namespace Rhisis.World.Handlers
         [PacketHandler(PacketType.JOIN)]
         public static void OnJoin(WorldClient client, NetPacketBase packet)
         {
-            throw new NotImplementedException();
+            var joinPacket = new JoinPacket(packet);
+
+            // TODO
         }
     }
 }
