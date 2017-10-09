@@ -9,28 +9,6 @@ namespace Rhisis.Login.Packets
 {
     public static class LoginPacketFactory
     {
-        public static void SendWelcome(NetConnection client, uint sessionId)
-        {
-            using (var packet = new FFPacket())
-            {
-                packet.WriteHeader(PacketType.WELCOME);
-                packet.Write(sessionId);
-
-                client.Send(packet);
-            }
-        }
-
-        public static void SendPong(NetConnection client, int time)
-        {
-            using (var packet = new FFPacket())
-            {
-                packet.WriteHeader(PacketType.PING);
-                packet.Write(time);
-
-                client.Send(packet);
-            }
-        }
-
         public static void SendLoginError(NetConnection client, ErrorType error)
         {
             using (var packet = new FFPacket())

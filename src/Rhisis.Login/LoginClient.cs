@@ -29,7 +29,7 @@ namespace Rhisis.Login
         public void InitializeClient(LoginServer loginServer)
         {
             this._loginServer = loginServer;
-            LoginPacketFactory.SendWelcome(this, this._sessionId);
+            CommonPacketFactory.SendWelcome(this, this._sessionId);
         }
 
         public void Disconnect()

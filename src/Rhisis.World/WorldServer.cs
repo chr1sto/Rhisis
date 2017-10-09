@@ -67,7 +67,7 @@ namespace Rhisis.World
         protected override void OnClientConnected(WorldClient connection)
         {
             Logger.Info("New client connected: {0}", connection.Id);
-            connection.InitializeClient(this);
+            connection.InitializeClient();
         }
 
         /// <summary>

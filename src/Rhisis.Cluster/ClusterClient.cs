@@ -45,7 +45,7 @@ namespace Rhisis.Cluster
         public void InitializeClient(ClusterServer clusterServer)
         {
             this._clusterServer = clusterServer;
-            ClusterPacketFactory.SendWelcome(this, this._sessionId);
+            CommonPacketFactory.SendWelcome(this, this._sessionId);
         }
 
         /// <summary>

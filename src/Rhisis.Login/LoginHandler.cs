@@ -17,7 +17,7 @@ namespace Rhisis.Login
         {
             var pingPacket = new PingPacket(packet);
 
-            LoginPacketFactory.SendPong(client, pingPacket.Time);
+            CommonPacketFactory.SendPong(client, pingPacket.Time);
         }
 
         [PacketHandler(PacketType.CERTIFY)]

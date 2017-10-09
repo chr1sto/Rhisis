@@ -20,7 +20,7 @@ namespace Rhisis.Cluster
         {
             var pingPacket = new PingPacket(packet);
 
-            ClusterPacketFactory.SendPong(client, pingPacket.Time);
+            CommonPacketFactory.SendPong(client, pingPacket.Time);
         }
 
         [PacketHandler(PacketType.GETPLAYERLIST)]
