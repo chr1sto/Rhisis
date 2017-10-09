@@ -4,6 +4,10 @@ using Ether.Network.Packets;
 using Rhisis.Core.IO;
 using Rhisis.Core.Helpers;
 using Rhisis.World.Packets;
+using Rhisis.Core.Network;
+using Rhisis.Core.Network.Packets;
+using System.Collections.Generic;
+using Rhisis.Core.Exceptions;
 
 namespace Rhisis.World
 {
@@ -25,7 +29,34 @@ namespace Rhisis.World
 
         public override void HandleMessage(NetPacketBase packet)
         {
-            Logger.Info("Handle messages");
+            var pak = packet as FFPacket;
+            var packetHeader = new PacketHeader(pak);
+
+            if (!FFPacket.VerifyPacketHeader(packetHeader, (int)this._sessionId))
+            {
+                Logger.Warning("Invalid header for packet: {0}", packetHeader.Header);
+                return;
+            }
+
+            packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
+            var packetHeaderNumber = packet.Read<uint>();
+
+            try
+            {
+                PacketHandler<WorldClient>.Invoke(this, pak, (PacketType)packetHeaderNumber);
+            }
+            catch (KeyNotFoundException)
+            {
+                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
+            }
+            catch (RhisisPacketException packetException)
+            {
+                Logger.Error(packetException.Message);
+#if DEBUG
+                Logger.Debug("STACK TRACE");
+                Logger.Debug(packetException.InnerException?.StackTrace);
+#endif
+            }
         }
     }
 }
