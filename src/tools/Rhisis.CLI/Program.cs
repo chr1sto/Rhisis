@@ -34,7 +34,7 @@ namespace Rhisis.CLI
             };
 
             app.HelpOption("-?|-h|--help");
-            app.VersionOption("--version", "1.0.0");
+            app.VersionOption("--version", Version);
 
             foreach (ICommand command in Commands)
                 app.Command(command.Name, command.Execute);
@@ -66,9 +66,11 @@ namespace Rhisis.CLI
             return resourceText;
         }
 
+#if DEBUG
         private static string[] BuildDebugArgs(params string[] args)
         {
             return args;
         }
+#endif
     }
 }

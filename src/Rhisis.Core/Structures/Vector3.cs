@@ -6,19 +6,19 @@ namespace Rhisis.Core.Structures
     /// <summary>
     /// Represents 3D coordinates in space.
     /// </summary>
-    public class Vector3
+    public class Vector3 : IEquatable<Vector3>
     {
-        private float x;
-        private float y;
-        private float z;
+        private float _x;
+        private float _y;
+        private float _z;
 
         /// <summary>
         /// Gets or sets the X position in the world.
         /// </summary>
         public float X
         {
-            get { return this.x; }
-            set { this.x = value; }
+            get { return this._x; }
+            set { this._x = value; }
         }
 
         /// <summary>
@@ -26,8 +26,8 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float Y
         {
-            get { return this.y; }
-            set { this.y = value; }
+            get { return this._y; }
+            set { this._y = value; }
         }
 
         /// <summary>
@@ -35,8 +35,8 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float Z
         {
-            get { return this.z; }
-            set { this.z = value; }
+            get { return this._z; }
+            set { this._z = value; }
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float SquaredLength
         {
-            get { return (this.x * this.x) + (this.y * this.y) + (this.z * this.z); }
+            get { return (this._x * this._x) + (this._y * this._y) + (this._z * this._z); }
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace Rhisis.Core.Structures
         /// <param name="z"></param>
         public Vector3(float x, float y, float z)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
+            this._x = x;
+            this._y = y;
+            this._z = z;
         }
 
         /// <summary>
@@ -84,9 +84,9 @@ namespace Rhisis.Core.Structures
         /// <param name="z"></param>
         public Vector3(string x, string y, string z)
         {
-            float.TryParse(x, out this.x);
-            float.TryParse(y, out this.y);
-            float.TryParse(z, out this.z);
+            float.TryParse(x, out this._x);
+            float.TryParse(y, out this._y);
+            float.TryParse(z, out this._z);
         }
 
         /// <summary>
@@ -152,9 +152,9 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public void Reset()
         {
-            this.x = 0;
-            this.y = 0;
-            this.z = 0;
+            this._x = 0;
+            this._y = 0;
+            this._z = 0;
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("Vector3: {0}:{1}:{2}", this.x, this.y, this.z);
+            return string.Format("Vector3: {0}:{1}:{2}", this._x, this._y, this._z);
         }
 
         /// <summary>
@@ -354,6 +354,18 @@ namespace Rhisis.Core.Structures
             newVector.Z += (float)Math.Cos(angle) * power;
 
             return newVector;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="Vector3"/> objects.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Equals(Vector3 other)
+        {
+            return this.X == other.X
+                && this.Y == other.Y
+                && this.Z == other.Z;
         }
     }
 }

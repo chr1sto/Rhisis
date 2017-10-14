@@ -29,8 +29,7 @@ namespace Rhisis.Login.ISC
                 }
 
                 client.ServerInfo = new ClusterServerInfo(id, host, name);
-
-                //this._server.Clusters.Add(this.ServerInfo as ClusterServerInfo);
+                
                 PacketFactory.SendAuthenticationResult(client, InterServerError.AUTH_SUCCESS);
                 Logger.Info("Cluster Server '{0}' connected to InterServer.", name);
             }

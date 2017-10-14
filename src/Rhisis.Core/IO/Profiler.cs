@@ -22,6 +22,8 @@ namespace Rhisis.Core.IO
                 {
 #if DEBUG
                     throw new InvalidOperationException();
+#else
+                    // Nothing to do.
 #endif
                 }
 

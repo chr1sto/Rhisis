@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Cluster
 {
-    public class LoginProtect
+    public static class LoginProtect
     {
         private static int[,] numPad = new int[,]
         {

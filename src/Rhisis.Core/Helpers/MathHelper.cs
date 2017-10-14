@@ -28,11 +28,11 @@ namespace Rhisis.Core.Helpers
         /// Gives the percentage of a value.
         /// </summary>
         /// <param name="value">Reference value</param>
-        /// <param name="percentage">Percentage wanted</param>
+        /// <param name="percents">Percentage wanted</param>
         /// <returns></returns>
-        public static int Percentage(int value, int percentage)
+        public static int Percentage(int value, int percents)
         {
-            return (value * percentage) / 100;
+            return (value * percents) / 100;
         }
     }
 }

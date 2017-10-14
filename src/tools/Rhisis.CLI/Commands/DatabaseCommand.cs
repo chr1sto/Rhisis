@@ -21,7 +21,7 @@ namespace Rhisis.CLI.Commands
         /// <summary>
         /// Gets the command description.
         /// </summary>
-        public string Description => CommandName;
+        public string Description => CommandDescription;
 
         /// <summary>
         /// Executes the command logic.
