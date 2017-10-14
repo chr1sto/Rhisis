@@ -3,8 +3,10 @@ using System;
 
 namespace Rhisis.Core.Helpers
 {
-    public class RandomHelper
+    public static class RandomHelper
     {
+        private static int _id = 0;
+
         /// <summary>
         /// Do a random between integers
         /// </summary>
@@ -45,6 +47,15 @@ namespace Rhisis.Core.Helpers
         public static uint GenerateSessionKey()
         {
             return (uint)(new Random().Next(0, int.MaxValue));
+        }
+
+        /// <summary>
+        /// Generates a unique id. 
+        /// </summary>
+        /// <returns></returns>
+        public static int GenerateUniqueId()
+        {
+            return ++_id;
         }
     }
 }
