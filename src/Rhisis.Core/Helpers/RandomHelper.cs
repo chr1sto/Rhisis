@@ -5,7 +5,7 @@ namespace Rhisis.Core.Helpers
 {
     public static class RandomHelper
     {
-        private static int _id = 0;
+        private static int _id;
 
         /// <summary>
         /// Do a random between integers

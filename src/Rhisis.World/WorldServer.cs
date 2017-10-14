@@ -53,9 +53,7 @@ namespace Rhisis.World
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
             // TODO: Load resources
-
-            _client = new ISCClient(this.WorldConfiguration);
-            _client.Connect();
+            ConnectToISC(this.WorldConfiguration);
 
             Logger.Info("Rhisis world server is up");
         }
@@ -110,6 +108,12 @@ namespace Rhisis.World
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+        }
+
+        private static void ConnectToISC(WorldConfiguration configuration)
+        {
+            _client = new ISCClient(configuration);
+            _client.Connect();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
-using Rhisis.Core.Network.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace Rhisis.Core.Network
     {
         private static readonly Dictionary<object, Action<T, NetPacketBase>> _handlers = new Dictionary<object, Action<T, NetPacketBase>>();
 
-        private struct PacketMethodHandler
+        private struct PacketMethodHandler : IEquatable<PacketMethodHandler>
         {
             public PacketHandlerAttribute Attribute;
             public MethodInfo Method;
@@ -22,6 +21,13 @@ namespace Rhisis.Core.Network
             {
                 this.Method = method;
                 this.Attribute = attribute;
+            }
+
+            public bool Equals(PacketMethodHandler other)
+            {
+                return this.Attribute.Header == other.Attribute.Header
+                    && this.Attribute.TypeId == other.Attribute.TypeId
+                    && this.Method == other.Method;
             }
         }
 
@@ -42,10 +48,7 @@ namespace Rhisis.Core.Network
                 {
                     ParameterInfo[] parameters = methodHandler.Method.GetParameters();
 
-                    if (parameters.Count() < 2)
-                        continue;
-                    
-                    if (parameters.First().ParameterType != typeof(T))
+                    if (parameters.Count() < 2 || parameters.First().ParameterType != typeof(T))
                         continue;
 
                     var action = methodHandler.Method.CreateDelegate(typeof(Action<T, NetPacketBase>)) as Action<T, NetPacketBase>;
