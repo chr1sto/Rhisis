@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Systems\" />
+  </ItemGroup>
+
 </Project>
