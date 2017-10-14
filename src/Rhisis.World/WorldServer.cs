@@ -110,6 +110,10 @@ namespace Rhisis.World
             this.Configuration.BufferSize = 4096;
         }
 
+        /// <summary>
+        /// Connects to the ISC.
+        /// </summary>
+        /// <param name="configuration"></param>
         private static void ConnectToISC(WorldConfiguration configuration)
         {
             _client = new ISCClient(configuration);

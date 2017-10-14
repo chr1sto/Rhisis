@@ -50,8 +50,26 @@ namespace Rhisis.World.Handlers
                 Size = 100
             };
 
+            var humanComponent = new HumanComponent()
+            {
+                Gender = character.Gender,
+                SkinSetId = character.SkinSetId,
+                HairId = character.HairId,
+                HairColor = character.HairColor,
+                FaceId = character.FaceId,
+            };
+
+            var playerComponent = new PlayerComponent()
+            {
+                Id = character.Id,
+                Slot = character.Slot,
+                Connection = client
+            };
+
             // 3rd: attach the component to the entity
             player.AddComponent(objectComponent);
+            player.AddComponent(humanComponent);
+            player.AddComponent(playerComponent);
 
             // 4rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client, player);
