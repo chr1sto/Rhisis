@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Rhisis.World.Packets
 {
-    public static class WorldPacketFactory
+    public static partial class WorldPacketFactory
     {
         // TODO: Add methods
     }

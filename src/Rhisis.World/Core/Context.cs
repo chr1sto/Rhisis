@@ -1,6 +1,7 @@
 ﻿using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,18 +13,26 @@ namespace Rhisis.World.Core
 
         public static Context Instance => lazyInstance.Value;
 
+        private readonly ConcurrentDictionary<Guid, IEntity> _entities;
+
         private Context()
         {
+            this._entities = new ConcurrentDictionary<Guid, IEntity>();
         }
 
         public IEntity CreateEntity()
         {
-            throw new NotImplementedException();
+            var entity = new Entity();
+
+            if (this._entities.TryAdd(entity.Id, entity))
+                return entity;
+
+            return null;
         }
 
-        public void DeleteEntity(IEntity entity)
+        public bool DeleteEntity(IEntity entity)
         {
-            throw new NotImplementedException();
+            return this._entities.TryRemove(entity.Id, out IEntity value);
         }
 
         public void AddSystem(ISystem system)
