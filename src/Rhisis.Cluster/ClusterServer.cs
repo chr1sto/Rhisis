@@ -87,10 +87,10 @@ namespace Rhisis.Cluster
         /// Fired when an error occurs.
         /// </summary>
         /// <param name="exception"></param>
-        protected override void OnError(Exception exception)
-        {
-            // TODO: handle
-        }
+        //protected override void OnError(Exception exception)
+        //{
+        //    // TODO: handle
+        //}
 
         /// <summary>
         /// Split the incoming network data into flyff packets.

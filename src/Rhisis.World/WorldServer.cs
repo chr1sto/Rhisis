@@ -53,7 +53,10 @@ namespace Rhisis.World
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
             // TODO: Load resources
-            ConnectToISC(this.WorldConfiguration);
+            //ConnectToISC(this.WorldConfiguration);
+
+            _client = new ISCClient(this.WorldConfiguration);
+            _client.Connect();
 
             Logger.Info("Rhisis world server is up");
         }
@@ -81,10 +84,10 @@ namespace Rhisis.World
         /// Fired when an error occurs.
         /// </summary>
         /// <param name="exception"></param>
-        protected override void OnError(Exception exception)
-        {
-            // TODO: handle
-        }
+        //protected override void OnError(Exception exception)
+        //{
+        //    // TODO: handle
+        //}
 
         /// <summary>
         /// Split the incoming network data into flyff packets.

@@ -7,6 +7,7 @@ using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.IO;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.ISC.Structures;
+using System.Net.Sockets;
 
 namespace Rhisis.Cluster.ISC
 {
@@ -71,5 +72,10 @@ namespace Rhisis.Cluster.ISC
         {
             Logger.Info("Disconnected from InterServer.");
         }
+
+        //protected override void OnSocketError(SocketError socketError)
+        //{
+        //    Logger.Error("Socket errror: {0}", socketError.ToString());
+        //}
     }
 }

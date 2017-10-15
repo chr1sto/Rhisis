@@ -1,1 +1,1 @@
-dotnet run --project ../src/Rhisis.Cluster/Rhisis.Cluster.csproj --configuration Release
+dotnet run --project ../src/Rhisis.Cluster/Rhisis.Cluster.csproj --configuration Debug

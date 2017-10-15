@@ -4,7 +4,7 @@ namespace Rhisis.Login
 {
     public static class Program
     {
-        private static readonly string ProgramTitle = "Rhisis - ClusterServer";
+        private static readonly string ProgramTitle = "Rhisis - LoginServer";
 
         private static void Main(string[] args)
         {

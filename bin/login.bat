@@ -1,1 +1,1 @@
-dotnet run --project ../src/Rhisis.Login/Rhisis.Login.csproj --configuration Release
+dotnet run --project ../src/Rhisis.Login/Rhisis.Login.csproj --configuration Debug

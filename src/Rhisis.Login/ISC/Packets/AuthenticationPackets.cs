@@ -1,5 +1,6 @@
 ﻿using Ether.Network;
 using Ether.Network.Packets;
+using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
 using System.Collections.Generic;
@@ -32,6 +33,8 @@ namespace Rhisis.Login.ISC.Packets
 
         public static void SendUpdateWorldList(NetConnection client, IEnumerable<WorldServerInfo> worlds)
         {
+            Logger.Warning("Cluster connected: {0}", client.Socket.Connected);
+
             using (var packet = new NetPacket())
             {
                 packet.Write((uint)InterPacketType.UpdateClusterWorldsList);
@@ -46,6 +49,7 @@ namespace Rhisis.Login.ISC.Packets
                 }
 
                 client.Send(packet);
+                Logger.Warning("Update World List OK");
             }
         }
     }

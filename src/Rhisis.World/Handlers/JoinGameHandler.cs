@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Common;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
@@ -44,10 +45,13 @@ namespace Rhisis.World.Handlers
             // 2nd: create the components
             var objectComponent = new ObjectComponent
             {
+                ModelId = character.Gender == 0 ? 11 : 12,
+                Type = WorldObjectType.Mover,
                 MapId = character.MapId,
                 Position = new Vector3(character.PosX, character.PosY, character.PosZ),
                 Angle = character.Angle,
-                Size = 100
+                Size = 100,
+                Name = character.Name
             };
 
             var humanComponent = new HumanComponent()
