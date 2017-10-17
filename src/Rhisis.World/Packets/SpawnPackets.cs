@@ -43,14 +43,14 @@ namespace Rhisis.World.Packets
                 packet.Write((short)(objectComponent.Angle * 10));
                 packet.Write(objectComponent.ObjectId);
 
-                packet.Write<short>(0);
-                packet.Write<byte>(1); // is player ?
+                packet.Write<short>(0); // m_dwMotion
+                packet.Write<byte>(1); // m_bPlayer
                 packet.Write(230); // HP
                 packet.Write(0); // moving flags
                 packet.Write(0); // motion flags
-                packet.Write<byte>(1);
+                packet.Write<byte>(1); // m_dwBelligerence
 
-                packet.Write(-1);
+                packet.Write(-1); // m_dwMoverSfxId
 
                 packet.Write(objectComponent.Name);
                 packet.Write(humanComponent.Gender);
@@ -59,12 +59,12 @@ namespace Rhisis.World.Packets
                 packet.Write((int)humanComponent.HairColor);
                 packet.Write((byte)humanComponent.FaceId);
                 packet.Write(playerComponent.Id);
-                packet.Write((byte)1);
+                packet.Write((byte)1); // Job
                 packet.Write((short)15); // STR
                 packet.Write((short)15); // STA
                 packet.Write((short)15); // DEX
                 packet.Write((short)15); // INT
-                packet.Write((short)1);
+                packet.Write((short)1); // Levels
                 packet.Write(-1); // Fuel
                 packet.Write(0); // Actuel fuel
 
