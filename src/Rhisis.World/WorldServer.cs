@@ -10,14 +10,21 @@ using Rhisis.Core.IO;
 using Rhisis.World.ISC;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
+using Rhisis.World.Game;
 
 namespace Rhisis.World
 {
-    public sealed class WorldServer : NetServer<WorldClient>
+    public sealed partial class WorldServer : NetServer<WorldClient>
     {
         private static readonly string WorldConfigFile = "config/world.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
         private static ISCClient _client;
+        private static IDictionary<int, Map> _maps = new Dictionary<int, Map>();
+
+        /// <summary>
+        /// Gets the World server maps.
+        /// </summary>
+        public static IReadOnlyDictionary<int, Map> Maps => _maps as IReadOnlyDictionary<int, Map>;
 
         /// <summary>
         /// Gets the Inter client.
@@ -52,11 +59,8 @@ namespace Rhisis.World
             if (!DatabaseService.GetContext().DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
-            // TODO: Load resources
-            //ConnectToISC(this.WorldConfiguration);
-
-            _client = new ISCClient(this.WorldConfiguration);
-            _client.Connect();
+            this.LoadResources();
+            ConnectToISC(this.WorldConfiguration);
 
             Logger.Info("Rhisis world server is up");
         }

@@ -39,8 +39,10 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            // 1st: Create the player entity
-            IEntity player = Context.Instance.CreateEntity();
+            var map = WorldServer.Maps[character.MapId];
+
+            // 1st: Create the player entity with the map context
+            IEntity player = map.Context.CreateEntity();
 
             // 2nd: create the components
             var objectComponent = new ObjectComponent
@@ -51,7 +53,8 @@ namespace Rhisis.World.Handlers
                 Position = new Vector3(character.PosX, character.PosY, character.PosZ),
                 Angle = character.Angle,
                 Size = 100,
-                Name = character.Name
+                Name = character.Name,
+                Spawned = false
             };
 
             var humanComponent = new HumanComponent()
@@ -77,6 +80,9 @@ namespace Rhisis.World.Handlers
 
             // 4rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client, player);
+
+            // 5th: player is now spawned
+            objectComponent.Spawned = true;
         }
     }
 }

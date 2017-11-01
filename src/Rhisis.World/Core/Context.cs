@@ -7,15 +7,18 @@ using System.Text;
 
 namespace Rhisis.World.Core
 {
-    public class Context
+    public class Context : IContext
     {
         private static readonly Lazy<Context> lazyInstance = new Lazy<Context>(() => new Context());
 
         public static Context Instance => lazyInstance.Value;
 
-        private readonly ConcurrentDictionary<Guid, IEntity> _entities;
+        public ICollection<IEntity> Entities => throw new NotImplementedException();
 
-        private Context()
+        private readonly ConcurrentDictionary<Guid, IEntity> _entities;
+        private readonly List<ISystem> _systems;
+
+        public Context()
         {
             this._entities = new ConcurrentDictionary<Guid, IEntity>();
         }
@@ -35,19 +38,13 @@ namespace Rhisis.World.Core
             return this._entities.TryRemove(entity.Id, out IEntity value);
         }
 
-        public void AddSystem(ISystem system)
+        public IEntity FindEntity(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteSystem(ISystem system)
-        {
-            throw new NotImplementedException();
-        }
+        public void AddSystem(ISystem system) => this._systems.Add(system);
 
-        public void Start()
-        {
-            throw new NotImplementedException();
-        }
+        public void RemoveSystem(ISystem system) => this._systems.Remove(system);
     }
 }

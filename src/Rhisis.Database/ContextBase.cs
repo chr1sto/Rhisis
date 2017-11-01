@@ -29,6 +29,12 @@ namespace Rhisis.Database
         /// </summary>
         protected DatabaseConfiguration Configuration { get; private set; }
 
+        internal DbSet<User> UsersDbSet { get; set; }
+
+        internal DbSet<Character> CharactersDbSet { get; set; }
+
+        internal DbSet<Item> ItemsDbSet { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/> instance.
         /// </summary>
