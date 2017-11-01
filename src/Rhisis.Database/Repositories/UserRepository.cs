@@ -7,7 +7,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// User repository.
     /// </summary>
-    public sealed class UserRepository : ARepository<User>
+    public sealed class UserRepository : RepositoryBase<User>
     {
         /// <summary>
         /// Creates and initialize an <see cref="UserRepository"/>.

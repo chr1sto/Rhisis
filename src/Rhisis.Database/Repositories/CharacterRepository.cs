@@ -7,7 +7,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// Character repository.
     /// </summary>
-    public sealed class CharacterRepository : ARepository<Character>
+    public sealed class CharacterRepository : RepositoryBase<Character>
     {
         /// <summary>
         /// Creates and initialize the <see cref="CharacterRepository"/>.

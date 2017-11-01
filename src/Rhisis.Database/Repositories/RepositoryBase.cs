@@ -10,7 +10,7 @@ namespace Rhisis.Database.Repositories
     /// Abstract implementation of a repository.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class ARepository<T> : IRepository<T> 
+    public abstract class RepositoryBase<T> : IRepository<T> 
         where T : class, IDatabaseEntity
     {
         private readonly DbContext _context;
@@ -19,7 +19,7 @@ namespace Rhisis.Database.Repositories
         /// Initializes the repository <see cref="DbContext"/>.
         /// </summary>
         /// <param name="context"></param>
-        protected ARepository(DbContext context)
+        protected RepositoryBase(DbContext context)
         {
             this._context = context;
         }

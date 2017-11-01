@@ -7,7 +7,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// Item repository.
     /// </summary>
-    public sealed class ItemRepository : ARepository<Item>
+    public sealed class ItemRepository : RepositoryBase<Item>
     {
         /// <summary>
         /// Creates an initialize an <see cref="ItemRepository"/>.
