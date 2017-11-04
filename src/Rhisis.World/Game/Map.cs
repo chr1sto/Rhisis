@@ -3,6 +3,7 @@ using Rhisis.World.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rhisis.World.Game
@@ -10,9 +11,12 @@ namespace Rhisis.World.Game
     /// <summary>
     /// Defines a map with it's own entities and context.
     /// </summary>
-    public sealed class Map
+    public sealed class Map : IDisposable
     {
-        private readonly Task _updateTask;
+        private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly CancellationToken _cancellationToken;
+
+        private bool _isDisposed;
 
         /// <summary>
         /// Gets the map id.
@@ -27,11 +31,33 @@ namespace Rhisis.World.Game
         public Map()
         {
             this.Context = new Context();
+            this._cancellationTokenSource = new CancellationTokenSource();
+            this._cancellationToken = this._cancellationTokenSource.Token;
         }
 
         public void Start()
         {
-            // TODO: start a new task that will update all systems of the current map context
+            Task.Factory.StartNew(() => this.Update());
+        }
+
+        private async Task Update()
+        {
+            while (true)
+            {
+                if (this._cancellationToken.IsCancellationRequested)
+                    break;
+                
+
+                await Task.Delay(100);
+            }
+        }
+        
+        public void Dispose()
+        {
+            if (this._isDisposed)
+                throw new ObjectDisposedException(nameof(Map));
+
+            this._cancellationTokenSource.Cancel();
         }
 
         public static Map Load(string mapPath)

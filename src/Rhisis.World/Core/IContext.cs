@@ -5,9 +5,11 @@ using System.Collections.Generic;
 
 namespace Rhisis.World.Core
 {
-    public interface IContext
+    public interface IContext : IDisposable
     {
-        ICollection<IEntity> Entities { get; }
+        IReadOnlyCollection<IEntity> Entities { get; }
+
+        IReadOnlyCollection<ISystem> Systems { get; }
 
         IEntity CreateEntity();
 

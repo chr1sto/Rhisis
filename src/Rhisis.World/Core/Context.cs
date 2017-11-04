@@ -7,20 +7,29 @@ using System.Text;
 
 namespace Rhisis.World.Core
 {
-    public class Context : IContext
+    public class Context : IContext, IDisposable
     {
-        private static readonly Lazy<Context> lazyInstance = new Lazy<Context>(() => new Context());
+        private static readonly Lazy<IContext> lazyInstance = new Lazy<IContext>(() => new Context());
 
-        public static Context Instance => lazyInstance.Value;
+        public static IContext Shared => lazyInstance.Value;
 
-        public ICollection<IEntity> Entities => throw new NotImplementedException();
+        private readonly IDictionary<Guid, IEntity> _entities;
+        private readonly IList<ISystem> _systems;
+        private bool _disposedValue;
 
-        private readonly ConcurrentDictionary<Guid, IEntity> _entities;
-        private readonly List<ISystem> _systems;
+        public IReadOnlyCollection<IEntity> Entities => this._entities.Values as IReadOnlyCollection<IEntity>;
+
+        public IReadOnlyCollection<ISystem> Systems => this._systems as IReadOnlyCollection<ISystem>;
 
         public Context()
         {
             this._entities = new ConcurrentDictionary<Guid, IEntity>();
+            this._systems = new List<ISystem>();
+        }
+
+        ~Context()
+        {
+            this.Dispose(false);
         }
 
         public IEntity CreateEntity()
@@ -33,10 +42,7 @@ namespace Rhisis.World.Core
             return null;
         }
 
-        public bool DeleteEntity(IEntity entity)
-        {
-            return this._entities.TryRemove(entity.Id, out IEntity value);
-        }
+        public bool DeleteEntity(IEntity entity) => this._entities.Remove(entity.Id);
 
         public IEntity FindEntity(Guid id)
         {
@@ -46,5 +52,28 @@ namespace Rhisis.World.Core
         public void AddSystem(ISystem system) => this._systems.Add(system);
 
         public void RemoveSystem(ISystem system) => this._systems.Remove(system);
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    foreach (var entity in this.Entities)
+                        entity.Dispose();
+
+                    this._entities.Clear();
+                    this._systems.Clear();
+                }
+
+                _disposedValue = true;
+            }
+        }
+        
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

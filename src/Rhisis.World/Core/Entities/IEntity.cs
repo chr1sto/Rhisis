@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace Rhisis.World.Core.Entities
 {
     /// <summary>
-    /// Defines the entity behavior.
+    /// Defines an entity.
     /// </summary>
-    public interface IEntity
+    public interface IEntity : IDisposable
     {
         /// <summary>
         /// Gets the entity id.

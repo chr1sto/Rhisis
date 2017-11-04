@@ -8,15 +8,15 @@ namespace Rhisis.World.Core.Entities
     /// <summary>
     /// Defines a basic and empty entity.
     /// </summary>
-    public class Entity : IEntity
+    public class Entity : IEntity, IDisposable
     {
-        private readonly Guid _id;
         private readonly ICollection<IComponent> _components;
+        private bool _disposedValue;
 
         /// <summary>
         /// Gets the entity id.
         /// </summary>
-        public Guid Id => this._id;
+        public Guid Id { get; }
 
         /// <summary>
         /// Gets the list of the components attached to this entity.
@@ -28,8 +28,16 @@ namespace Rhisis.World.Core.Entities
         /// </summary>
         public Entity()
         {
-            this._id = Guid.NewGuid();
+            this.Id = Guid.NewGuid();
             this._components = new List<IComponent>();
+        }
+
+        /// <summary>
+        /// Destructs the <see cref="Entity"/>.
+        /// </summary>
+        ~Entity()
+        {
+            this.Dispose(false);
         }
 
         /// <summary>
@@ -72,5 +80,31 @@ namespace Rhisis.World.Core.Entities
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public bool HasComponent<T>() where T : IComponent => this._components.Any(x => x.GetType() == typeof(T));
+
+        /// <summary>
+        /// Disposes the <see cref="Entity"/> resources.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    this._components.Clear();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Disposes the <see cref="Entity"/> resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
