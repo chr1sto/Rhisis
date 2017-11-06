@@ -14,6 +14,16 @@ namespace Rhisis.World.Core.Entities
         private bool _disposedValue;
 
         /// <summary>
+        /// Event fired when a component is attached to this entity.
+        /// </summary>
+        public event EventHandler<IComponent> ComponentAdded;
+
+        /// <summary>
+        /// Event fired when a component is detached from this entity.
+        /// </summary>
+        public event EventHandler<IComponent> ComponentRemoved;
+
+        /// <summary>
         /// Gets the entity id.
         /// </summary>
         public Guid Id { get; }
@@ -59,6 +69,7 @@ namespace Rhisis.World.Core.Entities
                 return default(T);
 
             this._components.Add(component);
+            this.ComponentAdded?.Invoke(this, component);
 
             return component;
         }
@@ -71,7 +82,10 @@ namespace Rhisis.World.Core.Entities
         public void RemoveComponent<T>(T component) where T : IComponent
         {
             if (this.HasComponent<T>())
+            {
                 this._components.Remove(component);
+                this.ComponentRemoved?.Invoke(this, component);
+            }
         }
 
         /// <summary>

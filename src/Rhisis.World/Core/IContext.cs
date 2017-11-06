@@ -20,5 +20,9 @@ namespace Rhisis.World.Core
         void AddSystem(ISystem system);
 
         void RemoveSystem(ISystem system);
+
+        void StartSystemUpdate(int delay);
+
+        void StopSystemUpdate();
     }
 }

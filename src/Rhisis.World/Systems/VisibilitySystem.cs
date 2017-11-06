@@ -6,6 +6,7 @@ using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Core;
 using Rhisis.Core.IO;
+using System.Linq;
 
 namespace Rhisis.World.Systems
 {
@@ -21,7 +22,17 @@ namespace Rhisis.World.Systems
 
         public override void Execute()
         {
-            Logger.Debug("Updating visibility system");
+            foreach (var entity in this.Entities)
+            {
+                var otherEntitiesAround = from x in this.Entities
+                                          where entity.GetComponent<ObjectComponent>().Position.IsInCircle(x.GetComponent<ObjectComponent>().Position, 75f)
+                                          select x;
+
+                foreach (var otherEntity in otherEntitiesAround)
+                {
+
+                }
+            }
         }
     }
 }

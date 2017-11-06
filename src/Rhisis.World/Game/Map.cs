@@ -1,8 +1,5 @@
 ﻿using Rhisis.World.Core;
-using Rhisis.World.Core.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,32 +40,26 @@ namespace Rhisis.World.Game
         /// </summary>
         public void Start()
         {
-            Task.Factory.StartNew(() => this.Update());
-        }
-
-        private async Task Update()
-        {
-            while (true)
-            {
-                if (this._cancellationToken.IsCancellationRequested)
-                    break;
-
-                foreach (var system in this.Context.Systems)
-                    system.Execute();
-                
-                await Task.Delay(50);
-            }
+            Task.Factory.StartNew(() => this.Context.StartSystemUpdate(50));
         }
         
+        /// <summary>
+        /// Dispose the map resources.
+        /// </summary>
         public void Dispose()
         {
             if (this._isDisposed)
                 throw new ObjectDisposedException(nameof(Map));
-
-            this._cancellationTokenSource.Cancel();
+            
+            this.Context.Dispose();
             this._isDisposed = true;
         }
 
+        /// <summary>
+        /// Loads a new map.
+        /// </summary>
+        /// <param name="mapPath">Map path</param>
+        /// <returns>New map</returns>
         public static Map Load(string mapPath)
         {
             // TODO: load map informations
