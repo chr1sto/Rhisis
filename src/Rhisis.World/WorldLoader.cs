@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.World.Game;
+using Rhisis.World.Systems;
 
 namespace Rhisis.World
 {
@@ -29,6 +30,7 @@ namespace Rhisis.World
             Logger.Loading("Loading maps...\t\t");
 
             var map = Map.Load("data/maps/WdMadrigal"); // Load map
+            map.Context.AddSystem(new VisibilitySystem(map.Context));
             map.Start(); // Start map update thread
 
             _maps.Add(1, map); // Add the map to the 

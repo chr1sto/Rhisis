@@ -28,6 +28,9 @@ namespace Rhisis.World.Game
         /// </summary>
         public IContext Context { get; }
 
+        /// <summary>
+        /// Creates and initializes a new <see cref="Map"/> instance.
+        /// </summary>
         public Map()
         {
             this.Context = new Context();
@@ -35,6 +38,9 @@ namespace Rhisis.World.Game
             this._cancellationToken = this._cancellationTokenSource.Token;
         }
 
+        /// <summary>
+        /// Start the map update task.
+        /// </summary>
         public void Start()
         {
             Task.Factory.StartNew(() => this.Update());
@@ -46,9 +52,11 @@ namespace Rhisis.World.Game
             {
                 if (this._cancellationToken.IsCancellationRequested)
                     break;
-                
 
-                await Task.Delay(100);
+                foreach (var system in this.Context.Systems)
+                    system.Execute();
+                
+                await Task.Delay(50);
             }
         }
         
@@ -58,10 +66,17 @@ namespace Rhisis.World.Game
                 throw new ObjectDisposedException(nameof(Map));
 
             this._cancellationTokenSource.Cancel();
+            this._isDisposed = true;
         }
 
         public static Map Load(string mapPath)
         {
+            // TODO: load map informations
+            // TODO: load regions
+            // TODO: load objects
+            // TODO: load heights
+            // TODO: load revival zones
+
             return new Map();
         }
     }
