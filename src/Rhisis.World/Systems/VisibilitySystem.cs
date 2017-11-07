@@ -1,12 +1,11 @@
-﻿using Rhisis.World.Core.Systems;
+﻿using Rhisis.World.Core;
+using Rhisis.World.Core.Components;
+using Rhisis.World.Core.Entities;
+using Rhisis.World.Core.Systems;
+using Rhisis.World.Packets;
 using System;
 using System.Collections.Generic;
-using Rhisis.World.Core.Entities;
-using Rhisis.World.Core.Components;
-using Rhisis.World.Core;
-using Rhisis.Core.IO;
 using System.Linq;
-using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems
 {

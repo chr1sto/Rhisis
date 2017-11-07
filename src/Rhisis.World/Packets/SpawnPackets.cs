@@ -234,7 +234,14 @@ namespace Rhisis.World.Packets
 
         public static void SendDespawn(NetConnection client, IEntity entity)
         {
-            // TODO
+            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
+
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(entityObjectComponent.ObjectId, SnapshotType.DEL_OBJ);
+
+                client.Send(packet);
+            }
         }
     }
 }
