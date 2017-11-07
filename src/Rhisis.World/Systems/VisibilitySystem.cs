@@ -6,6 +6,7 @@ using Rhisis.World.Core.Components;
 using Rhisis.World.Core;
 using Rhisis.Core.IO;
 using System.Linq;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems
 {
@@ -24,6 +25,7 @@ namespace Rhisis.World.Systems
             foreach (var entity in this.Entities)
             {
                 var entityObjectComponent = entity.GetComponent<ObjectComponent>();
+                var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
 
                 IEnumerable<IEntity> otherEntitiesAround = from x in this.Entities
                                                            let otherEntityPosition = x.GetComponent<ObjectComponent>().Position
@@ -38,13 +40,17 @@ namespace Rhisis.World.Systems
                 foreach (IEntity entityOutOfRange in otherEntitiesOut)
                 {
                     entityObjectComponent.Entities.Remove(entityOutOfRange);
-                    // Send despawn packet
+
+                    if (entityPlayerComponent != null)
+                        WorldPacketFactory.SendDespawn(entityPlayerComponent.Connection, entityOutOfRange);
                 }
 
                 foreach (IEntity entityInRange in otherEntitiesAround)
                 {
                     entityObjectComponent.Entities.Add(entity);
-                    // Send spawn packet
+
+                    if (entityPlayerComponent != null)
+                        WorldPacketFactory.SendSpawn(entityPlayerComponent.Connection, entityInRange);
                 }
             }
         }

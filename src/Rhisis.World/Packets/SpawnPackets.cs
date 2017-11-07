@@ -226,5 +226,15 @@ namespace Rhisis.World.Packets
                 client.Send(packet);
             }
         }
+
+        public static void SendSpawn(NetConnection client, IEntity entity)
+        {
+            // TODO
+        }
+
+        public static void SendDespawn(NetConnection client, IEntity entity)
+        {
+            // TODO
+        }
     }
 }
