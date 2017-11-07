@@ -1,7 +1,6 @@
 ﻿using Rhisis.World.Core.Systems;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Core;
@@ -24,13 +23,28 @@ namespace Rhisis.World.Systems
         {
             foreach (var entity in this.Entities)
             {
-                var otherEntitiesAround = from x in this.Entities
-                                          where entity.GetComponent<ObjectComponent>().Position.IsInCircle(x.GetComponent<ObjectComponent>().Position, 75f)
-                                          select x;
+                var entityObjectComponent = entity.GetComponent<ObjectComponent>();
 
-                foreach (var otherEntity in otherEntitiesAround)
+                IEnumerable<IEntity> otherEntitiesAround = from x in this.Entities
+                                                           let otherEntityPosition = x.GetComponent<ObjectComponent>().Position
+                                                           where entityObjectComponent.Position.IsInCircle(otherEntityPosition, 75f) &&
+                                                                 !entityObjectComponent.Entities.Contains(x)
+                                                           select x;
+
+                IEnumerable<IEntity> otherEntitiesOut = from x in entityObjectComponent.Entities
+                                                        where !otherEntitiesAround.Contains(x)
+                                                        select x;
+
+                foreach (IEntity entityOutOfRange in otherEntitiesOut)
                 {
+                    entityObjectComponent.Entities.Remove(entityOutOfRange);
+                    // Send despawn packet
+                }
 
+                foreach (IEntity entityInRange in otherEntitiesAround)
+                {
+                    entityObjectComponent.Entities.Add(entity);
+                    // Send spawn packet
                 }
             }
         }
