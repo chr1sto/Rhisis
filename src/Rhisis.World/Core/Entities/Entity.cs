@@ -106,6 +106,7 @@ namespace Rhisis.World.Core.Entities
                 if (disposing)
                 {
                     this._components.Clear();
+                    this.ComponentRemoved?.Invoke(this, null);
                 }
 
                 _disposedValue = true;

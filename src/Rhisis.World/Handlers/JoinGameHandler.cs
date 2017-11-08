@@ -42,7 +42,7 @@ namespace Rhisis.World.Handlers
             var map = WorldServer.Maps[character.MapId];
 
             // 1st: Create the player entity with the map context
-            IEntity player = map.Context.CreateEntity();
+            client.Player = map.Context.CreateEntity();
 
             // 2nd: create the components
             var objectComponent = new ObjectComponent
@@ -74,12 +74,12 @@ namespace Rhisis.World.Handlers
             };
 
             // 3rd: attach the component to the entity
-            player.AddComponent(objectComponent);
-            player.AddComponent(humanComponent);
-            player.AddComponent(playerComponent);
+            client.Player.AddComponent(objectComponent);
+            client.Player.AddComponent(humanComponent);
+            client.Player.AddComponent(playerComponent);
 
             // 4rd: spawn the player
-            WorldPacketFactory.SendPlayerSpawn(client, player);
+            WorldPacketFactory.SendPlayerSpawn(client, client.Player);
 
             // 5th: player is now spawned
             objectComponent.Spawned = true;

@@ -26,32 +26,45 @@ namespace Rhisis.World.Systems
                 var entityObjectComponent = entity.GetComponent<ObjectComponent>();
                 var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
 
+                if (entityObjectComponent == null)
+                    continue;
+
                 IEnumerable<IEntity> otherEntitiesAround = from x in this.Entities
-                                                           let otherEntityPosition = x.GetComponent<ObjectComponent>().Position
-                                                           where entityObjectComponent.Position.IsInCircle(otherEntityPosition, 75f) &&
-                                                                 !entityObjectComponent.Entities.Contains(x)
+                                                           where CanSee(entity, x)
                                                            select x;
 
                 IEnumerable<IEntity> otherEntitiesOut = from x in entityObjectComponent.Entities
                                                         where !otherEntitiesAround.Contains(x)
                                                         select x;
 
-                foreach (IEntity entityOutOfRange in otherEntitiesOut)
+                for (int i = otherEntitiesOut.Count(); i > 0; i--)
                 {
-                    entityObjectComponent.Entities.Remove(entityOutOfRange);
-
                     if (entityPlayerComponent != null)
-                        WorldPacketFactory.SendDespawn(entityPlayerComponent.Connection, entityOutOfRange);
+                        WorldPacketFactory.SendDespawn(entityPlayerComponent.Connection, otherEntitiesOut.ElementAt(0));
+
+                    entityObjectComponent.Entities.RemoveAt(0);
                 }
 
                 foreach (IEntity entityInRange in otherEntitiesAround)
                 {
-                    entityObjectComponent.Entities.Add(entity);
+                    if (!entityObjectComponent.Entities.Contains(entityInRange))
+                    {
+                        entityObjectComponent.Entities.Add(entityInRange);
 
-                    if (entityPlayerComponent != null)
-                        WorldPacketFactory.SendSpawn(entityPlayerComponent.Connection, entityInRange);
+                        if (entityPlayerComponent != null)
+                            WorldPacketFactory.SendSpawn(entityPlayerComponent.Connection, entityInRange);
+                    }
                 }
             }
+        }
+
+        private bool CanSee(IEntity entity, IEntity otherEntity)
+        {
+            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
+            var otherEntityObjectComponent = otherEntity.GetComponent<ObjectComponent>();
+
+            return entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, 75f)
+                && entityObjectComponent.ObjectId != otherEntityObjectComponent.ObjectId;
         }
     }
 }

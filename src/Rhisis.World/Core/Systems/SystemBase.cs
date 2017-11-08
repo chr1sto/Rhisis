@@ -16,6 +16,7 @@ namespace Rhisis.World.Core.Systems
         protected SystemBase(IContext context)
         {
             this.Context = context;
+            this.Entities = new List<IEntity>();
         }
 
         public abstract void Execute();

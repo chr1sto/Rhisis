@@ -229,7 +229,108 @@ namespace Rhisis.World.Packets
 
         public static void SendSpawn(NetConnection client, IEntity entity)
         {
-            // TODO
+            using (var packet = new FFPacket())
+            {
+                var otherObjectComponent = entity.GetComponent<ObjectComponent>();
+                var otherHumanComponent = entity.GetComponent<HumanComponent>();
+                var otherPlayerComponent = entity.GetComponent<PlayerComponent>();
+
+                packet.StartNewMergedPacket(otherObjectComponent.ObjectId, SnapshotType.ADD_OBJ);
+
+                packet.Write((byte)otherObjectComponent.Type);
+                packet.Write(otherObjectComponent.ModelId);
+                packet.Write((byte)otherObjectComponent.Type);
+                packet.Write(otherObjectComponent.ModelId);
+                packet.Write(otherObjectComponent.Size);
+                packet.Write(otherObjectComponent.Position.X);
+                packet.Write(otherObjectComponent.Position.Y);
+                packet.Write(otherObjectComponent.Position.Z);
+                packet.Write((short)(otherObjectComponent.Angle * 10f));
+                packet.Write(otherObjectComponent.ObjectId);
+
+                packet.Write<short>(0);
+                packet.Write<byte>(1); // is player?
+                packet.Write(230); // HP
+                packet.Write((int)0); // moving flags
+                packet.Write((int)0); // motion flags
+                packet.Write<byte>(0);
+                packet.Write(-1); // baby buffer
+
+                packet.Write(otherObjectComponent.Name);
+                packet.Write(otherHumanComponent.Gender);
+                packet.Write((byte)otherHumanComponent.SkinSetId);
+                packet.Write((byte)otherHumanComponent.HairId);
+                packet.Write((int)otherHumanComponent.HairColor);
+                packet.Write((byte)otherHumanComponent.FaceId);
+                packet.Write(otherPlayerComponent.Id);
+                packet.Write((byte)1);
+                packet.Write((short)0); // STR
+                packet.Write((short)0); // STA
+                packet.Write((short)0); // DEX
+                packet.Write((short)0); // INT
+                packet.Write((short)1); // Level
+
+                packet.Write(-1);
+                packet.Write(0);
+
+                packet.Write<byte>(0); // has guild
+                packet.Write(0); // guild cloak
+
+                packet.Write<byte>(0); // has party
+
+                packet.Write((byte)100); // Authority
+                packet.Write(0); // mode
+                packet.Write(0); // state mode
+                packet.Write(0x000001F6); // item used ??
+                packet.Write(0); // last pk time.
+                packet.Write(0); // karma
+                packet.Write(0); // pk propensity
+                packet.Write(0); // pk exp
+                packet.Write(0); // fame
+                packet.Write<byte>(0); // duel
+                packet.Write(-1); // titles
+
+                for (int i = 0; i < 31; ++i)
+                    packet.Write(0);
+                //for (int i = Inventory.EquipOffset; i < Inventory.MaxItems; ++i)
+                //{
+                //    var item = this.Inventory.GetItemBySlot(i);
+
+                //    if (item == null || item.Id < 0)
+                //        packet.Write(0);
+                //    else
+                //    {
+                //        packet.Write(item.Refine); // Refine
+                //        packet.Write<byte>(0);
+                //        packet.Write(item.Element); // Element (fire, water, elec, ect...)
+                //        packet.Write(item.ElementRefine); // Element refine
+                //    }
+                //}
+
+                for (int i = 0; i < 28; i++)
+                    packet.Write(0);
+
+                packet.Write((byte)0);
+
+                //IEnumerable<Item> equipedItems = this.Inventory.GetEquipedItems();
+
+                //packet.Write((byte)equipedItems.Count(x => x.Id != -1));
+
+                //foreach (var item in equipedItems)
+                //{
+                //    if (item != null && item.Id > 0)
+                //    {
+                //        packet.Write((byte)(item.Slot - Inventory.EquipOffset));
+                //        packet.Write((short)item.Id);
+                //        packet.Write<byte>(0);
+                //    }
+                //}
+
+                packet.Write(-1); // pet ?
+                packet.Write(0); // buffs ?
+
+                client.Send(packet);
+            }
         }
 
         public static void SendDespawn(NetConnection client, IEntity entity)

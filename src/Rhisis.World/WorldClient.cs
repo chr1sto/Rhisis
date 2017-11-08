@@ -6,12 +6,20 @@ using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using System.Collections.Generic;
 using Rhisis.Core.Exceptions;
+using Rhisis.World.Core.Entities;
+using Rhisis.World.Core.Components;
+using Rhisis.World.Game;
 
 namespace Rhisis.World
 {
     public sealed class WorldClient : NetConnection
     {
         private readonly uint _sessionId;
+        
+        /// <summary>
+        /// Gets or sets the player entity.
+        /// </summary>
+        public IEntity Player { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="WorldClient"/> instance.
@@ -63,6 +71,16 @@ namespace Rhisis.World
                 Logger.Debug(packetException.InnerException?.StackTrace);
 #endif
             }
+        }
+
+        public override void Dispose()
+        {
+            var entityObjectComponent = this.Player?.GetComponent<ObjectComponent>();
+
+            if (WorldServer.Maps.TryGetValue(entityObjectComponent.MapId, out Map currentMap))
+                currentMap.Context.DeleteEntity(this.Player);
+
+            base.Dispose();
         }
     }
 }

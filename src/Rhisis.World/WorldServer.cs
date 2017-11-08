@@ -1,16 +1,14 @@
 ﻿using Ether.Network;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Ether.Network.Packets;
-using Rhisis.Core.Network;
-using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
-using Rhisis.World.ISC;
+using Rhisis.Core.Network;
+using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
 using Rhisis.World.Game;
+using Rhisis.World.ISC;
+using System.Collections.Generic;
 
 namespace Rhisis.World
 {
@@ -71,8 +69,9 @@ namespace Rhisis.World
         /// <param name="connection"></param>
         protected override void OnClientConnected(WorldClient connection)
         {
-            Logger.Info("New client connected: {0}", connection.Id);
             connection.InitializeClient();
+
+            Logger.Info("New client connected: {0}", connection.Id);
         }
 
         /// <summary>
@@ -81,6 +80,8 @@ namespace Rhisis.World
         /// <param name="connection"></param>
         protected override void OnClientDisconnected(WorldClient connection)
         {
+            connection.Dispose();
+
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
 

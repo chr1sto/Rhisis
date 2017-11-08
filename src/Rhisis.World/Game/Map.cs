@@ -40,7 +40,7 @@ namespace Rhisis.World.Game
         /// </summary>
         public void Start()
         {
-            Task.Factory.StartNew(() => this.Context.StartSystemUpdate(50));
+            this.Context.StartSystemUpdate(50);
         }
         
         /// <summary>

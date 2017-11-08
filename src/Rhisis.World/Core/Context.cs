@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Core.Entities;
+﻿using Rhisis.Core.IO;
+using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
 using System;
 using System.Collections.Concurrent;
@@ -67,7 +68,14 @@ namespace Rhisis.World.Core
             return null;
         }
 
-        public bool DeleteEntity(IEntity entity) => this._entities.Remove(entity.Id);
+        public bool DeleteEntity(IEntity entity)
+        {
+            bool removed = this._entities.Remove(entity.Id);
+
+            this.RefreshSystems();
+
+            return removed;
+        }
 
         public IEntity FindEntity(Guid id)
         {
@@ -89,8 +97,16 @@ namespace Rhisis.World.Core
 
                     lock (_syncSystemLock)
                     {
-                        foreach (var system in this._systems)
-                            system.Execute();
+                        try
+                        {
+                            foreach (var system in this._systems)
+                                system.Execute();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error("An error occured while updating a system: {0}", e.Message);
+                            Logger.Debug("Stack Trace : {0}", e.StackTrace);
+                        }
                     }
 
                     await Task.Delay(50);
