@@ -22,6 +22,8 @@ namespace Rhisis.World
         {
             Logger.Loading("Loading systems...");
 
+            // TODO: Load systems using reflection
+
             Logger.Info("Systems loaded! \t\t");
         }
 
@@ -31,6 +33,7 @@ namespace Rhisis.World
 
             var map = Map.Load("data/maps/WdMadrigal"); // Load map
             map.Context.AddSystem(new VisibilitySystem(map.Context));
+            map.Context.AddSystem(new MobilitySystem(map.Context));
             map.Start(); // Start map update thread
 
             _maps.Add(1, map); // Add the map to the 

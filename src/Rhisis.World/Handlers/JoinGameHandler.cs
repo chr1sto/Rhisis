@@ -6,11 +6,8 @@ using Rhisis.Core.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Structures;
-using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
-using Rhisis.World.Core.Entities;
 using Rhisis.World.Packets;
-using System;
 
 namespace Rhisis.World.Handlers
 {
@@ -73,10 +70,13 @@ namespace Rhisis.World.Handlers
                 Connection = client
             };
 
+            var movableComponent = new MovableComponent();
+
             // 3rd: attach the component to the entity
             client.Player.AddComponent(objectComponent);
             client.Player.AddComponent(humanComponent);
             client.Player.AddComponent(playerComponent);
+            client.Player.AddComponent(movableComponent);
 
             // 4rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client, client.Player);

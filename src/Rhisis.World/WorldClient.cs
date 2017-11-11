@@ -73,6 +73,9 @@ namespace Rhisis.World
             }
         }
 
+        /// <summary>
+        /// Disposes the <see cref="WorldClient"/> resources.
+        /// </summary>
         public override void Dispose()
         {
             var entityObjectComponent = this.Player?.GetComponent<ObjectComponent>();
