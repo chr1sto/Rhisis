@@ -4,6 +4,7 @@ using Rhisis.World.Core.Systems;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -106,6 +107,19 @@ namespace Rhisis.World.Core
         public void RemoveSystem(ISystem system) => this._systems.Remove(system);
 
         /// <summary>
+        /// Notifies and executes a system for the entity passed as parameter aslong with the event args.
+        /// </summary>
+        /// <typeparam name="T">System type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="e">Arguments parameter</param>
+        public void NotifySystem<T>(IEntity entity, EventArgs e) where T : IReactiveSystem
+        {
+            var system = this._systems.FirstOrDefault(x => x.GetType() == typeof(T)) as IReactiveSystem;
+
+            system?.Execute(entity, e);
+        }
+
+        /// <summary>
         /// Update the systems of this context.
         /// </summary>
         /// <param name="delay"></param>
@@ -123,7 +137,10 @@ namespace Rhisis.World.Core
                         try
                         {
                             foreach (var system in this._systems)
-                                system.Execute();
+                            {
+                                if (system is IUpdateSystem updateSystem)
+                                    updateSystem.Execute();
+                            }
                         }
                         catch (Exception e)
                         {
@@ -153,7 +170,10 @@ namespace Rhisis.World.Core
             lock (_syncSystemLock)
             {
                 foreach (var system in this._systems)
-                    system.Refresh();
+                {
+                    if (system is IUpdateSystem updateSystem)
+                        updateSystem.Refresh();
+                }
             }
         }
 

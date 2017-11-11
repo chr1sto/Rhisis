@@ -7,7 +7,7 @@ using System;
 namespace Rhisis.World.Systems
 {
     [System]
-    public class MobilitySystem : SystemBase
+    public class MobilitySystem : UpdateSystemBase
     {
         public override Func<IEntity, bool> Filter => x => x.HasComponent<ObjectComponent>() && x.HasComponent<MovableComponent>();
 

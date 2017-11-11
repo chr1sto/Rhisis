@@ -9,6 +9,9 @@ namespace Rhisis.World.Handlers
         [PacketHandler(PacketType.CHAT)]
         public static void OnChat(WorldClient client, NetPacketBase packet)
         {
+            var message = packet.Read<string>();
+
+
         }
     }
 }

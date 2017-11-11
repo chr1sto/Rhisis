@@ -10,7 +10,7 @@ using System.Linq;
 namespace Rhisis.World.Systems
 {
     [System]
-    public class VisibilitySystem : SystemBase
+    public class VisibilitySystem : UpdateSystemBase
     {
         public override Func<IEntity, bool> Filter => x => x.HasComponent<ObjectComponent>();
 

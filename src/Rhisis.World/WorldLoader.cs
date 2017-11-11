@@ -34,6 +34,7 @@ namespace Rhisis.World
             var map = Map.Load("data/maps/WdMadrigal"); // Load map
             map.Context.AddSystem(new VisibilitySystem(map.Context));
             map.Context.AddSystem(new MobilitySystem(map.Context));
+            map.Context.AddSystem(new ChatSystem(map.Context));
             map.Start(); // Start map update thread
 
             _maps.Add(1, map); // Add the map to the 

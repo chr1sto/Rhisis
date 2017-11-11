@@ -21,6 +21,8 @@ namespace Rhisis.World.Core
 
         void RemoveSystem(ISystem system);
 
+        void NotifySystem<T>(IEntity entity, EventArgs e) where T : IReactiveSystem;
+
         void StartSystemUpdate(int delay);
 
         void StopSystemUpdate();

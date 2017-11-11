@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Rhisis.World.Core.Systems
 {
-    public abstract class SystemBase : ISystem
+    public abstract class UpdateSystemBase : IUpdateSystem
     {
         public virtual Func<IEntity, bool> Filter => x => true;
 
@@ -13,7 +13,7 @@ namespace Rhisis.World.Core.Systems
 
         protected IEnumerable<IEntity> Entities { get; private set; }
 
-        protected SystemBase(IContext context)
+        protected UpdateSystemBase(IContext context)
         {
             this.Context = context;
             this.Entities = new List<IEntity>();
