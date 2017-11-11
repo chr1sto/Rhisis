@@ -7,7 +7,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/500148ec8bdd4f2e954f11c682c39f3c)](https://www.codacy.com/app/Eastrall/Rhisis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Rhisis&amp;utm_campaign=Badge_Grade)
 [![discord](https://discordapp.com/api/guilds/294405146300121088/widget.png)](https://discord.gg/zAT6Az2)
 
-Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 1.0.
+Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 2.0.
 
 This project has been created for learning purposes about the network and game logic problematics on the server-side. Also, this is a rework of the Hellion emulator.
 
@@ -16,7 +16,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 ## Details
 
 - Language: `C#` 7
-- Framework: `.NET Core 2.0.0`
+- Framework: `.NET Core 2.0`
 - Application type: `Console`
 - Database type: `MsSQL Express` or `MySQL`
 - Configuration files type: `JSON`
@@ -52,5 +52,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 ### World
 - Inter-Server authentication (ISC)
 - Connect to the world
+- Visibility System
+- Mobility System
 
 [ethernetwork]: https://github.com/Eastrall/Ether.Network
