@@ -20,7 +20,7 @@ namespace Rhisis.World.Systems
         {
             foreach (var entity in this.Entities)
             {
-
+                // TODO: Update entity real position
             }
         }
     }

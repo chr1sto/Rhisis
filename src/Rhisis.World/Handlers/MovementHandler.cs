@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Exceptions;
 using Rhisis.Core.Structures;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Packets;
@@ -17,7 +18,7 @@ namespace Rhisis.World.Handlers
             var forward = packet.Read<byte>();
 
             if (movableComponent == null)
-                throw new NullReferenceException($"The player doesn't have any {nameof(MovableComponent)} attached.");
+                throw new RhisisException($"The player doesn't have any {nameof(MovableComponent)} attached.");
 
             movableComponent.DestinationPosition = new Vector3(posX, posY, posZ);
 

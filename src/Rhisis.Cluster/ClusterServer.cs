@@ -58,8 +58,7 @@ namespace Rhisis.Cluster
             if (!DatabaseService.GetContext().DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
-            _client = new ISCClient(this.ClusterConfiguration);
-            _client.Connect();
+            ConnectToISC(this.ClusterConfiguration);
 
             Logger.Info("Rhisis cluster server is up");
         }
@@ -82,15 +81,6 @@ namespace Rhisis.Cluster
         {
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
-
-        /// <summary>
-        /// Fired when an error occurs.
-        /// </summary>
-        /// <param name="exception"></param>
-        //protected override void OnError(Exception exception)
-        //{
-        //    // TODO: handle
-        //}
 
         /// <summary>
         /// Split the incoming network data into flyff packets.
@@ -122,5 +112,15 @@ namespace Rhisis.Cluster
         /// <param name="id">World Server id</param>
         /// <returns></returns>
         public static WorldServerInfo GetWorldServerById(int id) => Worlds.FirstOrDefault(x => x.Id == id);
+
+        /// <summary>
+        /// Connects to the ISC.
+        /// </summary>
+        /// <param name="configuration"></param>
+        private static void ConnectToISC(ClusterConfiguration configuration)
+        {
+            _client = new ISCClient(configuration);
+            _client.Connect();
+        }
     }
 }

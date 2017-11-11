@@ -47,11 +47,6 @@ namespace Rhisis.Login.ISC
             }
         }
 
-        //protected override void OnError(Exception exception)
-        //{
-        //    Logger.Error(exception.Message);
-        //}
-
         internal bool HasClusterWithId(int id)
         {
             return this.Clients.Any(x => x.ServerInfo is ClusterServerInfo && x.ServerInfo.Id == id);

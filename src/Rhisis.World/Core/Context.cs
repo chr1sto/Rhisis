@@ -109,7 +109,7 @@ namespace Rhisis.World.Core
                         }
                     }
 
-                    await Task.Delay(50);
+                    await Task.Delay(50).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }

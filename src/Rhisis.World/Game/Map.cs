@@ -10,9 +10,6 @@ namespace Rhisis.World.Game
     /// </summary>
     public sealed class Map : IDisposable
     {
-        private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly CancellationToken _cancellationToken;
-
         private bool _isDisposed;
 
         /// <summary>
@@ -31,8 +28,6 @@ namespace Rhisis.World.Game
         public Map()
         {
             this.Context = new Context();
-            this._cancellationTokenSource = new CancellationTokenSource();
-            this._cancellationToken = this._cancellationTokenSource.Token;
         }
 
         /// <summary>
@@ -48,11 +43,11 @@ namespace Rhisis.World.Game
         /// </summary>
         public void Dispose()
         {
-            if (this._isDisposed)
-                throw new ObjectDisposedException(nameof(Map));
-            
-            this.Context.Dispose();
-            this._isDisposed = true;
+            if (!this._isDisposed)
+            {
+                this.Context.Dispose();
+                this._isDisposed = true;
+            }
         }
 
         /// <summary>

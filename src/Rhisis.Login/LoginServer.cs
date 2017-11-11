@@ -45,7 +45,6 @@ namespace Rhisis.Login
             Task.Run(() =>
             {
                 this._interServer = new ISCServer(this.LoginConfiguration.ISC);
-
                 this._interServer.Start();
             });
 
@@ -62,11 +61,6 @@ namespace Rhisis.Login
         {
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
-
-        //protected override void OnError(Exception exception)
-        //{
-        //    // TODO: handle
-        //}
 
         protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
         {
