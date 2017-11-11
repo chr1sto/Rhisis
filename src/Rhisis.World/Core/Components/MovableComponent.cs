@@ -6,6 +6,8 @@ namespace Rhisis.World.Core.Components
     {
         public Vector3 DestinationPosition { get; set; }
 
+        public float Speed { get; set; }
+
         public MovableComponent()
         {
             this.DestinationPosition = new Vector3();

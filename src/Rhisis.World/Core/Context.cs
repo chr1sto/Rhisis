@@ -55,9 +55,13 @@ namespace Rhisis.World.Core
             this.Dispose(false);
         }
 
+        /// <summary>
+        /// Creates a new entity in the current context.
+        /// </summary>
+        /// <returns>Entity</returns>
         public IEntity CreateEntity()
         {
-            var entity = new Entity();
+            var entity = new Entity(this);
 
             entity.ComponentAdded += (sender, e) => this.RefreshSystems();
             entity.ComponentRemoved += (sender, e) => this.RefreshSystems();
@@ -68,6 +72,11 @@ namespace Rhisis.World.Core
             return null;
         }
 
+        /// <summary>
+        /// Deletes the entity from this context.
+        /// </summary>
+        /// <param name="entity">Entity to delete</param>
+        /// <returns></returns>
         public bool DeleteEntity(IEntity entity)
         {
             bool removed = this._entities.Remove(entity.Id);
@@ -77,15 +86,29 @@ namespace Rhisis.World.Core
             return removed;
         }
 
-        public IEntity FindEntity(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Find an entity by his id.
+        /// </summary>
+        /// <param name="id">Entity id.</param>
+        /// <returns>The entity</returns>
+        public IEntity FindEntity(Guid id) => this._entities.TryGetValue(id, out IEntity entity) ? entity : null;
 
+        /// <summary>
+        /// Add a new system to the context.
+        /// </summary>
+        /// <param name="system"></param>
         public void AddSystem(ISystem system) => this._systems.Add(system);
 
+        /// <summary>
+        /// Removes a system from the context.
+        /// </summary>
+        /// <param name="system"></param>
         public void RemoveSystem(ISystem system) => this._systems.Remove(system);
 
+        /// <summary>
+        /// Update the systems of this context.
+        /// </summary>
+        /// <param name="delay"></param>
         public void StartSystemUpdate(int delay)
         {
             Task.Factory.StartNew(async () =>
@@ -114,11 +137,17 @@ namespace Rhisis.World.Core
             }, this._cancellationToken);
         }
 
+        /// <summary>
+        /// Stop the system update process within this context.
+        /// </summary>
         public void StopSystemUpdate()
         {
             this._cancellationTokenSource.Cancel();
         }
 
+        /// <summary>
+        /// Refresh the systems.
+        /// </summary>
         private void RefreshSystems()
         {
             lock (_syncSystemLock)
@@ -128,6 +157,10 @@ namespace Rhisis.World.Core
             }
         }
 
+        /// <summary>
+        /// Dispose the resources of this context.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -147,6 +180,9 @@ namespace Rhisis.World.Core
             }
         }
         
+        /// <summary>
+        /// Dispose the resources of this context.
+        /// </summary>
         public void Dispose()
         {
             this.Dispose(true);

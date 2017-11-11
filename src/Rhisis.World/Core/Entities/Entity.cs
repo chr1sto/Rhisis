@@ -29,6 +29,11 @@ namespace Rhisis.World.Core.Entities
         public Guid Id { get; }
 
         /// <summary>
+        /// Gets the current entity context.
+        /// </summary>
+        public IContext Context { get; }
+
+        /// <summary>
         /// Gets the list of the components attached to this entity.
         /// </summary>
         public IReadOnlyCollection<IComponent> Components => this._components as IReadOnlyCollection<IComponent>;
@@ -36,9 +41,11 @@ namespace Rhisis.World.Core.Entities
         /// <summary>
         /// Creates a new <see cref="Entity"/> instance.
         /// </summary>
-        public Entity()
+        /// <param name="context">Current context of the entity</param>
+        internal Entity(IContext context)
         {
             this.Id = Guid.NewGuid();
+            this.Context = context;
             this._components = new List<IComponent>();
         }
 

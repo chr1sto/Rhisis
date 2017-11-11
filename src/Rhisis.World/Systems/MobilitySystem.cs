@@ -20,8 +20,18 @@ namespace Rhisis.World.Systems
         {
             foreach (var entity in this.Entities)
             {
-                // TODO: Update entity real position
+                var movableComponent = entity.GetComponent<MovableComponent>();
+
+                if (movableComponent.DestinationPosition.IsZero())
+                    continue;
+
+                this.Walk(entity);
             }
+        }
+
+        private void Walk(IEntity entity)
+        {
+            // TODO
         }
     }
 }

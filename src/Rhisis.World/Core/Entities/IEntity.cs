@@ -15,6 +15,11 @@ namespace Rhisis.World.Core.Entities
         Guid Id { get; }
 
         /// <summary>
+        /// Gets the entity current context.
+        /// </summary>
+        IContext Context { get; }
+
+        /// <summary>
         /// Gets the list of the components attached to this entity.
         /// </summary>
         IReadOnlyCollection<IComponent> Components { get; }
