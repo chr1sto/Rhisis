@@ -54,5 +54,6 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Connect to the world
 - Visibility System
 - Mobility System
+- Chat System
 
 [ethernetwork]: https://github.com/Eastrall/Ether.Network
