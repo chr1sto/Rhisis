@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
+using Rhisis.Core.Structures;
 using Rhisis.World.Game;
 using Rhisis.World.Systems;
 using System.Collections.Generic;
@@ -14,14 +15,22 @@ namespace Rhisis.World
         private static readonly string ResourcePath = Path.Combine(DataPath, "res");
         private static readonly IDictionary<string, int> _defines = new Dictionary<string, int>();
         private static readonly IDictionary<string, string> _texts = new Dictionary<string, string>();
+        private static readonly IDictionary<int, MoverData> _movers = new Dictionary<int, MoverData>();
 
+        /// <summary>
+        /// Gets the Movers data.
+        /// </summary>
+        public static IReadOnlyDictionary<int, MoverData> Movers => _movers as IReadOnlyDictionary<int, MoverData>;
+        
+        /// <summary>
+        /// Loads the server's resources.
+        /// </summary>
         private void LoadResources()
         {
             Logger.Info("Loading resources...");
             Profiler.Start("LoadResources");
 
-            this.LoadDefines();
-            this.LoadTexts();
+            this.LoadDefinesAndTexts();
             this.LoadMovers();
             this.LoadSystems();
             this.LoadMaps();
@@ -31,11 +40,15 @@ namespace Rhisis.World
             Logger.Info("Resources loaded in {0}ms", time.ElapsedMilliseconds);
         }
 
-        private void LoadDefines()
+        private void LoadDefinesAndTexts()
         {
             var headerFiles = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
                               where DefineFile.Extensions.Contains(Path.GetExtension(x))
                               select x;
+
+            var textFiles = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
+                            where TextFile.Extensions.Contains(Path.GetExtension(x)) && x.EndsWith(".txt.txt")
+                            select x;
 
             foreach (var headerFile in headerFiles)
             {
@@ -48,14 +61,7 @@ namespace Rhisis.World
                     }
                 }
             }
-        }
-
-        private void LoadTexts()
-        {
-            var textFiles = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
-                            where TextFile.Extensions.Contains(Path.GetExtension(x)) && x.EndsWith(".txt.txt")
-                            select x;
-
+            
             foreach (var textFilePath in textFiles)
             {
                 using (var textFile = new TextFile(textFilePath))
@@ -85,11 +91,17 @@ namespace Rhisis.World
 
                 while (propMoverFile.Read())
                 {
-                    // TODO: Add movers
+                    var mover = new MoverData(propMoverFile);
+
+                    if (_movers.ContainsKey(mover.Id))
+                        _movers[mover.Id] = mover;
+                    else
+                        _movers.Add(mover.Id, mover);
+
                     Logger.Loading("Loading {0}/{1} movers...", propMoverFile.ReadingIndex, propMoverFile.Count());
                 }
             }
-            Logger.Info("{0} movers loaded!\t\t", 0);
+            Logger.Info("{0} movers loaded!\t\t", _movers.Count);
         }
 
         private void LoadSystems()

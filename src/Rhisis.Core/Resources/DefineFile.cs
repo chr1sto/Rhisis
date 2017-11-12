@@ -89,7 +89,11 @@ namespace Rhisis.Core.Resources
 
             try
             {
-                if (defineValue.StartsWith(DwordCast))
+                if (this._defines.ContainsKey(defineValue))
+                {
+                    newDefineValue = this._defines[defineValue];
+                }
+                else if (defineValue.StartsWith(DwordCast))
                 {
                     newDefineValue = Convert.ToUInt32(defineValue.Replace(DwordCast, string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }

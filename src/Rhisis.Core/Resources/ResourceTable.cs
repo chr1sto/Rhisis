@@ -71,46 +71,44 @@ namespace Rhisis.Core.Resources
         /// </summary>
         public void Parse()
         {
-            using (var reader = new StreamReader(this))
+            var reader = new StreamReader(this);
+            while (!reader.EndOfStream)
             {
-                while (!reader.EndOfStream)
+                string line = reader.ReadLine().Trim();
+
+                // Remove comments from line
+                if (line.StartsWith("//"))
+                    continue;
+                if (line.StartsWith("/*"))
                 {
-                    string line = reader.ReadLine().Trim();
+                    while (line.Contains("*/") == false)
+                        line = reader.ReadLine();
+                    continue;
+                }
+                if (line.Contains("//"))
+                    line = line.Remove(line.IndexOf("/"));
 
-                    // Remove comments from line
-                    if (line.StartsWith("//"))
-                        continue;
-                    if (line.StartsWith("/*"))
+                line = line.Replace(",,", ",=,").Replace(",", "\t");
+                string[] lineData = line.Split(new char[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (lineData.Length == this._headers.Count)
+                {
+                    var data = new ResourceTableData();
+
+                    for (int i = 0; i < lineData.Length; ++i)
                     {
-                        while (line.Contains("*/") == false)
-                            line = reader.ReadLine();
-                        continue;
+                        string dataValue = lineData[i].Trim();
+
+                        if (this._defines.ContainsKey(dataValue))
+                            dataValue = this._defines[dataValue].ToString();
+                        else if (this._texts.ContainsKey(dataValue))
+                            dataValue = this._texts[dataValue];
+
+                        dataValue = dataValue.Replace("=", "0").Replace(",", ".").Replace("\"", "");
+                        data[this._headers[i]] = dataValue;
                     }
-                    if (line.Contains("//"))
-                        line = line.Remove(line.IndexOf("/"));
 
-                    line = line.Replace(",,", ",=,").Replace(",", "\t");
-                    string[] lineData = line.Split(new char[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (lineData.Length == this._headers.Count)
-                    {
-                        var data = new ResourceTableData();
-
-                        for (int i = 0; i < lineData.Length; ++i)
-                        {
-                            string dataValue = lineData[i].Trim();
-
-                            if (this._defines.ContainsKey(dataValue))
-                                dataValue = this._defines[dataValue].ToString();
-                            else if (this._texts.ContainsKey(dataValue))
-                                dataValue = this._texts[dataValue];
-
-                            dataValue = dataValue.Replace("=", "0").Replace(",", ".").Replace("\"", "");
-                            data[this._headers[i]] = dataValue;
-                        }
-
-                        this._tableData.Add(data);
-                    }
+                    this._tableData.Add(data);
                 }
             }
         }
