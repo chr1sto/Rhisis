@@ -22,6 +22,7 @@ namespace Rhisis.World
 
             this.LoadDefines();
             this.LoadTexts();
+            this.LoadMovers();
             this.LoadSystems();
             this.LoadMaps();
             this.CleanUp();
@@ -68,6 +69,27 @@ namespace Rhisis.World
                     }
                 }
             }
+        }
+
+        private void LoadMovers()
+        {
+            string propMoverPath = Path.Combine(ResourcePath, "data", "propMover.txt");
+
+            Logger.Loading("Loading movers...");
+            using (var propMoverFile = new ResourceTable(propMoverPath))
+            {
+                propMoverFile.AddDefines(_defines);
+                propMoverFile.AddTexts(_texts);
+                propMoverFile.SetTableHeaders("dwID", "szName", "dwAI", "dwStr", "dwSta", "dwDex", "dwInt", "dwHR", "dwER", "dwRace", "dwBelligerence", "dwGender", "dwLevel", "dwFlightLevel", "dwSize", "dwClass", "bIfPart", "dwKarma", "dwUseable", "dwActionRadius", "dwAtkMin", "dwAtkMax", "dwAtk1", "dwAtk2", "dwAtk3", "dwHorizontalRate", "dwVerticalRate", "dwDiagonalRate", "dwThrustRate", "dwChestRate", "dwHeadRate", "dwArmRate", "dwLegRate", "dwAttackSpeed", "dwReAttackDelay", "dwAddHp", "dwAddMp", "dwNaturealArmor", "nAbrasion", "nHardness", "dwAdjAtkDelay", "eElementType", "wElementAtk", "dwHideLevel", "fSpeed", "dwShelter", "bFlying", "dwJumping", "dwAirJump", "bTaming", "dwResistMagic", "fResistElectricity", "fResistFire", "fResistWind", "fResistWater", "fResistEarth", "dwCash", "dwSourceMaterial", "dwMaterialAmount", "dwCohesion", "dwHoldingTime", "dwCorrectionValue", "dwExpValue", "nFxpValue", "nBodyState", "dwAddAbility", "bKillable", "dwVirtItem1", "dwVirtType1", "dwVirtItem2", "dwVirtType2", "dwVirtItem3", "dwVirtType3", "dwSndAtk1", "dwSndAtk2", "dwSndDie1", "dwSndDie2", "dwSndDmg1", "dwSndDmg2", "dwSndDmg3", "dwSndIdle1", "dwSndIdle2", "szComment");
+                propMoverFile.Parse();
+
+                while (propMoverFile.Read())
+                {
+                    // TODO: Add movers
+                    Logger.Loading("Loading {0}/{1} movers...", propMoverFile.ReadingIndex, propMoverFile.Count());
+                }
+            }
+            Logger.Info("{0} movers loaded!\t\t", 0);
         }
 
         private void LoadSystems()

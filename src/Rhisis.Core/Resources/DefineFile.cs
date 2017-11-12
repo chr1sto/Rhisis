@@ -11,7 +11,6 @@ namespace Rhisis.Core.Resources
     public sealed class DefineFile : IDisposable
     {
         public static readonly IEnumerable<String> Extensions = new[] { ".h", ".hh", ".hpp" };
-        private static readonly string DefineDirective = "#define";
         private static readonly string DwordCast = "(DWORD)";
         private static readonly string WordCast = "(WORD)";
         private static readonly string ByteCast = "(BYTE)";
