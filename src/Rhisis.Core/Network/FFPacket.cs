@@ -233,12 +233,6 @@ namespace Rhisis.Core.Network
                 return false;
 
             return true;
-
-            // TODO: find out why it work on some clients and not on other
-            //int lengthHash = ~(BitConverter.ToInt32(Crc32.ComputeChecksumBytes(BitConverter.GetBytes(packetHeader.Length)), 0) ^ sessionKey);
-            //int dataHash = ~(BitConverter.ToInt32(Crc32.ComputeChecksumBytes(packetHeader.Data), 0) ^ sessionKey);
-
-            //return packetHeader.HashData == dataHash && packetHeader.HashLength == lengthHash;
         }
     }
 }

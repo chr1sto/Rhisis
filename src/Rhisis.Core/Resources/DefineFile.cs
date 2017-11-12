@@ -10,14 +10,14 @@ namespace Hellion.Core.Resources
     /// </summary>
     public sealed class DefineFile : IDisposable
     {
-        public static readonly string[] Extensions = new string[] { ".h", ".hh", ".hpp" };
+        public static readonly IEnumerable<String> Extensions = new[] { ".h", ".hh", ".hpp" };
         private const string DefineDirective = "#define";
         private const string DwordCast = "(DWORD)";
         private const string WordCast = "(WORD)";
         private const string ByteCast = "(BYTE)";
 
-        private TokenScanner _scanner;
-        private IDictionary<string, object> _defines;
+        private readonly TokenScanner _scanner;
+        private readonly IDictionary<string, object> _defines;
 
         /// <summary>
         /// Gets the value of a define directive.
@@ -77,8 +77,6 @@ namespace Hellion.Core.Resources
         {
             if (this._defines.Any())
                 this._defines.Clear();
-
-            this._defines = null;
         }
 
         /// <summary>
@@ -94,23 +92,19 @@ namespace Hellion.Core.Resources
             {
                 if (defineValue.StartsWith(DwordCast))
                 {
-                    defineValue = defineValue.Replace(DwordCast, string.Empty);
-                    newDefineValue = Convert.ToUInt32(defineValue, defineValue.StartsWith("0x") ? 16 : 10);
+                    newDefineValue = Convert.ToUInt32(defineValue.Replace(DwordCast, string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }
                 else if (defineValue.StartsWith(WordCast))
                 {
-                    defineValue = defineValue.Replace(WordCast, string.Empty);
-                    newDefineValue = Convert.ToUInt16(defineValue, defineValue.StartsWith("0x") ? 16 : 10);
+                    newDefineValue = Convert.ToUInt16(defineValue.Replace(WordCast, string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }
                 else if (defineValue.StartsWith(ByteCast))
                 {
-                    defineValue = defineValue.Replace(ByteCast, string.Empty);
-                    newDefineValue = Convert.ToByte(defineValue, defineValue.StartsWith("0x") ? 16 : 10);
+                    newDefineValue = Convert.ToByte(defineValue.Replace(ByteCast, string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }
                 else if (defineValue.EndsWith("L"))
                 {
-                    defineValue = defineValue.Replace("L", string.Empty);
-                    newDefineValue = Convert.ToInt64(defineValue, defineValue.StartsWith("0x") ? 16 : 10);
+                    newDefineValue = Convert.ToInt64(defineValue.Replace("L", string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }
                 else
                 {

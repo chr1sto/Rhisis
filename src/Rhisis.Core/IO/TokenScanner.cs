@@ -11,10 +11,10 @@ namespace Rhisis.Core.IO
         private static readonly string MultiLineCommentBegin = "/*";
         private static readonly string MultiLineCommentEnd = "*/";
         private static readonly char[] SplitCharacters = new char[] { '\n', '\r' };
-        
+
+        private readonly string _filePath;
+        private readonly string _splitRegex;
         private int _currentTokenIndex;
-        private string _filePath;
-        private string _splitRegex;
         private string[] _tokens;
         private string[] _comments;
 
@@ -68,7 +68,8 @@ namespace Rhisis.Core.IO
                         splitFileContent[i] = line.Remove(line.IndexOf(MultiLineCommentBegin)).Trim();
                         while (!splitFileContent[i].Contains(MultiLineCommentEnd))
                         {
-                            splitFileContent[i++] = string.Empty;
+                            splitFileContent[i] = string.Empty;
+                            i++;
                             continue;
                         }
                         int removeStartIndex = splitFileContent[i].IndexOf(MultiLineCommentEnd) + MultiLineCommentEnd.Length;
