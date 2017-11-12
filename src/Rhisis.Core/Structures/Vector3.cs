@@ -17,8 +17,8 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float X
         {
-            get { return this._x; }
-            set { this._x = value; }
+            get => this._x;
+            set => this._x = value;
         }
 
         /// <summary>
@@ -26,8 +26,8 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float Y
         {
-            get { return this._y; }
-            set { this._y = value; }
+            get => this._y;
+            set => this._y = value;
         }
 
         /// <summary>
@@ -35,25 +35,19 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float Z
         {
-            get { return this._z; }
-            set { this._z = value; }
+            get => this._z;
+            set => this._z = value;
         }
 
         /// <summary>
         /// Gets the vector length.
         /// </summary>
-        public float Length
-        {
-            get { return (float)Math.Sqrt(this.SquaredLength); }
-        }
+        public float Length => (float)Math.Sqrt(this.SquaredLength);
 
         /// <summary>
         /// Gets the vector squared length.
         /// </summary>
-        public float SquaredLength
-        {
-            get { return (this._x * this._x) + (this._y * this._y) + (this._z * this._z); }
-        }
+        public float SquaredLength => (this._x * this._x) + (this._y * this._y) + (this._z * this._z);
 
         /// <summary>
         /// Creates a new Vector3 initialized to 0.
@@ -142,10 +136,7 @@ namespace Rhisis.Core.Structures
         /// Clones this Vector3 instance.
         /// </summary>
         /// <returns></returns>
-        public Vector3 Clone()
-        {
-            return new Vector3(this.X, this.Y, this.Z);
-        }
+        public Vector3 Clone() => new Vector3(this.X, this.Y, this.Z);
 
         /// <summary>
         /// Reset to 0 this Vector3.
@@ -161,10 +152,7 @@ namespace Rhisis.Core.Structures
         /// Check if the Vector3 is zero.
         /// </summary>
         /// <returns></returns>
-        public bool IsZero()
-        {
-            return this.SquaredLength <= 0;
-        }
+        public bool IsZero() => this.SquaredLength <= 0;
 
         /// <summary>
         /// Returns a vector3 under string format.
@@ -230,10 +218,7 @@ namespace Rhisis.Core.Structures
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Vector3 operator +(Vector3 a, Vector3 b)
-        {
-            return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
-        }
+        public static Vector3 operator +(Vector3 a, Vector3 b) => new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
 
         /// <summary>
         /// Substract two Vector3.
@@ -241,10 +226,7 @@ namespace Rhisis.Core.Structures
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Vector3 operator -(Vector3 a, Vector3 b)
-        {
-            return new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
-        }
+        public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
 
         /// <summary>
         /// Multiplies two Vector3.
@@ -252,10 +234,7 @@ namespace Rhisis.Core.Structures
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Vector3 operator *(Vector3 a, Vector3 b)
-        {
-            return new Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
-        }
+        public static Vector3 operator *(Vector3 a, Vector3 b) => new Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
 
         /// <summary>
         /// Multiplies a Vector3 and a float value.
@@ -263,10 +242,7 @@ namespace Rhisis.Core.Structures
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Vector3 operator *(Vector3 a, float b)
-        {
-            return new Vector3(a.X * b, a.Y * b, a.Z * b);
-        }
+        public static Vector3 operator *(Vector3 a, float b) => new Vector3(a.X * b, a.Y * b, a.Z * b);
 
         /// <summary>
         /// Divides two Vector3.
@@ -277,10 +253,7 @@ namespace Rhisis.Core.Structures
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Vector3 operator /(Vector3 a, Vector3 b)
-        {
-            return new Vector3(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
-        }
+        public static Vector3 operator /(Vector3 a, Vector3 b) => new Vector3(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
 
         /// <summary>
         /// Devides a vector by a scalar number.
@@ -361,11 +334,6 @@ namespace Rhisis.Core.Structures
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(Vector3 other)
-        {
-            return this.X == other.X
-                && this.Y == other.Y
-                && this.Z == other.Z;
-        }
+        public bool Equals(Vector3 other) => this == other;
     }
 }
