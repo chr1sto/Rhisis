@@ -1,5 +1,8 @@
-﻿using Rhisis.World.Core;
+﻿using Rhisis.Core.Resources;
+using Rhisis.Core.Resources.Dyo;
+using Rhisis.World.Core;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +44,7 @@ namespace Rhisis.World.Game
         {
             this.Context.StartSystemUpdate(50);
         }
-        
+
         /// <summary>
         /// Dispose the map resources.
         /// </summary>
@@ -61,12 +64,24 @@ namespace Rhisis.World.Game
         /// <returns>New map</returns>
         public static Map Load(string mapPath, string mapName, int mapId)
         {
+            string wld = Path.Combine(mapPath, mapName + ".wld");
+            string dyo = Path.Combine(mapPath, mapName + ".dyo");
+            string rgn = Path.Combine(mapPath, mapName + ".rgn");
+
+            using (var dyoFile = new DyoFile(dyo))
+            {
+            }
+
+            using (var rgnFile = new RgnFile(rgn))
+            {
+            }
+
             // TODO: load map informations
             // TODO: load regions
             // TODO: load objects
             // TODO: load heights
             // TODO: load revival zones
-
+            
             return new Map(mapName, mapId);
         }
     }

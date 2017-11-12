@@ -140,7 +140,7 @@ namespace Rhisis.World
                     continue;
                 }
 
-                string mapPath = Path.Combine(ResourcePath, "maps", mapName);
+                string mapPath = Path.Combine(DataPath, "maps", mapName);
                 var map = Map.Load(mapPath, mapName, id); // Load map
                 map.Context.AddSystem(new VisibilitySystem(map.Context));
                 map.Context.AddSystem(new MobilitySystem(map.Context));
