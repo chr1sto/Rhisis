@@ -10,7 +10,7 @@ namespace Rhisis.Core.IO
         private static readonly string SingleLineComment = "//";
         private static readonly string MultiLineCommentBegin = "/*";
         private static readonly string MultiLineCommentEnd = "*/";
-        private static readonly char[] SplitCharacters = new char[] { '\n', '\r' };
+        private static readonly char[] SplitCharacters = new[] { '\n', '\r' };
 
         private readonly string _filePath;
         private readonly string _splitRegex;

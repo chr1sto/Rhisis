@@ -16,7 +16,6 @@ namespace Rhisis.Core.Resources
         public int AgroNumber { get; private set; }
 
         public RgnRespawn7(string[] respawnData)
-            : base()
         {
             this.Type = int.Parse(respawnData[1]);
             this.Model = int.Parse(respawnData[2]);

@@ -89,7 +89,7 @@ namespace Rhisis.Core.Resources
                     line = line.Remove(line.IndexOf("/"));
 
                 line = line.Replace(",,", ",=,").Replace(",", "\t");
-                string[] lineData = line.Split(new char[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] lineData = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (lineData.Length == this._headers.Count)
                 {

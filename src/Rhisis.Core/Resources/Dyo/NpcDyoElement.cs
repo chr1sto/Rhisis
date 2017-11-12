@@ -7,11 +7,6 @@ namespace Rhisis.Core.Resources.Dyo
     {
         public string Name { get; private set; }
 
-        public NpcDyoElement()
-            : base()
-        {
-        }
-
         public override void Read(BinaryReader reader)
         {
             base.Read(reader);

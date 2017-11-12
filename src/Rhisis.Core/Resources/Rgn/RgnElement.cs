@@ -18,9 +18,5 @@ namespace Rhisis.Core.Resources
         public int Right { get; protected set; }
 
         public int Bottom { get; protected set; }
-
-        public RgnElement()
-        {
-        }
     }
 }

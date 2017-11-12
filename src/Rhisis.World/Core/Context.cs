@@ -183,7 +183,7 @@ namespace Rhisis.World.Core
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposedValue)
+            if (!this._disposedValue)
             {
                 if (disposing)
                 {
@@ -196,7 +196,7 @@ namespace Rhisis.World.Core
                     this._systems.Clear();
                 }
 
-                _disposedValue = true;
+                this._disposedValue = true;
             }
         }
         

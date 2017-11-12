@@ -261,13 +261,7 @@ namespace Rhisis.Core.Structures
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Vector3 operator /(Vector3 a, float b)
-        {
-            if (b == 0)
-                throw new DivideByZeroException();
-
-            return new Vector3(a.X / b, a.Y / b, a.Z / b);
-        }
+        public static Vector3 operator /(Vector3 a, float b) => new Vector3(a.X / b, a.Y / b, a.Z / b);
 
         /// <summary>
         /// Compares two Vector3.
