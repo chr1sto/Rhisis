@@ -1,8 +1,7 @@
-﻿using Hellion.Core.Resources;
-using Rhisis.Core.IO;
+﻿using Rhisis.Core.IO;
+using Rhisis.Core.Resources;
 using Rhisis.World.Game;
 using Rhisis.World.Systems;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +21,7 @@ namespace Rhisis.World
             Profiler.Start("LoadResources");
 
             this.LoadDefines();
+            this.LoadTexts();
             this.LoadSystems();
             this.LoadMaps();
             this.CleanUp();
@@ -44,6 +44,27 @@ namespace Rhisis.World
                     {
                         if (!_defines.ContainsKey(define.Key) && define.Value is int)
                             _defines.Add(define.Key, int.Parse(define.Value.ToString()));
+                    }
+                }
+            }
+        }
+
+        private void LoadTexts()
+        {
+            var textFiles = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
+                            where TextFile.Extensions.Contains(Path.GetExtension(x)) && x.EndsWith(".txt.txt")
+                            select x;
+
+            foreach (var textFilePath in textFiles)
+            {
+                using (var textFile = new TextFile(textFilePath))
+                {
+                    textFile.Parse();
+
+                    foreach (var text in textFile.Texts)
+                    {
+                        if (!_texts.ContainsKey(text.Key) && !string.IsNullOrEmpty(text.Value))
+                            _texts.Add(text);
                     }
                 }
             }

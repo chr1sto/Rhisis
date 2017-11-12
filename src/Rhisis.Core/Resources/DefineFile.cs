@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Hellion.Core.Resources
+namespace Rhisis.Core.Resources
 {
     /// <summary>
     /// Represents a C/C++ define file.
