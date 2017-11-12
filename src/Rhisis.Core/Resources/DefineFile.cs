@@ -11,10 +11,10 @@ namespace Hellion.Core.Resources
     public sealed class DefineFile : IDisposable
     {
         public static readonly IEnumerable<String> Extensions = new[] { ".h", ".hh", ".hpp" };
-        private const string DefineDirective = "#define";
-        private const string DwordCast = "(DWORD)";
-        private const string WordCast = "(WORD)";
-        private const string ByteCast = "(BYTE)";
+        private static readonly string DefineDirective = "#define";
+        private static readonly string DwordCast = "(DWORD)";
+        private static readonly string WordCast = "(WORD)";
+        private static readonly string ByteCast = "(BYTE)";
 
         private readonly TokenScanner _scanner;
         private readonly IDictionary<string, object> _defines;

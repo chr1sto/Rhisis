@@ -11,32 +11,32 @@ namespace Rhisis.Core.Network.Packets.World
         /// <summary>
         /// Gets the World Id.
         /// </summary>
-        public int WorldId { get; private set; }
+        public int WorldId { get; }
 
         /// <summary>
         /// Gets the Player Id.
         /// </summary>
-        public int PlayerId { get; private set; }
+        public int PlayerId { get; }
 
         /// <summary>
         /// Gets the Authentication key.
         /// </summary>
-        public int AuthenticationKey { get; private set; }
+        public int AuthenticationKey { get; }
 
         /// <summary>
         /// Gets the player's party id.
         /// </summary>
-        public int PartyId { get; private set; }
+        public int PartyId { get; }
 
         /// <summary>
         /// Gets the player's guild id.
         /// </summary>
-        public int GuildId { get; private set; }
+        public int GuildId { get; }
 
         /// <summary>
         /// Gets the player's guild war id.
         /// </summary>
-        public int GuildWarId { get; private set; }
+        public int GuildWarId { get; }
 
         /// <summary>
         /// Gets the Id of multi
@@ -44,37 +44,37 @@ namespace Rhisis.Core.Network.Packets.World
         /// <remarks>
         /// What is this ?
         /// </remarks>
-        public int IdOfMulti { get; private set; }
+        public int IdOfMulti { get; }
 
         /// <summary>
         /// Gets the player's slot.
         /// </summary>
-        public byte Slot { get; private set; }
+        public byte Slot { get; }
 
         /// <summary>
         /// Gets the player's name.
         /// </summary>
-        public string PlayerName { get; private set; }
+        public string PlayerName { get; }
 
         /// <summary>
         /// Gets the player's account username.
         /// </summary>
-        public string Username { get; private set; }
+        public string Username { get; }
 
         /// <summary>
         /// Gets the player's account password.
         /// </summary>
-        public string Password { get; private set; }
+        public string Password { get; }
 
         /// <summary>
         /// Gets the messenger state.
         /// </summary>
-        public int MessengerState { get; private set; }
+        public int MessengerState { get; }
 
         /// <summary>
         /// Gets the messenger count.
         /// </summary>
-        public int MessengerCount { get; private set; }
+        public int MessengerCount { get; }
 
         /// <summary>
         /// Creates a new <see cref="JoinPacket"/> object.
