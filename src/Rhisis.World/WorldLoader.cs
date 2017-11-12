@@ -117,14 +117,39 @@ namespace Rhisis.World
         {
             Logger.Loading("Loading maps...\t\t");
 
-            var map = Map.Load("data/maps/WdMadrigal"); // Load map
-            map.Context.AddSystem(new VisibilitySystem(map.Context));
-            map.Context.AddSystem(new MobilitySystem(map.Context));
-            map.Context.AddSystem(new ChatSystem(map.Context));
-            map.Start(); // Start map update thread
+            // Load world script
+            var worldsPaths = new Dictionary<string, string>();
+            using (var textFile = new TextFile(Path.Combine(ResourcePath, "data", "World.inc")))
+            {
+                textFile.Parse();
+                foreach (var text in textFile.Texts)
+                    worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
+            }
 
-            _maps.Add(1, map); // Add the map to the 
+            foreach (string mapId in this.WorldConfiguration.Maps)
+            {
+                if (!worldsPaths.TryGetValue(mapId, out string mapName))
+                {
+                    Logger.Warning("Cannot load map with Id: {0}. Please check your world script file.", mapId);
+                    continue;
+                }
 
+                if (!_defines.TryGetValue(mapId, out int id))
+                {
+                    Logger.Warning("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.", mapId);
+                    continue;
+                }
+
+                string mapPath = Path.Combine(ResourcePath, "maps", mapName);
+                var map = Map.Load(mapPath, mapName, id); // Load map
+                map.Context.AddSystem(new VisibilitySystem(map.Context));
+                map.Context.AddSystem(new MobilitySystem(map.Context));
+                map.Context.AddSystem(new ChatSystem(map.Context));
+                map.Start(); // Start map update thread
+
+                _maps.Add(id, map); // Add the map to the 
+            }
+            
             Logger.Info("All maps loaded! \t\t");
         }
 

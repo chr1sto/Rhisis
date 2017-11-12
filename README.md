@@ -52,6 +52,10 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 ### World
 - Inter-Server authentication (ISC)
 - Connect to the world
+- Load resources
+   - Defines & texts
+   - Movers
+   - Maps
 - Visibility System
 - Mobility System
 - Chat System

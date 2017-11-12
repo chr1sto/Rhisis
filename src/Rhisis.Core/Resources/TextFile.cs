@@ -59,7 +59,7 @@ namespace Rhisis.Core.Resources
 
                     string[] texts = line.Split(Separators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
-                    if (texts.Length > 2)
+                    if (texts.Length >= 2)
                     {
                         string key = texts.First();
                         string value = line.Replace(key, string.Empty).Trim();

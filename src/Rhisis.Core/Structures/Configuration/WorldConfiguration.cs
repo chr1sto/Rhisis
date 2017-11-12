@@ -35,6 +35,12 @@ namespace Rhisis.Core.Structures.Configuration
         public IDictionary<string, bool> Systems { get; set; }
 
         /// <summary>
+        /// Gets or sets the maps of the world server.
+        /// </summary>
+        [DataMember(Name = "maps")]
+        public IEnumerable<string> Maps { get; set; }
+
+        /// <summary>
         /// Gets or sets the IPC configuration.
         /// </summary>
         [DataMember(Name = "isc")]

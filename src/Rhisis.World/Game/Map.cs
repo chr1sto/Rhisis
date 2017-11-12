@@ -15,7 +15,9 @@ namespace Rhisis.World.Game
         /// <summary>
         /// Gets the map id.
         /// </summary>
-        public int Id { get; private set; }
+        public int Id { get; }
+
+        public string Name { get; }
 
         /// <summary>
         /// Gets the map context.
@@ -25,8 +27,10 @@ namespace Rhisis.World.Game
         /// <summary>
         /// Creates and initializes a new <see cref="Map"/> instance.
         /// </summary>
-        public Map()
+        private Map(string name, int id)
         {
+            this.Id = id;
+            this.Name = name;
             this.Context = new Context();
         }
 
@@ -55,7 +59,7 @@ namespace Rhisis.World.Game
         /// </summary>
         /// <param name="mapPath">Map path</param>
         /// <returns>New map</returns>
-        public static Map Load(string mapPath)
+        public static Map Load(string mapPath, string mapName, int mapId)
         {
             // TODO: load map informations
             // TODO: load regions
@@ -63,7 +67,7 @@ namespace Rhisis.World.Game
             // TODO: load heights
             // TODO: load revival zones
 
-            return new Map();
+            return new Map(mapName, mapId);
         }
     }
 }
