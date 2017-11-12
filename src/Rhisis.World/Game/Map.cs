@@ -1,10 +1,14 @@
-﻿using Rhisis.Core.Resources;
+﻿using Rhisis.Core.Common;
+using Rhisis.Core.Helpers;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.World.Core;
+using Rhisis.World.Core.Components;
+using Rhisis.World.Game.Regions;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace Rhisis.World.Game
 {
@@ -15,11 +19,16 @@ namespace Rhisis.World.Game
     {
         private bool _isDisposed;
 
+        private readonly ICollection<IRegion> _regions;
+
         /// <summary>
         /// Gets the map id.
         /// </summary>
         public int Id { get; }
 
+        /// <summary>
+        /// Gets the map name.
+        /// </summary>
         public string Name { get; }
 
         /// <summary>
@@ -35,6 +44,7 @@ namespace Rhisis.World.Game
             this.Id = id;
             this.Name = name;
             this.Context = new Context();
+            this._regions = new List<IRegion>();
         }
 
         /// <summary>
@@ -67,6 +77,7 @@ namespace Rhisis.World.Game
             string wld = Path.Combine(mapPath, mapName + ".wld");
             string dyo = Path.Combine(mapPath, mapName + ".dyo");
             string rgn = Path.Combine(mapPath, mapName + ".rgn");
+            var map = new Map(mapName, mapId);
 
             using (var dyoFile = new DyoFile(dyo))
             {
@@ -74,6 +85,35 @@ namespace Rhisis.World.Game
 
             using (var rgnFile = new RgnFile(rgn))
             {
+                foreach (RgnRespawn7 rgnElement in rgnFile.Elements.Where(r => r is RgnRespawn7))
+                {
+                    var respawner = new RespawnerRegion(rgnElement.Left, rgnElement.Top, rgnElement.Right, rgnElement.Bottom, rgnElement.Time);
+
+                    if (rgnElement.Type == (int)WorldObjectType.Mover)
+                    {
+                        for (int i = 0; i < rgnElement.Count; ++i)
+                        {
+                            var monster = map.Context.CreateEntity();
+
+                            var objectComponent = new ObjectComponent
+                            {
+                                MapId = mapId,
+                                ModelId = rgnElement.Model,
+                                Type = WorldObjectType.Mover,
+                                EntityType = WorldEntityType.Monster,
+                                Position = respawner.GetRandomPosition(),
+                                Angle = RandomHelper.FloatRandom(0, 360f),
+                                Name = "",
+                                Size = 100,
+                                Spawned = true,
+                            };
+
+                            monster.AddComponent(objectComponent);
+                        }
+                    }
+
+                    map._regions.Add(respawner);
+                }
             }
 
             // TODO: load map informations
@@ -81,8 +121,8 @@ namespace Rhisis.World.Game
             // TODO: load objects
             // TODO: load heights
             // TODO: load revival zones
-            
-            return new Map(mapName, mapId);
+
+            return map;
         }
     }
 }

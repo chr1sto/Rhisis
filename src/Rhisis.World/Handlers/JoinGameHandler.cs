@@ -46,6 +46,7 @@ namespace Rhisis.World.Handlers
             {
                 ModelId = character.Gender == 0 ? 11 : 12,
                 Type = WorldObjectType.Mover,
+                EntityType = WorldEntityType.Player,
                 MapId = character.MapId,
                 Position = new Vector3(character.PosX, character.PosY, character.PosZ),
                 Angle = character.Angle,

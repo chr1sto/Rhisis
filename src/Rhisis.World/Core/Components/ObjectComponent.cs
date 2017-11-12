@@ -24,6 +24,11 @@ namespace Rhisis.World.Core.Components
         public WorldObjectType Type { get; set; }
 
         /// <summary>
+        /// Gets or sets the entity type.
+        /// </summary>
+        public WorldEntityType EntityType { get; set; }
+
+        /// <summary>
         /// Gets or sets the map id.
         /// </summary>
         public int MapId { get; set; }

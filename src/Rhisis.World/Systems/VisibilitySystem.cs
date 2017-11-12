@@ -40,7 +40,7 @@ namespace Rhisis.World.Systems
                 for (int i = otherEntitiesOut.Count(); i > 0; i--)
                 {
                     if (entityPlayerComponent != null)
-                        WorldPacketFactory.SendDespawn(entityPlayerComponent.Connection, otherEntitiesOut.ElementAt(0));
+                        WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, otherEntitiesOut.ElementAt(0));
 
                     entityObjectComponent.Entities.RemoveAt(0);
                 }
@@ -52,7 +52,7 @@ namespace Rhisis.World.Systems
                         entityObjectComponent.Entities.Add(entityInRange);
 
                         if (entityPlayerComponent != null)
-                            WorldPacketFactory.SendSpawn(entityPlayerComponent.Connection, entityInRange);
+                            WorldPacketFactory.SendSpawnObject(entityPlayerComponent.Connection, entityInRange);
                     }
                 }
             }

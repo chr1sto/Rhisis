@@ -1,11 +1,13 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
+using Rhisis.World.Core.Systems;
 using Rhisis.World.Game;
-using Rhisis.World.Systems;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Rhisis.World
 {
@@ -21,7 +23,7 @@ namespace Rhisis.World
         /// Gets the Movers data.
         /// </summary>
         public static IReadOnlyDictionary<int, MoverData> Movers => _movers as IReadOnlyDictionary<int, MoverData>;
-        
+
         /// <summary>
         /// Loads the server's resources.
         /// </summary>
@@ -32,7 +34,6 @@ namespace Rhisis.World
 
             this.LoadDefinesAndTexts();
             this.LoadMovers();
-            this.LoadSystems();
             this.LoadMaps();
             this.CleanUp();
 
@@ -61,7 +62,7 @@ namespace Rhisis.World
                     }
                 }
             }
-            
+
             foreach (var textFilePath in textFiles)
             {
                 using (var textFile = new TextFile(textFilePath))
@@ -104,27 +105,11 @@ namespace Rhisis.World
             Logger.Info("{0} movers loaded!\t\t", _movers.Count);
         }
 
-        private void LoadSystems()
-        {
-            Logger.Loading("Loading systems...");
-
-            // TODO: Load systems using reflection
-
-            Logger.Info("Systems loaded! \t\t");
-        }
-
         private void LoadMaps()
         {
             Logger.Loading("Loading maps...\t\t");
-
-            // Load world script
-            var worldsPaths = new Dictionary<string, string>();
-            using (var textFile = new TextFile(Path.Combine(ResourcePath, "data", "World.inc")))
-            {
-                textFile.Parse();
-                foreach (var text in textFile.Texts)
-                    worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
-            }
+            IEnumerable<Type> systemTypes = this.LoadSystems();
+            IDictionary<string, string> worldsPaths = this.LoadWorldScript();
 
             foreach (string mapId in this.WorldConfiguration.Maps)
             {
@@ -139,24 +124,45 @@ namespace Rhisis.World
                     Logger.Warning("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.", mapId);
                     continue;
                 }
+                
+                var map = Map.Load(Path.Combine(DataPath, "maps", mapName), mapName, id);
 
-                string mapPath = Path.Combine(DataPath, "maps", mapName);
-                var map = Map.Load(mapPath, mapName, id); // Load map
-                map.Context.AddSystem(new VisibilitySystem(map.Context));
-                map.Context.AddSystem(new MobilitySystem(map.Context));
-                map.Context.AddSystem(new ChatSystem(map.Context));
-                map.Start(); // Start map update thread
+                foreach (var type in systemTypes)
+                    map.Context.AddSystem(Activator.CreateInstance(type, map.Context) as ISystem);
 
-                _maps.Add(id, map); // Add the map to the 
+                map.Start();
+                _maps.Add(id, map);
             }
-            
-            Logger.Info("All maps loaded! \t\t");
+
+            Logger.Info("{0} maps loaded! \t\t", _maps.Count);
+        }
+
+        private IEnumerable<Type> LoadSystems()
+        {
+            return from x in Assembly.GetExecutingAssembly().GetTypes()
+                   where x.GetTypeInfo().GetCustomAttribute<SystemAttribute>() != null
+                   select x;
+        }
+
+        private IDictionary<string, string> LoadWorldScript()
+        {
+            var worldsPaths = new Dictionary<string, string>();
+
+            using (var textFile = new TextFile(Path.Combine(ResourcePath, "data", "World.inc")))
+            {
+                textFile.Parse();
+                foreach (var text in textFile.Texts)
+                    worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
+            }
+
+            return worldsPaths;
         }
 
         private void CleanUp()
         {
             _defines.Clear();
             _texts.Clear();
+            GC.Collect();
         }
     }
 }
