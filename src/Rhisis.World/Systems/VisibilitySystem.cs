@@ -60,17 +60,16 @@ namespace Rhisis.World.Systems
                 {
                     if (entityPlayerComponent != null)
                         WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, otherEntitiesOut.ElementAt(0));
+                    entityObjectComponent.Entities.RemoveAt(0);
 
+                    // Remove entity from the other entity.
                     var otherEntityOut = otherEntitiesOut.ElementAt(0);
-
                     var otherEntityOutObjectComponent = otherEntityOut.GetComponent<ObjectComponent>();
                     var otherEntityOutPlayerComponent = otherEntityOut.GetComponent<PlayerComponent>();
 
                     if (otherEntityOutPlayerComponent != null)
                         WorldPacketFactory.SendDespawnObject(otherEntityOutPlayerComponent.Connection, entity);
                     otherEntityOutObjectComponent.Entities.Remove(entity);
-
-                    entityObjectComponent.Entities.RemoveAt(0);
                 }
             }
         }
