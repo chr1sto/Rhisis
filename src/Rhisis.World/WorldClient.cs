@@ -80,7 +80,7 @@ namespace Rhisis.World
         {
             var entityObjectComponent = this.Player?.GetComponent<ObjectComponent>();
 
-            if (WorldServer.Maps.TryGetValue(entityObjectComponent.MapId, out Map currentMap))
+            if (entityObjectComponent != null && WorldServer.Maps.TryGetValue(entityObjectComponent.MapId, out Map currentMap))
                 currentMap.Context.DeleteEntity(this.Player);
 
             base.Dispose();

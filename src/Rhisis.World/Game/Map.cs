@@ -117,7 +117,6 @@ namespace Rhisis.World.Game
             }
 
             // TODO: load map informations
-            // TODO: load regions
             // TODO: load objects
             // TODO: load heights
             // TODO: load revival zones

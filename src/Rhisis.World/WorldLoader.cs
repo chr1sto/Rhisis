@@ -140,7 +140,7 @@ namespace Rhisis.World
         private IEnumerable<Type> LoadSystems()
         {
             return from x in Assembly.GetExecutingAssembly().GetTypes()
-                   where x.GetTypeInfo().GetCustomAttribute<SystemAttribute>() != null
+                   where x.GetTypeInfo().GetCustomAttribute<SystemAttribute>() != null && typeof(ISystem).IsAssignableFrom(x)
                    select x;
         }
 

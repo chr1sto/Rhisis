@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Core;
+﻿using Rhisis.Core.IO;
+using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
@@ -23,27 +24,14 @@ namespace Rhisis.World.Systems
         {
             foreach (var entity in this.Entities)
             {
-                var entityObjectComponent = entity.GetComponent<ObjectComponent>();
                 var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
 
-                if (entityObjectComponent == null)
+                if (entityPlayerComponent == null)
                     continue;
 
-                IEnumerable<IEntity> otherEntitiesAround = from x in this.Entities
-                                                           where CanSee(entity, x)
-                                                           select x;
-
-                IEnumerable<IEntity> otherEntitiesOut = from x in entityObjectComponent.Entities
-                                                        where !otherEntitiesAround.Contains(x)
-                                                        select x;
-
-                for (int i = otherEntitiesOut.Count(); i > 0; i--)
-                {
-                    if (entityPlayerComponent != null)
-                        WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, otherEntitiesOut.ElementAt(0));
-
-                    entityObjectComponent.Entities.RemoveAt(0);
-                }
+                var entityObjectComponent = entity.GetComponent<ObjectComponent>();
+                IEnumerable<IEntity> otherEntitiesAround = this.Entities.Where(x => this.CanSee(entity, x));
+                IEnumerable<IEntity> otherEntitiesOut = entityObjectComponent.Entities.Where(x => !otherEntitiesAround.Contains(x));
 
                 foreach (IEntity entityInRange in otherEntitiesAround)
                 {
@@ -54,6 +42,35 @@ namespace Rhisis.World.Systems
                         if (entityPlayerComponent != null)
                             WorldPacketFactory.SendSpawnObject(entityPlayerComponent.Connection, entityInRange);
                     }
+
+                    // Also add the current entity to the entity in range to gain performance
+                    var otherEntityObjectComponent = entityInRange.GetComponent<ObjectComponent>();
+
+                    if (!otherEntityObjectComponent.Entities.Contains(entity))
+                    {
+                        otherEntityObjectComponent.Entities.Add(entity);
+
+                        var otherEntityPlayerComponent = entityInRange.GetComponent<PlayerComponent>();
+                        if (otherEntityPlayerComponent != null)
+                            WorldPacketFactory.SendSpawnObject(otherEntityPlayerComponent.Connection, entity);
+                    }
+                }
+
+                for (int i = otherEntitiesOut.Count(); i > 0; i--)
+                {
+                    if (entityPlayerComponent != null)
+                        WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, otherEntitiesOut.ElementAt(0));
+
+                    var otherEntityOut = otherEntitiesOut.ElementAt(0);
+
+                    var otherEntityOutObjectComponent = otherEntityOut.GetComponent<ObjectComponent>();
+                    var otherEntityOutPlayerComponent = otherEntityOut.GetComponent<PlayerComponent>();
+
+                    if (otherEntityOutPlayerComponent != null)
+                        WorldPacketFactory.SendDespawnObject(otherEntityOutPlayerComponent.Connection, entity);
+                    otherEntityOutObjectComponent.Entities.Remove(entity);
+
+                    entityObjectComponent.Entities.RemoveAt(0);
                 }
             }
         }

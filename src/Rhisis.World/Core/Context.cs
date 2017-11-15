@@ -125,6 +125,8 @@ namespace Rhisis.World.Core
         /// <param name="delay"></param>
         public void StartSystemUpdate(int delay)
         {
+            this.RefreshSystems();
+
             Task.Factory.StartNew(async () =>
             {
                 while (true)
@@ -149,7 +151,7 @@ namespace Rhisis.World.Core
                         }
                     }
 
-                    await Task.Delay(50).ConfigureAwait(false);
+                    await Task.Delay(delay).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }
