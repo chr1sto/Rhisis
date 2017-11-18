@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.IO;
-using Rhisis.World.Core;
+﻿using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
@@ -15,7 +14,7 @@ namespace Rhisis.World.Systems
     {
         private static readonly float VisbilityRange = 75f;
 
-        public override Func<IEntity, bool> Filter => x => x.HasComponent<PlayerComponent>();
+        protected override Func<IEntity, bool> Filter => x => x.HasComponent<PlayerComponent>();
 
         public VisibilitySystem(IContext context)
             : base(context)

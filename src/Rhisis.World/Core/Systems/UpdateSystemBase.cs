@@ -6,7 +6,7 @@ namespace Rhisis.World.Core.Systems
 {
     public abstract class UpdateSystemBase : IUpdateSystem
     {
-        public abstract Func<IEntity, bool> Filter { get; }
+        protected abstract Func<IEntity, bool> Filter { get; }
 
         protected IContext Context { get; }
 

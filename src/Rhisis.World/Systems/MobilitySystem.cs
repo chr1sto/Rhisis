@@ -9,7 +9,7 @@ namespace Rhisis.World.Systems
     [System]
     public class MobilitySystem : UpdateSystemBase
     {
-        public override Func<IEntity, bool> Filter => x => x.HasComponent<MovableComponent>();
+        protected override Func<IEntity, bool> Filter => x => x.HasComponent<MovableComponent>();
 
         public MobilitySystem(IContext context)
             : base(context)
