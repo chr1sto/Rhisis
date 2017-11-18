@@ -1,29 +1,24 @@
 ﻿using System;
 using Rhisis.World.Core.Entities;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.World.Core.Systems
 {
     public abstract class UpdateSystemBase : IUpdateSystem
     {
-        public virtual Func<IEntity, bool> Filter => x => true;
+        public abstract Func<IEntity, bool> Filter { get; }
 
         protected IContext Context { get; }
 
-        protected IEnumerable<IEntity> Entities { get; private set; }
+        protected IEnumerable<IEntity> Entities => this.Context.Entities;
 
         protected UpdateSystemBase(IContext context)
         {
             this.Context = context;
-            this.Entities = new List<IEntity>();
         }
 
-        public abstract void Execute();
+        public bool Match(IEntity entity) => this.Filter.Invoke(entity);
 
-        public void Refresh()
-        {
-            this.Entities = this.Context.Entities.Where(this.Filter);
-        }
+        public abstract void Execute(IEntity entity);
     }
 }

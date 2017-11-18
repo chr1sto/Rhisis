@@ -63,10 +63,7 @@ namespace Rhisis.World.Core
         public IEntity CreateEntity()
         {
             var entity = new Entity(this);
-
-            entity.ComponentAdded += (sender, e) => this.RefreshSystems();
-            entity.ComponentRemoved += (sender, e) => this.RefreshSystems();
-
+            
             if (this._entities.TryAdd(entity.Id, entity))
                 return entity;
 
@@ -81,8 +78,6 @@ namespace Rhisis.World.Core
         public bool DeleteEntity(IEntity entity)
         {
             bool removed = this._entities.Remove(entity.Id);
-
-            this.RefreshSystems();
 
             return removed;
         }
@@ -125,8 +120,6 @@ namespace Rhisis.World.Core
         /// <param name="delay"></param>
         public void StartSystemUpdate(int delay)
         {
-            this.RefreshSystems();
-
             Task.Factory.StartNew(async () =>
             {
                 while (true)
@@ -134,20 +127,12 @@ namespace Rhisis.World.Core
                     if (this._cancellationToken.IsCancellationRequested)
                         break;
 
-                    lock (_syncSystemLock)
+                    foreach (var entity in this._entities)
                     {
-                        try
+                        foreach (var system in this._systems)
                         {
-                            foreach (var system in this._systems)
-                            {
-                                if (system is IUpdateSystem updateSystem)
-                                    updateSystem.Execute();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error("An error occured while updating a system: {0}", e.Message);
-                            Logger.Debug("Stack Trace : {0}", e.StackTrace);
+                            if (system is IUpdateSystem updateSystem && updateSystem.Match(entity.Value))
+                                updateSystem.Execute(entity.Value);
                         }
                     }
 
@@ -162,21 +147,6 @@ namespace Rhisis.World.Core
         public void StopSystemUpdate()
         {
             this._cancellationTokenSource.Cancel();
-        }
-
-        /// <summary>
-        /// Refresh the systems.
-        /// </summary>
-        private void RefreshSystems()
-        {
-            lock (_syncSystemLock)
-            {
-                foreach (var system in this._systems)
-                {
-                    if (system is IUpdateSystem updateSystem)
-                        updateSystem.Refresh();
-                }
-            }
         }
 
         /// <summary>

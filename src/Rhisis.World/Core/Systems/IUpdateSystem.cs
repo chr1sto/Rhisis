@@ -6,9 +6,9 @@ namespace Rhisis.World.Core.Systems
     public interface IUpdateSystem : ISystem
     {
         Func<IEntity, bool> Filter { get; }
+        
+        void Execute(IEntity entity);
 
-        void Execute();
-
-        void Refresh();
+        bool Match(IEntity entity);
     }
 }

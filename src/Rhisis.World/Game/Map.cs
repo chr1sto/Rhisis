@@ -52,7 +52,7 @@ namespace Rhisis.World.Game
         /// </summary>
         public void Start()
         {
-            this.Context.StartSystemUpdate(50);
+            this.Context.StartSystemUpdate(100);
         }
 
         /// <summary>
