@@ -4,56 +4,68 @@ using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Packets;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
     [System]
     public class VisibilitySystem : UpdateSystemBase
     {
-        private static readonly float VisbilityRange = 75f;
+        private static readonly float VisibilityRange = 75f;
 
-        protected override Func<IEntity, bool> Filter => x => x.HasComponent<PlayerComponent>();
+        protected override Expression<Func<IEntity, bool>> Filter => x => x.HasComponent<PlayerComponent>() && x.HasComponent<ObjectComponent>();
 
         public VisibilitySystem(IContext context)
             : base(context)
         {
         }
-        
+
         public override void Execute(IEntity entity)
         {
-            var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
             var entityObjectComponent = entity.GetComponent<ObjectComponent>();
-            IEnumerable<IEntity> otherEntitiesAround = this.Context.Entities.Where(x => this.CanSee(entity, x));
-            IEnumerable<IEntity> otherEntitiesOut = entityObjectComponent.Entities.Where(x => !otherEntitiesAround.Contains(x));
+            var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
+            IEntity[] entitiesAround = this.GetEntitiesAround(entityObjectComponent);
+            IEntity[] entitiesOut = this.GetEntitiesOut(entityObjectComponent, entitiesAround);
 
-            foreach (IEntity entityInRange in otherEntitiesAround)
+            for (int i = 0; i < entitiesAround.Length; i++)
             {
-                if (!entityObjectComponent.Entities.Contains(entityInRange))
+                if (!entityObjectComponent.Entities.Contains(entitiesAround[i]))
                 {
-                    entityObjectComponent.Entities.Add(entityInRange);
-
-                    if (entityPlayerComponent != null)
-                        WorldPacketFactory.SendSpawnObject(entityPlayerComponent.Connection, entityInRange);
+                    WorldPacketFactory.SendSpawnObject(entityPlayerComponent.Connection, entitiesAround[i]);
+                    entityObjectComponent.Entities.Add(entitiesAround[i]);
                 }
             }
 
-            for (int i = otherEntitiesOut.Count(); i > 0; i--)
+            if (entitiesOut.Any())
             {
-                if (entityPlayerComponent != null)
-                    WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, otherEntitiesOut.ElementAt(0));
-                entityObjectComponent.Entities.RemoveAt(0);
+                for (int i = entitiesOut.Length - 1; i >= 0; i--)
+                {
+                    WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, entitiesOut[0]);
+                    entityObjectComponent.Entities.RemoveAt(0);
+                }
             }
         }
 
-        private bool CanSee(IEntity entity, IEntity otherEntity)
+        private IEntity[] GetEntitiesAround(ObjectComponent entityObjectComponent)
         {
-            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
-            var otherEntityObjectComponent = otherEntity.GetComponent<ObjectComponent>();
+            var entitiesAround = from x in this.Entities
+                                 let otherEntityObjectComponent = x.GetComponent<ObjectComponent>()
+                                 where otherEntityObjectComponent != null &&
+                                       entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilityRange) &&
+                                       entityObjectComponent.ObjectId != otherEntityObjectComponent.ObjectId
+                                 select x;
 
-            return entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisbilityRange)
-                && entityObjectComponent.ObjectId != otherEntityObjectComponent.ObjectId;
+            return entitiesAround.ToArray();
+        }
+
+        private IEntity[] GetEntitiesOut(ObjectComponent entityObjectComponent, IEntity[] entitiesAround)
+        {
+            var entitiesOut = from x in entityObjectComponent.Entities
+                              where !entitiesAround.Contains(x)
+                              select x;
+
+            return entitiesOut.ToArray();
         }
     }
 }

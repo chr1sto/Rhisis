@@ -127,14 +127,14 @@ namespace Rhisis.World.Core
                     if (this._cancellationToken.IsCancellationRequested)
                         break;
 
-                    foreach (var entity in this._entities)
+                    Parallel.ForEach(this._entities.Values, (entity) =>
                     {
-                        foreach (var system in this._systems)
+                        for (int i = 0; i < this._systems.Count; i++)
                         {
-                            if (system is IUpdateSystem updateSystem && updateSystem.Match(entity.Value))
-                                updateSystem.Execute(entity.Value);
+                            if (this._systems[i] is IUpdateSystem updateSystem && updateSystem.Match(entity))
+                                updateSystem.Execute(entity);
                         }
-                    }
+                    });
 
                     await Task.Delay(delay).ConfigureAwait(false);
                 }

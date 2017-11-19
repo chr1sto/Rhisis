@@ -1,12 +1,15 @@
 ﻿using System;
 using Rhisis.World.Core.Entities;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Rhisis.World.Core.Systems
 {
     public abstract class UpdateSystemBase : IUpdateSystem
     {
-        protected abstract Func<IEntity, bool> Filter { get; }
+        private Func<IEntity, bool> _filter;
+
+        protected abstract Expression<Func<IEntity, bool>> Filter { get; }
 
         protected IContext Context { get; }
 
@@ -17,7 +20,13 @@ namespace Rhisis.World.Core.Systems
             this.Context = context;
         }
 
-        public bool Match(IEntity entity) => this.Filter.Invoke(entity);
+        public bool Match(IEntity entity)
+        {
+            if (this._filter == null)
+                this._filter = this.Filter.Compile();
+
+            return this._filter(entity);
+        }
 
         public abstract void Execute(IEntity entity);
     }

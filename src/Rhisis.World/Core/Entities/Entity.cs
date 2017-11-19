@@ -50,14 +50,6 @@ namespace Rhisis.World.Core.Entities
         }
 
         /// <summary>
-        /// Destructs the <see cref="Entity"/>.
-        /// </summary>
-        ~Entity()
-        {
-            this.Dispose(false);
-        }
-
-        /// <summary>
         /// Gets the component of type passed as template parameter.
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>

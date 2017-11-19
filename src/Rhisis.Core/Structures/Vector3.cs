@@ -111,11 +111,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public bool IsInCircle(Vector3 otherPosition, float circleRadius)
         {
-            float xDistance = otherPosition.X - this.X;
-            float zDistance = otherPosition.Z - this.Z;
-            float distance = (xDistance * xDistance + zDistance * zDistance);
-
-            return distance <= circleRadius * circleRadius;
+            return Math.Pow(otherPosition.X - this.X, 2) + Math.Pow(otherPosition.Z - this.Z, 2) < Math.Pow(circleRadius, 2);
         }
 
         /// <summary>
