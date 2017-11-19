@@ -26,7 +26,11 @@ namespace Rhisis.World.Core
         private readonly IDictionary<Guid, IEntity> _entities;
         private readonly IList<ISystem> _systems;
         private bool _disposedValue;
-        
+        private double _time;
+        private long _lastTime;
+
+        public double Time => this._time;
+
         /// <summary>
         /// Gets the entities of the present context.
         /// </summary>
@@ -120,23 +124,31 @@ namespace Rhisis.World.Core
         /// <param name="delay"></param>
         public void StartSystemUpdate(int delay)
         {
-            Task.Factory.StartNew(async () =>
+            Task.Factory.StartNew(() =>
             {
+                var currentTime = Rhisis.Core.IO.Time.TimeInSeconds();
+
                 while (true)
                 {
                     if (this._cancellationToken.IsCancellationRequested)
                         break;
+                    
+                    double newTime = Rhisis.Core.IO.Time.TimeInSeconds();
+                    double frameTime = newTime - currentTime;
+                    currentTime = newTime;
 
-                    Parallel.ForEach(this._entities.Values, (entity) =>
+                    this._time = frameTime;
+
+                    foreach (var entity in this._entities.Values)
                     {
                         for (int i = 0; i < this._systems.Count; i++)
                         {
                             if (this._systems[i] is IUpdateSystem updateSystem && updateSystem.Match(entity))
                                 updateSystem.Execute(entity);
                         }
-                    });
+                    }
 
-                    await Task.Delay(delay).ConfigureAwait(false);
+                    Thread.Sleep(delay);
                 }
             }, this._cancellationToken);
         }

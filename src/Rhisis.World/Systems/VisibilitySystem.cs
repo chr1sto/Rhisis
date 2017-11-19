@@ -53,7 +53,8 @@ namespace Rhisis.World.Systems
                                  let otherEntityObjectComponent = x.GetComponent<ObjectComponent>()
                                  where otherEntityObjectComponent != null &&
                                        entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilityRange) &&
-                                       entityObjectComponent.ObjectId != otherEntityObjectComponent.ObjectId
+                                       entityObjectComponent.ObjectId != otherEntityObjectComponent.ObjectId &&
+                                       otherEntityObjectComponent.Spawned
                                  select x;
 
             return entitiesAround.ToArray();

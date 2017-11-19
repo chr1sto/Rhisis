@@ -4,6 +4,12 @@ namespace Rhisis.World.Core.Components
 {
     public class MovableComponent : IComponent
     {
+        public long MoveTime { get; set; }
+
+        public long LastMoveTime { get; set; }
+        
+        public long NextMoveTime { get; set; }
+
         public Vector3 DestinationPosition { get; set; }
 
         public float Speed { get; set; }

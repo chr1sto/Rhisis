@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Core.Common;
+using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
@@ -55,7 +56,7 @@ namespace Rhisis.World.Handlers
                 Spawned = false
             };
 
-            var humanComponent = new HumanComponent()
+            var humanComponent = new HumanComponent
             {
                 Gender = character.Gender,
                 SkinSetId = character.SkinSetId,
@@ -64,14 +65,20 @@ namespace Rhisis.World.Handlers
                 FaceId = character.FaceId,
             };
 
-            var playerComponent = new PlayerComponent()
+            var playerComponent = new PlayerComponent
             {
                 Id = character.Id,
                 Slot = character.Slot,
                 Connection = client
             };
 
-            var movableComponent = new MovableComponent();
+            var movableComponent = new MovableComponent
+            {
+                Speed = WorldServer.Movers[objectComponent.ModelId].Speed,
+                DestinationPosition = objectComponent.Position.Clone(),
+                LastMoveTime = Time.GetElapsedTime(),
+                NextMoveTime = Time.GetElapsedTime() + 10
+            };
 
             // 3rd: attach the component to the entity
             client.Player.AddComponent(objectComponent);

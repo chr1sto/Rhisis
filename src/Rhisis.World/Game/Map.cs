@@ -103,7 +103,7 @@ namespace Rhisis.World.Game
                                 EntityType = WorldEntityType.Monster,
                                 Position = respawner.GetRandomPosition(),
                                 Angle = RandomHelper.FloatRandom(0, 360f),
-                                Name = "",
+                                Name = WorldServer.Movers[rgnElement.Model].Name,
                                 Size = 100,
                                 Spawned = true,
                             };

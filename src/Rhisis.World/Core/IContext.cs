@@ -7,6 +7,8 @@ namespace Rhisis.World.Core
 {
     public interface IContext : IDisposable
     {
+        double Time { get; }
+
         IReadOnlyCollection<IEntity> Entities { get; }
 
         IReadOnlyCollection<ISystem> Systems { get; }
