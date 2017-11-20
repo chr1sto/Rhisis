@@ -74,6 +74,14 @@ namespace Rhisis.World
         }
 
         /// <summary>
+        /// Save the entity to the database.
+        /// </summary>
+        private void Save()
+        {
+            // TODO: save the entity in the database.
+        }
+
+        /// <summary>
         /// Disposes the <see cref="WorldClient"/> resources.
         /// </summary>
         public override void Dispose()
@@ -82,6 +90,8 @@ namespace Rhisis.World
 
             if (entityObjectComponent != null && WorldServer.Maps.TryGetValue(entityObjectComponent.MapId, out Map currentMap))
                 currentMap.Context.DeleteEntity(this.Player);
+
+            this.Save();
 
             base.Dispose();
         }

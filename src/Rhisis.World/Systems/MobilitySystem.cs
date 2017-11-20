@@ -41,24 +41,28 @@ namespace Rhisis.World.Systems
             }
             else
             {
-                float speed = (float)((movableComponent.Speed * 100) * this.Context.Time);
+                double speed = ((movableComponent.Speed * 100) * this.Context.Time);
                 float distanceX = movableComponent.DestinationPosition.X - objectComponent.Position.X;
                 float distanceZ = movableComponent.DestinationPosition.Z - objectComponent.Position.Z;
-                float distance = (float)Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
+                double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
                 // Normalize
-                float deltaX = distanceX / distance;
-                float deltaZ = distanceZ / distance;
-                float offsetX = deltaX * speed;
-                float offsetZ = deltaZ * speed;
-
+                double deltaX = distanceX / distance;
+                double deltaZ = distanceZ / distance;
+                double offsetX = deltaX * speed;
+                double offsetZ = deltaZ * speed;
+                
                 if (Math.Abs(offsetX) > Math.Abs(distanceX))
                     offsetX = distanceX;
                 if (Math.Abs(offsetZ) > Math.Abs(distanceZ))
                     offsetZ = distanceZ;
+                
+                objectComponent.Position.X += (float)offsetX;
+                objectComponent.Position.Z += (float)offsetZ;
 
-                objectComponent.Position.X += offsetX;
-                objectComponent.Position.Z += offsetZ;
+                Logger.Debug("Moving: {0}, {1}", offsetX, offsetZ);
+                Logger.Debug("DestinationPosition: {0}", movableComponent.DestinationPosition);
+                Logger.Debug("CurrentPosition: {0}", objectComponent.Position);
             }
         }
     }

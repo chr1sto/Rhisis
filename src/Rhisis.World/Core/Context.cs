@@ -4,6 +4,7 @@ using Rhisis.World.Core.Systems;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -26,10 +27,8 @@ namespace Rhisis.World.Core
         private readonly IDictionary<Guid, IEntity> _entities;
         private readonly IList<ISystem> _systems;
         private bool _disposedValue;
-        private double _time;
-        private long _lastTime;
 
-        public double Time => this._time;
+        public double Time { get; private set; }
 
         /// <summary>
         /// Gets the entities of the present context.
@@ -67,7 +66,7 @@ namespace Rhisis.World.Core
         public IEntity CreateEntity()
         {
             var entity = new Entity(this);
-            
+
             if (this._entities.TryAdd(entity.Id, entity))
                 return entity;
 
@@ -126,18 +125,20 @@ namespace Rhisis.World.Core
         {
             Task.Factory.StartNew(() =>
             {
-                var currentTime = Rhisis.Core.IO.Time.TimeInSeconds();
+                double deltaTime = 0f;
+                double currentTime = 0f;
+                double previousTime = 0f;
 
                 while (true)
                 {
                     if (this._cancellationToken.IsCancellationRequested)
                         break;
-                    
-                    double newTime = Rhisis.Core.IO.Time.TimeInSeconds();
-                    double frameTime = newTime - currentTime;
-                    currentTime = newTime;
 
-                    this._time = frameTime;
+                    currentTime = Rhisis.Core.IO.Time.TimeInMilliseconds();
+                    deltaTime = currentTime - previousTime;
+                    previousTime = currentTime;
+
+                    this.Time = deltaTime / 1000f;
 
                     foreach (var entity in this._entities.Values)
                     {
@@ -183,7 +184,7 @@ namespace Rhisis.World.Core
                 this._disposedValue = true;
             }
         }
-        
+
         /// <summary>
         /// Dispose the resources of this context.
         /// </summary>

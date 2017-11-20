@@ -38,6 +38,21 @@ namespace Rhisis.Core.IO
         }
 
         /// <summary>
+        /// Gets the time in milliseconds.
+        /// </summary>
+        /// <returns></returns>
+        public static double TimeInMilliseconds()
+        {
+            var date = DateTime.UtcNow;
+
+            if (date < Utc)
+                date = Utc;
+
+            return (date - Utc).TotalMilliseconds;
+
+        }
+
+        /// <summary>
         /// Gets the number of milliseconds since the program has started.
         /// </summary>
         /// <returns></returns>
