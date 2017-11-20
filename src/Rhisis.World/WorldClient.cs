@@ -9,6 +9,7 @@ using Rhisis.Core.Exceptions;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Game;
+using Rhisis.Database;
 
 namespace Rhisis.World
 {
@@ -78,7 +79,32 @@ namespace Rhisis.World
         /// </summary>
         private void Save()
         {
-            // TODO: save the entity in the database.
+            var objectComponent = this.Player.GetComponent<ObjectComponent>();
+            var humanComponent = this.Player.GetComponent<HumanComponent>();
+            var playerComponent = this.Player.GetComponent<PlayerComponent>();
+
+            objectComponent.Spawned = false;
+            
+            using (var db = DatabaseService.GetContext())
+            {
+                var character = db.Characters.Get(playerComponent.Id);
+
+                if (character != null)
+                {
+                    character.PosX = objectComponent.Position.X;
+                    character.PosY = objectComponent.Position.Y;
+                    character.PosZ = objectComponent.Position.Z;
+                    character.Angle = objectComponent.Angle;
+                    character.MapId = objectComponent.MapId;
+                    character.Gender = humanComponent.Gender;
+                    character.HairColor = humanComponent.HairColor;
+                    character.HairId = humanComponent.HairId;
+                    character.FaceId = humanComponent.FaceId;
+                    character.SkinSetId = humanComponent.SkinSetId;
+
+                    db.SaveChanges();
+                }
+            }
         }
 
         /// <summary>
