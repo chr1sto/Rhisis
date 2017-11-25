@@ -1,7 +1,7 @@
-﻿using System;
-using Rhisis.World.Core;
+﻿using Rhisis.World.Core;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
+using System;
 
 namespace Rhisis.World.Systems
 {
@@ -15,7 +15,6 @@ namespace Rhisis.World.Systems
 
         public override void Execute(IEntity entity, EventArgs e)
         {
-            throw new NotImplementedException();
         }
     }
 }

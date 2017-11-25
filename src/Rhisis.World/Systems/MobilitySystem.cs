@@ -1,5 +1,4 @@
 ﻿using Rhisis.Core.IO;
-using Rhisis.Core.Structures;
 using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;

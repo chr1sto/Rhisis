@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Rhisis.Core.Exceptions;
 using Rhisis.World.Core;
+using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
-using Rhisis.World.Core.Components;
-using Rhisis.Core.Exceptions;
-using Rhisis.Core.IO;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Events;
+using System;
 
 namespace Rhisis.World.Systems
 {
@@ -41,16 +41,6 @@ namespace Rhisis.World.Systems
             {
                 WorldPacketFactory.SendChat(playerComponent.Connection, entity, chatEvent.Message);
             }
-        }
-    }
-
-    public class ChatEventArgs : EventArgs
-    {
-        public string Message { get; }
-
-        public ChatEventArgs(string message)
-        {
-            this.Message = message;
         }
     }
 }
