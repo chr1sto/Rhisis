@@ -57,7 +57,7 @@ namespace Rhisis.World.Packets
                 packet.Write(humanComponent.Gender);
                 packet.Write((byte)humanComponent.SkinSetId);
                 packet.Write((byte)humanComponent.HairId);
-                packet.Write((int)humanComponent.HairColor);
+                packet.Write(humanComponent.HairColor);
                 packet.Write((byte)humanComponent.FaceId);
                 packet.Write(playerComponent.Id);
                 packet.Write((byte)1); // Job
@@ -263,7 +263,7 @@ namespace Rhisis.World.Packets
                     packet.Write(otherHumanComponent.Gender);
                     packet.Write((byte)otherHumanComponent.SkinSetId);
                     packet.Write((byte)otherHumanComponent.HairId);
-                    packet.Write((int)otherHumanComponent.HairColor);
+                    packet.Write(otherHumanComponent.HairColor);
                     packet.Write((byte)otherHumanComponent.FaceId);
                     packet.Write(otherPlayerComponent.Id);
                     packet.Write((byte)1);

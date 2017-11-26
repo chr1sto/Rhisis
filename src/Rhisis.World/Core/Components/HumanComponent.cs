@@ -8,7 +8,7 @@
 
         public int HairId { get; set; }
 
-        public uint HairColor { get; set; }
+        public int HairColor { get; set; }
 
         public int FaceId { get; set; }
     }

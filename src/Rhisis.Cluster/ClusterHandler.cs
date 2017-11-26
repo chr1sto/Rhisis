@@ -87,7 +87,7 @@ namespace Rhisis.Cluster
                     Name = createPlayerPacket.Name,
                     Slot = createPlayerPacket.Slot,
                     SkinSetId = createPlayerPacket.SkinSet,
-                    HairColor = createPlayerPacket.HairColor,
+                    HairColor = (int)createPlayerPacket.HairColor,
                     FaceId = createPlayerPacket.HeadMesh,
                     HairId = createPlayerPacket.HairMeshId,
                     BankCode = createPlayerPacket.BankPassword,

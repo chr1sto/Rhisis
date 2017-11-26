@@ -69,7 +69,7 @@ namespace Rhisis.Cluster.Packets
                     packet.Write(0); // War Id
                     packet.Write(character.SkinSetId);
                     packet.Write(character.HairId);
-                    packet.Write(character.HairColor);
+                    packet.Write((uint)character.HairColor);
                     packet.Write(character.FaceId);
                     packet.Write(character.Gender);
                     packet.Write(character.ClassId);
