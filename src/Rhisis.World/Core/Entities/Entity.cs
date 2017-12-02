@@ -29,6 +29,11 @@ namespace Rhisis.World.Core.Entities
         public Guid Id { get; }
 
         /// <summary>
+        /// Gets or sets the entity type.
+        /// </summary>
+        public WorldEntityType EntityType { get; set; }
+
+        /// <summary>
         /// Gets the current entity context.
         /// </summary>
         public IContext Context { get; }

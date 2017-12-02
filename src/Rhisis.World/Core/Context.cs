@@ -25,6 +25,7 @@ namespace Rhisis.World.Core
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly CancellationToken _cancellationToken;
         private readonly IDictionary<Guid, IEntity> _entities;
+        private readonly IList<IEntity> _playersEntities;
         private readonly IList<ISystem> _systems;
         private bool _disposedValue;
 
@@ -48,6 +49,7 @@ namespace Rhisis.World.Core
             this._cancellationTokenSource = new CancellationTokenSource();
             this._cancellationToken = this._cancellationTokenSource.Token;
             this._entities = new ConcurrentDictionary<Guid, IEntity>();
+            this._playersEntities = new List<IEntity>();
             this._systems = new List<ISystem>();
         }
 
@@ -74,6 +76,23 @@ namespace Rhisis.World.Core
         }
 
         /// <summary>
+        /// Creates a new entity in the current context and set his type.
+        /// </summary>
+        /// <param name="type">Entity type</param>
+        /// <returns></returns>
+        public IEntity CreateEntity(WorldEntityType type)
+        {
+            var entity = this.CreateEntity();
+
+            entity.EntityType = type;
+
+            if (entity.EntityType == WorldEntityType.Player)
+                this._playersEntities.Add(entity);
+
+            return entity;
+        }
+
+        /// <summary>
         /// Deletes the entity from this context.
         /// </summary>
         /// <param name="entity">Entity to delete</param>
@@ -81,6 +100,9 @@ namespace Rhisis.World.Core
         public bool DeleteEntity(IEntity entity)
         {
             bool removed = this._entities.Remove(entity.Id);
+
+            if (entity.EntityType == WorldEntityType.Player && this._playersEntities.Contains(entity))
+                this._playersEntities.Remove(entity);
 
             return removed;
         }
@@ -140,7 +162,7 @@ namespace Rhisis.World.Core
 
                     this.Time = deltaTime / 1000f;
 
-                    foreach (var entity in this._entities.Values)
+                    foreach (var entity in this._playersEntities)
                     {
                         for (int i = 0; i < this._systems.Count; i++)
                         {

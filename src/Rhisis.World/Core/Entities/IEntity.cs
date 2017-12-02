@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Core.Components;
+﻿using Rhisis.Core.Common;
+using Rhisis.World.Core.Components;
 using System;
 using System.Collections.Generic;
 
@@ -18,6 +19,11 @@ namespace Rhisis.World.Core.Entities
         /// Gets the entity current context.
         /// </summary>
         IContext Context { get; }
+
+        /// <summary>
+        /// Gets or sets the 
+        /// </summary>
+        WorldEntityType EntityType { get; set; }
 
         /// <summary>
         /// Gets the list of the components attached to this entity.

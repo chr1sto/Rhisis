@@ -1,7 +1,7 @@
 ﻿using Ether.Network;
-using Rhisis.Core.Common;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
+using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;
 using System;
@@ -249,7 +249,7 @@ namespace Rhisis.World.Packets
                 packet.Write((short)(otherObjectComponent.Angle * 10f));
                 packet.Write(otherObjectComponent.ObjectId);
 
-                if (otherObjectComponent.EntityType == WorldEntityType.Player)
+                if (entity.EntityType == WorldEntityType.Player)
                 {
                     packet.Write<short>(0);
                     packet.Write<byte>(1); // is player?
@@ -332,7 +332,7 @@ namespace Rhisis.World.Packets
                     packet.Write(-1); // pet ?
                     packet.Write(0); // buffs ?
                 }
-                else if (otherObjectComponent.EntityType == WorldEntityType.Monster)
+                else if (entity.EntityType == WorldEntityType.Monster)
                 {
                     packet.Write<short>(5);
                     packet.Write<byte>(0);

@@ -93,14 +93,13 @@ namespace Rhisis.World.Game
                     {
                         for (int i = 0; i < rgnElement.Count; ++i)
                         {
-                            var monster = map.Context.CreateEntity();
+                            var monster = map.Context.CreateEntity(WorldEntityType.Monster);
 
                             var objectComponent = new ObjectComponent
                             {
                                 MapId = mapId,
                                 ModelId = rgnElement.Model,
                                 Type = WorldObjectType.Mover,
-                                EntityType = WorldEntityType.Monster,
                                 Position = respawner.GetRandomPosition(),
                                 Angle = RandomHelper.FloatRandom(0, 360f),
                                 Name = WorldServer.Movers[rgnElement.Model].Name,

@@ -15,6 +15,8 @@ namespace Rhisis.World.Core
 
         IEntity CreateEntity();
 
+        IEntity CreateEntity(WorldEntityType entityType);
+
         bool DeleteEntity(IEntity entity);
 
         IEntity FindEntity(Guid id);

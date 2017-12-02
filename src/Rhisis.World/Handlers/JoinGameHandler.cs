@@ -7,6 +7,7 @@ using Rhisis.Core.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Structures;
+using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Packets;
 
@@ -40,14 +41,13 @@ namespace Rhisis.World.Handlers
             var map = WorldServer.Maps[character.MapId];
 
             // 1st: Create the player entity with the map context
-            client.Player = map.Context.CreateEntity();
+            client.Player = map.Context.CreateEntity(WorldEntityType.Player);
 
             // 2nd: create the components
             var objectComponent = new ObjectComponent
             {
                 ModelId = character.Gender == 0 ? 11 : 12,
                 Type = WorldObjectType.Mover,
-                EntityType = WorldEntityType.Player,
                 MapId = character.MapId,
                 Position = new Vector3(character.PosX, character.PosY, character.PosZ),
                 Angle = character.Angle,
