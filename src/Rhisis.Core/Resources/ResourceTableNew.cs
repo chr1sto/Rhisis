@@ -7,26 +7,45 @@ using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Resources
 {
+    /// <summary>
+    /// Represents the FlyFF Resource table parser (files such as propItem.txt, propMover.txt, etc...)
+    /// </summary>
     public class ResourceTableNew : FileStream, IDisposable
     {
         private readonly IDictionary<string, int> _defines;
         private readonly IDictionary<string, string> _texts;
+        private readonly IList<string> _headers;
+        private readonly IList<IEnumerable<string>> _datas;
         private readonly StreamReader _reader;
 
-        private IList<string> _headers;
-        private IList<IEnumerable<string>> _datas;
         private int _headerIndex;
 
+        /// <summary>
+        /// Creates a new <see cref="ResourceTableNew"/> instance.
+        /// </summary>
+        /// <param name="path">Resource path</param>
         public ResourceTableNew(string path)
             : this(path, 0, null, null)
         {
         }
 
+        /// <summary>
+        /// Creates a new <see cref="ResourceTableNew"/> instance.
+        /// </summary>
+        /// <param name="path">Resource path</param>
+        /// <param name="headerIndex">Header index in file</param>
         public ResourceTableNew(string path, int headerIndex)
             : this(path, headerIndex, null, null)
         {
         }
 
+        /// <summary>
+        /// Creates a new <see cref="ResourceTableNew"/> instance.
+        /// </summary>
+        /// <param name="path">Resource path</param>
+        /// <param name="headerIndex">Header index in file</param>
+        /// <param name="defines">Defines used to transform</param>
+        /// <param name="texts">Texts used to transform</param>
         public ResourceTableNew(string path, int headerIndex, IDictionary<string, int> defines, IDictionary<string, string> texts)
             : base(path, FileMode.Open, FileAccess.Read)
         {
@@ -34,24 +53,59 @@ namespace Rhisis.Core.Resources
             this._headerIndex = headerIndex;
             this._defines = defines;
             this._texts = texts;
-            this._headers = new List<string>();
+            this._headers = this.ReadHeader();
             this._datas = new List<IEnumerable<string>>();
-
-            this.ReadHeader();
+            
             this.ReadContent();
         }
 
-        private void ReadHeader()
+        /// <summary>
+        /// Gets the list of all records mapped for the type passed as template parameter.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetRecords<T>() where T : class, new()
+        {
+            var records = new List<T>();
+            var typeProperties = this.GetPropertiesWithDataMemberAttribute<T>();
+
+            foreach (var record in this._datas)
+            {
+                T obj = (T)Activator.CreateInstance(typeof(T));
+
+                foreach (var property in typeProperties)
+                {
+                    string dataMemberName = this.GetDataMemberName(property);
+                    int index = this._headers.IndexOf(dataMemberName);
+
+                    if (index != -1)
+                        property.SetValue(obj, Convert.ChangeType(record.ElementAt(index), property.PropertyType));
+                }
+
+                records.Add(obj);
+            }
+
+            return records;
+        }
+
+        /// <summary>
+        /// Reads and returns a list with the <see cref="ResourceTableNew"/> headers.
+        /// </summary>
+        /// <returns></returns>
+        private IList<string> ReadHeader()
         {
             for (int i = 0; i < this._headerIndex; i++)
                 this._reader.ReadLine();
 
-            this._headers = this._reader.ReadLine()
-                .Replace("/", string.Empty)
-                .Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries)
-                .ToList();
+            return this._reader.ReadLine()
+                        .Replace("/", string.Empty)
+                        .Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries)
+                        .ToList();
         }
 
+        /// <summary>
+        /// Reads the content of the <see cref="ResourceTableNew"/>.
+        /// </summary>
         private void ReadContent()
         {
             while (!this._reader.EndOfStream)
@@ -74,6 +128,12 @@ namespace Rhisis.Core.Resources
             }
         }
 
+        /// <summary>
+        /// Check if the data passed as parameter exists in the defines or texts dictionnary.
+        /// If it exists replace the data by the first occurence, else transform it.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         private string Transform(string data)
         {
             if (this._defines.ContainsKey(data))
@@ -84,32 +144,11 @@ namespace Rhisis.Core.Resources
             return data.Replace("=", "0").Replace(",", ".").Replace("\"", "");
         }
 
-        public IEnumerable<T> GetRecords<T>() where T : class, new()
-        {
-            var records = new List<T>();
-            var typeProperties = this.GetPropertiesWithDataMemberAttribute<T>();
-
-            foreach (var record in this._datas)
-            {
-                T obj = (T)Activator.CreateInstance(typeof(T));
-
-                foreach (var property in typeProperties)
-                {
-                    string dataMemberName = this.GetDataMemberName(property);
-                    int index = this._headers.IndexOf(dataMemberName);
-
-                    if (index != -1)
-                    {
-                        property.SetValue(obj, Convert.ChangeType(record.ElementAt(index), property.PropertyType));
-                    }
-                }
-
-                records.Add(obj);
-            }
-
-            return records;
-        }
-
+        /// <summary>
+        /// Gets the properties of the type passed as template parameter that has the custom attribute <see cref="DataMemberAttribute"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         private IEnumerable<PropertyInfo> GetPropertiesWithDataMemberAttribute<T>()
         {
             return from x in typeof(T).GetProperties()
@@ -117,6 +156,11 @@ namespace Rhisis.Core.Resources
                    select x;
         }
 
+        /// <summary>
+        /// Gets the <see cref="DataMemberAttribute"/> name value from the given property.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
         private string GetDataMemberName(PropertyInfo property)
         {
             var dataMemberAttribute = property.GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute;
@@ -124,6 +168,10 @@ namespace Rhisis.Core.Resources
             return dataMemberAttribute?.Name;
         }
 
+        /// <summary>
+        /// Disposes the resources.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
