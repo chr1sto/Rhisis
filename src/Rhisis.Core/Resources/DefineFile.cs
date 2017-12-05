@@ -23,12 +23,17 @@ namespace Rhisis.Core.Resources
         /// </summary>
         /// <param name="define"></param>
         /// <returns></returns>
-        public object this[string define] => this._defines.ContainsKey(define) ? this._defines[define] : null;
+        public object this[string define] => this.GetValue<object>(define);
 
         /// <summary>
         /// Gets the define directive.
         /// </summary>
         public IReadOnlyDictionary<string, object> Defines => this._defines as IReadOnlyDictionary<string, object>;
+
+        /// <summary>
+        /// Gets the number of definitions.
+        /// </summary>
+        public int Count => this._defines.Count;
 
         /// <summary>
         /// Creates a new DefineFile instance.
@@ -40,6 +45,20 @@ namespace Rhisis.Core.Resources
             this._defines = new Dictionary<string, object>();
 
             this.Read();
+        }
+
+        /// <summary>
+        /// Get the value of a define key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="defineKey"></param>
+        /// <returns></returns>
+        public T GetValue<T>(string defineKey)
+        {
+            if (this._defines.TryGetValue(defineKey, out object value))
+                return (T)Convert.ChangeType(value, typeof(T));
+
+            throw new KeyNotFoundException();
         }
 
         /// <summary>
@@ -93,21 +112,25 @@ namespace Rhisis.Core.Resources
                 {
                     newDefineValue = this._defines[defineValue];
                 }
-                else if (defineValue.StartsWith(DwordCast))
+                else if (defineValue.StartsWith(DwordCast, StringComparison.OrdinalIgnoreCase))
                 {
                     newDefineValue = Convert.ToUInt32(defineValue.Replace(DwordCast, string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }
-                else if (defineValue.StartsWith(WordCast))
+                else if (defineValue.StartsWith(WordCast, StringComparison.OrdinalIgnoreCase))
                 {
                     newDefineValue = Convert.ToUInt16(defineValue.Replace(WordCast, string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }
-                else if (defineValue.StartsWith(ByteCast))
+                else if (defineValue.StartsWith(ByteCast, StringComparison.OrdinalIgnoreCase))
                 {
                     newDefineValue = Convert.ToByte(defineValue.Replace(ByteCast, string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
                 }
-                else if (defineValue.EndsWith("L"))
+                else if (defineValue.EndsWith("L", StringComparison.OrdinalIgnoreCase))
                 {
                     newDefineValue = Convert.ToInt64(defineValue.Replace("L", string.Empty), defineValue.StartsWith("0x") ? 16 : 10);
+                }
+                else if (defineValue.StartsWith("\"") && defineValue.EndsWith("\""))
+                {
+                    newDefineValue = defineValue.Trim('"');
                 }
                 else
                 {
