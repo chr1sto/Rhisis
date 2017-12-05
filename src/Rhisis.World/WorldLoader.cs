@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game;
 using System;
@@ -34,6 +35,7 @@ namespace Rhisis.World
 
             this.LoadDefinesAndTexts();
             this.LoadMovers();
+            this.LoadItems();
             this.LoadMaps();
             this.CleanUp();
 
@@ -103,6 +105,20 @@ namespace Rhisis.World
                 }
             }
             Logger.Info("{0} movers loaded!\t\t", _movers.Count);
+        }
+
+        private void LoadItems()
+        {
+            string propItemPath = Path.Combine(ResourcePath, "dataSub2", "propItem.txt");
+
+            Logger.Loading("Loading items...");
+            Profiler.Start("LoadItems");
+            using (var propItem = new ResourceTableNew(propItemPath, 1, _defines, _texts))
+            {
+                var items = propItem.GetRecords<ItemData>();
+            }
+            var time = Profiler.Stop("LoadItems");
+            Logger.Info("{0} itesms loaded! in {1}ms\t\t", 0, time.ElapsedMilliseconds);
         }
 
         private void LoadMaps()
