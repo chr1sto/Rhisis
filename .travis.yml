@@ -11,3 +11,4 @@ script:
   - dotnet build src/Rhisis.Login/ -f netcoreapp2.0
   - dotnet build src/Rhisis.Cluster/ -f netcoreapp2.0
   - dotnet build src/Rhisis.World/ -f netcoreapp2.0
+  - dotnet test test/Rhisis.Core.Test/
