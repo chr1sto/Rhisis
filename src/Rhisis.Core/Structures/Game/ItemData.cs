@@ -11,7 +11,7 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "ver6")]
         public int Version { get; set; }
 
-        [DataMember(Name = "dwId")]
+        [DataMember(Name = "dwID")]
         public int Id { get; set; }
 
         [DataMember(Name = "szName")]

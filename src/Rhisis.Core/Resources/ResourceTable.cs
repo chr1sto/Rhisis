@@ -1,198 +1,186 @@
-﻿using Rhisis.Core.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Resources
 {
     /// <summary>
-    /// This class is used to parse and exploit the FlyFF resources like propItem.txt, propSkills.txt, etc...
+    /// Represents the FlyFF Resource table parser (files such as propItem.txt, propMover.txt, etc...)
     /// </summary>
-    public class ResourceTable : FileStream
+    public class ResourceTable : FileStream, IDisposable
     {
-        private readonly List<string> _headers;
-        private readonly ICollection<ResourceTableData> _tableData;
-        private IDictionary<string, int> _defines;
-        private IDictionary<string, string> _texts;
+        private readonly IDictionary<string, int> _defines;
+        private readonly IDictionary<string, string> _texts;
+        private readonly IList<string> _headers;
+        private readonly IList<IEnumerable<string>> _datas;
+        private readonly StreamReader _reader;
+
+        private int _headerIndex;
 
         /// <summary>
-        /// Gets the reading index.
+        /// Creates a new <see cref="ResourceTable"/> instance.
         /// </summary>
-        public int ReadingIndex { get; private set; }
-
-        /// <summary>
-        /// Creates a new ResourceTable instance using a file path.
-        /// </summary>
-        /// <param name="filePath"></param>
-        public ResourceTable(string filePath)
-            : base(filePath, FileMode.Open, FileAccess.ReadWrite)
+        /// <param name="path">Resource path</param>
+        public ResourceTable(string path)
+            : this(path, 0, null, null)
         {
-            this.ReadingIndex = -1;
-            this._headers = new List<string>();
-            this._tableData = new List<ResourceTableData>();
         }
 
         /// <summary>
-        /// Set the table headers.
+        /// Creates a new <see cref="ResourceTable"/> instance.
         /// </summary>
-        /// <param name="headers"></param>
-        public void SetTableHeaders(params string[] headers) => this._headers.AddRange(headers);
-
-        /// <summary>
-        /// Add a dictionary of defines to this resource table.
-        /// </summary>
-        /// <param name="definesToAdd"></param>
-        public void AddDefines(IDictionary<string, int> definesToAdd) => this._defines = definesToAdd;
-
-        /// <summary>
-        /// Add a dictionary of texts to this resource table.
-        /// </summary>
-        /// <param name="textsToAdd"></param>
-        public void AddTexts(IDictionary<string, string> textsToAdd) => this._texts = textsToAdd;
-
-        /// <summary>
-        /// Read the resource table.
-        /// </summary>
-        /// <returns></returns>
-        public bool Read()
+        /// <param name="path">Resource path</param>
+        /// <param name="headerIndex">Header index in file</param>
+        public ResourceTable(string path, int headerIndex)
+            : this(path, headerIndex, null, null)
         {
-            ++this.ReadingIndex;
-
-            if (this.ReadingIndex > this._tableData.Count - 1)
-                return false;
-
-            return true;
         }
 
         /// <summary>
-        /// Parse the resource table raw data.
+        /// Creates a new <see cref="ResourceTable"/> instance.
         /// </summary>
-        public void Parse()
+        /// <param name="path">Resource path</param>
+        /// <param name="headerIndex">Header index in file</param>
+        /// <param name="defines">Defines used to transform</param>
+        /// <param name="texts">Texts used to transform</param>
+        public ResourceTable(string path, int headerIndex, IDictionary<string, int> defines, IDictionary<string, string> texts)
+            : base(path, FileMode.Open, FileAccess.Read)
         {
-            var reader = new StreamReader(this);
-            while (!reader.EndOfStream)
-            {
-                string line = reader.ReadLine().Trim();
-
-                // Remove comments from line
-                if (line.StartsWith("//"))
-                    continue;
-                if (line.StartsWith("/*"))
-                {
-                    while (line.Contains("*/") == false)
-                        line = reader.ReadLine();
-                    continue;
-                }
-                if (line.Contains("//"))
-                    line = line.Remove(line.IndexOf("/"));
-
-                line = line.Replace(",,", ",=,").Replace(",", "\t");
-                string[] lineData = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (lineData.Length == this._headers.Count)
-                {
-                    var data = new ResourceTableData();
-
-                    for (int i = 0; i < lineData.Length; ++i)
-                    {
-                        string dataValue = lineData[i].Trim();
-
-                        if (this._defines.ContainsKey(dataValue))
-                            dataValue = this._defines[dataValue].ToString();
-                        else if (this._texts.ContainsKey(dataValue))
-                            dataValue = this._texts[dataValue];
-
-                        dataValue = dataValue.Replace("=", "0").Replace(",", ".").Replace("\"", "");
-                        data[this._headers[i]] = dataValue;
-                    }
-
-                    this._tableData.Add(data);
-                }
-            }
+            this._reader = new StreamReader(this);
+            this._headerIndex = headerIndex;
+            this._defines = defines;
+            this._texts = texts;
+            this._headers = this.ReadHeader();
+            this._datas = new List<IEnumerable<string>>();
+            
+            this.ReadContent();
         }
 
         /// <summary>
-        /// Gets the number of data inside this resource table.
-        /// </summary>
-        public int Count() => this._tableData.Count;
-
-        /// <summary>
-        /// Gets the value of the current line using a header key.
+        /// Gets the list of all records mapped for the type passed as template parameter.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
         /// <returns></returns>
-        public T Get<T>(string key)
+        public IEnumerable<T> GetRecords<T>() where T : class, new()
         {
-            var value = this._tableData.ElementAt(this.ReadingIndex)?[key];
+            var records = new List<T>();
+            var typeProperties = this.GetPropertiesWithDataMemberAttribute<T>();
 
-            try
+            foreach (var record in this._datas)
             {
-                if (string.IsNullOrEmpty(value))
-                    return default(T);
+                T obj = (T)Activator.CreateInstance(typeof(T));
 
-                if (value.StartsWith("0x"))
+                foreach (var property in typeProperties)
                 {
-                    value = value.Remove(0, 2);
-                    value = uint.Parse(value, NumberStyles.HexNumber).ToString();
+                    string dataMemberName = this.GetDataMemberName(property);
+                    int index = this._headers.IndexOf(dataMemberName);
+
+                    if (index != -1)
+                        property.SetValue(obj, Convert.ChangeType(record.ElementAt(index), property.PropertyType));
                 }
 
-                return (T)Convert.ChangeType(value, typeof(T));
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Unable to get the value of key: {0}.", key);
-                Logger.Debug("StackTrace: {0}", e.StackTrace);
+                records.Add(obj);
             }
 
-            return default(T);
+            return records;
         }
 
         /// <summary>
-        /// Dispose the <see cref="ResourceTable"/> resources.
+        /// Reads and returns a list with the <see cref="ResourceTable"/> headers.
+        /// </summary>
+        /// <returns></returns>
+        private IList<string> ReadHeader()
+        {
+            for (int i = 0; i < this._headerIndex; i++)
+                this._reader.ReadLine();
+
+            return this._reader.ReadLine()
+                        .Replace("/", string.Empty)
+                        .Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries)
+                        .ToList();
+        }
+
+        /// <summary>
+        /// Reads the content of the <see cref="ResourceTable"/>.
+        /// </summary>
+        private void ReadContent()
+        {
+            while (!this._reader.EndOfStream)
+            {
+                string line = this._reader.ReadLine();
+
+                if (!string.IsNullOrEmpty(line) && !line.StartsWith("//"))
+                {
+                    line = line.Replace(",,", ",=,").Replace(",", "\t");
+                    string[] content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (content.Length == this._headers.Count)
+                    {
+                        for (int i = 0; i < content.Length; i++)
+                            content[i] = this.Transform(content[i]);
+
+                        this._datas.Add(content);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check if the data passed as parameter exists in the defines or texts dictionnary.
+        /// If it exists replace the data by the first occurence, else transform it.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private string Transform(string data)
+        {
+            if (this._defines != null && this._defines.ContainsKey(data))
+                return this._defines[data].ToString();
+            else if (this._texts != null && this._texts.ContainsKey(data))
+                return this._texts[data].ToString();
+
+            return data.Replace("=", "0").Replace(",", ".").Replace("\"", "");
+        }
+
+        /// <summary>
+        /// Gets the properties of the type passed as template parameter that has the custom attribute <see cref="DataMemberAttribute"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        private IEnumerable<PropertyInfo> GetPropertiesWithDataMemberAttribute<T>()
+        {
+            return from x in typeof(T).GetProperties()
+                   where x.GetCustomAttribute(typeof(DataMemberAttribute)) != null
+                   select x;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="DataMemberAttribute"/> name value from the given property.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        private string GetDataMemberName(PropertyInfo property)
+        {
+            var dataMemberAttribute = property.GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute;
+
+            return dataMemberAttribute?.Name;
+        }
+
+        /// <summary>
+        /// Disposes the resources.
         /// </summary>
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                this._tableData.Clear();
                 this._headers.Clear();
+                this._datas.Clear();
             }
 
             base.Dispose(disposing);
-        }
-    }
-
-    public class ResourceTableData
-    {
-        private readonly Dictionary<string, string> _tableData;
-
-        /// <summary>
-        /// Gets or sets the resource table data.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public string this[string key]
-        {
-            get { return this._tableData.ContainsKey(key) ? this._tableData[key] : string.Empty; }
-            set
-            {
-                if (this._tableData.ContainsKey(key))
-                    this._tableData[key] = value;
-                else
-                    this._tableData.Add(key, value);
-            }
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="ResourceTableData"/> instance.
-        /// </summary>
-        public ResourceTableData()
-        {
-            this._tableData = new Dictionary<string, string>();
         }
     }
 }

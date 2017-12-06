@@ -19,11 +19,17 @@ namespace Rhisis.World
         private static readonly IDictionary<string, int> _defines = new Dictionary<string, int>();
         private static readonly IDictionary<string, string> _texts = new Dictionary<string, string>();
         private static readonly IDictionary<int, MoverData> _movers = new Dictionary<int, MoverData>();
+        private static readonly IDictionary<int, ItemData> _items = new Dictionary<int, ItemData>();
 
         /// <summary>
         /// Gets the Movers data.
         /// </summary>
         public static IReadOnlyDictionary<int, MoverData> Movers => _movers as IReadOnlyDictionary<int, MoverData>;
+
+        /// <summary>
+        /// Gets the Items data.
+        /// </summary>
+        public static IReadOnlyDictionary<int, ItemData> Items => _items as IReadOnlyDictionary<int, ItemData>;
 
         /// <summary>
         /// Loads the server's resources.
@@ -85,23 +91,16 @@ namespace Rhisis.World
             string propMoverPath = Path.Combine(ResourcePath, "data", "propMover.txt");
 
             Logger.Loading("Loading movers...");
-            using (var propMoverFile = new ResourceTable(propMoverPath))
+            using (var propMoverFile = new ResourceTable(propMoverPath, 1, _defines, _texts))
             {
-                propMoverFile.AddDefines(_defines);
-                propMoverFile.AddTexts(_texts);
-                propMoverFile.SetTableHeaders("dwID", "szName", "dwAI", "dwStr", "dwSta", "dwDex", "dwInt", "dwHR", "dwER", "dwRace", "dwBelligerence", "dwGender", "dwLevel", "dwFlightLevel", "dwSize", "dwClass", "bIfPart", "dwKarma", "dwUseable", "dwActionRadius", "dwAtkMin", "dwAtkMax", "dwAtk1", "dwAtk2", "dwAtk3", "dwHorizontalRate", "dwVerticalRate", "dwDiagonalRate", "dwThrustRate", "dwChestRate", "dwHeadRate", "dwArmRate", "dwLegRate", "dwAttackSpeed", "dwReAttackDelay", "dwAddHp", "dwAddMp", "dwNaturealArmor", "nAbrasion", "nHardness", "dwAdjAtkDelay", "eElementType", "wElementAtk", "dwHideLevel", "fSpeed", "dwShelter", "bFlying", "dwJumping", "dwAirJump", "bTaming", "dwResistMagic", "fResistElectricity", "fResistFire", "fResistWind", "fResistWater", "fResistEarth", "dwCash", "dwSourceMaterial", "dwMaterialAmount", "dwCohesion", "dwHoldingTime", "dwCorrectionValue", "dwExpValue", "nFxpValue", "nBodyState", "dwAddAbility", "bKillable", "dwVirtItem1", "dwVirtType1", "dwVirtItem2", "dwVirtType2", "dwVirtItem3", "dwVirtType3", "dwSndAtk1", "dwSndAtk2", "dwSndDie1", "dwSndDie2", "dwSndDmg1", "dwSndDmg2", "dwSndDmg3", "dwSndIdle1", "dwSndIdle2", "szComment");
-                propMoverFile.Parse();
+                var movers = propMoverFile.GetRecords<MoverData>();
 
-                while (propMoverFile.Read())
+                foreach (var mover in movers)
                 {
-                    var mover = new MoverData(propMoverFile);
-
                     if (_movers.ContainsKey(mover.Id))
                         _movers[mover.Id] = mover;
                     else
                         _movers.Add(mover.Id, mover);
-
-                    Logger.Loading("Loading {0}/{1} movers...", propMoverFile.ReadingIndex, propMoverFile.Count());
                 }
             }
             Logger.Info("{0} movers loaded!\t\t", _movers.Count);
@@ -112,13 +111,19 @@ namespace Rhisis.World
             string propItemPath = Path.Combine(ResourcePath, "dataSub2", "propItem.txt");
 
             Logger.Loading("Loading items...");
-            Profiler.Start("LoadItems");
-            using (var propItem = new ResourceTableNew(propItemPath, 1, _defines, _texts))
+            using (var propItem = new ResourceTable(propItemPath, 1, _defines, _texts))
             {
                 var items = propItem.GetRecords<ItemData>();
+
+                foreach (var item in items)
+                {
+                    if (_items.ContainsKey(item.Id))
+                        _items[item.Id] = item;
+                    else
+                        _items.Add(item.Id, item);
+                }
             }
-            var time = Profiler.Stop("LoadItems");
-            Logger.Info("{0} itesms loaded! in {1}ms\t\t", 0, time.ElapsedMilliseconds);
+            Logger.Info("{0} items loaded!\t\t", _items.Count);
         }
 
         private void LoadMaps()
