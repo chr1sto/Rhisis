@@ -41,20 +41,31 @@ namespace Rhisis.Core.Test.Resources
         }
 
         /// <summary>
-        /// Gets a numeric define value.
+        /// Gets a numeric define value from the <see cref="DefineFile"/> method.
         /// </summary>
         [Fact]
-        public void GetDefineValueAsNumber()
+        public void GetDefineValueAsNumberFromMethod()
         {
             var defines = new DefineFile(DefineFilePath);
-
             Assert.NotNull(defines);
 
-            int defineValueFromIndexer = (int)defines[TextTwoKey];
-            int defineValueFromMethod = defines.GetValue<int>(TextTwoKey);
+            int value = (int)defines[TextTwoKey];
+            Assert.Equal(TextTwoValue, value);
 
-            Assert.Equal(TextTwoValue, defineValueFromIndexer);
-            Assert.Equal(TextTwoValue, defineValueFromMethod);
+            defines.Dispose();
+        }
+
+        /// <summary>
+        /// Gets a numeric define value from the <see cref="DefineFile"/> indexer.
+        /// </summary>
+        [Fact]
+        public void GetDefineValueAsNumberFromIndexer()
+        {
+            var defines = new DefineFile(DefineFilePath);
+            Assert.NotNull(defines);
+            
+            int value = defines.GetValue<int>(TextTwoKey);
+            Assert.Equal(TextTwoValue, value);
 
             defines.Dispose();
         }
@@ -66,7 +77,6 @@ namespace Rhisis.Core.Test.Resources
         public void TryGetCommentedDefineValue()
         {
             var defines = new DefineFile(DefineFilePath);
-
             Assert.NotNull(defines);
 
             var exception = Assert.Throws<KeyNotFoundException>(() =>

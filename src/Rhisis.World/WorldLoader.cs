@@ -75,8 +75,6 @@ namespace Rhisis.World
             {
                 using (var textFile = new TextFile(textFilePath))
                 {
-                    textFile.Parse();
-
                     foreach (var text in textFile.Texts)
                     {
                         if (!_texts.ContainsKey(text.Key) && !string.IsNullOrEmpty(text.Value))
@@ -171,7 +169,6 @@ namespace Rhisis.World
 
             using (var textFile = new TextFile(Path.Combine(ResourcePath, "data", "World.inc")))
             {
-                textFile.Parse();
                 foreach (var text in textFile.Texts)
                     worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
             }
