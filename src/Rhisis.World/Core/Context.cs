@@ -15,6 +15,7 @@ namespace Rhisis.World.Core
     public class Context : IContext, IDisposable
     {
         private static readonly object _syncSystemLock = new object();
+        private static readonly object _syncPlayersLock = new object();
         private static readonly Lazy<IContext> lazyInstance = new Lazy<IContext>(() => new Context());
 
         /// <summary>
@@ -87,7 +88,12 @@ namespace Rhisis.World.Core
             entity.EntityType = type;
 
             if (entity.EntityType == WorldEntityType.Player)
-                this._playersEntities.Add(entity);
+            {
+                lock (_syncPlayersLock)
+                {
+                    this._playersEntities.Add(entity);
+                }
+            }
 
             return entity;
         }
@@ -102,7 +108,12 @@ namespace Rhisis.World.Core
             bool removed = this._entities.Remove(entity.Id);
 
             if (entity.EntityType == WorldEntityType.Player && this._playersEntities.Contains(entity))
-                this._playersEntities.Remove(entity);
+            {
+                lock (_syncPlayersLock)
+                {
+                    removed = this._playersEntities.Remove(entity);
+                }
+            }
 
             return removed;
         }
@@ -162,12 +173,15 @@ namespace Rhisis.World.Core
 
                     this.Time = deltaTime / 1000f;
 
-                    foreach (var entity in this._playersEntities)
+                    lock (_syncPlayersLock)
                     {
-                        for (int i = 0; i < this._systems.Count; i++)
+                        foreach (var entity in this._playersEntities)
                         {
-                            if (this._systems[i] is IUpdateSystem updateSystem && updateSystem.Match(entity))
-                                updateSystem.Execute(entity);
+                            for (int i = 0; i < this._systems.Count; i++)
+                            {
+                                if (this._systems[i] is IUpdateSystem updateSystem/* && updateSystem.Match(entity)*/)
+                                    updateSystem.Execute(entity);
+                            }
                         }
                     }
 

@@ -10,6 +10,10 @@ using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Game;
 using Rhisis.Database;
+using System.Linq;
+using Rhisis.World.Systems;
+using Rhisis.World.Core;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World
 {
@@ -108,6 +112,35 @@ namespace Rhisis.World
         }
 
         /// <summary>
+        /// Despawns the current player and notify other players arround.
+        /// </summary>
+        /// <param name="currentMap"></param>
+        /// <param name="entityObjectComponent"></param>
+        private void DespawnPlayer(Map currentMap, ObjectComponent entityObjectComponent)
+        {
+            var entitiesAround = from x in currentMap.Context.Entities
+                                 let otherEntityObjectComponent = x.GetComponent<ObjectComponent>()
+                                 where entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilitySystem.VisibilityRange)
+                                 select x;
+
+            foreach (var entity in entitiesAround)
+            {
+                var otherEntityObjectComponent = entity.GetComponent<ObjectComponent>();
+
+                if (entity.EntityType == WorldEntityType.Player)
+                {
+                    var playerComponent = entity.GetComponent<PlayerComponent>();
+
+                    WorldPacketFactory.SendDespawnObject(playerComponent.Connection, this.Player);
+                }
+
+                otherEntityObjectComponent.Entities.Remove(this.Player);
+            }
+
+            currentMap.Context.DeleteEntity(this.Player);
+        }
+
+        /// <summary>
         /// Disposes the <see cref="WorldClient"/> resources.
         /// </summary>
         public override void Dispose()
@@ -115,7 +148,9 @@ namespace Rhisis.World
             var entityObjectComponent = this.Player?.GetComponent<ObjectComponent>();
 
             if (entityObjectComponent != null && WorldServer.Maps.TryGetValue(entityObjectComponent.MapId, out Map currentMap))
-                currentMap.Context.DeleteEntity(this.Player);
+            {
+                this.DespawnPlayer(currentMap, entityObjectComponent);
+            }
 
             this.Save();
 
