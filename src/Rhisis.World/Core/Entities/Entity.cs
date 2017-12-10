@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Core.Components;
+﻿using Rhisis.Core.Helpers;
+using Rhisis.World.Core.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace Rhisis.World.Core.Entities
     /// <summary>
     /// Defines a basic and empty entity.
     /// </summary>
-    public class Entity : IEntity, IDisposable
+    public class Entity : IEntity, IDisposable, IEqualityComparer<IEntity>
     {
         private readonly IDictionary<Type, IComponent> _components;
         private bool _disposedValue;
@@ -26,7 +27,7 @@ namespace Rhisis.World.Core.Entities
         /// <summary>
         /// Gets the entity id.
         /// </summary>
-        public Guid Id { get; }
+        public int Id { get; }
 
         /// <summary>
         /// Gets or sets the entity type.
@@ -49,7 +50,7 @@ namespace Rhisis.World.Core.Entities
         /// <param name="context">Current context of the entity</param>
         internal Entity(IContext context)
         {
-            this.Id = Guid.NewGuid();
+            this.Id = RandomHelper.GenerateUniqueId();
             this.Context = context;
             this._components = new Dictionary<Type, IComponent>();
         }
@@ -137,6 +138,18 @@ namespace Rhisis.World.Core.Entities
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public bool Equals(IEntity x, IEntity y)
+        {
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(IEntity obj)
+        {
+            int hCode = obj.Id ^ (int)obj.EntityType;
+
+            return hCode.GetHashCode();
         }
     }
 }

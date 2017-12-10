@@ -25,7 +25,7 @@ namespace Rhisis.World.Core
 
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly CancellationToken _cancellationToken;
-        private readonly IDictionary<Guid, IEntity> _entities;
+        private readonly IDictionary<int, IEntity> _entities;
         private readonly IList<IEntity> _playersEntities;
         private readonly IList<ISystem> _systems;
         private bool _disposedValue;
@@ -49,7 +49,7 @@ namespace Rhisis.World.Core
         {
             this._cancellationTokenSource = new CancellationTokenSource();
             this._cancellationToken = this._cancellationTokenSource.Token;
-            this._entities = new ConcurrentDictionary<Guid, IEntity>();
+            this._entities = new ConcurrentDictionary<int, IEntity>();
             this._playersEntities = new List<IEntity>();
             this._systems = new List<ISystem>();
         }
@@ -123,7 +123,7 @@ namespace Rhisis.World.Core
         /// </summary>
         /// <param name="id">Entity id.</param>
         /// <returns>The entity</returns>
-        public IEntity FindEntity(Guid id) => this._entities.TryGetValue(id, out IEntity entity) ? entity : null;
+        public IEntity FindEntity(int id) => this._entities.TryGetValue(id, out IEntity entity) ? entity : null;
 
         /// <summary>
         /// Add a new system to the context.

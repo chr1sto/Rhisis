@@ -21,16 +21,16 @@ namespace Rhisis.World.Packets
 
             using (var packet = new FFPacket())
             {
-                packet.StartNewMergedPacket(objectComponent.ObjectId, SnapshotType.ENVIRONMENTALL, 0x0000FF00);
+                packet.StartNewMergedPacket(player.Id, SnapshotType.ENVIRONMENTALL, 0x0000FF00);
                 packet.Write(0); // Get weather by season
 
-                packet.StartNewMergedPacket(objectComponent.ObjectId, SnapshotType.WORLD_READINFO);
+                packet.StartNewMergedPacket(player.Id, SnapshotType.WORLD_READINFO);
                 packet.Write(objectComponent.MapId);
                 packet.Write(objectComponent.Position.X);
                 packet.Write(objectComponent.Position.Y);
                 packet.Write(objectComponent.Position.Z);
 
-                packet.StartNewMergedPacket(objectComponent.ObjectId, SnapshotType.ADD_OBJ);
+                packet.StartNewMergedPacket(player.Id, SnapshotType.ADD_OBJ);
 
                 // Common object properties
                 packet.Write((byte)objectComponent.Type);
@@ -42,7 +42,7 @@ namespace Rhisis.World.Packets
                 packet.Write(objectComponent.Position.Y);
                 packet.Write(objectComponent.Position.Z);
                 packet.Write((short)(objectComponent.Angle * 10));
-                packet.Write(objectComponent.ObjectId);
+                packet.Write(player.Id);
 
                 packet.Write<short>(0); // m_dwMotion
                 packet.Write<byte>(1); // m_bPlayer
@@ -236,7 +236,7 @@ namespace Rhisis.World.Packets
                 var otherHumanComponent = entity.GetComponent<HumanComponent>();
                 var otherPlayerComponent = entity.GetComponent<PlayerComponent>();
 
-                packet.StartNewMergedPacket(otherObjectComponent.ObjectId, SnapshotType.ADD_OBJ);
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.ADD_OBJ);
 
                 packet.Write((byte)otherObjectComponent.Type);
                 packet.Write(otherObjectComponent.ModelId);
@@ -247,7 +247,7 @@ namespace Rhisis.World.Packets
                 packet.Write(otherObjectComponent.Position.Y);
                 packet.Write(otherObjectComponent.Position.Z);
                 packet.Write((short)(otherObjectComponent.Angle * 10f));
-                packet.Write(otherObjectComponent.ObjectId);
+                packet.Write(entity.Id);
 
                 if (entity.EntityType == WorldEntityType.Player)
                 {
@@ -372,7 +372,7 @@ namespace Rhisis.World.Packets
 
             using (var packet = new FFPacket())
             {
-                packet.StartNewMergedPacket(entityObjectComponent.ObjectId, SnapshotType.DEL_OBJ);
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.DEL_OBJ);
 
                 client.Send(packet);
             }

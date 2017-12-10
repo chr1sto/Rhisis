@@ -31,7 +31,7 @@ namespace Rhisis.World.Packets
 
             using (var packet = new FFPacket())
             {
-                packet.StartNewMergedPacket(objectComponent.ObjectId, SnapshotType.DESTPOS);
+                packet.StartNewMergedPacket(player.Id, SnapshotType.DESTPOS);
                 packet.Write(movableComponent.DestinationPosition.X);
                 packet.Write(movableComponent.DestinationPosition.Y);
                 packet.Write(movableComponent.DestinationPosition.Z);

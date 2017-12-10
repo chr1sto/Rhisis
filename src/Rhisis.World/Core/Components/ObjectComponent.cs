@@ -9,11 +9,6 @@ namespace Rhisis.World.Core.Components
     public class ObjectComponent : IComponent
     {
         /// <summary>
-        /// Gets the unique object id.
-        /// </summary>
-        public int ObjectId { get; }
-
-        /// <summary>
         /// Gets or sets the model id.
         /// </summary>
         public int ModelId { get; set; }
@@ -63,7 +58,6 @@ namespace Rhisis.World.Core.Components
         /// </summary>
         public ObjectComponent()
         {
-            this.ObjectId = RandomHelper.GenerateUniqueId();
             this.Position = new Vector3();
             this.Entities = new List<IEntity>();
         }

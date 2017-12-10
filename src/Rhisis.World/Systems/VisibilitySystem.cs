@@ -3,6 +3,7 @@ using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Packets;
+using System.Linq;
 
 namespace Rhisis.World.Systems
 {
@@ -69,6 +70,17 @@ namespace Rhisis.World.Systems
             // Despawn for the other entities
             if (otherEntity.EntityType != WorldEntityType.Player && otherEntityObjectComponent.Entities.Contains(entity))
                 otherEntityObjectComponent.Entities.Remove(entity);
+        }
+
+        private bool EntityHasOther(ObjectComponent entityObjectComponent, IEntity otherEntity)
+        {
+            for (int i = 0; i < entityObjectComponent.Entities.Count; i++)
+            {
+                if (entityObjectComponent.Entities[i].Id == otherEntity.Id)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

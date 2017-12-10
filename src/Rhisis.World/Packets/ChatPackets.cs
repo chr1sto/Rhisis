@@ -17,7 +17,7 @@ namespace Rhisis.World.Packets
 
             using (var packet = new FFPacket())
             {
-                packet.StartNewMergedPacket(objectComponent.ObjectId, SnapshotType.CHAT);
+                packet.StartNewMergedPacket(player.Id, SnapshotType.CHAT);
                 packet.Write(message);
 
                 client.Send(packet);

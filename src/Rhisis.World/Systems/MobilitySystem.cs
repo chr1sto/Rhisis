@@ -59,9 +59,9 @@ namespace Rhisis.World.Systems
                 objectComponent.Position.X += (float)offsetX;
                 objectComponent.Position.Z += (float)offsetZ;
 
-                Logger.Debug("Moving: {0}, {1}", offsetX, offsetZ);
-                Logger.Debug("DestinationPosition: {0}", movableComponent.DestinationPosition);
-                Logger.Debug("CurrentPosition: {0}", objectComponent.Position);
+                //Logger.Debug("Moving: {0}, {1}", offsetX, offsetZ);
+                //Logger.Debug("DestinationPosition: {0}", movableComponent.DestinationPosition);
+                //Logger.Debug("CurrentPosition: {0}", objectComponent.Position);
             }
         }
     }

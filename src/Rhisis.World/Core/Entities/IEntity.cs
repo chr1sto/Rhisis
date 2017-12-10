@@ -8,12 +8,12 @@ namespace Rhisis.World.Core.Entities
     /// <summary>
     /// Defines an entity.
     /// </summary>
-    public interface IEntity : IDisposable
+    public interface IEntity : IDisposable, IEqualityComparer<IEntity>
     {
         /// <summary>
         /// Gets the entity id.
         /// </summary>
-        Guid Id { get; }
+        int Id { get; }
 
         /// <summary>
         /// Gets the entity current context.

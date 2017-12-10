@@ -19,7 +19,7 @@ namespace Rhisis.World.Core
 
         bool DeleteEntity(IEntity entity);
 
-        IEntity FindEntity(Guid id);
+        IEntity FindEntity(int id);
 
         void AddSystem(ISystem system);
 
