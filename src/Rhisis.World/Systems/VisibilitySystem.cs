@@ -24,27 +24,25 @@ namespace Rhisis.World.Systems
             {
                 var otherEntityObjectComponent = otherEntity.GetComponent<ObjectComponent>();
 
-                if (entity.Id != otherEntity.Id && otherEntityObjectComponent.Spawned)
+                if (entity.GetHashCode() != otherEntity.GetHashCode() && otherEntityObjectComponent.Spawned)
                 {
                     if (entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilityRange))
                     {
                         if (!entityObjectComponent.Entities.Contains(otherEntity))
-                            this.SpawnOtherEntity(entity, otherEntity);
+                            this.SpawnOtherEntity(entity, entityObjectComponent, otherEntity, otherEntityObjectComponent);
                     }
                     else
                     {
                         if (entityObjectComponent.Entities.Contains(otherEntity))
-                            this.DespawnOtherEntity(entity, otherEntity);
+                            this.DespawnOtherEntity(entity, entityObjectComponent, otherEntity, otherEntityObjectComponent);
                     }
                 }
             }
         }
         
-        private void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private void SpawnOtherEntity(IEntity entity, ObjectComponent entityObjectComponent, IEntity otherEntity, ObjectComponent otherEntityObjectComponent)
         {
-            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
             var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
-            var otherEntityObjectComponent = otherEntity.GetComponent<ObjectComponent>();
 
             // Spawn for the current player entity.
             WorldPacketFactory.SendSpawnObject(entityPlayerComponent.Connection, otherEntity);
@@ -60,11 +58,9 @@ namespace Rhisis.World.Systems
                 WorldPacketFactory.SendDestinationPosition(entityPlayerComponent.Connection, otherEntity);
         }
 
-        private void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private void DespawnOtherEntity(IEntity entity, ObjectComponent entityObjectComponent, IEntity otherEntity, ObjectComponent otherEntityObjectComponent)
         {
-            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
             var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
-            var otherEntityObjectComponent = otherEntity.GetComponent<ObjectComponent>();
 
             // Despawn for the current player entity.
             WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, otherEntity);

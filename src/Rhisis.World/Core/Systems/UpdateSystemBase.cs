@@ -13,7 +13,7 @@ namespace Rhisis.World.Core.Systems
 
         protected IContext Context { get; }
 
-        protected ICollection<IEntity> Entities => this.Context.Entities;
+        protected IEnumerable<IEntity> Entities => this.Context.Entities;
 
         protected UpdateSystemBase(IContext context)
         {

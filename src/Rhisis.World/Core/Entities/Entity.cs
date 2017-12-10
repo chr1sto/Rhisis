@@ -61,8 +61,8 @@ namespace Rhisis.World.Core.Entities
         /// <returns>Component</returns>
         public T GetComponent<T>() where T : IComponent
         {
-            if (this.HasComponent<T>())
-                return (T)this._components[typeof(T)];
+            if (this._components.TryGetValue(typeof(T), out IComponent value))
+                return (T)value;
 
             return default(T);
         }
