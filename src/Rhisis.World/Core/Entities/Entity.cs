@@ -10,7 +10,7 @@ namespace Rhisis.World.Core.Entities
     /// </summary>
     public class Entity : IEntity, IDisposable
     {
-        private readonly ICollection<IComponent> _components;
+        private readonly IDictionary<Type, IComponent> _components;
         private bool _disposedValue;
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Rhisis.World.Core.Entities
         {
             this.Id = Guid.NewGuid();
             this.Context = context;
-            this._components = new List<IComponent>();
+            this._components = new Dictionary<Type, IComponent>();
         }
 
         /// <summary>
@@ -59,7 +59,13 @@ namespace Rhisis.World.Core.Entities
         /// </summary>
         /// <typeparam name="T">Component type</typeparam>
         /// <returns>Component</returns>
-        public T GetComponent<T>() where T : IComponent => (T)this._components.FirstOrDefault(x => x.GetType() == typeof(T));
+        public T GetComponent<T>() where T : IComponent
+        {
+            if (this.HasComponent<T>())
+                return (T)this._components[typeof(T)];
+
+            return default(T);
+        }
 
         /// <summary>
         /// Adds a component to the entity.
@@ -70,9 +76,9 @@ namespace Rhisis.World.Core.Entities
         public T AddComponent<T>(T component) where T : IComponent
         {
             if (this.HasComponent<T>())
-                return default(T);
+                throw new ArgumentException("This component type is already attached to the entity.", nameof(component));
 
-            this._components.Add(component);
+            this._components.Add(typeof(T), component);
             this.ComponentAdded?.Invoke(this, component);
 
             return component;
@@ -87,17 +93,24 @@ namespace Rhisis.World.Core.Entities
         {
             if (this.HasComponent<T>())
             {
-                this._components.Remove(component);
+                this._components.Remove(component.GetType());
                 this.ComponentRemoved?.Invoke(this, component);
             }
         }
 
         /// <summary>
-        /// Check if the component exists in the entity.
+        /// Check if the component is attached to this entity.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Component type</typeparam>
         /// <returns></returns>
-        public bool HasComponent<T>() where T : IComponent => this._components.Any(x => x.GetType() == typeof(T));
+        public bool HasComponent<T>() where T : IComponent => this.HasComponent(typeof(T));
+
+        /// <summary>
+        /// Check if the component is attached to this entity.
+        /// </summary>
+        /// <param name="componentType">Component type</param>
+        /// <returns></returns>
+        private bool HasComponent(Type componentType) => this._components.ContainsKey(componentType);
 
         /// <summary>
         /// Disposes the <see cref="Entity"/> resources.

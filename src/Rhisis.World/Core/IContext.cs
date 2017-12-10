@@ -9,9 +9,9 @@ namespace Rhisis.World.Core
     {
         double Time { get; }
 
-        IReadOnlyCollection<IEntity> Entities { get; }
+        ICollection<IEntity> Entities { get; }
 
-        IReadOnlyCollection<ISystem> Systems { get; }
+        ICollection<ISystem> Systems { get; }
 
         IEntity CreateEntity();
 

@@ -35,12 +35,12 @@ namespace Rhisis.World.Core
         /// <summary>
         /// Gets the entities of the present context.
         /// </summary>
-        public IReadOnlyCollection<IEntity> Entities => this._entities.Values as IReadOnlyCollection<IEntity>;
+        public ICollection<IEntity> Entities => this._entities.Values;
 
         /// <summary>
         /// Gets the systems of the present context.
         /// </summary>
-        public IReadOnlyCollection<ISystem> Systems => this._systems as IReadOnlyCollection<ISystem>;
+        public ICollection<ISystem> Systems => this._systems;
 
         /// <summary>
         /// Creates and initializes a new <see cref="Context"/>.
@@ -156,7 +156,7 @@ namespace Rhisis.World.Core
         /// <param name="delay"></param>
         public void StartSystemUpdate(int delay)
         {
-            Task.Factory.StartNew(() =>
+            Task.Run(async () =>
             {
                 double deltaTime = 0f;
                 double currentTime = 0f;
@@ -179,13 +179,13 @@ namespace Rhisis.World.Core
                         {
                             for (int i = 0; i < this._systems.Count; i++)
                             {
-                                if (this._systems[i] is IUpdateSystem updateSystem/* && updateSystem.Match(entity)*/)
+                                if (this._systems[i] is IUpdateSystem updateSystem)
                                     updateSystem.Execute(entity);
                             }
                         }
                     }
 
-                    Thread.Sleep(delay);
+                    await Task.Delay(delay).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }

@@ -3,8 +3,6 @@ using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Packets;
-using System;
-using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
@@ -12,8 +10,6 @@ namespace Rhisis.World.Systems
     public class VisibilitySystem : UpdateSystemBase
     {
         public static readonly float VisibilityRange = 75f;
-
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.HasComponent<PlayerComponent>() && x.HasComponent<ObjectComponent>();
 
         public VisibilitySystem(IContext context)
             : base(context)
@@ -23,24 +19,23 @@ namespace Rhisis.World.Systems
         public override void Execute(IEntity entity)
         {
             var entityObjectComponent = entity.GetComponent<ObjectComponent>();
-            var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
 
             foreach (IEntity otherEntity in this.Entities)
             {
                 var otherEntityObjectComponent = otherEntity.GetComponent<ObjectComponent>();
 
-                if (entity.Id == otherEntity.Id || (otherEntityObjectComponent != null && !otherEntityObjectComponent.Spawned))
-                    continue;
-
-                if (entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilityRange))
+                if (entity.Id != otherEntity.Id && otherEntityObjectComponent.Spawned)
                 {
-                    if (!entityObjectComponent.Entities.Contains(otherEntity))
-                        this.SpawnOtherEntity(entity, otherEntity);
-                }
-                else
-                {
-                    if (entityObjectComponent.Entities.Contains(otherEntity))
-                        this.DespawnOtherEntity(entity, otherEntity);
+                    if (entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilityRange))
+                    {
+                        if (!entityObjectComponent.Entities.Contains(otherEntity))
+                            this.SpawnOtherEntity(entity, otherEntity);
+                    }
+                    else
+                    {
+                        if (entityObjectComponent.Entities.Contains(otherEntity))
+                            this.DespawnOtherEntity(entity, otherEntity);
+                    }
                 }
             }
         }

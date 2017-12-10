@@ -90,7 +90,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public double GetDistance2D(Vector3 otherPosition)
         {
-            return Math.Sqrt(Math.Pow(otherPosition.X - this.X, 2) + Math.Pow(otherPosition.Z - this.Z, 2));
+            return Math.Sqrt(Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2));
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public double GetDistance3D(Vector3 otherPosition)
         {
-            return Math.Sqrt(Math.Pow(otherPosition.X - this.X, 2) + Math.Pow(otherPosition.Y - this.Y, 2) + Math.Pow(otherPosition.Z - this.Z, 2));
+            return Math.Sqrt(Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Y - this._y, 2) + Math.Pow(otherPosition.Z - this._z, 2));
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public bool IsInCircle(Vector3 otherPosition, float circleRadius)
         {
-            return Math.Pow(otherPosition.X - this.X, 2) + Math.Pow(otherPosition.Z - this.Z, 2) < Math.Pow(circleRadius, 2);
+            return Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2) < Math.Pow(circleRadius, 2);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Rhisis.Core.Structures
         /// Clones this Vector3 instance.
         /// </summary>
         /// <returns></returns>
-        public Vector3 Clone() => new Vector3(this.X, this.Y, this.Z);
+        public Vector3 Clone() => new Vector3(this._x, this._y, this._z);
 
         /// <summary>
         /// Reset to 0 this Vector3.
@@ -167,9 +167,9 @@ namespace Rhisis.Core.Structures
         /// </returns> 
         public override int GetHashCode()
         {
-            return this.X.GetHashCode() ^
-                   this.Y.GetHashCode() ^
-                   this.Z.GetHashCode();
+            return this._x.GetHashCode() ^
+                   this._y.GetHashCode() ^
+                   this._z.GetHashCode();
         }
 
         /// <summary>

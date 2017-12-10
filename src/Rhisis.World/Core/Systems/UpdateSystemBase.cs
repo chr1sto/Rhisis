@@ -9,11 +9,11 @@ namespace Rhisis.World.Core.Systems
     {
         private Func<IEntity, bool> _filter;
 
-        protected abstract Expression<Func<IEntity, bool>> Filter { get; }
+        protected virtual Expression<Func<IEntity, bool>> Filter { get; }
 
         protected IContext Context { get; }
 
-        protected IEnumerable<IEntity> Entities => this.Context.Entities;
+        protected ICollection<IEntity> Entities => this.Context.Entities;
 
         protected UpdateSystemBase(IContext context)
         {
