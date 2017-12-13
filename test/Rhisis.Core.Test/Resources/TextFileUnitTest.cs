@@ -1,7 +1,5 @@
 ﻿using Rhisis.Core.Resources;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Rhisis.Core.Test.Resources

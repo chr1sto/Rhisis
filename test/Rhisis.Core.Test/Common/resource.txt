@@ -1,0 +1,7 @@
+﻿// This is a commented line
+// This file contains data
+header1	header2	header3		header4		header5 // Warning: Headers must be separated by tabs
+4	6	DEFINE_VALUE	42    24
+342		3532		3532	  25	OTHER_DEFINE_VALUE
+13543	2321	1341	2323	1341	0 // This line should be ignored because has too much values
+253 NICE_DEFINE_VALUE 3532 SOME_TEXT_VALUE 3535

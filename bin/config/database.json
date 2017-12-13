@@ -1,8 +1,8 @@
 {
-  "host": "DESKTOP-ST90NFQ\\SQLEXPRESS",
+  "host": "127.0.0.1",
   "port": 3306,
-  "username": "eastrall",
-  "password": "helloworld",
+  "username": "root",
+  "password": "hello_world",
   "database": "rhisis",
-  "provider": "MsSQL"
+  "provider": "MySQL"
 }

@@ -21,6 +21,11 @@ namespace Rhisis.Core.Resources
         private int _headerIndex;
 
         /// <summary>
+        /// Gets the amount of valid data within the <see cref="ResourceTable"/>.
+        /// </summary>
+        public int Count => this._datas.Count;
+
+        /// <summary>
         /// Creates a new <see cref="ResourceTable"/> instance.
         /// </summary>
         /// <param name="path">Resource path</param>
@@ -114,6 +119,9 @@ namespace Rhisis.Core.Resources
 
                 if (!string.IsNullOrEmpty(line) && !line.StartsWith("//"))
                 {
+                    if (line.Contains("//"))
+                        line.Remove(line.IndexOf("//"));
+
                     line = line.Replace(",,", ",=,").Replace(",", "\t");
                     string[] content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
