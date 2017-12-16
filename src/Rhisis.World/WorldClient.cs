@@ -7,6 +7,7 @@ using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Database;
 using Rhisis.World.Game;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
@@ -109,22 +110,15 @@ namespace Rhisis.World
         /// Despawns the current player and notify other players arround.
         /// </summary>
         /// <param name="currentMap"></param>
-        /// <param name="entityObjectComponent"></param>
-        private void DespawnPlayer(Map currentMap, ObjectComponent entityObjectComponent)
+        private void DespawnPlayer(Map currentMap)
         {
             var entitiesAround = from x in currentMap.Context.Entities
                                  where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange)
                                  select x;
-            //var entitiesAround = from x in currentMap.Context.Entities
-            //                     let otherEntityObjectComponent = x.GetComponent<ObjectComponent>()
-            //                     where entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilitySystem.VisibilityRange)
-            //                     select x;
 
             foreach (var entity in entitiesAround)
             {
-                //var otherEntityObjectComponent = entity.GetComponent<ObjectComponent>();
-
-                if (entity.EntityType == WorldEntityType.Player)
+                if (entity.Type == WorldEntityType.Player)
                 {
                     var otherPlayerEntity = entity as IPlayerEntity;
 
@@ -144,7 +138,7 @@ namespace Rhisis.World
         {
             if (this.Player != null && WorldServer.Maps.TryGetValue(this.Player.ObjectComponent.MapId, out Map currentMap))
             {
-                this.DespawnPlayer(currentMap, this.Player.ObjectComponent);
+                this.DespawnPlayer(currentMap);
             }
 
             this.Save();

@@ -11,6 +11,8 @@ namespace Rhisis.World.Systems
     [System]
     public class MobilitySystem : SystemBase
     {
+        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+
         public MobilitySystem(IContext context)
             : base(context)
         {

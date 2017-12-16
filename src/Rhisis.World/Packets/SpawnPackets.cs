@@ -2,8 +2,8 @@
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.World.Core;
-using Rhisis.World.Core.Components;
-using Rhisis.World.Core.Entities;
+using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using System;
 using System.Collections.Generic;
@@ -245,7 +245,7 @@ namespace Rhisis.World.Packets
                 packet.Write((short)(entity.ObjectComponent.Angle * 10f));
                 packet.Write(entity.Id);
 
-                if (entity.EntityType == WorldEntityType.Player)
+                if (entity.Type == WorldEntityType.Player)
                 {
                     var playerEntity = entity as IPlayerEntity;
 
@@ -330,7 +330,7 @@ namespace Rhisis.World.Packets
                     packet.Write(-1); // pet ?
                     packet.Write(0); // buffs ?
                 }
-                else if (entity.EntityType == WorldEntityType.Monster)
+                else if (entity.Type == WorldEntityType.Monster)
                 {
                     //packet.Write<short>(5);
                     //packet.Write<byte>(0);

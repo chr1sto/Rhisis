@@ -8,7 +8,7 @@ using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Structures;
 using Rhisis.World.Core;
-using Rhisis.World.Core.Components;
+using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 
@@ -80,17 +80,11 @@ namespace Rhisis.World.Handlers
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
-
-            // 3rd: attach the component to the entity
-            //client.Player.AddComponent(objectComponent);
-            //client.Player.AddComponent(humanComponent);
-            //client.Player.AddComponent(playerComponent);
-            //client.Player.AddComponent(movableComponent);
-
-            // 4rd: spawn the player
+            
+            // 3rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client, client.Player);
 
-            // 5th: player is now spawned
+            // 4th: player is now spawned
             client.Player.ObjectComponent.Spawned = true;
         }
     }

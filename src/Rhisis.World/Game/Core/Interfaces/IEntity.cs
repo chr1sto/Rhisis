@@ -12,6 +12,6 @@ namespace Rhisis.World.Game.Core.Interfaces
 
         IContext Context { get; }
 
-        ObjectComponent ObjectComponent { get; }
+        ObjectComponent ObjectComponent { get; set; }
     }
 }

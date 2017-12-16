@@ -1,9 +1,5 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.Exceptions;
 using Rhisis.Core.Network.Packets.World;
-using Rhisis.Core.Structures;
-using Rhisis.World.Core.Components;
-using Rhisis.World.Packets;
 
 namespace Rhisis.World.Handlers
 {

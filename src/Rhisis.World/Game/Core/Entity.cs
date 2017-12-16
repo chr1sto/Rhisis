@@ -16,7 +16,7 @@ namespace Rhisis.World.Game.Core
 
         public IContext Context { get; }
 
-        public ObjectComponent ObjectComponent { get; }
+        public ObjectComponent ObjectComponent { get; set; }
 
         internal Entity(IContext context)
         {
