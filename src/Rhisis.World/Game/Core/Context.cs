@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Rhisis.World.Game.Core
 {
+    /// <summary>
+    /// Implementation of a context.
+    /// </summary>
     public class Context : IContext, IDisposable
     {
         private static readonly object _syncPlayersLock = new object();
@@ -21,12 +24,24 @@ namespace Rhisis.World.Game.Core
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
+        /// <summary>
+        /// Gets the context update time.
+        /// </summary>
         public double Time { get; private set; }
 
+        /// <summary>
+        /// Gets a read-only collection of the systems of this context.
+        /// </summary>
         public IReadOnlyList<ISystem> Systems => this._systems as IReadOnlyList<ISystem>;
 
+        /// <summary>
+        /// Gets a read-only collection of the entities of this context.
+        /// </summary>
         public IReadOnlyList<IEntity> Entities => this._entities.Values as IReadOnlyList<IEntity>;
 
+        /// <summary>
+        /// Creates a new <see cref="Context"/> instance.
+        /// </summary>
         public Context()
         {
             this._systems = new List<ISystem>();
@@ -36,6 +51,11 @@ namespace Rhisis.World.Game.Core
             this._cancellationToken = this._cancellationTokenSource.Token;
         }
 
+        /// <summary>
+        /// Creates a new entity.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity concrete type.</typeparam>
+        /// <returns>New entity</returns>
         public TEntity CreateEntity<TEntity>() where TEntity : class, IEntity
         {
             var entity = Activator.CreateInstance(typeof(TEntity), this) as IEntity;
@@ -53,6 +73,11 @@ namespace Rhisis.World.Game.Core
             return (TEntity)entity;
         }
 
+        /// <summary>
+        /// Deletes an entity.
+        /// </summary>
+        /// <param name="entity">Entity to delete</param>
+        /// <returns>Deleted state</returns>
         public bool DeleteEntity(IEntity entity)
         {
             bool removed = this._entities.Remove(entity.Id);
@@ -68,8 +93,17 @@ namespace Rhisis.World.Game.Core
             return removed;
         }
 
+        /// <summary>
+        /// Finds an entity by his id.
+        /// </summary>
+        /// <param name="id">Entity id</param>
+        /// <returns>The found entity</returns>
         public IEntity FindEntity(int id) => this._entities.TryGetValue(id, out IEntity value) ? value : null;
 
+        /// <summary>
+        /// Starts the context update.
+        /// </summary>
+        /// <param name="delay"></param>
         public void StartSystemUpdate(int delay)
         {
             Task.Run(async () =>
@@ -114,15 +148,32 @@ namespace Rhisis.World.Game.Core
             }, this._cancellationToken);
         }
 
+        /// <summary>
+        /// Stops the context update.
+        /// </summary>
         public void StopSystemUpdate()
         {
             this._cancellationTokenSource.Cancel();
         }
 
+        /// <summary>
+        /// Adds a new system to the context.
+        /// </summary>
+        /// <param name="system">System</param>
         public void AddSystem(ISystem system) => this._systems.Add(system);
 
+        /// <summary>
+        /// Removes a system from the context.
+        /// </summary>
+        /// <param name="system"></param>
         public void RemoveSystem(ISystem system) => this._systems.Remove(system);
 
+        /// <summary>
+        /// Notify a system of this context to be executed.
+        /// </summary>
+        /// <typeparam name="T">System type</typeparam>
+        /// <param name="entity">Entity</param>
+        /// <param name="e">Arguments</param>
         public void NotifySystem<T>(IEntity entity, EventArgs e) where T : class, INotifiableSystem
         {
             if (this._systems.FirstOrDefault(x => x.GetType() == typeof(T)) is INotifiableSystem system && system.Match(entity))
