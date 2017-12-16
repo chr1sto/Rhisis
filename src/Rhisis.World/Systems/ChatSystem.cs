@@ -12,13 +12,25 @@ namespace Rhisis.World.Systems
     [System]
     public class ChatSystem : NotifiableSystemBase
     {
+        /// <summary>
+        /// Gets the <see cref="ChatSystem"/> match filte.
+        /// </summary>
         protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
 
+        /// <summary>
+        /// Creates a new <see cref="ChatSystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public ChatSystem(IContext context)
             : base(context)
         {
         }
 
+        /// <summary>
+        /// Executes the <see cref="ChatSystem"/> logic.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="e"></param>
         public override void Execute(IEntity entity, EventArgs e)
         {
             var chatEvent = e as ChatEventArgs;

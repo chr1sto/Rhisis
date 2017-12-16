@@ -11,13 +11,24 @@ namespace Rhisis.World.Systems
     [System]
     public class MobilitySystem : SystemBase
     {
+        /// <summary>
+        /// Gets the <see cref="MobilitySystem"/> match filter.
+        /// </summary>
         protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
 
+        /// <summary>
+        /// Creates a new <see cref="MobilitySystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public MobilitySystem(IContext context)
             : base(context)
         {
         }
 
+        /// <summary>
+        /// Executes the <see cref="MobilitySystem"/> logic.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
         public override void Execute(IEntity entity)
         {
             var movableEntity = entity as IMovableEntity;
@@ -28,6 +39,10 @@ namespace Rhisis.World.Systems
             this.Walk(movableEntity);
         }
 
+        /// <summary>
+        /// Process the walk algorithm.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
             if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.ObjectComponent.Position, 0.1f))

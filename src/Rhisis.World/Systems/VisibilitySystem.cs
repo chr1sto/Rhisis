@@ -13,13 +13,24 @@ namespace Rhisis.World.Systems
     {
         public static readonly float VisibilityRange = 75f;
 
+        /// <summary>
+        /// Gets the <see cref="VisibilitySystem"/> match filter.
+        /// </summary>
         protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
 
+        /// <summary>
+        /// Creates a new <see cref="VisibilitySystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public VisibilitySystem(IContext context)
             : base(context)
         {
         }
 
+        /// <summary>
+        /// Executes the <see cref="VisibilitySystem"/> logic.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
         public override void Execute(IEntity entity)
         {
             foreach (var otherEntity in this.Context.Entities)
@@ -40,6 +51,11 @@ namespace Rhisis.World.Systems
             }
         }
 
+        /// <summary>
+        /// Spawn the other entity for the current entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="otherEntity"></param>
         private void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
             var player = entity as IPlayerEntity;
@@ -55,6 +71,11 @@ namespace Rhisis.World.Systems
                 WorldPacketFactory.SendDestinationPosition(player.PlayerComponent.Connection, movableEntity);
         }
 
+        /// <summary>
+        /// Despawns the other entity for the current entity.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
+        /// <param name="otherEntity">other entity</param>
         private void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
             var player = entity as IPlayerEntity;
@@ -66,6 +87,12 @@ namespace Rhisis.World.Systems
                 otherEntity.ObjectComponent.Entities.Remove(entity);
         }
 
+        /// <summary>
+        /// Check if the entity can see the other entity.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
+        /// <param name="otherEntity">Other entity</param>
+        /// <returns>Can see or not the other entity</returns>
         private bool CanSee(IEntity entity, IEntity otherEntity)
         {
             return entity.ObjectComponent.Position.IsInCircle(otherEntity.ObjectComponent.Position, VisibilityRange);
