@@ -4,6 +4,7 @@ using Rhisis.Core.Network.Packets;
 using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
 using Rhisis.World.Core.Entities;
+using Rhisis.World.Game.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,36 +13,31 @@ namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendPlayerSpawn(NetConnection client, IEntity player)
+        public static void SendPlayerSpawn(NetConnection client, IPlayerEntity player)
         {
-            // Retrieve the component from the entity
-            var objectComponent = player.GetComponent<ObjectComponent>();
-            var humanComponent = player.GetComponent<HumanComponent>();
-            var playerComponent = player.GetComponent<PlayerComponent>();
-
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(player.Id, SnapshotType.ENVIRONMENTALL, 0x0000FF00);
                 packet.Write(0); // Get weather by season
 
                 packet.StartNewMergedPacket(player.Id, SnapshotType.WORLD_READINFO);
-                packet.Write(objectComponent.MapId);
-                packet.Write(objectComponent.Position.X);
-                packet.Write(objectComponent.Position.Y);
-                packet.Write(objectComponent.Position.Z);
+                packet.Write(player.ObjectComponent.MapId);
+                packet.Write(player.ObjectComponent.Position.X);
+                packet.Write(player.ObjectComponent.Position.Y);
+                packet.Write(player.ObjectComponent.Position.Z);
 
                 packet.StartNewMergedPacket(player.Id, SnapshotType.ADD_OBJ);
 
                 // Common object properties
-                packet.Write((byte)objectComponent.Type);
-                packet.Write(objectComponent.ModelId);
-                packet.Write((byte)objectComponent.Type);
-                packet.Write(objectComponent.ModelId);
-                packet.Write(objectComponent.Size);
-                packet.Write(objectComponent.Position.X);
-                packet.Write(objectComponent.Position.Y);
-                packet.Write(objectComponent.Position.Z);
-                packet.Write((short)(objectComponent.Angle * 10));
+                packet.Write((byte)player.ObjectComponent.Type);
+                packet.Write(player.ObjectComponent.ModelId);
+                packet.Write((byte)player.ObjectComponent.Type);
+                packet.Write(player.ObjectComponent.ModelId);
+                packet.Write(player.ObjectComponent.Size);
+                packet.Write(player.ObjectComponent.Position.X);
+                packet.Write(player.ObjectComponent.Position.Y);
+                packet.Write(player.ObjectComponent.Position.Z);
+                packet.Write((short)(player.ObjectComponent.Angle * 10));
                 packet.Write(player.Id);
 
                 packet.Write<short>(0); // m_dwMotion
@@ -53,13 +49,13 @@ namespace Rhisis.World.Packets
 
                 packet.Write(-1); // m_dwMoverSfxId
 
-                packet.Write(objectComponent.Name);
-                packet.Write(humanComponent.Gender);
-                packet.Write((byte)humanComponent.SkinSetId);
-                packet.Write((byte)humanComponent.HairId);
-                packet.Write(humanComponent.HairColor);
-                packet.Write((byte)humanComponent.FaceId);
-                packet.Write(playerComponent.Id);
+                packet.Write(player.ObjectComponent.Name);
+                packet.Write(player.HumanComponent.Gender);
+                packet.Write((byte)player.HumanComponent.SkinSetId);
+                packet.Write((byte)player.HumanComponent.HairId);
+                packet.Write(player.HumanComponent.HairColor);
+                packet.Write((byte)player.HumanComponent.FaceId);
+                packet.Write(player.PlayerComponent.Id);
                 packet.Write((byte)1); // Job
                 packet.Write((short)15); // STR
                 packet.Write((short)15); // STA
@@ -127,9 +123,9 @@ namespace Rhisis.World.Packets
                     packet.Write(0); // job in each level
 
                 packet.Write(0); // marking world id
-                packet.Write(objectComponent.Position.X);
-                packet.Write(objectComponent.Position.Y);
-                packet.Write(objectComponent.Position.Z);
+                packet.Write(player.ObjectComponent.Position.X);
+                packet.Write(player.ObjectComponent.Position.Y);
+                packet.Write(player.ObjectComponent.Position.Z);
 
                 // Quests
                 packet.Write<byte>(0);
@@ -155,7 +151,7 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // next cheer point ?
 
                 // Bank
-                packet.Write((byte)playerComponent.Slot);
+                packet.Write((byte)player.PlayerComponent.Slot);
                 for (int i = 0; i < 3; ++i)
                     packet.Write(0); // gold
                 for (int i = 0; i < 3; ++i)
@@ -232,25 +228,27 @@ namespace Rhisis.World.Packets
         {
             using (var packet = new FFPacket())
             {
-                var otherObjectComponent = entity.GetComponent<ObjectComponent>();
-                var otherHumanComponent = entity.GetComponent<HumanComponent>();
-                var otherPlayerComponent = entity.GetComponent<PlayerComponent>();
+                //var otherObjectComponent = entity.GetComponent<ObjectComponent>();
+                //var otherHumanComponent = entity.GetComponent<HumanComponent>();
+                //var otherPlayerComponent = entity.GetComponent<PlayerComponent>();
 
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.ADD_OBJ);
 
-                packet.Write((byte)otherObjectComponent.Type);
-                packet.Write(otherObjectComponent.ModelId);
-                packet.Write((byte)otherObjectComponent.Type);
-                packet.Write(otherObjectComponent.ModelId);
-                packet.Write(otherObjectComponent.Size);
-                packet.Write(otherObjectComponent.Position.X);
-                packet.Write(otherObjectComponent.Position.Y);
-                packet.Write(otherObjectComponent.Position.Z);
-                packet.Write((short)(otherObjectComponent.Angle * 10f));
+                packet.Write((byte)entity.ObjectComponent.Type);
+                packet.Write(entity.ObjectComponent.ModelId);
+                packet.Write((byte)entity.ObjectComponent.Type);
+                packet.Write(entity.ObjectComponent.ModelId);
+                packet.Write(entity.ObjectComponent.Size);
+                packet.Write(entity.ObjectComponent.Position.X);
+                packet.Write(entity.ObjectComponent.Position.Y);
+                packet.Write(entity.ObjectComponent.Position.Z);
+                packet.Write((short)(entity.ObjectComponent.Angle * 10f));
                 packet.Write(entity.Id);
 
                 if (entity.EntityType == WorldEntityType.Player)
                 {
+                    var playerEntity = entity as IPlayerEntity;
+
                     packet.Write<short>(0);
                     packet.Write<byte>(1); // is player?
                     packet.Write(230); // HP
@@ -259,13 +257,13 @@ namespace Rhisis.World.Packets
                     packet.Write<byte>(0);
                     packet.Write(-1); // baby buffer
 
-                    packet.Write(otherObjectComponent.Name);
-                    packet.Write(otherHumanComponent.Gender);
-                    packet.Write((byte)otherHumanComponent.SkinSetId);
-                    packet.Write((byte)otherHumanComponent.HairId);
-                    packet.Write(otherHumanComponent.HairColor);
-                    packet.Write((byte)otherHumanComponent.FaceId);
-                    packet.Write(otherPlayerComponent.Id);
+                    packet.Write(entity.ObjectComponent.Name);
+                    packet.Write(playerEntity.HumanComponent.Gender);
+                    packet.Write((byte)playerEntity.HumanComponent.SkinSetId);
+                    packet.Write((byte)playerEntity.HumanComponent.HairId);
+                    packet.Write(playerEntity.HumanComponent.HairColor);
+                    packet.Write((byte)playerEntity.HumanComponent.FaceId);
+                    packet.Write(playerEntity.PlayerComponent.Id);
                     packet.Write((byte)1);
                     packet.Write((short)0); // STR
                     packet.Write((short)0); // STA
@@ -334,32 +332,32 @@ namespace Rhisis.World.Packets
                 }
                 else if (entity.EntityType == WorldEntityType.Monster)
                 {
-                    packet.Write<short>(5);
-                    packet.Write<byte>(0);
-                    packet.Write(WorldServer.Movers[otherObjectComponent.ModelId].MaxHP);
-                    packet.Write(1);
-                    packet.Write(0);
-                    packet.Write((byte)WorldServer.Movers[otherObjectComponent.ModelId].Belligerence);
-                    packet.Write(-1);
+                    //packet.Write<short>(5);
+                    //packet.Write<byte>(0);
+                    //packet.Write(WorldServer.Movers[otherObjectComponent.ModelId].MaxHP);
+                    //packet.Write(1);
+                    //packet.Write(0);
+                    //packet.Write((byte)WorldServer.Movers[otherObjectComponent.ModelId].Belligerence);
+                    //packet.Write(-1);
 
-                    packet.Write((byte)0);
-                    packet.Write(-1);
-                    packet.Write((byte)0);
-                    packet.Write(0);
-                    packet.Write((byte)0);
-                    if (otherObjectComponent.ModelId == 1021)
-                    {
-                        packet.Write((byte)0);
-                    }
-                    else
-                    {
-                        packet.Write(false ? (byte)1 : (byte)0);
-                    }
-                    packet.Write((byte)0);
-                    packet.Write((byte)0);
-                    packet.Write(0);
-                    packet.Write(1f); // speed factor
-                    packet.Write(0);
+                    //packet.Write((byte)0);
+                    //packet.Write(-1);
+                    //packet.Write((byte)0);
+                    //packet.Write(0);
+                    //packet.Write((byte)0);
+                    //if (otherObjectComponent.ModelId == 1021)
+                    //{
+                    //    packet.Write((byte)0);
+                    //}
+                    //else
+                    //{
+                    //    packet.Write(false ? (byte)1 : (byte)0);
+                    //}
+                    //packet.Write((byte)0);
+                    //packet.Write((byte)0);
+                    //packet.Write(0);
+                    //packet.Write(1f); // speed factor
+                    //packet.Write(0);
                 }
 
                 client.Send(packet);
@@ -368,8 +366,6 @@ namespace Rhisis.World.Packets
 
         public static void SendDespawnObject(NetConnection client, IEntity entity)
         {
-            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
-
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.DEL_OBJ);

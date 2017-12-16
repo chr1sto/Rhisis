@@ -6,10 +6,8 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Database;
-using Rhisis.World.Core;
-using Rhisis.World.Core.Components;
-using Rhisis.World.Core.Entities;
 using Rhisis.World.Game;
+using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
 using System.Collections.Generic;
@@ -20,11 +18,11 @@ namespace Rhisis.World
     public sealed class WorldClient : NetConnection
     {
         private readonly uint _sessionId;
-        
+
         /// <summary>
         /// Gets or sets the player entity.
         /// </summary>
-        public IEntity Player { get; set; }
+        public IPlayerEntity Player { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="WorldClient"/> instance.
@@ -83,28 +81,24 @@ namespace Rhisis.World
         /// </summary>
         private void Save()
         {
-            var objectComponent = this.Player.GetComponent<ObjectComponent>();
-            var humanComponent = this.Player.GetComponent<HumanComponent>();
-            var playerComponent = this.Player.GetComponent<PlayerComponent>();
+            this.Player.ObjectComponent.Spawned = false;
 
-            objectComponent.Spawned = false;
-            
             using (var db = DatabaseService.GetContext())
             {
-                var character = db.Characters.Get(playerComponent.Id);
+                var character = db.Characters.Get(this.Player.PlayerComponent.Id);
 
                 if (character != null)
                 {
-                    character.PosX = objectComponent.Position.X;
-                    character.PosY = objectComponent.Position.Y;
-                    character.PosZ = objectComponent.Position.Z;
-                    character.Angle = objectComponent.Angle;
-                    character.MapId = objectComponent.MapId;
-                    character.Gender = humanComponent.Gender;
-                    character.HairColor = humanComponent.HairColor;
-                    character.HairId = humanComponent.HairId;
-                    character.FaceId = humanComponent.FaceId;
-                    character.SkinSetId = humanComponent.SkinSetId;
+                    character.PosX = this.Player.ObjectComponent.Position.X;
+                    character.PosY = this.Player.ObjectComponent.Position.Y;
+                    character.PosZ = this.Player.ObjectComponent.Position.Z;
+                    character.Angle = this.Player.ObjectComponent.Angle;
+                    character.MapId = this.Player.ObjectComponent.MapId;
+                    character.Gender = this.Player.HumanComponent.Gender;
+                    character.HairColor = this.Player.HumanComponent.HairColor;
+                    character.HairId = this.Player.HumanComponent.HairId;
+                    character.FaceId = this.Player.HumanComponent.FaceId;
+                    character.SkinSetId = this.Player.HumanComponent.SkinSetId;
 
                     db.SaveChanges();
                 }
@@ -119,22 +113,25 @@ namespace Rhisis.World
         private void DespawnPlayer(Map currentMap, ObjectComponent entityObjectComponent)
         {
             var entitiesAround = from x in currentMap.Context.Entities
-                                 let otherEntityObjectComponent = x.GetComponent<ObjectComponent>()
-                                 where entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilitySystem.VisibilityRange)
+                                 where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange)
                                  select x;
+            //var entitiesAround = from x in currentMap.Context.Entities
+            //                     let otherEntityObjectComponent = x.GetComponent<ObjectComponent>()
+            //                     where entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilitySystem.VisibilityRange)
+            //                     select x;
 
             foreach (var entity in entitiesAround)
             {
-                var otherEntityObjectComponent = entity.GetComponent<ObjectComponent>();
+                //var otherEntityObjectComponent = entity.GetComponent<ObjectComponent>();
 
                 if (entity.EntityType == WorldEntityType.Player)
                 {
-                    var playerComponent = entity.GetComponent<PlayerComponent>();
+                    var otherPlayerEntity = entity as IPlayerEntity;
 
-                    WorldPacketFactory.SendDespawnObject(playerComponent.Connection, this.Player);
+                    WorldPacketFactory.SendDespawnObject(otherPlayerEntity.PlayerComponent.Connection, this.Player);
                 }
 
-                otherEntityObjectComponent.Entities.Remove(this.Player);
+                entity.ObjectComponent.Entities.Remove(this.Player);
             }
 
             currentMap.Context.DeleteEntity(this.Player);
@@ -145,15 +142,12 @@ namespace Rhisis.World
         /// </summary>
         public override void Dispose()
         {
-            var entityObjectComponent = this.Player?.GetComponent<ObjectComponent>();
-
-            if (entityObjectComponent != null && WorldServer.Maps.TryGetValue(entityObjectComponent.MapId, out Map currentMap))
+            if (this.Player != null && WorldServer.Maps.TryGetValue(this.Player.ObjectComponent.MapId, out Map currentMap))
             {
-                this.DespawnPlayer(currentMap, entityObjectComponent);
+                this.DespawnPlayer(currentMap, this.Player.ObjectComponent);
             }
 
             this.Save();
-
             base.Dispose();
         }
     }

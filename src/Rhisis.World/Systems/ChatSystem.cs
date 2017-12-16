@@ -1,8 +1,8 @@
 ﻿using Rhisis.Core.Exceptions;
-using Rhisis.World.Core;
-using Rhisis.World.Core.Components;
-using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
+using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Events;
 using System;
@@ -10,7 +10,7 @@ using System;
 namespace Rhisis.World.Systems
 {
     [System]
-    public class ChatSystem : ReactiveSystemBase
+    public class ChatSystem : NotifiableSystemBase
     {
         public ChatSystem(IContext context)
             : base(context)
@@ -24,14 +24,10 @@ namespace Rhisis.World.Systems
             if (string.IsNullOrEmpty(chatEvent.Message))
                 return;
 
-            var objectComponent = entity.GetComponent<ObjectComponent>();
-            var playerComponent = entity.GetComponent<PlayerComponent>();
+            if (entity.Type != WorldEntityType.Player)
+                throw new RhisisException($"The entity is not a player.");
 
-            if (objectComponent == null)
-                throw new RhisisException($"The player doesn't have any {nameof(ObjectComponent)} attached.");
-
-            if (playerComponent == null)
-                throw new RhisisException($"The player doesn't have any {nameof(PlayerComponent)} attached.");
+            var player = entity as IPlayerEntity;
 
             if (chatEvent.Message.StartsWith("/"))
             {
@@ -39,7 +35,7 @@ namespace Rhisis.World.Systems
             }
             else
             {
-                WorldPacketFactory.SendChat(playerComponent.Connection, entity, chatEvent.Message);
+                WorldPacketFactory.SendChat(player, chatEvent.Message);
             }
         }
     }

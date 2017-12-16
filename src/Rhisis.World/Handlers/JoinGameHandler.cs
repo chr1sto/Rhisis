@@ -9,6 +9,7 @@ using Rhisis.Database;
 using Rhisis.Database.Structures;
 using Rhisis.World.Core;
 using Rhisis.World.Core.Components;
+using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 
 namespace Rhisis.World.Handlers
@@ -41,10 +42,10 @@ namespace Rhisis.World.Handlers
             var map = WorldServer.Maps[character.MapId];
 
             // 1st: Create the player entity with the map context
-            client.Player = map.Context.CreateEntity(WorldEntityType.Player);
+            client.Player = map.Context.CreateEntity<PlayerEntity>();
 
             // 2nd: create the components
-            var objectComponent = new ObjectComponent
+            client.Player.ObjectComponent = new ObjectComponent
             {
                 ModelId = character.Gender == 0 ? 11 : 12,
                 Type = WorldObjectType.Mover,
@@ -56,7 +57,7 @@ namespace Rhisis.World.Handlers
                 Spawned = false
             };
 
-            var humanComponent = new HumanComponent
+            client.Player.HumanComponent = new HumanComponent
             {
                 Gender = character.Gender,
                 SkinSetId = character.SkinSetId,
@@ -65,32 +66,32 @@ namespace Rhisis.World.Handlers
                 FaceId = character.FaceId,
             };
 
-            var playerComponent = new PlayerComponent
+            client.Player.PlayerComponent = new PlayerComponent
             {
                 Id = character.Id,
                 Slot = character.Slot,
                 Connection = client
             };
 
-            var movableComponent = new MovableComponent
+            client.Player.MovableComponent = new MovableComponent
             {
-                Speed = WorldServer.Movers[objectComponent.ModelId].Speed,
-                DestinationPosition = objectComponent.Position.Clone(),
+                Speed = WorldServer.Movers[client.Player.ObjectComponent.ModelId].Speed,
+                DestinationPosition = client.Player.ObjectComponent.Position.Clone(),
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
             // 3rd: attach the component to the entity
-            client.Player.AddComponent(objectComponent);
-            client.Player.AddComponent(humanComponent);
-            client.Player.AddComponent(playerComponent);
-            client.Player.AddComponent(movableComponent);
+            //client.Player.AddComponent(objectComponent);
+            //client.Player.AddComponent(humanComponent);
+            //client.Player.AddComponent(playerComponent);
+            //client.Player.AddComponent(movableComponent);
 
             // 4rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client, client.Player);
 
             // 5th: player is now spawned
-            objectComponent.Spawned = true;
+            client.Player.ObjectComponent.Spawned = true;
         }
     }
 }
