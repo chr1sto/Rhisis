@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 
 namespace Rhisis.World.Game.Entities
@@ -7,9 +8,12 @@ namespace Rhisis.World.Game.Entities
     {
         public override WorldEntityType Type => WorldEntityType.Monster;
 
+        public MovableComponent MovableComponent { get; set; }
+
         public MonsterEntity(IContext context)
             : base(context)
         {
+            this.MovableComponent = new MovableComponent();
         }
     }
 }

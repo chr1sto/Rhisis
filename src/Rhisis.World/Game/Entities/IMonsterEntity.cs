@@ -2,7 +2,7 @@
 
 namespace Rhisis.World.Game.Entities
 {
-    public interface IMonsterEntity : IEntity
+    public interface IMonsterEntity : IEntity, IMovableEntity
     {
     }
 }

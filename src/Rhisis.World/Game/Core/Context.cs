@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core.Interfaces;
+﻿using Rhisis.Core.IO;
+using Rhisis.World.Game.Core.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -88,16 +89,24 @@ namespace Rhisis.World.Game.Core
 
                     this.Time = deltaTime / 1000f;
 
-                    lock (_syncPlayersLock)
+                    try
                     {
-                        foreach (var entity in this._playersEntities)
+                        lock (_syncPlayersLock)
                         {
-                            foreach (var system in this._systems)
+                            foreach (var entity in this._playersEntities)
                             {
-                                if (!(system is INotifiableSystem) && system.Match(entity))
-                                    system.Execute(entity);
+                                foreach (var system in this._systems)
+                                {
+                                    if (!(system is INotifiableSystem) && system.Match(entity))
+                                        system.Execute(entity);
+                                }
                             }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Context error: {0}", e.Message);
+                        Logger.Debug(e.StackTrace);
                     }
 
                     await Task.Delay(delay).ConfigureAwait(false);

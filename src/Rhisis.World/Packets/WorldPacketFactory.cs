@@ -1,5 +1,7 @@
 ﻿using Ether.Network;
 using Ether.Network.Packets;
+using Rhisis.Core.Network;
+using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
@@ -20,21 +22,18 @@ namespace Rhisis.World.Packets
                 visiblePlayer.PlayerComponent.Connection.Send(packet);
         }
 
-        public static void SendDestinationPosition(NetConnection client, IEntity player)
+        public static void SendDestinationPosition(NetConnection client, IMovableEntity movableEntity)
         {
-            //var objectComponent = player.GetComponent<ObjectComponent>();
-            //var movableComponent = player.GetComponent<MovableComponent>();
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(movableEntity.Id, SnapshotType.DESTPOS);
+                packet.Write(movableEntity.MovableComponent.DestinationPosition.X);
+                packet.Write(movableEntity.MovableComponent.DestinationPosition.Y);
+                packet.Write(movableEntity.MovableComponent.DestinationPosition.Z);
+                packet.Write<byte>(1);
 
-            //using (var packet = new FFPacket())
-            //{
-            //    packet.StartNewMergedPacket(player.Id, SnapshotType.DESTPOS);
-            //    packet.Write(movableComponent.DestinationPosition.X);
-            //    packet.Write(movableComponent.DestinationPosition.Y);
-            //    packet.Write(movableComponent.DestinationPosition.Z);
-            //    packet.Write<byte>(1);
-
-            //    SendToVisible(packet, player);
-            //}
+                SendToVisible(packet, movableEntity);
+            }
         }
     }
 }

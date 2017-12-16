@@ -2,6 +2,7 @@
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
+using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
@@ -94,19 +95,19 @@ namespace Rhisis.World.Game
                     {
                         for (int i = 0; i < rgnElement.Count; ++i)
                         {
-                            //var monster = map.Context.CreateEntity<MonsterEntity>();
+                            var monster = map.Context.CreateEntity<MonsterEntity>();
 
-                            //monster.ObjectComponent = new ObjectComponent
-                            //{
-                            //    MapId = mapId,
-                            //    ModelId = rgnElement.Model,
-                            //    Type = WorldObjectType.Mover,
-                            //    Position = respawner.GetRandomPosition(),
-                            //    Angle = RandomHelper.FloatRandom(0, 360f),
-                            //    Name = WorldServer.Movers[rgnElement.Model].Name,
-                            //    Size = 100,
-                            //    Spawned = true,
-                            //};
+                            monster.ObjectComponent = new ObjectComponent
+                            {
+                                MapId = mapId,
+                                ModelId = rgnElement.Model,
+                                Type = WorldObjectType.Mover,
+                                Position = respawner.GetRandomPosition(),
+                                Angle = RandomHelper.FloatRandom(0, 360f),
+                                Name = WorldServer.Movers[rgnElement.Model].Name,
+                                Size = 100,
+                                Spawned = true,
+                            };
                         }
                     }
 
