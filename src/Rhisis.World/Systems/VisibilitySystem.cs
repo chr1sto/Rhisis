@@ -1,86 +1,101 @@
-﻿using Rhisis.World.Core;
-using Rhisis.World.Core.Components;
-using Rhisis.World.Core.Entities;
-using Rhisis.World.Core.Systems;
+﻿using Rhisis.World.Core.Systems;
+using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using System.Linq;
+using System;
+using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
     [System]
-    public class VisibilitySystem : UpdateSystemBase
+    public class VisibilitySystem : SystemBase
     {
         public static readonly float VisibilityRange = 75f;
 
+        /// <summary>
+        /// Gets the <see cref="VisibilitySystem"/> match filter.
+        /// </summary>
+        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+
+        /// <summary>
+        /// Creates a new <see cref="VisibilitySystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public VisibilitySystem(IContext context)
             : base(context)
         {
         }
 
+        /// <summary>
+        /// Executes the <see cref="VisibilitySystem"/> logic.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
         public override void Execute(IEntity entity)
         {
-            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
-
-            foreach (IEntity otherEntity in this.Entities)
+            foreach (var otherEntity in this.Context.Entities)
             {
-                var otherEntityObjectComponent = otherEntity.GetComponent<ObjectComponent>();
-
-                if (entity.GetHashCode() != otherEntity.GetHashCode() && otherEntityObjectComponent.Spawned)
+                if (entity.Id != otherEntity.Id && otherEntity.ObjectComponent.Spawned)
                 {
-                    if (entityObjectComponent.Position.IsInCircle(otherEntityObjectComponent.Position, VisibilityRange))
+                    if (this.CanSee(entity, otherEntity))
                     {
-                        if (!entityObjectComponent.Entities.Contains(otherEntity))
-                            this.SpawnOtherEntity(entity, entityObjectComponent, otherEntity, otherEntityObjectComponent);
+                        if (!entity.ObjectComponent.Entities.Contains(otherEntity))
+                            this.SpawnOtherEntity(entity, otherEntity);
                     }
                     else
                     {
-                        if (entityObjectComponent.Entities.Contains(otherEntity))
-                            this.DespawnOtherEntity(entity, entityObjectComponent, otherEntity, otherEntityObjectComponent);
+                        if (entity.ObjectComponent.Entities.Contains(otherEntity))
+                            this.DespawnOtherEntity(entity, otherEntity);
                     }
                 }
             }
         }
-        
-        private void SpawnOtherEntity(IEntity entity, ObjectComponent entityObjectComponent, IEntity otherEntity, ObjectComponent otherEntityObjectComponent)
+
+        /// <summary>
+        /// Spawn the other entity for the current entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="otherEntity"></param>
+        private void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
-            var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
+            var player = entity as IPlayerEntity;
 
-            // Spawn for the current player entity.
-            WorldPacketFactory.SendSpawnObject(entityPlayerComponent.Connection, otherEntity);
-            entityObjectComponent.Entities.Add(otherEntity);
+            entity.ObjectComponent.Entities.Add(otherEntity);
+            WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
 
-            // Spawn for other entities
-            if (otherEntity.EntityType != WorldEntityType.Player && !otherEntityObjectComponent.Entities.Contains(entity))
-                otherEntityObjectComponent.Entities.Add(entity);
+            if (otherEntity.Type != WorldEntityType.Player && !otherEntity.ObjectComponent.Entities.Contains(entity))
+                otherEntity.ObjectComponent.Entities.Add(entity);
 
-            // Send entity moves if it's moving while he spawns or enter the viewport
-            var otherEntityMovableComponent = otherEntity.GetComponent<MovableComponent>();
-            if (otherEntityMovableComponent != null && otherEntityMovableComponent.DestinationPosition != otherEntityObjectComponent.Position)
-                WorldPacketFactory.SendDestinationPosition(entityPlayerComponent.Connection, otherEntity);
+            if (otherEntity is IMovableEntity movableEntity &&
+                movableEntity.MovableComponent.DestinationPosition != movableEntity.ObjectComponent.Position)
+                WorldPacketFactory.SendDestinationPosition(player.PlayerComponent.Connection, movableEntity);
         }
 
-        private void DespawnOtherEntity(IEntity entity, ObjectComponent entityObjectComponent, IEntity otherEntity, ObjectComponent otherEntityObjectComponent)
+        /// <summary>
+        /// Despawns the other entity for the current entity.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
+        /// <param name="otherEntity">other entity</param>
+        private void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
-            var entityPlayerComponent = entity.GetComponent<PlayerComponent>();
+            var player = entity as IPlayerEntity;
 
-            // Despawn for the current player entity.
-            WorldPacketFactory.SendDespawnObject(entityPlayerComponent.Connection, otherEntity);
-            entityObjectComponent.Entities.Remove(otherEntity);
-
-            // Despawn for the other entities
-            if (otherEntity.EntityType != WorldEntityType.Player && otherEntityObjectComponent.Entities.Contains(entity))
-                otherEntityObjectComponent.Entities.Remove(entity);
+            WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
+            entity.ObjectComponent.Entities.Remove(otherEntity);
+            
+            if (otherEntity.Type != WorldEntityType.Player && otherEntity.ObjectComponent.Entities.Contains(entity))
+                otherEntity.ObjectComponent.Entities.Remove(entity);
         }
 
-        private bool EntityHasOther(ObjectComponent entityObjectComponent, IEntity otherEntity)
+        /// <summary>
+        /// Check if the entity can see the other entity.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
+        /// <param name="otherEntity">Other entity</param>
+        /// <returns>Can see or not the other entity</returns>
+        private bool CanSee(IEntity entity, IEntity otherEntity)
         {
-            for (int i = 0; i < entityObjectComponent.Entities.Count; i++)
-            {
-                if (entityObjectComponent.Entities[i].Id == otherEntity.Id)
-                    return true;
-            }
-
-            return false;
+            return entity.ObjectComponent.Position.IsInCircle(otherEntity.ObjectComponent.Position, VisibilityRange);
         }
     }
 }

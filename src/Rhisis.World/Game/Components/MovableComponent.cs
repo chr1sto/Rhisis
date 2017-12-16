@@ -1,8 +1,8 @@
 ﻿using Rhisis.Core.Structures;
 
-namespace Rhisis.World.Core.Components
+namespace Rhisis.World.Game.Components
 {
-    public class MovableComponent : IComponent
+    public class MovableComponent
     {
         public long MoveTime { get; set; }
 

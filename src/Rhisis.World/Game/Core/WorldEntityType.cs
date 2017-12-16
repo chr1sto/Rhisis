@@ -1,4 +1,4 @@
-﻿namespace Rhisis.World.Core
+﻿namespace Rhisis.World.Game.Core
 {
     /// <summary>
     /// Defines the different world entities.
@@ -10,6 +10,6 @@
         Monster,
         Npc,
         Drop,
-        Pet
+        Pet,
     }
 }

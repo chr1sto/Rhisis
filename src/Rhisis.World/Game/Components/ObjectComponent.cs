@@ -1,12 +1,11 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.World.Core.Entities;
+using Rhisis.World.Game.Core.Interfaces;
 using System.Collections.Generic;
 
-namespace Rhisis.World.Core.Components
+namespace Rhisis.World.Game.Components
 {
-    public class ObjectComponent : IComponent
+    public class ObjectComponent
     {
         /// <summary>
         /// Gets or sets the model id.
@@ -51,7 +50,7 @@ namespace Rhisis.World.Core.Components
         /// <summary>
         /// Gets the list of the visible entities around.
         /// </summary>
-        public IList<IEntity> Entities { get; private set; }
+        public IList<IEntity> Entities { get; }
 
         /// <summary>
         /// Creates and initializes a new <see cref="ObjectComponent"/>.

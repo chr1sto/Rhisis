@@ -1,9 +1,9 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
-using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game;
+using Rhisis.World.Game.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,8 +1,8 @@
 ﻿using Ether.Network;
 
-namespace Rhisis.World.Core.Components
+namespace Rhisis.World.Game.Components
 {
-    public class PlayerComponent : IComponent
+    public class PlayerComponent
     {
         public int Id { get; set; }
 

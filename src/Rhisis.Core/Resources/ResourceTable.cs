@@ -120,7 +120,7 @@ namespace Rhisis.Core.Resources
                 if (!string.IsNullOrEmpty(line) && !line.StartsWith("//"))
                 {
                     if (line.Contains("//"))
-                        line.Remove(line.IndexOf("//"));
+                        line = line.Remove(line.IndexOf("//"));
 
                     line = line.Replace(",,", ",=,").Replace(",", "\t");
                     string[] content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);

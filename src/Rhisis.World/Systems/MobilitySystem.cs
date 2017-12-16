@@ -1,48 +1,60 @@
 ﻿using Rhisis.Core.IO;
-using Rhisis.World.Core;
-using Rhisis.World.Core.Components;
-using Rhisis.World.Core.Entities;
 using Rhisis.World.Core.Systems;
+using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Game.Entities;
 using System;
 using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
     [System]
-    public class MobilitySystem : UpdateSystemBase
+    public class MobilitySystem : SystemBase
     {
-        private static readonly int MoveTime = 10;
+        /// <summary>
+        /// Gets the <see cref="MobilitySystem"/> match filter.
+        /// </summary>
+        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
 
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.HasComponent<ObjectComponent>() && x.HasComponent<MovableComponent>();
-
+        /// <summary>
+        /// Creates a new <see cref="MobilitySystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public MobilitySystem(IContext context)
             : base(context)
         {
         }
 
+        /// <summary>
+        /// Executes the <see cref="MobilitySystem"/> logic.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
         public override void Execute(IEntity entity)
         {
-            var entityObjectComponent = entity.GetComponent<ObjectComponent>();
-            var entityMovableComponent = entity.GetComponent<MovableComponent>();
+            var movableEntity = entity as IMovableEntity;
 
-            if (entityMovableComponent.DestinationPosition.IsZero())
+            if (movableEntity.MovableComponent.DestinationPosition.IsZero())
                 return;
 
-            this.Walk(entityObjectComponent, entityMovableComponent);
+            this.Walk(movableEntity);
         }
 
-        private void Walk(ObjectComponent objectComponent, MovableComponent movableComponent)
+        /// <summary>
+        /// Process the walk algorithm.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
+        private void Walk(IMovableEntity entity)
         {
-            if (movableComponent.DestinationPosition.IsInCircle(objectComponent.Position, 0.1f))
+            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.ObjectComponent.Position, 0.1f))
             {
-                Logger.Debug("{0} arrived to destination", objectComponent.Name);
-                movableComponent.DestinationPosition.Reset();
+                Logger.Debug("{0} arrived to destination", entity.ObjectComponent.Name);
+                entity.MovableComponent.DestinationPosition.Reset();
             }
             else
             {
-                double speed = ((movableComponent.Speed * 100) * this.Context.Time);
-                float distanceX = movableComponent.DestinationPosition.X - objectComponent.Position.X;
-                float distanceZ = movableComponent.DestinationPosition.Z - objectComponent.Position.Z;
+                double speed = ((entity.MovableComponent.Speed * 100) * this.Context.Time);
+                float distanceX = entity.MovableComponent.DestinationPosition.X - entity.ObjectComponent.Position.X;
+                float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.ObjectComponent.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
                 // Normalize
@@ -50,18 +62,14 @@ namespace Rhisis.World.Systems
                 double deltaZ = distanceZ / distance;
                 double offsetX = deltaX * speed;
                 double offsetZ = deltaZ * speed;
-                
+
                 if (Math.Abs(offsetX) > Math.Abs(distanceX))
                     offsetX = distanceX;
                 if (Math.Abs(offsetZ) > Math.Abs(distanceZ))
                     offsetZ = distanceZ;
-                
-                objectComponent.Position.X += (float)offsetX;
-                objectComponent.Position.Z += (float)offsetZ;
 
-                //Logger.Debug("Moving: {0}, {1}", offsetX, offsetZ);
-                //Logger.Debug("DestinationPosition: {0}", movableComponent.DestinationPosition);
-                //Logger.Debug("CurrentPosition: {0}", objectComponent.Position);
+                entity.ObjectComponent.Position.X += (float)offsetX;
+                entity.ObjectComponent.Position.Z += (float)offsetZ;
             }
         }
     }
