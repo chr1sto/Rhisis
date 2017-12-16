@@ -12,7 +12,7 @@ namespace Rhisis.World.Game.Core
         /// Creates a new <see cref="NotifiableSystemBase"/> instance.
         /// </summary>
         /// <param name="context"></param>
-        public NotifiableSystemBase(IContext context)
+        protected NotifiableSystemBase(IContext context)
             : base(context)
         {
         }

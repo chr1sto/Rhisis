@@ -332,32 +332,32 @@ namespace Rhisis.World.Packets
                 }
                 else if (entityToSpawn.Type == WorldEntityType.Monster)
                 {
-                    //packet.Write<short>(5);
-                    //packet.Write<byte>(0);
-                    //packet.Write(WorldServer.Movers[otherObjectComponent.ModelId].MaxHP);
-                    //packet.Write(1);
-                    //packet.Write(0);
-                    //packet.Write((byte)WorldServer.Movers[otherObjectComponent.ModelId].Belligerence);
-                    //packet.Write(-1);
+                    packet.Write<short>(5);
+                    packet.Write<byte>(0);
+                    packet.Write(WorldServer.Movers[entityToSpawn.ObjectComponent.ModelId].MaxHP);
+                    packet.Write(1);
+                    packet.Write(0);
+                    packet.Write((byte)WorldServer.Movers[entityToSpawn.ObjectComponent.ModelId].Belligerence);
+                    packet.Write(-1);
 
-                    //packet.Write((byte)0);
-                    //packet.Write(-1);
-                    //packet.Write((byte)0);
-                    //packet.Write(0);
-                    //packet.Write((byte)0);
-                    //if (otherObjectComponent.ModelId == 1021)
-                    //{
-                    //    packet.Write((byte)0);
-                    //}
-                    //else
-                    //{
-                    //    packet.Write(false ? (byte)1 : (byte)0);
-                    //}
-                    //packet.Write((byte)0);
-                    //packet.Write((byte)0);
-                    //packet.Write(0);
-                    //packet.Write(1f); // speed factor
-                    //packet.Write(0);
+                    packet.Write((byte)0);
+                    packet.Write(-1);
+                    packet.Write((byte)0);
+                    packet.Write(0);
+                    packet.Write((byte)0);
+                    if (entityToSpawn.ObjectComponent.ModelId == 1021)
+                    {
+                        packet.Write((byte)0);
+                    }
+                    else
+                    {
+                        packet.Write(false ? (byte)1 : (byte)0);
+                    }
+                    packet.Write((byte)0);
+                    packet.Write((byte)0);
+                    packet.Write(0);
+                    packet.Write(1f); // speed factor
+                    packet.Write(0);
                 }
 
                 player.PlayerComponent.Connection.Send(packet);
