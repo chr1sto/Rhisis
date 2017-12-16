@@ -122,7 +122,7 @@ namespace Rhisis.World
                 {
                     var otherPlayerEntity = entity as IPlayerEntity;
 
-                    WorldPacketFactory.SendDespawnObject(otherPlayerEntity.PlayerComponent.Connection, this.Player);
+                    WorldPacketFactory.SendDespawnObjectTo(otherPlayerEntity, this.Player);
                 }
 
                 entity.ObjectComponent.Entities.Remove(this.Player);

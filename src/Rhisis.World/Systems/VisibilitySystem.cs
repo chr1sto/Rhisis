@@ -61,7 +61,7 @@ namespace Rhisis.World.Systems
             var player = entity as IPlayerEntity;
 
             entity.ObjectComponent.Entities.Add(otherEntity);
-            WorldPacketFactory.SendSpawnObject(player.PlayerComponent.Connection, otherEntity);
+            WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
 
             if (otherEntity.Type != WorldEntityType.Player && !otherEntity.ObjectComponent.Entities.Contains(entity))
                 otherEntity.ObjectComponent.Entities.Add(entity);
@@ -80,7 +80,7 @@ namespace Rhisis.World.Systems
         {
             var player = entity as IPlayerEntity;
 
-            WorldPacketFactory.SendDespawnObject(player.PlayerComponent.Connection, otherEntity);
+            WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
             entity.ObjectComponent.Entities.Remove(otherEntity);
             
             if (otherEntity.Type != WorldEntityType.Player && otherEntity.ObjectComponent.Entities.Contains(entity))

@@ -1,19 +1,18 @@
-﻿using Ether.Network;
-using Rhisis.Core.Network;
+﻿using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
-using Rhisis.World.Core;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendPlayerSpawn(NetConnection client, IPlayerEntity player)
+        /// <summary>
+        /// Send the spawn packet to the current player.
+        /// </summary>
+        /// <param name="player">Current player</param>
+        public static void SendPlayerSpawn(IPlayerEntity player)
         {
             using (var packet = new FFPacket())
             {
@@ -220,34 +219,35 @@ namespace Rhisis.World.Packets
                 // buffs
                 packet.Write(0); // count
 
-                client.Send(packet);
+                player.PlayerComponent.Connection.Send(packet);
             }
         }
 
-        public static void SendSpawnObject(NetConnection client, IEntity entity)
+        /// <summary>
+        /// Sends the spawn object to the current player.
+        /// </summary>
+        /// <param name="player">Current player</param>
+        /// <param name="entityToSpawn">Entity to spawn</param>
+        public static void SendSpawnObjectTo(IPlayerEntity player, IEntity entityToSpawn)
         {
             using (var packet = new FFPacket())
             {
-                //var otherObjectComponent = entity.GetComponent<ObjectComponent>();
-                //var otherHumanComponent = entity.GetComponent<HumanComponent>();
-                //var otherPlayerComponent = entity.GetComponent<PlayerComponent>();
+                packet.StartNewMergedPacket(entityToSpawn.Id, SnapshotType.ADD_OBJ);
 
-                packet.StartNewMergedPacket(entity.Id, SnapshotType.ADD_OBJ);
+                packet.Write((byte)entityToSpawn.ObjectComponent.Type);
+                packet.Write(entityToSpawn.ObjectComponent.ModelId);
+                packet.Write((byte)entityToSpawn.ObjectComponent.Type);
+                packet.Write(entityToSpawn.ObjectComponent.ModelId);
+                packet.Write(entityToSpawn.ObjectComponent.Size);
+                packet.Write(entityToSpawn.ObjectComponent.Position.X);
+                packet.Write(entityToSpawn.ObjectComponent.Position.Y);
+                packet.Write(entityToSpawn.ObjectComponent.Position.Z);
+                packet.Write((short)(entityToSpawn.ObjectComponent.Angle * 10f));
+                packet.Write(entityToSpawn.Id);
 
-                packet.Write((byte)entity.ObjectComponent.Type);
-                packet.Write(entity.ObjectComponent.ModelId);
-                packet.Write((byte)entity.ObjectComponent.Type);
-                packet.Write(entity.ObjectComponent.ModelId);
-                packet.Write(entity.ObjectComponent.Size);
-                packet.Write(entity.ObjectComponent.Position.X);
-                packet.Write(entity.ObjectComponent.Position.Y);
-                packet.Write(entity.ObjectComponent.Position.Z);
-                packet.Write((short)(entity.ObjectComponent.Angle * 10f));
-                packet.Write(entity.Id);
-
-                if (entity.Type == WorldEntityType.Player)
+                if (entityToSpawn.Type == WorldEntityType.Player)
                 {
-                    var playerEntity = entity as IPlayerEntity;
+                    var playerEntity = entityToSpawn as IPlayerEntity;
 
                     packet.Write<short>(0);
                     packet.Write<byte>(1); // is player?
@@ -257,7 +257,7 @@ namespace Rhisis.World.Packets
                     packet.Write<byte>(0);
                     packet.Write(-1); // baby buffer
 
-                    packet.Write(entity.ObjectComponent.Name);
+                    packet.Write(entityToSpawn.ObjectComponent.Name);
                     packet.Write(playerEntity.HumanComponent.Gender);
                     packet.Write((byte)playerEntity.HumanComponent.SkinSetId);
                     packet.Write((byte)playerEntity.HumanComponent.HairId);
@@ -330,7 +330,7 @@ namespace Rhisis.World.Packets
                     packet.Write(-1); // pet ?
                     packet.Write(0); // buffs ?
                 }
-                else if (entity.Type == WorldEntityType.Monster)
+                else if (entityToSpawn.Type == WorldEntityType.Monster)
                 {
                     //packet.Write<short>(5);
                     //packet.Write<byte>(0);
@@ -360,17 +360,22 @@ namespace Rhisis.World.Packets
                     //packet.Write(0);
                 }
 
-                client.Send(packet);
+                player.PlayerComponent.Connection.Send(packet);
             }
         }
 
-        public static void SendDespawnObject(NetConnection client, IEntity entity)
+        /// <summary>
+        /// Sends the despawn object to the current player.
+        /// </summary>
+        /// <param name="player">Current player</param>
+        /// <param name="entityToDespawn">Entity to despawn</param>
+        public static void SendDespawnObjectTo(IPlayerEntity player, IEntity entityToDespawn)
         {
             using (var packet = new FFPacket())
             {
-                packet.StartNewMergedPacket(entity.Id, SnapshotType.DEL_OBJ);
+                packet.StartNewMergedPacket(entityToDespawn.Id, SnapshotType.DEL_OBJ);
 
-                client.Send(packet);
+                player.PlayerComponent.Connection.Send(packet);
             }
         }
     }

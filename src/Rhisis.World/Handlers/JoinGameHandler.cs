@@ -82,7 +82,7 @@ namespace Rhisis.World.Handlers
             };
             
             // 3rd: spawn the player
-            WorldPacketFactory.SendPlayerSpawn(client, client.Player);
+            WorldPacketFactory.SendPlayerSpawn(client.Player);
 
             // 4th: player is now spawned
             client.Player.ObjectComponent.Spawned = true;

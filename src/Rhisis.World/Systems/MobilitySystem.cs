@@ -70,10 +70,6 @@ namespace Rhisis.World.Systems
 
                 entity.ObjectComponent.Position.X += (float)offsetX;
                 entity.ObjectComponent.Position.Z += (float)offsetZ;
-
-                Logger.Debug("Moving: {0}, {1}", offsetX, offsetZ);
-                Logger.Debug("DestinationPosition: {0}", entity.MovableComponent.DestinationPosition);
-                Logger.Debug("CurrentPosition: {0}", entity.ObjectComponent.Position);
             }
         }
     }
