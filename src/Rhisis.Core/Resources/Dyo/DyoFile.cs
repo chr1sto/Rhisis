@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rhisis.Core.Resources.Dyo
 {
@@ -41,6 +42,13 @@ namespace Rhisis.Core.Resources.Dyo
                     this._elements.Add(rgnElement);
             }
         }
+        
+        /// <summary>
+        /// Gets the specific elements.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetElements<T>() where T : DyoElement => this._elements.Where(x => x is T).Select(x => x as T);
 
         /// <summary>
         /// Dispose the <see cref="DyoFile"/> resources.

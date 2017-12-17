@@ -359,6 +359,27 @@ namespace Rhisis.World.Packets
                     packet.Write(1f); // speed factor
                     packet.Write(0);
                 }
+                else if (entityToSpawn.Type == WorldEntityType.Npc)
+                {
+                    packet.Write<short>(1);
+                    packet.Write<byte>(0);
+                    packet.Write(1); // can be selected
+                    packet.Write(1);
+                    packet.Write(0);
+                    packet.Write<byte>(1);
+                    packet.Write(-1);
+                    packet.Write<byte>(0); // Npc hair id
+                    packet.Write(0); // Npc hair color
+                    packet.Write<byte>(0); // Npc Face Id
+                    packet.Write(entityToSpawn.ObjectComponent.Name);
+                    packet.Write<byte>(0); // item equiped count
+                    packet.Write<byte>(0);
+                    packet.Write<byte>(0);
+                    packet.Write<byte>(0);
+                    packet.Write(0);
+                    packet.Write<float>(1); // speed factor
+                    packet.Write(0);
+                }
 
                 player.PlayerComponent.Connection.Send(packet);
             }
