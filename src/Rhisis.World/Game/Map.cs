@@ -19,8 +19,10 @@ namespace Rhisis.World.Game
     /// </summary>
     public sealed class Map : IDisposable
     {
-        private bool _isDisposed;
+        private static readonly short DefaultMoverSize = 100;
 
+        private bool _isDisposed;
+        
         private readonly ICollection<IRegion> _regions;
 
         /// <summary>
@@ -81,10 +83,30 @@ namespace Rhisis.World.Game
             string rgn = Path.Combine(mapPath, mapName + ".rgn");
             var map = new Map(mapName, mapId);
 
+            // Load NPC
             using (var dyoFile = new DyoFile(dyo))
             {
+                IEnumerable<NpcDyoElement> npcElements = dyoFile.GetElements<NpcDyoElement>();
+
+                foreach (var element in npcElements)
+                {
+                    var npc = map.Context.CreateEntity<NpcEntity>();
+
+                    npc.ObjectComponent = new ObjectComponent
+                    {
+                        MapId = map.Id,
+                        ModelId = element.Index,
+                        Name = element.Name,
+                        Angle = element.Angle,
+                        Type = WorldObjectType.Mover,
+                        Position = element.Position.Clone(),
+                        Size = (short)(DefaultMoverSize * element.Scale.X),
+                        Spawned = true
+                    };
+                }
             }
 
+            // Load monsters
             using (var rgnFile = new RgnFile(rgn))
             {
                 foreach (RgnRespawn7 rgnElement in rgnFile.Elements.Where(r => r is RgnRespawn7))
@@ -105,7 +127,7 @@ namespace Rhisis.World.Game
                                 Position = respawner.GetRandomPosition(),
                                 Angle = RandomHelper.FloatRandom(0, 360f),
                                 Name = WorldServer.Movers[rgnElement.Model].Name,
-                                Size = 100,
+                                Size = DefaultMoverSize,
                                 Spawned = true,
                             };
                         }
@@ -116,7 +138,6 @@ namespace Rhisis.World.Game
             }
 
             // TODO: load map informations
-            // TODO: load objects
             // TODO: load heights
             // TODO: load revival zones
 

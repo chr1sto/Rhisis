@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Core.Systems;
+﻿using Rhisis.Core.IO;
+using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
@@ -16,7 +17,7 @@ namespace Rhisis.World.Systems
         /// <summary>
         /// Gets the <see cref="VisibilitySystem"/> match filter.
         /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster || x.Type == WorldEntityType.Npc;
 
         /// <summary>
         /// Creates a new <see cref="VisibilitySystem"/> instance.
