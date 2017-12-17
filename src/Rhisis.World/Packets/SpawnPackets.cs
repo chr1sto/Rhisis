@@ -3,6 +3,7 @@ using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Systems;
 
 namespace Rhisis.World.Packets
 {
@@ -85,22 +86,7 @@ namespace Rhisis.World.Packets
                 packet.Write<byte>(0); // duel
                 packet.Write(-1); // titles
 
-                for (int i = 0; i < 31; i++)
-                {
-                    packet.Write(0);
-                }
-                //foreach (var item in this.Inventory.GetEquipedItems())
-                //{
-                //    if (item == null || item.Id < 0)
-                //        packet.Write(0);
-                //    else
-                //    {
-                //        packet.Write(item.Refine); // Refine
-                //        packet.Write<byte>(0);
-                //        packet.Write(item.Element); // element (fire, water, elec...)
-                //        packet.Write(item.ElementRefine); // Refine element
-                //    }
-                //}
+                InventorySystem.SerializeVisibleEffects(player, packet);
 
                 packet.Write(0); // guild war state
 
@@ -156,23 +142,17 @@ namespace Rhisis.World.Packets
                 for (int i = 0; i < 3; ++i)
                     packet.Write(0); // player bank ?
 
-                packet.Write(1); //ar << m_nPlusMaxHitPoint;
-                packet.Write<byte>(0);  //ar << m_nAttackResistLeft;				
-                packet.Write<byte>(0);  //ar << m_nAttackResistRight;				
-                packet.Write<byte>(0);  //ar << m_nDefenseResist;
-                packet.Write<long>(0); //ar << m_nAngelExp;
-                packet.Write(0); //ar << m_nAngelLevel;
+                packet.Write(1); // ar << m_nPlusMaxHitPoint;
+                packet.Write<byte>(0); // ar << m_nAttackResistLeft;				
+                packet.Write<byte>(0); // ar << m_nAttackResistRight;				
+                packet.Write<byte>(0); // ar << m_nDefenseResist;
+                packet.Write<long>(0); // ar << m_nAngelExp;
+                packet.Write(0); // ar << m_nAngelLevel;
 
                 // Inventory
-                //this.Inventory.Serialize(packet);
-                for (int i = 0; i < 73; ++i)
-                    packet.Write(i);
-                packet.Write(0);
-                for (int i = 0; i < 73; ++i)
-                    packet.Write(i);
+                InventorySystem.SerializeInventory(player, packet);
 
                 // Bank
-
                 for (int i = 0; i < 3; ++i)
                 {
                     for (int j = 0; j < 0x2A; ++j)
@@ -185,17 +165,16 @@ namespace Rhisis.World.Packets
                 packet.Write(int.MaxValue); // pet id
 
                 // Bag
-
                 packet.Write<byte>(1);
                 for (int i = 0; i < 6; i++)
                 {
                     packet.Write(i);
                 }
-                packet.Write<byte>(0);                 // Base bag item count
+                packet.Write<byte>(0); // Base bag item count
                 for (int i = 0; i < 0; i++)
                 {
-                    packet.Write((byte)i);             // Slot
-                    packet.Write(i);            // Slot
+                    packet.Write((byte)i); // Slot
+                    packet.Write(i); // Slot
                 }
                 for (int i = 0; i < 6; i++)
                 {
@@ -291,41 +270,12 @@ namespace Rhisis.World.Packets
                     packet.Write<byte>(0); // duel
                     packet.Write(-1); // titles
 
-                    for (int i = 0; i < 31; ++i)
-                        packet.Write(0);
-                    //for (int i = Inventory.EquipOffset; i < Inventory.MaxItems; ++i)
-                    //{
-                    //    var item = this.Inventory.GetItemBySlot(i);
-
-                    //    if (item == null || item.Id < 0)
-                    //        packet.Write(0);
-                    //    else
-                    //    {
-                    //        packet.Write(item.Refine); // Refine
-                    //        packet.Write<byte>(0);
-                    //        packet.Write(item.Element); // Element (fire, water, elec, ect...)
-                    //        packet.Write(item.ElementRefine); // Element refine
-                    //    }
-                    //}
+                    InventorySystem.SerializeVisibleEffects(playerEntity, packet);
 
                     for (int i = 0; i < 28; i++)
                         packet.Write(0);
 
-                    packet.Write((byte)0);
-
-                    //IEnumerable<Item> equipedItems = this.Inventory.GetEquipedItems();
-
-                    //packet.Write((byte)equipedItems.Count(x => x.Id != -1));
-
-                    //foreach (var item in equipedItems)
-                    //{
-                    //    if (item != null && item.Id > 0)
-                    //    {
-                    //        packet.Write((byte)(item.Slot - Inventory.EquipOffset));
-                    //        packet.Write((short)item.Id);
-                    //        packet.Write<byte>(0);
-                    //    }
-                    //}
+                    InventorySystem.SerializeEquipedItems(playerEntity, packet);
 
                     packet.Write(-1); // pet ?
                     packet.Write(0); // buffs ?
