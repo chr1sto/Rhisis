@@ -56,6 +56,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
    - Defines & texts
    - Movers
    - Maps
+- Spawn monsters and NPC
 - Visibility System
 - Mobility System
 - Chat System
