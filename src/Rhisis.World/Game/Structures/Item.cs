@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Core.Structures.Game;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Structures
 {
@@ -11,7 +12,7 @@ namespace Rhisis.World.Game.Structures
         /// <summary>
         /// Flyff item refine table.
         /// </summary>
-        public static readonly int[] RefineTable = new int[] { 0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24 };
+        public static readonly IReadOnlyCollection<int> RefineTable = new[] { 0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24 };
 
         /// <summary>
         /// Gets the item Id.

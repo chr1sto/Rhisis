@@ -15,11 +15,11 @@ namespace Rhisis.World.Systems
     [System]
     public class InventorySystem : NotifiableSystemBase
     {
-        public const int RightWeaponSlot = 52;
-        public const int EquipOffset = 42;
-        public const int MaxItems = 73;
-        public const int InventorySize = EquipOffset;
-        public const int MaxHumanParts = MaxItems - EquipOffset;
+        public static readonly int RightWeaponSlot = 52;
+        public static readonly int EquipOffset = 42;
+        public static readonly int MaxItems = 73;
+        public static readonly int InventorySize = EquipOffset;
+        public static readonly int MaxHumanParts = MaxItems - EquipOffset;
 
         /// <summary>
         /// Gets the <see cref="InventorySystem"/> match filter.
