@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Game\Components\" />
-  </ItemGroup>
-
 </Project>

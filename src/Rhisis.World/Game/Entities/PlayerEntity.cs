@@ -14,12 +14,15 @@ namespace Rhisis.World.Game.Entities
 
         public MovableComponent MovableComponent { get; set; }
 
+        public InventoryComponent InventoryComponent { get; set; }
+
         public PlayerEntity(IContext context)
             : base(context)
         {
             this.HumanComponent = new HumanComponent();
             this.PlayerComponent = new PlayerComponent();
             this.MovableComponent = new MovableComponent();
+            this.InventoryComponent = new InventoryComponent();
         }
     }
 }

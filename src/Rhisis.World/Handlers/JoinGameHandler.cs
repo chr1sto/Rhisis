@@ -11,6 +11,7 @@ using Rhisis.World.Core;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems;
 
 namespace Rhisis.World.Handlers
 {
@@ -80,6 +81,8 @@ namespace Rhisis.World.Handlers
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
+
+            InventorySystem.InitializeInventory(client.Player, character.Items);
             
             // 3rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client.Player);
