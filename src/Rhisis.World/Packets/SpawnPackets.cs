@@ -368,9 +368,9 @@ namespace Rhisis.World.Packets
                     packet.Write(0);
                     packet.Write<byte>(1);
                     packet.Write(-1);
-                    packet.Write<byte>(0);//packet.Write((byte)this.Data.HairId);
-                    packet.Write(0);//packet.Write(this.Data.HairColor);
-                    packet.Write<byte>(0);//packet.Write((byte)this.Data.FaceId);
+                    packet.Write<byte>(0); // Npc hair id
+                    packet.Write(0); // Npc hair color
+                    packet.Write<byte>(0); // Npc Face Id
                     packet.Write(entityToSpawn.ObjectComponent.Name);
                     packet.Write<byte>(0); // item equiped count
                     packet.Write<byte>(0);
