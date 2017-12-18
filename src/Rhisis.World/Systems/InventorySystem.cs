@@ -42,6 +42,7 @@ namespace Rhisis.World.Systems
         /// <param name="e"></param>
         public override void Execute(IEntity entity, EventArgs e)
         {
+            throw new NotImplementedException();
         }
 
         /// <summary>

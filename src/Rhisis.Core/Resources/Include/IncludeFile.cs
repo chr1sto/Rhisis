@@ -72,10 +72,7 @@ namespace Rhisis.Core.Resources.Include
             while ((parameter = this._scanner.GetToken()) != ")")
                 instruction.AddParameter(parameter);
 
-            string endDelimiter = this._scanner.GetToken();
-
-            //if (endDelimiter != ";")
-            //    throw new InvalidDataException("Invalid instruction format. Missing ';' for instruction " + instruction.Name);
+            this._scanner.GetToken();
 
             return instruction;
         }

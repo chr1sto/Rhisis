@@ -1,6 +1,8 @@
-﻿namespace Rhisis.Core.Resources.Include
+﻿using System;
+
+namespace Rhisis.Core.Resources.Include
 {
-    public interface IStatement
+    public interface IStatement : IDisposable
     {
         string Name { get; }
 
