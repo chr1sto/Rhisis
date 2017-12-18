@@ -142,12 +142,12 @@ namespace Rhisis.World.Packets
                 for (int i = 0; i < 3; ++i)
                     packet.Write(0); // player bank ?
 
-                packet.Write(1); // ar << m_nPlusMaxHitPoint;
-                packet.Write<byte>(0); // ar << m_nAttackResistLeft;				
-                packet.Write<byte>(0); // ar << m_nAttackResistRight;				
-                packet.Write<byte>(0); // ar << m_nDefenseResist;
-                packet.Write<long>(0); // ar << m_nAngelExp;
-                packet.Write(0); // ar << m_nAngelLevel;
+                packet.Write(1); // ar << m_nPlusMaxHitPoint
+                packet.Write<byte>(0); // ar << m_nAttackResistLeft			
+                packet.Write<byte>(0); // ar << m_nAttackResistRight			
+                packet.Write<byte>(0); // ar << m_nDefenseResist
+                packet.Write<long>(0); // ar << m_nAngelExp
+                packet.Write(0); // ar << m_nAngelLevel
 
                 // Inventory
                 InventorySystem.SerializeInventory(player, packet);
@@ -231,8 +231,8 @@ namespace Rhisis.World.Packets
                     packet.Write<short>(0);
                     packet.Write<byte>(1); // is player?
                     packet.Write(230); // HP
-                    packet.Write((int)0); // moving flags
-                    packet.Write((int)0); // motion flags
+                    packet.Write(0); // moving flags
+                    packet.Write(0); // motion flags
                     packet.Write<byte>(0);
                     packet.Write(-1); // baby buffer
 

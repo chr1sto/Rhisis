@@ -18,7 +18,7 @@ namespace Rhisis.Core.Resources
         private readonly IList<IEnumerable<string>> _datas;
         private readonly StreamReader _reader;
 
-        private int _headerIndex;
+        private readonly int _headerIndex;
 
         /// <summary>
         /// Gets the amount of valid data within the <see cref="ResourceTable"/>.
@@ -147,7 +147,7 @@ namespace Rhisis.Core.Resources
             if (this._defines != null && this._defines.ContainsKey(data))
                 return this._defines[data].ToString();
             else if (this._texts != null && this._texts.ContainsKey(data))
-                return this._texts[data].ToString();
+                return this._texts[data];
 
             return data.Replace("=", "0").Replace(",", ".").Replace("\"", "");
         }

@@ -180,7 +180,6 @@ namespace Rhisis.World
         {
             _defines.Clear();
             _texts.Clear();
-            GC.Collect();
         }
     }
 }
