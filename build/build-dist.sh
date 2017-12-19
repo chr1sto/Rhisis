@@ -18,10 +18,10 @@ DIST_DIRECTORY_BINARIES=$DIST_DIRECTORY/bin
 function create_rhisis_file {
     FILE_PATH=$DIST_DIRECTORY/$1
 
-    echo "#!/bin/bash" > FILE_PATH
-    echo "cd \${0%/*}" >> FILE_PATH
-    echo "dotnet $2" >> FILE_PATH
-    chmod +x FILE_PATH
+    echo "#!/bin/bash" > $FILE_PATH
+    echo "cd \${0%/*}" >> $FILE_PATH
+    echo "dotnet $2" >> $FILE_PATH
+    chmod +x $FILE_PATH
 }
 
 # Delete dist folder if exists
@@ -39,7 +39,8 @@ mkdir $DIST_DIRECTORY_BINARIES/tools
 mkdir $DIST_DIRECTORY_BINARIES/tools/cli
 
 # Build Rhisis solution release mode
-sudo ./build.sh
+echo "BUILD DIST"
+sudo ./build/build.sh
 
 # Copy binaries to dist/bin folders
 cp src/Rhisis.Login/bin/Release/netcoreapp2.0/* $DIST_DIRECTORY_BINARIES/login
