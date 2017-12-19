@@ -8,6 +8,7 @@
 # creates the release folder named "dist".
 #
 
+# Global variables
 DIST_DIRECTORY=dist
 DIST_DIRECTORY_BINARIES=$DIST_DIRECTORY/bin
 
@@ -15,9 +16,12 @@ DIST_DIRECTORY_BINARIES=$DIST_DIRECTORY/bin
 # Create the dist folder and subfolders
 #
 function create_rhisis_file {
-    echo "#!/bin/bash" > $DIST_DIRECTORY/$1
-    echo "dotnet $2" >> $DIST_DIRECTORY/$1
-    chmod +x $DIST_DIRECTORY/$1
+    FILE_PATH=$DIST_DIRECTORY/$1
+
+    echo "#!/bin/bash" > FILE_PATH
+    echo "cd \${0%/*}" >> FILE_PATH
+    echo "dotnet $2" >> FILE_PATH
+    chmod +x FILE_PATH
 }
 
 # Delete dist folder if exists
