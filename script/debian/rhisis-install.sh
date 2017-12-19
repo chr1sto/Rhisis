@@ -51,7 +51,7 @@ function install_dotnet_core {
     CODENAME=`lsb_release --codename | cut -f2`
     
     # Register Microsoft trusted key
-       	curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 	sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 	
 	sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-debian-$CODENAME-prod $CODENAME main" > /etc/apt/sources.list.d/dotnetdev.list'
@@ -92,7 +92,8 @@ sudo git clone $REPOSITORY
 
 echo "change directory"
 cd Rhisis/
-git checkout feature/scripts
+# Temporary
+# git checkout develop
 
 echo "Give access to script"
 sudo chmod +x ./build/build-dist.sh
@@ -100,3 +101,5 @@ sudo chmod +x ./build/build.sh
 
 echo "start script"
 sudo ./build/build-dist.sh
+
+cp 

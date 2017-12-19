@@ -1,0 +1,49 @@
+#!/bin/sh -e
+# kFreeBSD do not accept scripts as interpreters, using #!/bin/sh and sourcing.
+if [ true != "$INIT_D_SCRIPT_SOURCED" ] ; then
+    set "$0" "$@"; INIT_D_SCRIPT_SOURCED=true . /lib/init/init-d-script
+fi
+### BEGIN INIT INFO
+# Provides:          rhisis-cluster
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Rhisis Cluster Server
+# Description:       This script starts the Rhisis Cluster Server service.
+### END INIT INFO
+
+#. /lib/lsb/init-functions
+
+NAME=rhisis-cluster
+DESC="Rhisis Cluster Server"
+DAEMON=/usr/local/bin/dotnet
+DAEMON_ARGS=/var/Rhisis/bin/cluster/Rhisis.Cluster.dll
+PIDFILE=/var/run/$NAME.pid
+RHISIS_BINARY=/var/Rhisis
+
+d_start()
+{
+    start-stop-daemon --chdir $RHISIS_BINARY --start --quiet --make-pidfile --pidfile $PIDFILE --background --startas /bin/sh -- -c "exec $DAEMON $DAEMON_ARGS > /var/log/$NAME.log 2>&1"
+}
+
+d_stop()
+{
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE
+}
+
+case "$1" in
+    start)
+    stop)
+	d_$1
+	;;
+    restart)
+	d_stop
+	d_start
+	;;
+    *)
+	echo "Usage: $NAME [start|stop|restart]"
+	exit 3
+	;;
+esac
+exit 0
