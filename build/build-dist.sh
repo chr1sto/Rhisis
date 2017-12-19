@@ -12,6 +12,9 @@
 DIST_DIRECTORY=dist
 DIST_DIRECTORY_BINARIES=$DIST_DIRECTORY/bin
 
+# Define current working directory
+cd ${0%/*}
+
 #
 # Create the dist folder and subfolders
 #

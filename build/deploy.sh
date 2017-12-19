@@ -11,6 +11,9 @@
 # Global variables
 DIST_DIRECTORY=dist
 
+# Define current working directory
+cd ${0%/*}
+
 # Build the distribution folder
 ./build-dist.sh
 

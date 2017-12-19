@@ -58,44 +58,41 @@ function install_dotnet_core {
 	sudo apt-get install dotnet-sdk-2.0.0
 }
 
-#
-# Install Rhisis emulator and tools from source
-#
-function install_rhisis {
-	
-}
-
-#
 # Check install directory
-#
-function install_directory {
-	if [ ! -z $1 ]; then
-		INSTALL_DIRECTORY=$1
-	fi
 
-	while true; do
-      read -p "'$INSTALL_DIRECTORY' already exists, do you want to delete it?" yn
-      case $yn in
-          [Yy]* )
-			echo "Deleting '$INSTALL_DIRECTORY'..."
-			rm -rf $INSTALL_DIRECTORY 
-			break
-			;;
-          [Nn]* ) exit;;
-          * ) echo "Please answer yes or no.";;
-      esac
+if [ ! -z $1 ]; then
+    INSTALL_DIRECTORY=$1
+fi
+
+if [ -d "$INSTALL_DIRECTORY" ]; then
+    while true; do
+	read -p "'$INSTALL_DIRECTORY' already exists, do you want to delete it?" yn
+	case $yn in
+	    [Yy]* )
+		echo "Deleting '$INSTALL_DIRECTORY'..."
+		rm -rf $INSTALL_DIRECTORY
+		break
+		;;
+	    [Nn]* ) exit;;
+	    * ) echo "Please answer yes or no.";;
+	esac
     done
-}
+fi
 
-#
-# Main function
-#
-function main {
-	check_install_directory
-	install_tools
-	install_mysql
-	install_dotnet_core
-	install_rhisis
-}
+# Install tools
+install_tools
+install_mysql
+install_dotnet
 
-main
+# Install Rhisis emulator
+echo "Clone repository"
+git clone $REPOSITORY
+
+echo "change directory"
+cd Rhisis/
+
+echo "Give access to script"
+chmod +x ./Rhisis/build/build-dist.sh
+
+echo "start script"
+./Rhisis/build/build-dist.sh
