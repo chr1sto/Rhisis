@@ -1,14 +1,40 @@
+# General build informations
 language: csharp
 dist: trusty
 sudo: required
 mono: none
 dotnet: 2.0.0
-script:
-  - dotnet restore
-  - dotnet build src/Rhisis.Core/ -f netstandard2.0
-  - dotnet build src/Rhisis.Database/ -f netstandard2.0
-  - dotnet build src/tools/Rhisis.CLI/ -f netcoreapp2.0
-  - dotnet build src/Rhisis.Login/ -f netcoreapp2.0
-  - dotnet build src/Rhisis.Cluster/ -f netcoreapp2.0
-  - dotnet build src/Rhisis.World/ -f netcoreapp2.0
-  - dotnet test test/Rhisis.Core.Test/
+
+# Grant access to scripts
+before_script:
+  - chmod +x ./build/build.sh
+  - chmod +x ./build/build-dist.sh
+  - chmod +x ./build/test.sh
+  - chmod +x ./build/deploy.sh
+
+# Build the project
+script: 
+  - ./build/build.sh
+  - ./build/test.sh
+
+# Define deployement strategy
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: ./build/deploy.sh
+  on:
+    branch: master
+
+# Define environment variables
+env:
+  global:
+    - secure: "qpp3fICvD48kxhiSDXi8pchuKsgmlu0EcrTtFkCbTzHaeKQVWLDdcDJJjKthWVcwhziP09BsI3uZChice4JacEsZFVsQNzU7vv7zBeBzOnd+qdbbRMcrm+jmJPi0s+9KgbYGClhFlIawW+mSGv7acxbQt8QHOPBTDjpXEUVUdFKOJXvxaXcvZgKEnLhGDToENAfuo4IzGsr6kMDwZ04WWuNx4YwJH95+QuJey5iftFvV/bb5M6HSdIhKtOacAbR5wox2wsgLP9fyF3usX36Mv1EvhjmHe4E4Ty8QGOtaA6D62KSS72F6A8jJ8+OhqGZuFQUXM9wXnvWX1vRp0qVQe7G+/iLCyFhwmUZOkcoe2ZRk8kgyUjcyV+lejrmM2mAUWH5Ah1eF+Rja9n181GqN95lyHt6wtOeesL5sisEQIyUDN5dDzru4mfVOv6V+Oqi/CsabGj4rsfQkPoZFXmAfD/UaMQoGLaqbVYnGHfJY23sfRJzOs62wX8WdfZnLBiONcl5QaN94FAzKZClP5KwWFyI88qD6DF30GSchpW6OGnfVTI1iyPpyh2p+FqjLQ70QC35QVOWUmLgbeAudCGDTOw1+JOYZG3NMbN2wL4ZwuBdaB2TFCqvsgO8ob78o8mT4pAwYIOQdKkx6EkQszjm1qnG+a7RBOPwRmeJQz7rhkLQ="
+    - secure: "vPO/OkoBaZbb7E5JTNA1vNQ9DcJqCmOboo/9Zf/vKpUMegALZ1utXMNEfi2py+4K4fF7y+0Iy+1WAokB1P535ITYG7d8Uuk90y7y5l9WQ96+cGavWA87eyBmksLAVFyfIiDfgqRvMI4Zm1mhpwHmB739dSo6/fUldUB2Li2wMrNi89xiSf++tOVEFf7scTHRLs2hUKRmcNMmSJwl4ud/HhWo8KapeMMHAD8Q4gtX4x18m8GGteYqbL9cpCIiktQF2IwmO3GxWNJ9BfmRoFmviiC4SFKjmi219zABYnUzMeX9VV/lThL2QTJqVNogm5vawKUnCruaOAk8zPJK8bEiop/muMKlBuSn4/DLqga1hRKr0IxkpxVuHdycxaE6E3F3y2jMfCu/Py6diZHJCkkDZ4rfP6plO68I7CpMWNjYiO6GdDQesFko9nyBMpKzV5XlxTOQzvZ+x/DWnolM2onSFi5SMoi4ukejRVTimsVAofJ6NzAUfLUvsO4ISaBB2PwU5AwuARUPveqJuefD1k8bWy3YfvrpaW8QGLMYGwvR+U8FaoGKJ7YXkqXlklRnRxm7klPlrKuEDnRW73fbFeQnBj5PjPyVhLQpkFazeHOSn4Ryn/cEcykPr/acZyfYOnhCrZYBXlRqqVx/85d05cndg0zz+SyTVtKgYuB98v56/is="
+    - secure: "w72qNNr9qxTt+qP0w+gjkv6C3IHAVNhZ+AEgJOwbZKPlIulvf2qY0jIl9KrQtFbj9hlrVedm1BEUUiSj+PYqIJCXxwAS8ebmco4W4M08rNJQcS11/ZcNBsuUHQ9owmn5AFg2ZwO670msdKzjXmD5jkqoaco86OWFVX3jiZlD7jYtmIXvDsaKfOzw2WxMQeaOiGm/8E33A3jsKYii/wpzw8ofe0sOV52lowRzSMPD4rFL4wQJH2brS22Y2j3qDakoYD5sOcE8w+S/9qVDk8d+3vcunyb0m0UO1xTkAdnWpAL3bsOd9Zm4NFe/qmxyaDtiHemMDroPQ6zrAYskNBSwF8pHrTe0J22M7CIVW1os2uo8vxMZIyv42do017WJ0y5mx+5bgYUsPnWcWEJmRpEZhc2bv5fWcwpVaZV6bm4hPwB1Ajp/WdqYITKB+xqswXsUeKG+5J2PxsR4Juu+NThwUosjM0pjbDoA9LCCAhHsKwEKrF1fSxGs7WiOlAZUoTQSmLkOcqtxeaPIm2BBiI9G7+JubKsNZTR35kPX/iGjZvnACDlBB0ZiUVkS8NfXj4Jj7Oi27LadaaMfCGVk+SQ7qj8enR+xwC6HnA2CMXUomfwgGONDu5at11VYzzd05k1Qq7LY7eKa7KeOC8Pz672Mfa5Q2NbuJnRFEsMGLwxftN0="
+    - secure: "KCwA0HODxchmOoAWjdaR8SGZBFWufximte58S1SARn7MPJq/3gXqi17kuZ8YcyLCoqVA5bVFbxvqH4NvP/pgzzFKsjddNgh96bVNSIaFLLtY2Eytwmnx8us7FA+HBCvPXiupKcsRPdm9RNM0O3EbHjRE2CCgdWBx0K8RloR8M+p1O4zKafLvFjqCYPobrcawU8lbsTk+mvKcTrkZB+M1KnbMLdm9odnpniAlUvz0O4GiAumyjtqafIpZkxl7EO8DIAX/VhpJug6LTqaFXegan3Rf72YUuBEgEhvsIYmqMsYn4LQV3AHg4GbFnbVACfHB1bN1LKVmAl2w9wNyje84dXJ3bbHMkEzF5v0kMyH8ctgJH0wMFMML0tfynyoE538h2KmCkX5PS35C2NZFJAdCQtfb9hi7HwtdCR5Y7lyaqnEfpKvaDP5JIyMGRLgvh8I40hy84ZMbYmr6r8KQacd+U1IIHHIvSo6H/Efu22Tev4NNb/A8iPhXZUjrlxbeS6ojCVckYGrxic5kmwrbHpjoe0a1BpZlHQ4BSmRDpEoxYJ3nFg3w+mk8WbhKrFX7piTflJnksWsKK+xqNqUAsBIS9AGJtc6fRmIVgp2WuKi67i9E3NZKrQ7heNnXJTb6WwtuWl7uU0oyLhdg3UGELA7jcUv9IgoqivqPL4jsnqe4Hgk="
+
+# Additional packages
+addons:
+    apt:
+        packages:
+            - sshpass
