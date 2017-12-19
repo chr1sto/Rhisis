@@ -20,8 +20,8 @@ MYSQL_ROOT_PASSWORD="password_root"
 # Update, updgrade and install packages.
 #
 function install_tools {
-  sudo apt-get udpate && apt-get upgrade -y
-  sudo apt-get install -y git curl libunwind8 gettext apt-transport-https
+	sudo apt-get udpate && apt-get upgrade -y
+	sudo apt-get install -y git curl libunwind8 gettext apt-transport-https
 }
 
 #
