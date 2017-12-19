@@ -12,9 +12,6 @@
 DIST_DIRECTORY=dist
 DIST_DIRECTORY_BINARIES=$DIST_DIRECTORY/bin
 
-# Define current working directory
-cd ${0%/*}
-
 #
 # Create the dist folder and subfolders
 #
@@ -42,7 +39,7 @@ mkdir $DIST_DIRECTORY_BINARIES/tools
 mkdir $DIST_DIRECTORY_BINARIES/tools/cli
 
 # Build Rhisis solution release mode
-./build/build.sh
+sudo ./build.sh
 
 # Copy binaries to dist/bin folders
 cp src/Rhisis.Login/bin/Release/netcoreapp2.0/* $DIST_DIRECTORY_BINARIES/login

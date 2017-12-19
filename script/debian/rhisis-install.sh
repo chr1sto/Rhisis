@@ -86,13 +86,14 @@ install_dotnet
 
 # Install Rhisis emulator
 echo "Clone repository"
-git clone $REPOSITORY
+sudo git clone $REPOSITORY
 
 echo "change directory"
 cd Rhisis/
+git checkout feature/scripts
 
 echo "Give access to script"
-chmod +x ./Rhisis/build/build-dist.sh
+sudo chmod +x ./build/build-dist.sh
 
 echo "start script"
-./Rhisis/build/build-dist.sh
+sudo ./build/build-dist.sh

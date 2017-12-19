@@ -7,7 +7,6 @@
 # This script builds and tests the Rhisis solution.
 #
 
-cd ${0%/*}
 dotnet restore
 dotnet build src/Rhisis.Core/ -f netstandard2.0 --configuration Release
 dotnet build src/Rhisis.Database/ -f netstandard2.0 --configuration Release
