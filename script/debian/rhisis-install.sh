@@ -54,10 +54,10 @@ function install_dotnet_core {
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 	sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 	
-	sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-debian-$CODENAME-prod $CODENAME main" > /etc/apt/sources.list.d/dotnetdev.list'
+	sudo echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-debian-$CODENAME-prod $CODENAME main" > /etc/apt/sources.list.d/dotnetdev.list
 	
 	sudo apt-get update
-	sudo apt-get install dotnet-sdk-2.0.0
+	sudo apt-get install dotnet-sdk-2.0.2
 }
 
 # Check install directory
@@ -84,7 +84,7 @@ fi
 # Install tools
 install_tools
 install_mysql
-install_dotnet
+install_dotnet_core
 
 # Install Rhisis emulator
 echo "Clone repository"
@@ -98,10 +98,10 @@ sudo chmod +x ./build/build-dist.sh
 sudo chmod +x ./build/build.sh
 
 echo "start build-dist script"
-sudo ./build/build-dist.sh
+sudo ./build/build-dist.sh $INSTALL_DIRECTORY
 
 mkdir $INSTALL_DIRECTORY
-cp -a Rhisis/dist/. $INSTALL_DIRECTORY
+cp -a dist/. $INSTALL_DIRECTORY
 
 # Copy service files
 cp script/debian/rhisis-login /etc/init.d/

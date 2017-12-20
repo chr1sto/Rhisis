@@ -9,8 +9,9 @@
 #
 
 # Global variables
-DIST_DIRECTORY=dist
-DIST_DIRECTORY_BINARIES=$DIST_DIRECTORY/bin
+INSTALL_DIRECTORY="/var/rhisis"
+DIST_DIRECTORY="dist/"
+DIST_DIRECTORY_BINARIES="$DIST_DIRECTORY/bin"
 
 #
 # Create the dist folder and subfolders
@@ -20,9 +21,14 @@ function create_rhisis_file {
 
     echo "#!/bin/bash" > $FILE_PATH
     echo "cd \${0%/*}" >> $FILE_PATH
-    echo "dotnet $2 \$@" >> $FILE_PATH
+    echo "/usr/bin/dotnet $INSTALL_DIRECTORY/$2 \$@" >> $FILE_PATH
     chmod +x $FILE_PATH
 }
+
+# Define install directory
+if [ ! -z $1 ]; then
+    INSTALL_DIRECTORY=$1
+fi
 
 # Delete dist folder if exists
 if [ -d "$DIST_DIRECTORY" ]; then
