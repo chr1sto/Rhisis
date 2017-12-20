@@ -104,6 +104,7 @@ cp -a dist/. $INSTALL_DIRECTORY
 cp script/debian/rhisis-login /etc/init.d/
 cp script/debian/rhisis-cluster /etc/init.d/
 cp script/debian/rhisis-world /etc/init.d/
+sudo chmod +x /etc/init.d/rhisis-*
 sudo systemctl daemon-reload
 
 # Create symlink for Rhisis CLI
