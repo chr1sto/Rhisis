@@ -92,14 +92,21 @@ sudo git clone $REPOSITORY
 
 echo "change directory"
 cd Rhisis/
-# Temporary
-# git checkout develop
 
 echo "Give access to script"
 sudo chmod +x ./build/build-dist.sh
 sudo chmod +x ./build/build.sh
 
-echo "start script"
+echo "start build-dist script"
 sudo ./build/build-dist.sh
 
-cp 
+mkdir $INSTALL_DIRECTORY
+cp -a Rhisis/dist/. $INSTALL_DIRECTORY
+
+# Copy service files
+cp script/debian/rhisis-login /etc/init.d/
+# TODO: copy cluster and world files
+sudo systemctl daemon-reload
+
+# Create symlink for Rhisis CLI
+sudo ln -s $INSTALL_DIRECTORY/rhisis-cli /usr/bin/rhisis-cli
