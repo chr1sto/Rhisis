@@ -88,27 +88,28 @@ install_mysql
 install_dotnet_core
 
 # Install Rhisis emulator
-echo "Clone repository"
 sudo git clone $REPOSITORY
-
-echo "change directory"
 cd Rhisis/
 
-echo "Give access to script"
+# Start build dist script
 sudo chmod +x ./build/build-dist.sh
 sudo chmod +x ./build/build.sh
-
-echo "start build-dist script"
 sudo ./build/build-dist.sh $INSTALL_DIRECTORY
 
+# Move dist files to install directory
 mkdir $INSTALL_DIRECTORY
 cp -a dist/. $INSTALL_DIRECTORY
 
 # Copy service files
 cp script/debian/rhisis-login /etc/init.d/
-# TODO: copy cluster and world files
+cp script/debian/rhisis-cluster /etc/init.d/
+cp script/debian/rhisis-world /etc/init.d/
 sudo systemctl daemon-reload
 
 # Create symlink for Rhisis CLI
 sudo rm -rf $RHISIS_CLI_COMMAND
 sudo ln -s $INSTALL_DIRECTORY/rhisis-cli $RHISIS_CLI_COMMAND
+
+# Delete Rhisis repository
+cd ..
+sudo rm -rf Rhisis/
