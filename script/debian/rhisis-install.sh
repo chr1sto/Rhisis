@@ -15,6 +15,7 @@
 REPOSITORY="https://github.com/Eastrall/Rhisis"
 INSTALL_DIRECTORY="/var/rhisis"
 MYSQL_ROOT_PASSWORD="password_root"
+RHISIS_CLI_COMMAND="/usr/bin/rhisis-cli"
 
 #
 # Update, updgrade and install packages.
@@ -109,4 +110,5 @@ cp script/debian/rhisis-login /etc/init.d/
 sudo systemctl daemon-reload
 
 # Create symlink for Rhisis CLI
-sudo ln -s $INSTALL_DIRECTORY/rhisis-cli /usr/bin/rhisis-cli
+sudo rm -rf $RHISIS_CLI_COMMAND
+sudo ln -s $INSTALL_DIRECTORY/rhisis-cli $RHISIS_CLI_COMMAND
