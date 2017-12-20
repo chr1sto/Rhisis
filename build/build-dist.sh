@@ -20,7 +20,7 @@ function create_rhisis_file {
 
     echo "#!/bin/bash" > $FILE_PATH
     echo "cd \${0%/*}" >> $FILE_PATH
-    echo "dotnet $2" >> $FILE_PATH
+    echo "dotnet $2 \$@" >> $FILE_PATH
     chmod +x $FILE_PATH
 }
 
