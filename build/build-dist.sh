@@ -45,7 +45,6 @@ mkdir $DIST_DIRECTORY_BINARIES/tools
 mkdir $DIST_DIRECTORY_BINARIES/tools/cli
 
 # Build Rhisis solution release mode
-echo "BUILD DIST"
 sudo ./build/build.sh
 
 # Copy binaries to dist/bin folders

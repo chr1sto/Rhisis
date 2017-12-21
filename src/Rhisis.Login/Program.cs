@@ -11,7 +11,7 @@ namespace Rhisis.Login
         private static void Main(string[] args)
         {
             Console.Title = ProgramTitle;
-            AssemblyLoadContext.Default.Unloading += Default_Unloading;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             try
             {
@@ -31,7 +31,7 @@ namespace Rhisis.Login
             }
         }
 
-        private static void Default_Unloading(AssemblyLoadContext obj)
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             Server?.Dispose();
         }

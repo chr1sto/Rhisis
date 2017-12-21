@@ -21,7 +21,8 @@ RHISIS_CLI_COMMAND="/usr/bin/rhisis-cli"
 # Update, updgrade and install packages.
 #
 function install_tools {
-	sudo apt-get udpate && apt-get upgrade -y
+	sudo apt-get udpate
+	sudo apt-get upgrade
 	sudo apt-get install -y git curl libunwind8 gettext apt-transport-https
 }
 
@@ -69,11 +70,17 @@ fi
 
 if [ -d "$INSTALL_DIRECTORY" ]; then
     while true; do
-	read -p "'$INSTALL_DIRECTORY' already exists, do you want to delete it?" yn
+	read -p "'$INSTALL_DIRECTORY' already exists, do you want to delete it? (y/n) " yn
 	case $yn in
 	    [Yy]* )
+		# Remove current install directory
 		echo "Deleting '$INSTALL_DIRECTORY'..."
 		rm -rf $INSTALL_DIRECTORY
+
+		# Stop the existing services
+		sudo service rhisis-login stop
+		sudo service rhisis-cluster stop
+		sudo service rhisis-world stop
 		break
 		;;
 	    [Nn]* ) exit;;

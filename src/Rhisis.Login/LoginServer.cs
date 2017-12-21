@@ -69,8 +69,11 @@ namespace Rhisis.Login
 
         protected override void Dispose(bool disposing)
         {
-            this._interServer.Stop();
-            this._interServer.Dispose();
+            if (this._interServer != null)
+            {
+                this._interServer.Stop();
+                this._interServer.Dispose();
+            }
 
             base.Dispose(disposing);
         }
