@@ -3,10 +3,45 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Rhisis.Manager.ViewModels"
+        xmlns:converters="clr-namespace:Rhisis.Manager.Converters"
         xmlns:local="clr-namespace:Rhisis.Manager.Views"
         mc:Ignorable="d"
         Title="Rhisis - Manager" Height="350" Width="525">
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <converters:ImageConverter x:Key="imageConverter" />
+    </Window.Resources>
+    
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0" ItemsSource="{Binding MenuItems}">
+            <Menu.ItemContainerStyle>
+                <Style TargetType="{x:Type MenuItem}">
+                    <Setter Property="Command" Value="{Binding Command}" />
+                    <Setter Property="Icon">
+                        <Setter.Value>
+                            <Image Source="{Binding Icon, Converter={StaticResource imageConverter}}" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Menu.ItemContainerStyle>
+            <Menu.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type viewModels:MenuItemViewModel}" ItemsSource="{Binding Path=MenuItems}">
+                    <TextBlock Text="{Binding Header}" VerticalAlignment="Center"/>
+                </HierarchicalDataTemplate>
+            </Menu.ItemTemplate>
+        </Menu>
+
+        <Grid Grid.Row="1">
+            
+        </Grid>
     </Grid>
 </Window>
