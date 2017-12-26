@@ -4,5 +4,11 @@
              xmlns:local="clr-namespace:Rhisis.Manager"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Translations/AppTranslation.en-US.xaml"/>
+                <ResourceDictionary Source="Resources/Translations/AppTranslation.fr-FR.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

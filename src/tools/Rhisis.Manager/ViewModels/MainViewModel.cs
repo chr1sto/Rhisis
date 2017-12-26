@@ -5,21 +5,22 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Rhisis.Manager.ViewModels
 {
     public sealed class MainViewModel : ViewModelBase
     {
-        public ObservableCollection<MenuItemViewModel> MenuItems { get; }
+        public ICommand ChangeLanguageCommand { get; }
 
         public MainViewModel()
         {
-            this.MenuItems = new ObservableCollection<MenuItemViewModel>
-            {
-                new MenuItemViewModel("File", "/Resources/Images/Icons/document.png", null),
-                new MenuItemViewModel("Tools", "/Resources/Images/Icons/settings.png", null),
-                new MenuItemViewModel("About", "/Resources/Images/Icons/about.png", null)
-            };
+            this.ChangeLanguageCommand = new Command(this.OnChangeLanguage);
+        }
+
+        private void OnChangeLanguage(object param)
+        {
+            App.Instance.SwitchLanguage(param.ToString());
         }
     }
 }

@@ -8,36 +8,54 @@
         xmlns:local="clr-namespace:Rhisis.Manager.Views"
         mc:Ignorable="d"
         Title="Rhisis - Manager" Height="350" Width="525">
+    
+    <!-- Window context -->
     <Window.DataContext>
         <viewModels:MainViewModel />
     </Window.DataContext>
 
     <Window.Resources>
-        <converters:ImageConverter x:Key="imageConverter" />
+        <Image x:Key="fileIcon" x:Shared="False" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/document.png" />
+        <Image x:Key="toolsIcon" x:Shared="False" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/tools.png" />
+        <Image x:Key="optionsIcon" x:Shared="False" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/settings.png" />
+        <Image x:Key="quitIcon" x:Shared="False" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/delete.png" />
+        <Image x:Key="worldIcon" x:Shared="False" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/world.png" />
+        <Image x:Key="usersIcon" x:Shared="False" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/users.png" />
+
+        <!-- Language icons -->
+        <Image x:Key="englishFlag" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/Language/english.png" />
+        <Image x:Key="frenchFlag" Source="pack://application:,,,/Rhisis.Manager;component/Resources/Images/Icons/Language/french.png" />
+
+        <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    
-    <Grid>
+
+    <Grid x:Name="ROOT_GRID">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Menu Grid.Row="0" ItemsSource="{Binding MenuItems}">
-            <Menu.ItemContainerStyle>
-                <Style TargetType="{x:Type MenuItem}">
-                    <Setter Property="Command" Value="{Binding Command}" />
-                    <Setter Property="Icon">
-                        <Setter.Value>
-                            <Image Source="{Binding Icon, Converter={StaticResource imageConverter}}" />
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Menu.ItemContainerStyle>
-            <Menu.ItemTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type viewModels:MenuItemViewModel}" ItemsSource="{Binding Path=MenuItems}">
-                    <TextBlock Text="{Binding Header}" VerticalAlignment="Center"/>
-                </HierarchicalDataTemplate>
-            </Menu.ItemTemplate>
+        <Menu Grid.Row="0">
+            <MenuItem Header="{DynamicResource MenuFileEntry}" Icon="{StaticResource fileIcon}">
+                <MenuItem Header="{DynamicResource MenuQuitEntry}" Icon="{StaticResource quitIcon}" />
+            </MenuItem>
+            <MenuItem Header="{DynamicResource MenuToolsEntry}" Icon="{StaticResource toolsIcon}">
+                <MenuItem Header="{DynamicResource MenuUserManagerEntry}" Icon="{StaticResource usersIcon}" />
+            </MenuItem>
+            <MenuItem Header="{DynamicResource MenuOptionsEntry}" Icon="{StaticResource optionsIcon}">
+                <MenuItem Header="{DynamicResource MenuLanguageEntry}" Icon="{StaticResource worldIcon}">
+                    <MenuItem Header="English" Icon="{StaticResource englishFlag}" Command="{Binding ChangeLanguageCommand}" CommandParameter="en-US" />
+                    <MenuItem Header="Français" Icon="{StaticResource frenchFlag}" Command="{Binding ChangeLanguageCommand}" CommandParameter="fr-FR" />
+                </MenuItem>
+            </MenuItem>
         </Menu>
 
         <Grid Grid.Row="1">
