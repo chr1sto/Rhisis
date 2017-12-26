@@ -4,7 +4,7 @@
     <sys:String x:Key="MenuFileEntry">Fichier</sys:String>
     <sys:String x:Key="MenuToolsEntry">Outils</sys:String>
     <sys:String x:Key="MenuOptionsEntry">Options</sys:String>
-    <sys:String x:Key="MenuUserManagerEntry">Gestion utilisateur</sys:String>
+    <sys:String x:Key="MenuUserManagerEntry">Gestion utilisateurs</sys:String>
     <sys:String x:Key="MenuLanguageEntry">Langue</sys:String>
     <sys:String x:Key="MenuQuitEntry">Quitter</sys:String>
 </ResourceDictionary>
