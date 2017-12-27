@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Components;
@@ -6,6 +7,7 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems.Events;
 using System;
 using System.Collections.Generic;
@@ -241,8 +243,8 @@ namespace Rhisis.World.Systems
                 if (destItem.Slot != -1)
                     destItem.Slot = sourceSlot;
 
-                // TODO: Swap items
-                // TODO: Send item move to player
+                player.InventoryComponent.Items.Swap(sourceSlot, destinationSlot);
+                WorldPacketFactory.SendItemMove(player, (byte)sourceSlot, (byte)destinationSlot);
             }
         }
     }
