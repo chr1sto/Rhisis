@@ -62,6 +62,9 @@ namespace Rhisis.World.Systems
                     case InventoryActionType.SerializeVisibleEffects:
                         this.SerializeVisibleEffects(playerEntity, inventoryEvent.Arguments);
                         break;
+                    case InventoryActionType.MoveItem:
+                        this.MoveItem(playerEntity, inventoryEvent.Arguments);
+                        break;
                 }
             }
         }
@@ -203,6 +206,44 @@ namespace Rhisis.World.Systems
 
             for (int i = 0; i < MaxItems; ++i)
                 packet.Write(items[i].UniqueId);
+        }
+
+        /// <summary>
+        /// Move an item.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="args"></param>
+        private void MoveItem(IPlayerEntity player, object[] args)
+        {
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length < 1)
+                throw new ArgumentException("Inventory event arguments should be equal to 2.", nameof(args));
+
+            int sourceSlot = Convert.ToInt32(args[0]);
+            int destinationSlot = Convert.ToInt32(args[1]);
+            var sourceItem = player.InventoryComponent.Items[sourceSlot];
+            var destItem = player.InventoryComponent.Items[destinationSlot];
+            
+            Logger.Debug("Moving item from {0} to {1}", sourceSlot, destinationSlot);
+
+            bool stackable = sourceItem.Id == destItem.Id && sourceItem.Data.PackMax > 1;
+
+            if (stackable)
+            {
+                // TODO: stack items
+            }
+            else
+            {
+                sourceItem.Slot = destinationSlot;
+
+                if (destItem.Slot != -1)
+                    destItem.Slot = sourceSlot;
+
+                // TODO: Swap items
+                // TODO: Send item move to player
+            }
         }
     }
 }

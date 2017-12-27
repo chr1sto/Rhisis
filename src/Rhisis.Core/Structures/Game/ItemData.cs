@@ -16,5 +16,8 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "szName")]
         public string Name { get; set; }
+
+        [DataMember(Name = "dwPackMax")]
+        public int PackMax { get; set; }
     }
 }
