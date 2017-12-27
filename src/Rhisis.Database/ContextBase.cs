@@ -58,13 +58,20 @@ namespace Rhisis.Database
         }
 
         /// <summary>
+        /// Opens the connection.
+        /// </summary>
+        public virtual void OpenConnection() => this.Database.OpenConnection();
+
+        /// <summary>
+        /// Closes the connection.
+        /// </summary>
+        public virtual void CloseConnection() => this.Database.CloseConnection();
+
+        /// <summary>
         /// Creates the database.
         /// </summary>
         /// <returns></returns>
-        public virtual bool CreateDatabase()
-        {
-            return this.Database.EnsureCreated();
-        }
+        public virtual bool CreateDatabase => this.Database.EnsureCreated();
 
         /// <summary>
         /// Check if the database exists.
