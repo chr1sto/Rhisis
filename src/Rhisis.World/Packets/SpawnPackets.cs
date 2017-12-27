@@ -4,6 +4,7 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems;
+using Rhisis.World.Systems.Events;
 
 namespace Rhisis.World.Packets
 {
@@ -86,7 +87,8 @@ namespace Rhisis.World.Packets
                 packet.Write<byte>(0); // duel
                 packet.Write(-1); // titles
 
-                InventorySystem.SerializeVisibleEffects(player, packet);
+                player.Context.NotifySystem<InventorySystem>(player, new InventoryEventArgs(InventoryActionType.SerializeVisibleEffects, packet));
+                //InventorySystem.SerializeVisibleEffects(player, packet);
 
                 packet.Write(0); // guild war state
 
@@ -150,7 +152,7 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // ar << m_nAngelLevel
 
                 // Inventory
-                InventorySystem.SerializeInventory(player, packet);
+                player.Context.NotifySystem<InventorySystem>(player, new InventoryEventArgs(InventoryActionType.SerializeInventory, packet));
 
                 // Bank
                 for (int i = 0; i < 3; ++i)
@@ -270,12 +272,12 @@ namespace Rhisis.World.Packets
                     packet.Write<byte>(0); // duel
                     packet.Write(-1); // titles
 
-                    InventorySystem.SerializeVisibleEffects(playerEntity, packet);
+                    player.Context.NotifySystem<InventorySystem>(playerEntity, new InventoryEventArgs(InventoryActionType.SerializeVisibleEffects, packet));
 
                     for (int i = 0; i < 28; i++)
                         packet.Write(0);
 
-                    InventorySystem.SerializeEquipedItems(playerEntity, packet);
+                    player.Context.NotifySystem<InventorySystem>(playerEntity, new InventoryEventArgs(InventoryActionType.SerializeEquipement, packet));
 
                     packet.Write(-1); // pet ?
                     packet.Write(0); // buffs ?

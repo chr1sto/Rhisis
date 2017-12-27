@@ -1,10 +1,12 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.IO;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
+using Rhisis.World.Systems.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +44,26 @@ namespace Rhisis.World.Systems
         /// <param name="e"></param>
         public override void Execute(IEntity entity, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (e is InventoryEventArgs inventoryEvent)
+            {
+                var playerEntity = entity as IPlayerEntity;
+
+                switch (inventoryEvent.ActionType)
+                {
+                    case InventoryActionType.Initialize:
+                        this.InitializeInventory(playerEntity, inventoryEvent.Arguments);
+                        break;
+                    case InventoryActionType.SerializeInventory:
+                        this.SerializeInventory(playerEntity, inventoryEvent.Arguments);
+                        break;
+                    case InventoryActionType.SerializeEquipement:
+                        this.SerializeEquipedItems(playerEntity, inventoryEvent.Arguments);
+                        break;
+                    case InventoryActionType.SerializeVisibleEffects:
+                        this.SerializeVisibleEffects(playerEntity, inventoryEvent.Arguments);
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -50,8 +71,17 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="player">Current player</param>
         /// <param name="dbItems">Player's item stored in database</param>
-        public static void InitializeInventory(IPlayerEntity player, IEnumerable<Database.Structures.Item> dbItems)
+        private void InitializeInventory(IPlayerEntity player, object[] args)
         {
+            Logger.Debug("Initialize inventory");
+
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length < 0)
+                throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
+
+            var dbItems = args[0] as IEnumerable<Database.Structures.Item>;
             InventoryComponent inventory = player.InventoryComponent;
 
             for (int i = 0; i < MaxItems; ++i)
@@ -77,10 +107,24 @@ namespace Rhisis.World.Systems
                 if (inventory.Items[i].Id == -1)
                     inventory.Items[i].UniqueId = -1;
             }
+
+            Logger.Debug("Initialize inventory done");
         }
 
-        public static void SerializeVisibleEffects(IPlayerEntity player, NetPacketBase packet)
+        /// <summary>
+        /// Serialize the inventory visible effects.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="args"></param>
+        private void SerializeVisibleEffects(IPlayerEntity player, object[] args)
         {
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length < 0)
+                throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
+
+            var packet = args[0] as NetPacketBase;
             IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(EquipOffset, MaxItems - EquipOffset);
 
             foreach (var item in equipedItems)
@@ -97,8 +141,20 @@ namespace Rhisis.World.Systems
             }
         }
 
-        public static void SerializeEquipedItems(IPlayerEntity player, NetPacketBase packet)
+        /// <summary>
+        /// Serialize the inventory equiped items.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="args"></param>
+        private void SerializeEquipedItems(IPlayerEntity player, object[] args)
         {
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length < 0)
+                throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
+
+            var packet = args[0] as NetPacketBase;
             IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(EquipOffset, MaxItems - EquipOffset);
 
             packet.Write((byte)equipedItems.Count(x => x.Id != -1));
@@ -114,8 +170,20 @@ namespace Rhisis.World.Systems
             }
         }
 
-        public static void SerializeInventory(IPlayerEntity player, NetPacketBase packet)
+        /// <summary>
+        /// Serialize player's inventory.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="args"></param>
+        private void SerializeInventory(IPlayerEntity player, object[] args)
         {
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length < 0)
+                throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
+
+            var packet = args[0] as NetPacketBase;
             IList<Item> items = player.InventoryComponent.Items;
 
             for (int i = 0; i < MaxItems; ++i)

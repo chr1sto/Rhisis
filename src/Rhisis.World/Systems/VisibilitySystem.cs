@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.IO;
-using Rhisis.World.Core.Systems;
+﻿using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
@@ -96,7 +95,8 @@ namespace Rhisis.World.Systems
         /// <returns>Can see or not the other entity</returns>
         private bool CanSee(IEntity entity, IEntity otherEntity)
         {
-            return entity.ObjectComponent.Position.IsInCircle(otherEntity.ObjectComponent.Position, VisibilityRange);
+            return entity.ObjectComponent.Position.IsInCircle(otherEntity.ObjectComponent.Position, VisibilityRange) 
+                && entity != otherEntity;
         }
     }
 }

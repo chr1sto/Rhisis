@@ -7,11 +7,11 @@ using Rhisis.Core.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Structures;
-using Rhisis.World.Core;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
+using Rhisis.World.Systems.Events;
 
 namespace Rhisis.World.Handlers
 {
@@ -45,7 +45,7 @@ namespace Rhisis.World.Handlers
             // 1st: Create the player entity with the map context
             client.Player = map.Context.CreateEntity<PlayerEntity>();
 
-            // 2nd: create the components
+            // 2nd: create and initialize the components
             client.Player.ObjectComponent = new ObjectComponent
             {
                 ModelId = character.Gender == 0 ? 11 : 12,
@@ -82,7 +82,9 @@ namespace Rhisis.World.Handlers
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
-            InventorySystem.InitializeInventory(client.Player, character.Items);
+            // Initialize the inventory
+            var inventoryEventArgs = new InventoryEventArgs(InventoryActionType.Initialize, character.Items);
+            client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEventArgs);
             
             // 3rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client.Player);
