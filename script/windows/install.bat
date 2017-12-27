@@ -40,9 +40,6 @@ if not exist dist\bin\world md dist\bin\world
 %DOTNET_COMMAND% build src\Rhisis.Cluster\ --configuration Release
 %DOTNET_COMMAND% build src\Rhisis.World\ --configuration Release
 
-:: Compile Rhisis tools
-%MSBUILD_COMMAND% src/tools/Rhisis.Configuration/Rhisis.Configuration.csproj
-
 :: Copy binaries to dist\bin folders
 xcopy /E src\Rhisis.Login\bin\Release\netcoreapp2.0 dist\bin\login\
 xcopy /E src\Rhisis.Cluster\bin\Release\netcoreapp2.0 dist\bin\cluster\

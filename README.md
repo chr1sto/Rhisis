@@ -61,4 +61,17 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Mobility System
 - Chat System
 
+
+## How to setup Rhisis (from `develop` branch) (Windows platform)
+
+1. Download or Clone the `develop` branch
+2. Install the .NET Core SDK 2.0 : https://www.microsoft.com/net/download/windows
+3. Install `MsSQL Express` or `MySQL Server`
+4. Edit the files in `bin/config/` (`database.json`, `login.json`, `cluster.json`, `world.json`)
+5. Create an account in your database (tool available soon)
+6. Start the emulator
+6.1. Start `login.bat`
+6.2. Start `cluster.bat`
+6.3. Start `world.bat`
+
 [ethernetwork]: https://github.com/Eastrall/Ether.Network
