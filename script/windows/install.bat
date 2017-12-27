@@ -4,6 +4,7 @@
 @echo OFF
 
 :: Define messages constats
+set MSBUILD_COMMAND=C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
 set DOTNET_COMMAND=dotnet
 set DOTNET_NOT_FOUND="%DOTNET_COMMAND% command was not found. Please install the .NET Core 2.0 SDK."
 set WRONG_FOLDER=You must sart the install script at the root folder of Rhisis.
@@ -38,6 +39,9 @@ if not exist dist\bin\world md dist\bin\world
 %DOTNET_COMMAND% build src\Rhisis.Login\ --configuration Release
 %DOTNET_COMMAND% build src\Rhisis.Cluster\ --configuration Release
 %DOTNET_COMMAND% build src\Rhisis.World\ --configuration Release
+
+:: Compile Rhisis tools
+%MSBUILD_COMMAND% src/tools/Rhisis.Configuration/Rhisis.Configuration.csproj
 
 :: Copy binaries to dist\bin folders
 xcopy /E src\Rhisis.Login\bin\Release\netcoreapp2.0 dist\bin\login\
