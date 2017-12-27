@@ -10,7 +10,7 @@ namespace Rhisis.Database.Contexts
         /// <summary>
         /// MySQL server connection string.
         /// </summary>
-        private static readonly string MySQLConnectionString = "server={0};userid={1};pwd={2};port=3306;database={3};sslmode=none;";
+        private static readonly string MySQLConnectionString = "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
 
         /// <summary>
         /// Creates a new <see cref="MySQLContext"/> instance.
@@ -31,7 +31,8 @@ namespace Rhisis.Database.Contexts
                 this.Configuration.Host,
                 this.Configuration.Username,
                 this.Configuration.Password,
-                this.Configuration.Database);
+                this.Configuration.Database,
+                this.Configuration.Port);
 
             optionsBuilder.UseMySql(connectionString);
             base.OnConfiguring(optionsBuilder);

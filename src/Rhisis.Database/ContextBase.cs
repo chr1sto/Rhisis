@@ -71,7 +71,7 @@ namespace Rhisis.Database
         /// Creates the database.
         /// </summary>
         /// <returns></returns>
-        public virtual bool CreateDatabase => this.Database.EnsureCreated();
+        public virtual bool CreateDatabase() => this.Database.EnsureCreated();
 
         /// <summary>
         /// Check if the database exists.

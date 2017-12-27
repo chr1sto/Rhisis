@@ -4,5 +4,10 @@ namespace Rhisis.Configuration.ViewModels
 {
     public sealed class LoginConfigurationViewModel : ViewModelBase
     {
+        public LoginConfigurationViewModel()
+            : base()
+        {
+
+        }
     }
 }

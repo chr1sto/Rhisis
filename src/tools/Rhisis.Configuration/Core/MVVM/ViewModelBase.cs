@@ -19,6 +19,14 @@ namespace Rhisis.Configuration.Core.MVVM
         protected IDialogService DialogService { get; set; }
 
         /// <summary>
+        /// Creates a new <see cref="ViewModelBase"/> instance.
+        /// </summary>
+        protected ViewModelBase()
+        {
+            this.DialogService = new DialogService();
+        }
+
+        /// <summary>
         /// On property changed event.
         /// </summary>
         /// <param name="propName"></param>
@@ -51,7 +59,6 @@ namespace Rhisis.Configuration.Core.MVVM
             var window = ViewFactory.CreateInstance(this.GetType()) as Window;
 
             this._currentWindow = window;
-            this.DialogService = new DialogService();
             window.DataContext = this;
             window.ShowDialog();
         }

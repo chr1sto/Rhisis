@@ -1,45 +1,67 @@
-﻿using Rhisis.Configuration.Core;
-using Rhisis.Configuration.Core.MVVM;
-using Rhisis.Configuration.Services;
+﻿using Rhisis.Configuration.Core.MVVM;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Rhisis.Configuration.ViewModels
 {
     public sealed class MainViewModel : ViewModelBase
     {
+        private readonly IDictionary<string, Type> _configurationViewModelsTypes;
         private string _folder;
         private bool _isFolderValid;
 
+        /// <summary>
+        /// Gets or sets the Rhisis working folder.
+        /// </summary>
         public string Folder
         {
             get { return this._folder; }
             set { this.NotifyPropertyChanged(ref this._folder, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the state that indicates if the working folder is correct or not.
+        /// </summary>
         public bool IsFolderValid
         {
             get { return this._isFolderValid; }
             set { this.NotifyPropertyChanged(ref this._isFolderValid, value); }
         }
 
+        /// <summary>
+        /// Gets the command to pick a folder.
+        /// </summary>
         public ICommand SelectFolderCommand { get; }
 
+        /// <summary>
+        /// Gets the command to configure a configuration section.
+        /// </summary>
         public ICommand ConfigureCommand { get; }
 
-        public MainViewModel(IDialogService dialogService)
+        /// <summary>
+        /// Creates a new <see cref="MainViewModel"/> instance.
+        /// </summary>
+        public MainViewModel()
+            : base()
         {
-            this.DialogService = dialogService;
             this.IsFolderValid = true;
             this.SelectFolderCommand = new Command(this.OnSelectFolder);
             this.ConfigureCommand = new Command(this.OnConfigure);
+            this._configurationViewModelsTypes = new Dictionary<string, Type>
+            {
+                { "database", typeof(DatabaseConfigurationViewModel) },
+                { "login", typeof(LoginConfigurationViewModel) },
+                { "cluster", typeof(ClusterConfigurationViewModel) },
+                { "world", typeof(WorldConfigurationViewModel) },
+            };
         }
 
+        /// <summary>
+        /// Select the Rhisis working folder.
+        /// </summary>
+        /// <param name="param"></param>
         private void OnSelectFolder(object param)
         {
             this.Folder = this.DialogService.OpenFolderDialog();
@@ -67,11 +89,20 @@ namespace Rhisis.Configuration.ViewModels
             }
         }
 
+        /// <summary>
+        /// Configure the select section.
+        /// </summary>
+        /// <param name="param"></param>
         private void OnConfigure(object param)
         {
-            var viewModel = new DatabaseConfigurationViewModel();
+            string type = param.ToString();
 
-            viewModel.ShowDialog();
+            if (this._configurationViewModelsTypes.ContainsKey(type))
+            {
+                var viewModel = Activator.CreateInstance(this._configurationViewModelsTypes[type]) as ViewModelBase;
+
+                viewModel.ShowDialog();
+            }
         }
     }
 }

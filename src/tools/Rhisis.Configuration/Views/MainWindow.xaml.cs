@@ -1,6 +1,4 @@
-﻿using Rhisis.Configuration.Services;
-using Rhisis.Configuration.ViewModels;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Rhisis.Configuration.Views
 {
@@ -9,7 +7,6 @@ namespace Rhisis.Configuration.Views
         public MainWindow()
         {
             this.InitializeComponent();
-            this.DataContext = new MainViewModel(new DialogService());
         }
     }
 }
