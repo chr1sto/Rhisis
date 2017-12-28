@@ -200,7 +200,7 @@ namespace Rhisis.World.Packets
                 // buffs
                 packet.Write(0); // count
 
-                player.PlayerComponent.Connection.Send(packet);
+                player.Connection.Send(packet);
             }
         }
 
@@ -333,7 +333,7 @@ namespace Rhisis.World.Packets
                     packet.Write(0);
                 }
 
-                player.PlayerComponent.Connection.Send(packet);
+                player.Connection.Send(packet);
             }
         }
 
@@ -348,7 +348,7 @@ namespace Rhisis.World.Packets
             {
                 packet.StartNewMergedPacket(entityToDespawn.Id, SnapshotType.DEL_OBJ);
 
-                player.PlayerComponent.Connection.Send(packet);
+                player.Connection.Send(packet);
             }
         }
     }

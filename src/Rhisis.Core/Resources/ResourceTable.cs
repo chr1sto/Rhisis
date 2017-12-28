@@ -84,7 +84,16 @@ namespace Rhisis.Core.Resources
                     int index = this._headers.IndexOf(dataMemberName);
 
                     if (index != -1)
-                        property.SetValue(obj, Convert.ChangeType(record.ElementAt(index), property.PropertyType));
+                    {
+                        object value = record.ElementAt(index);
+
+                        if (property.PropertyType.BaseType == typeof(Enum))
+                        {
+                            value = Enum.ToObject(property.PropertyType, Convert.ToInt32(value));
+                        }
+
+                        property.SetValue(obj, Convert.ChangeType(value, property.PropertyType));
+                    }
                 }
 
                 records.Add(obj);

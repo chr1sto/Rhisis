@@ -15,7 +15,7 @@ namespace Rhisis.World.Packets
                 packet.Write(sourceSlot);
                 packet.Write(destinationSlot);
 
-                entity.PlayerComponent.Connection.Send(packet);
+                entity.Connection.Send(packet);
             }
         }
     }

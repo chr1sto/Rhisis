@@ -54,8 +54,12 @@ namespace Rhisis.World
             var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
 
             DatabaseService.Configure(databaseConfiguration);
-            if (!DatabaseService.GetContext().DatabaseExists())
-                throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
+
+            using (var context = DatabaseService.GetContext())
+            {
+                if (!context.DatabaseExists())
+                    throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
+            }
 
             this.LoadResources();
             ConnectToISC(this.WorldConfiguration);

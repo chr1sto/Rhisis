@@ -48,6 +48,11 @@ namespace Rhisis.World.Game.Components
         public bool Spawned { get; set; }
 
         /// <summary>
+        /// Gets or sets the object's level.
+        /// </summary>
+        public int Level { get; set; }
+
+        /// <summary>
         /// Gets the list of the visible entities around.
         /// </summary>
         public IList<IEntity> Entities { get; }

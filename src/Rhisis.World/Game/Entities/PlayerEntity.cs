@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Components;
+﻿using Ether.Network;
+using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 
@@ -15,6 +16,8 @@ namespace Rhisis.World.Game.Entities
         public MovableComponent MovableComponent { get; set; }
 
         public ItemContainerComponent InventoryComponent { get; set; }
+
+        public NetConnection Connection { get; set; }
 
         public PlayerEntity(IContext context)
             : base(context)

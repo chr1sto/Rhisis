@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
 using Rhisis.World.Core.Systems;
@@ -303,6 +304,19 @@ namespace Rhisis.World.Systems
                 Logger.Debug("Item: {0}", item.ToString());
 
                 // TODO: check if the player fits the item requirements
+                if (item.Data.ItemKind1 == ItemKind1.ARMOR && item.Data.ItemSex != player.HumanComponent.Gender)
+                {
+                    // TODO: Send invalid sex error
+                    return;
+                }
+
+                if (item.Data.LimitLevel < player.ObjectComponent.Level)
+                {
+                    // TODO: Send low level error
+                    return;
+                }
+
+
                 // SPECIAL: double weapon for blades...
 
                 // TODO: check if there is already an item equiped. If there is one, unequip it and equipe the new one.

@@ -18,7 +18,7 @@ namespace Rhisis.World.Packets
                 packet.StartNewMergedPacket(player.Id, SnapshotType.CHAT);
                 packet.Write(message);
 
-                player.PlayerComponent.Connection.Send(packet);
+                player.Connection.Send(packet);
                 SendToVisible(packet, player);
             }
         }

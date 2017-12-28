@@ -100,6 +100,7 @@ namespace Rhisis.World
                     character.HairId = this.Player.HumanComponent.HairId;
                     character.FaceId = this.Player.HumanComponent.FaceId;
                     character.SkinSetId = this.Player.HumanComponent.SkinSetId;
+                    character.Level = this.Player.ObjectComponent.Level;
                 }
 
                 db.SaveChanges();

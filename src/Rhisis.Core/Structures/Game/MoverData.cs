@@ -30,5 +30,11 @@ namespace Rhisis.Core.Structures.Game
         public int AddMp { get; set; }
 
         public int MaxHP => this.AddHp;
+
+        [DataMember(Name = "dwLevel")]
+        public int Level { get; set; }
+
+        [DataMember(Name = "dwFilghtLevel")]
+        public int FlightLevel { get; set; }
     }
 }

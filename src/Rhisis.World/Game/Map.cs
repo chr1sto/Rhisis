@@ -101,7 +101,8 @@ namespace Rhisis.World.Game
                         Type = WorldObjectType.Mover,
                         Position = element.Position.Clone(),
                         Size = (short)(DefaultMoverSize * element.Scale.X),
-                        Spawned = true
+                        Spawned = true,
+                        Level = 1
                     };
                 }
             }
@@ -129,6 +130,7 @@ namespace Rhisis.World.Game
                                 Name = WorldServer.Movers[rgnElement.Model].Name,
                                 Size = DefaultMoverSize,
                                 Spawned = true,
+                                Level = WorldServer.Movers[rgnElement.Model].Level
                             };
                         }
                     }

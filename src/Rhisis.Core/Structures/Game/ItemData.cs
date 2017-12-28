@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using Rhisis.Core.Data;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
 {
@@ -19,5 +20,20 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwPackMax")]
         public int PackMax { get; set; }
+
+        [DataMember(Name = "dwItemKind1")]
+        public ItemKind1 ItemKind1 { get; set; }
+
+        [DataMember(Name = "dwItemKind2")]
+        public ItemKind1 ItemKind2 { get; set; }
+
+        [DataMember(Name = "dwItemKind3")]
+        public ItemKind1 ItemKind3 { get; set; }
+
+        [DataMember(Name = "dwItemSex")]
+        public int ItemSex { get; set; }
+
+        [DataMember(Name = "dwLimitLevel1")]
+        public int LimitLevel { get; set; }
     }
 }

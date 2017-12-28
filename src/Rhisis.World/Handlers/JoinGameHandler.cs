@@ -55,7 +55,8 @@ namespace Rhisis.World.Handlers
                 Angle = character.Angle,
                 Size = 100,
                 Name = character.Name,
-                Spawned = false
+                Spawned = false,
+                Level = character.Level
             };
 
             client.Player.HumanComponent = new HumanComponent
@@ -70,8 +71,7 @@ namespace Rhisis.World.Handlers
             client.Player.PlayerComponent = new PlayerComponent
             {
                 Id = character.Id,
-                Slot = character.Slot,
-                Connection = client
+                Slot = character.Slot
             };
 
             client.Player.MovableComponent = new MovableComponent
@@ -81,6 +81,8 @@ namespace Rhisis.World.Handlers
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
+
+            client.Player.Connection = client;
 
             // Initialize the inventory
             var inventoryEventArgs = new InventoryEventArgs(InventoryActionType.Initialize, character.Items);

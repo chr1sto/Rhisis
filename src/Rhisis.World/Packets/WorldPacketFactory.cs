@@ -18,8 +18,8 @@ namespace Rhisis.World.Packets
                                                         where x.Type == WorldEntityType.Player
                                                         select x as IPlayerEntity;
 
-            foreach (var visiblePlayer in visiblePlayers)
-                visiblePlayer.PlayerComponent.Connection.Send(packet);
+            foreach (IPlayerEntity visiblePlayer in visiblePlayers)
+                visiblePlayer.Connection.Send(packet);
         }
 
         public static void SendDestinationPosition(NetConnection client, IMovableEntity movableEntity)
