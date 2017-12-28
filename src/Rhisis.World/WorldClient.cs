@@ -101,6 +101,55 @@ namespace Rhisis.World
                     character.FaceId = this.Player.HumanComponent.FaceId;
                     character.SkinSetId = this.Player.HumanComponent.SkinSetId;
                     character.Level = this.Player.ObjectComponent.Level;
+
+                    // Save inventory
+                    
+                    // Delete items
+                    for (int i = character.Items.Count - 1; i > 0; i--)
+                    {
+                        var dbItem = character.Items.ElementAt(i);
+                        var inventoryItem = this.Player.InventoryComponent.GetItemBySlot(dbItem.ItemSlot);
+
+                        if (inventoryItem != null && inventoryItem.Id == -1)
+                            character.Items.Remove(dbItem);
+                        
+                    }
+
+                    // Add or update items
+                    foreach (var item in this.Player.InventoryComponent.Items)
+                    {
+                        if (item.Id != -1)
+                        {
+                            var dbItem = character.Items.FirstOrDefault(x => x.ItemId == item.Id);
+
+                            if (dbItem != null)
+                            {
+                                dbItem.ItemId = item.Id;
+                                dbItem.ItemCount = item.Quantity;
+                                dbItem.ItemSlot = item.Slot;
+                                dbItem.Refine = item.Refine;
+                                dbItem.Element = item.Element;
+                                dbItem.ElementRefine = item.ElementRefine;
+
+                            }
+                            else
+                            {
+                                dbItem = new Rhisis.Database.Structures.Item()
+                                {
+                                    CharacterId = this.Player.PlayerComponent.Id,
+                                    CreatorId = item.CreatorId,
+                                    ItemId = item.Id,
+                                    ItemCount = item.Quantity,
+                                    ItemSlot = item.Slot,
+                                    Refine = item.Refine,
+                                    Element = item.Element,
+                                    ElementRefine = item.ElementRefine
+                                };
+
+                                character.Items.Add(dbItem);
+                            }
+                        }
+                    }
                 }
 
                 db.SaveChanges();

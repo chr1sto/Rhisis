@@ -320,7 +320,8 @@ namespace Rhisis.World.Systems
 
                 // TODO: SPECIAL: double weapon for blades...
 
-                var equipedItemSlot = item.Data.Parts + EquipOffset;
+                int sourceSlot = item.Slot;
+                int equipedItemSlot = item.Data.Parts + EquipOffset;
                 var equipedItem = player.InventoryComponent.GetItemBySlot(equipedItemSlot);
                 
                 if (equipedItem != null && equipedItem.Slot != -1)
@@ -329,8 +330,8 @@ namespace Rhisis.World.Systems
                 }
 
                 // Move item
-                player.InventoryComponent.Items.Swap(item.Slot, equipedItemSlot);
                 item.Slot = equipedItemSlot;
+                player.InventoryComponent.Items.Swap(sourceSlot, equipedItemSlot);
 
                 WorldPacketFactory.SendItemEquip(player, item, item.Data.Parts, true);
             }
