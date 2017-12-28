@@ -28,6 +28,13 @@ namespace Rhisis.World.Game.Components
         public Item GetItem(int uniqueId) => this.Items.FirstOrDefault(x => x.UniqueId == uniqueId);
 
         /// <summary>
+        /// Gets the item by slot.
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public Item GetItemBySlot(int slot) => this.Items[slot];
+
+        /// <summary>
         /// Returs the position of an available slot.
         /// </summary>
         /// <returns></returns>

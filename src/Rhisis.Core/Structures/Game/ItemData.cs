@@ -35,5 +35,8 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwLimitLevel1")]
         public int LimitLevel { get; set; }
+
+        [DataMember(Name = "dwParts")]
+        public int Parts { get; set; }
     }
 }

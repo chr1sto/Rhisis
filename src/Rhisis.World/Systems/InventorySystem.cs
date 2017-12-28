@@ -290,48 +290,82 @@ namespace Rhisis.World.Systems
                 return;
             }
 
+            var item = player.InventoryComponent.GetItem(uniqueId);
+
+            if (item == null)
+                return;
+
             bool equip = part == -1;
 
             Logger.Debug("Equip item: {0}", equip.ToString());
 
             if (equip)
             {
-                var item = player.InventoryComponent.GetItem(uniqueId);
-
-                if (item == null)
-                    return;
-
                 Logger.Debug("Item: {0}", item.ToString());
 
                 // TODO: check if the player fits the item requirements
                 if (item.Data.ItemKind1 == ItemKind1.ARMOR && item.Data.ItemSex != player.HumanComponent.Gender)
                 {
+                    Logger.Debug("Wrong sex for armor");
                     // TODO: Send invalid sex error
                     return;
                 }
 
-                if (item.Data.LimitLevel < player.ObjectComponent.Level)
+                if (player.ObjectComponent.Level < item.Data.LimitLevel)
                 {
+                    Logger.Debug("Player level to low");
                     // TODO: Send low level error
                     return;
                 }
 
+                // TODO: SPECIAL: double weapon for blades...
 
-                // SPECIAL: double weapon for blades...
+                var equipedItemSlot = item.Data.Parts + EquipOffset;
+                var equipedItem = player.InventoryComponent.GetItemBySlot(equipedItemSlot);
+                
+                if (equipedItem != null && equipedItem.Slot != -1)
+                {
+                    this.UnequipItem(player, equipedItem);
+                }
 
-                // TODO: check if there is already an item equiped. If there is one, unequip it and equipe the new one.
+                // Move item
+                player.InventoryComponent.Items.Swap(item.Slot, equipedItemSlot);
+                item.Slot = equipedItemSlot;
+
+                WorldPacketFactory.SendItemEquip(player, item, item.Data.Parts, true);
             }
             else
             {
-                int availableSlot = player.InventoryComponent.GetAvailableSlot();
-                Logger.Debug("Available slot: {0}", availableSlot);
+                this.UnequipItem(player, item);
+            }
+        }
 
-                if (availableSlot == 1)
-                {
-                    Logger.Debug("No available slots.");
-                    // TODO: send error to client. No more space in inventory.
-                    return;
-                }
+        /// <summary>
+        /// Unequip an item.
+        /// </summary>
+        /// <param name="player">Player entity</param>
+        /// <param name="item">Item to unequip</param>
+        private void UnequipItem(IPlayerEntity player, Item item)
+        {
+            int sourceSlot = item.Slot;
+            int availableSlot = player.InventoryComponent.GetAvailableSlot();
+            Logger.Debug("Available slot: {0}", availableSlot);
+
+            if (availableSlot == -1)
+            {
+                Logger.Debug("No available slots.");
+                // TODO: send error to client. No more space in inventory.
+                return;
+            }
+
+            if (item.Id > 0 && item.Slot > EquipOffset)
+            {
+                int parts = Math.Abs(sourceSlot - EquipOffset);
+
+                item.Slot = availableSlot;
+                player.InventoryComponent.Items.Swap(sourceSlot, availableSlot);
+
+                WorldPacketFactory.SendItemEquip(player, item, parts, false);
             }
         }
     }
