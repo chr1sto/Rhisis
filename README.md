@@ -60,6 +60,10 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Visibility System
 - Mobility System
 - Chat System
+- Inventory System
+	- Move items
+	- Equip/Unequip items
+	- Save inventory
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
