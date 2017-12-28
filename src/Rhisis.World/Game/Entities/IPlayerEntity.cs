@@ -9,6 +9,6 @@ namespace Rhisis.World.Game.Entities
 
         PlayerComponent PlayerComponent { get; set; }
 
-        InventoryComponent InventoryComponent { get; set; }
+        ItemContainerComponent InventoryComponent { get; set; }
     }
 }

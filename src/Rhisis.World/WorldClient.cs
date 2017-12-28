@@ -113,7 +113,7 @@ namespace Rhisis.World
         private void DespawnPlayer(Map currentMap)
         {
             var entitiesAround = from x in currentMap.Context.Entities
-                                 where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange)
+                                 where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange) && x != this.Player
                                  select x;
 
             foreach (var entity in entitiesAround)

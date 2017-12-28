@@ -50,6 +50,8 @@ namespace Rhisis.World.Systems
             {
                 var playerEntity = entity as IPlayerEntity;
 
+                Logger.Debug("Execute inventory action: {0}", inventoryEvent.ActionType.ToString());
+
                 switch (inventoryEvent.ActionType)
                 {
                     case InventoryActionType.Initialize:
@@ -66,6 +68,9 @@ namespace Rhisis.World.Systems
                         break;
                     case InventoryActionType.MoveItem:
                         this.MoveItem(playerEntity, inventoryEvent.Arguments);
+                        break;
+                    case InventoryActionType.Equip:
+                        this.EquipItem(playerEntity, inventoryEvent.Arguments);
                         break;
                 }
             }
@@ -87,7 +92,7 @@ namespace Rhisis.World.Systems
                 throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
 
             var dbItems = args[0] as IEnumerable<Database.Structures.Item>;
-            InventoryComponent inventory = player.InventoryComponent;
+            ItemContainerComponent inventory = player.InventoryComponent;
 
             for (int i = 0; i < MaxItems; ++i)
             {
@@ -123,6 +128,8 @@ namespace Rhisis.World.Systems
         /// <param name="args"></param>
         private void SerializeVisibleEffects(IPlayerEntity player, object[] args)
         {
+            Logger.Debug("Serialize visible effects");
+
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
@@ -144,6 +151,8 @@ namespace Rhisis.World.Systems
                     packet.Write(item.ElementRefine); // Refine element
                 }
             }
+
+            Logger.Debug("Serialize visible effects done");
         }
 
         /// <summary>
@@ -153,6 +162,8 @@ namespace Rhisis.World.Systems
         /// <param name="args"></param>
         private void SerializeEquipedItems(IPlayerEntity player, object[] args)
         {
+            Logger.Debug("Serialize equiped items");
+
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
@@ -173,6 +184,8 @@ namespace Rhisis.World.Systems
                     packet.Write<byte>(0);
                 }
             }
+
+            Logger.Debug("Serialize equiped items done");
         }
 
         /// <summary>
@@ -182,6 +195,8 @@ namespace Rhisis.World.Systems
         /// <param name="args"></param>
         private void SerializeInventory(IPlayerEntity player, object[] args)
         {
+            Logger.Debug("Serialize inventory");
+
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
@@ -208,6 +223,8 @@ namespace Rhisis.World.Systems
 
             for (int i = 0; i < MaxItems; ++i)
                 packet.Write(items[i].UniqueId);
+
+            Logger.Debug("Serialize inventory done");
         }
 
         /// <summary>
@@ -245,6 +262,62 @@ namespace Rhisis.World.Systems
 
                 player.InventoryComponent.Items.Swap(sourceSlot, destinationSlot);
                 WorldPacketFactory.SendItemMove(player, (byte)sourceSlot, (byte)destinationSlot);
+            }
+        }
+
+        /// <summary>
+        /// Equips an item.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="args"></param>
+        private void EquipItem(IPlayerEntity player, object[] args)
+        {
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length < 1)
+                throw new ArgumentException("Inventory event arguments should be equal to 2.", nameof(args));
+
+            int uniqueId = Convert.ToInt32(args[0]);
+            int part = Convert.ToInt32(args[1]);
+
+            Logger.Debug("UniqueId: {0} | Part: {1}", uniqueId, part);
+
+            if (part >= MaxHumanParts)
+            {
+                Logger.Error("Cannot equip item with unique id: {0}. Not an equipable item.", uniqueId);
+                return;
+            }
+
+            bool equip = part == -1;
+
+            Logger.Debug("Equip item: {0}", equip.ToString());
+
+            if (equip)
+            {
+                var item = player.InventoryComponent.GetItem(uniqueId);
+
+                if (item == null)
+                    return;
+
+                Logger.Debug("Item: {0}", item.ToString());
+
+                // TODO: check if the player fits the item requirements
+                // SPECIAL: double weapon for blades...
+
+                // TODO: check if there is already an item equiped. If there is one, unequip it and equipe the new one.
+            }
+            else
+            {
+                int availableSlot = player.InventoryComponent.GetAvailableSlot();
+                Logger.Debug("Available slot: {0}", availableSlot);
+
+                if (availableSlot == 1)
+                {
+                    Logger.Debug("No available slots.");
+                    // TODO: send error to client. No more space in inventory.
+                    return;
+                }
             }
         }
     }

@@ -17,5 +17,14 @@ namespace Rhisis.World.Handlers
 
             client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEvent);
         }
+
+        [PacketHandler(PacketType.DOEQUIP)]
+        public static void OnDoEquip(WorldClient client, NetPacketBase packet)
+        {
+            var equipItemPacket = new EquipItemPacket(packet);
+            var inventoryEvent = new InventoryEventArgs(InventoryActionType.Equip, equipItemPacket.UniqueId, equipItemPacket.Part);
+
+            client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEvent);
+        }
     }
 }

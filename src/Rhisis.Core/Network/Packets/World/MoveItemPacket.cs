@@ -1,7 +1,5 @@
 ﻿using Ether.Network.Packets;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.Core.Network.Packets.World
 {
@@ -10,12 +8,25 @@ namespace Rhisis.Core.Network.Packets.World
     /// </summary>
     public struct MoveItemPacket : IEquatable<MoveItemPacket>
     {
+        /// <summary>
+        /// Gets the Item type.
+        /// </summary>
         public byte ItemType { get; }
 
+        /// <summary>
+        /// Gets the Item source slot.
+        /// </summary>
         public byte SourceSlot { get; }
 
+        /// <summary>
+        /// Gets the item destination slot.
+        /// </summary>
         public byte DestinationSlot { get; }
 
+        /// <summary>
+        /// Creates a new <see cref="MoveItemPacket"/> instance.
+        /// </summary>
+        /// <param name="packet"></param>
         public MoveItemPacket(NetPacketBase packet)
         {
             this.ItemType = packet.Read<byte>();
@@ -23,6 +34,11 @@ namespace Rhisis.Core.Network.Packets.World
             this.DestinationSlot = packet.Read<byte>();
         }
 
+        /// <summary>
+        /// Compares two <see cref="MoveItemPacket"/> instance.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(MoveItemPacket other)
         {
             throw new NotImplementedException();

@@ -225,6 +225,5 @@ namespace Rhisis.World.Game.Structures
         {
             return $"Item: Id{this.Id} Slot:{this.Slot} UniqueId:{this.UniqueId}";
         }
-
     }
 }

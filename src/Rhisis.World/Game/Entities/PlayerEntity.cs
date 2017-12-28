@@ -14,7 +14,7 @@ namespace Rhisis.World.Game.Entities
 
         public MovableComponent MovableComponent { get; set; }
 
-        public InventoryComponent InventoryComponent { get; set; }
+        public ItemContainerComponent InventoryComponent { get; set; }
 
         public PlayerEntity(IContext context)
             : base(context)
@@ -22,7 +22,7 @@ namespace Rhisis.World.Game.Entities
             this.HumanComponent = new HumanComponent();
             this.PlayerComponent = new PlayerComponent();
             this.MovableComponent = new MovableComponent();
-            this.InventoryComponent = new InventoryComponent();
+            this.InventoryComponent = new ItemContainerComponent();
         }
     }
 }
