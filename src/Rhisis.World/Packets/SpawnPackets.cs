@@ -3,8 +3,10 @@ using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems;
-using Rhisis.World.Systems.Events;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Packets
 {
@@ -86,9 +88,12 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // fame
                 packet.Write<byte>(0); // duel
                 packet.Write(-1); // titles
+                
+                // Serialize visible effects
+                IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
-                player.Context.NotifySystem<InventorySystem>(player, new InventoryEventArgs(InventoryActionType.SerializeVisibleEffects, packet));
-                //InventorySystem.SerializeVisibleEffects(player, packet);
+                foreach (var item in equipedItems)
+                    packet.Write(item.Refines);
 
                 packet.Write(0); // guild war state
 
@@ -124,8 +129,8 @@ namespace Rhisis.World.Packets
                 packet.Write<short>(0); // always 0
 
                 // item mask
-                for (int i = 0; i < 31; i++)
-                    packet.Write(0);
+                foreach (var item in equipedItems)
+                    packet.Write(item.Id);
 
                 // skills
                 for (int i = 0; i < 45; ++i)
@@ -151,8 +156,26 @@ namespace Rhisis.World.Packets
                 packet.Write<long>(0); // ar << m_nAngelExp
                 packet.Write(0); // ar << m_nAngelLevel
 
-                // Inventory
-                player.Context.NotifySystem<InventorySystem>(player, new InventoryEventArgs(InventoryActionType.SerializeInventory, packet));
+                // Serialize Inventory
+                IList<Item> items = player.InventoryComponent.Items;
+
+                for (int i = 0; i < InventorySystem.MaxItems; ++i)
+                    packet.Write(items[i].UniqueId);
+
+                packet.Write((byte)items.Count(x => x.Id != -1));
+
+                for (int i = 0; i < InventorySystem.MaxItems; ++i)
+                {
+                    if (items[i].Id > 0)
+                    {
+                        packet.Write((byte)items[i].UniqueId);
+                        packet.Write(items[i].UniqueId);
+                        items[i].Serialize(packet);
+                    }
+                }
+
+                for (int i = 0; i < InventorySystem.MaxItems; ++i)
+                    packet.Write(items[i].UniqueId);
 
                 // Bank
                 for (int i = 0; i < 3; ++i)
@@ -271,13 +294,28 @@ namespace Rhisis.World.Packets
                     packet.Write(0); // fame
                     packet.Write<byte>(0); // duel
                     packet.Write(-1); // titles
+                    
+                    // Serialize visible effects
+                    IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
-                    player.Context.NotifySystem<InventorySystem>(playerEntity, new InventoryEventArgs(InventoryActionType.SerializeVisibleEffects, packet));
+                    foreach (var item in equipedItems)
+                        packet.Write(item.Refines);
 
                     for (int i = 0; i < 28; i++)
                         packet.Write(0);
 
-                    player.Context.NotifySystem<InventorySystem>(playerEntity, new InventoryEventArgs(InventoryActionType.SerializeEquipement, packet));
+                    // Serialize Equiped items
+                    packet.Write((byte)equipedItems.Count(x => x.Id != -1));
+
+                    foreach (var item in equipedItems)
+                    {
+                        if (item != null && item.Id > 0)
+                        {
+                            packet.Write((byte)(item.Slot - InventorySystem.EquipOffset));
+                            packet.Write((short)item.Id);
+                            packet.Write<byte>(0);
+                        }
+                    }
 
                     packet.Write(-1); // pet ?
                     packet.Write(0); // buffs ?

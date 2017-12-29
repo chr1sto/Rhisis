@@ -82,6 +82,9 @@ namespace Rhisis.World
         /// </summary>
         private void Save()
         {
+            if (this.Player == null)
+                return;
+
             this.Player.ObjectComponent.Spawned = false;
 
             using (var db = DatabaseService.GetContext())

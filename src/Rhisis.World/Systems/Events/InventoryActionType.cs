@@ -4,11 +4,11 @@
     {
         Unknown,
         Initialize,
-        SerializeInventory,
-        SerializeEquipement,
-        SerializeVisibleEffects,
+        //SerializeInventory,
+        //SerializeEquipement,
+        //SerializeVisibleEffects,
         MoveItem,
         Equip,
-        Unequip
+        //Unequip
     }
 }

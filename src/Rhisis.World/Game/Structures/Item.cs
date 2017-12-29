@@ -55,6 +55,11 @@ namespace Rhisis.World.Game.Structures
         public byte ElementRefine { get; set; }
 
         /// <summary>
+        /// Gets the items refine options.
+        /// </summary>
+        public int Refines => Refine & Element & ElementRefine;
+
+        /// <summary>
         /// Gets the item data informations.
         /// </summary>
         public ItemData Data { get; }

@@ -12,7 +12,7 @@ namespace Rhisis.World.Packets
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVEITEM);
-                packet.Write<byte>(0);
+                packet.Write<byte>(0); // item type (not used)
                 packet.Write(sourceSlot);
                 packet.Write(destinationSlot);
 
@@ -26,13 +26,13 @@ namespace Rhisis.World.Packets
             {
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.DOEQUIP);
                 packet.Write(item.UniqueId);
-                packet.Write<byte>(0);
+                packet.Write<byte>(0); // Guild id
                 packet.Write(equip ? (byte)0x01 : (byte)0x00);
                 packet.Write(item.Id);
                 packet.Write<short>(item.Refine); // Refine
                 packet.Write(item.Element); // element
                 packet.Write(item.ElementRefine); // element refine
-                packet.Write(0);
+                packet.Write(0); // flag
                 packet.Write(targetSlot);
 
                 entity.Connection.Send(packet);
