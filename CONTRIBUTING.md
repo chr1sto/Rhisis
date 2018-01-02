@@ -21,7 +21,7 @@ We recommend to use [Visual Studio IDE](https://www.visualstudio.com) (For Windo
 The Rhisis project follows the [GitHub Flow](https://guides.github.com/introduction/flow/index.html) in order to make contribution easier.
 The steps to contribute to Rhisis are the following :
 
-1. Create a **fork** of the Hellion `develop` branch. ([How to fork a GitHub repository](https://help.github.com/articles/fork-a-repo/))
+1. Create a **fork** of the Rhisis `develop` branch. ([How to fork a GitHub repository](https://help.github.com/articles/fork-a-repo/))
 2. Clone your **fork** to your local disk and open the folder.
 3. Configure the remote `upstream` of the official Rhisis repository witht the command:
 ```
@@ -51,7 +51,7 @@ $> git push
 
 ## Coding guidelines
 
-There is some rules you should respect when you contribute to the Hellion project.
+There is some rules you should respect when you contribute to the Rhisis project.
 
 We try to respect the [Microsoft C# Coding Guidelines](https://msdn.microsoft.com/en-us/library/ff926074.aspx) so please, try to do so.
 
