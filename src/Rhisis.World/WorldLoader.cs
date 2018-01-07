@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Rhisis.World.Game.Chat;
+using Rhisis.World.Systems;
 
 namespace Rhisis.World
 {
@@ -16,20 +18,20 @@ namespace Rhisis.World
     {
         private static readonly string DataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
         private static readonly string ResourcePath = Path.Combine(DataPath, "res");
-        private static readonly IDictionary<string, int> _defines = new Dictionary<string, int>();
-        private static readonly IDictionary<string, string> _texts = new Dictionary<string, string>();
-        private static readonly IDictionary<int, MoverData> _movers = new Dictionary<int, MoverData>();
-        private static readonly IDictionary<int, ItemData> _items = new Dictionary<int, ItemData>();
+        private static readonly IDictionary<string, int> Defines = new Dictionary<string, int>();
+        private static readonly IDictionary<string, string> Texts = new Dictionary<string, string>();
+        private static readonly IDictionary<int, MoverData> MoversData = new Dictionary<int, MoverData>();
+        private static readonly IDictionary<int, ItemData> ItemsData = new Dictionary<int, ItemData>();
 
         /// <summary>
         /// Gets the Movers data.
         /// </summary>
-        public static IReadOnlyDictionary<int, MoverData> Movers => _movers as IReadOnlyDictionary<int, MoverData>;
+        public static IReadOnlyDictionary<int, MoverData> Movers => MoversData as IReadOnlyDictionary<int, MoverData>;
 
         /// <summary>
         /// Gets the Items data.
         /// </summary>
-        public static IReadOnlyDictionary<int, ItemData> Items => _items as IReadOnlyDictionary<int, ItemData>;
+        public static IReadOnlyDictionary<int, ItemData> Items => ItemsData as IReadOnlyDictionary<int, ItemData>;
 
         /// <summary>
         /// Loads the server's resources.
@@ -65,8 +67,8 @@ namespace Rhisis.World
                 {
                     foreach (var define in defineFile.Defines)
                     {
-                        if (!_defines.ContainsKey(define.Key) && define.Value is int)
-                            _defines.Add(define.Key, int.Parse(define.Value.ToString()));
+                        if (!Defines.ContainsKey(define.Key) && define.Value is int)
+                            Defines.Add(define.Key, int.Parse(define.Value.ToString()));
                     }
                 }
             }
@@ -77,8 +79,8 @@ namespace Rhisis.World
                 {
                     foreach (var text in textFile.Texts)
                     {
-                        if (!_texts.ContainsKey(text.Key) && !string.IsNullOrEmpty(text.Value))
-                            _texts.Add(text);
+                        if (!Texts.ContainsKey(text.Key) && !string.IsNullOrEmpty(text.Value))
+                            Texts.Add(text);
                     }
                 }
             }
@@ -89,19 +91,19 @@ namespace Rhisis.World
             string propMoverPath = Path.Combine(ResourcePath, "data", "propMover.txt");
 
             Logger.Loading("Loading movers...");
-            using (var propMoverFile = new ResourceTable(propMoverPath, 1, _defines, _texts))
+            using (var propMoverFile = new ResourceTable(propMoverPath, 1, Defines, Texts))
             {
                 var movers = propMoverFile.GetRecords<MoverData>();
 
                 foreach (var mover in movers)
                 {
-                    if (_movers.ContainsKey(mover.Id))
-                        _movers[mover.Id] = mover;
+                    if (MoversData.ContainsKey(mover.Id))
+                        MoversData[mover.Id] = mover;
                     else
-                        _movers.Add(mover.Id, mover);
+                        MoversData.Add(mover.Id, mover);
                 }
             }
-            Logger.Info("{0} movers loaded!\t\t", _movers.Count);
+            Logger.Info("{0} movers loaded!\t\t", MoversData.Count);
         }
 
         private void LoadItems()
@@ -109,19 +111,19 @@ namespace Rhisis.World
             string propItemPath = Path.Combine(ResourcePath, "dataSub2", "propItem.txt");
 
             Logger.Loading("Loading items...");
-            using (var propItem = new ResourceTable(propItemPath, 1, _defines, _texts))
+            using (var propItem = new ResourceTable(propItemPath, 1, Defines, Texts))
             {
                 var items = propItem.GetRecords<ItemData>();
 
                 foreach (var item in items)
                 {
-                    if (_items.ContainsKey(item.Id))
-                        _items[item.Id] = item;
+                    if (ItemsData.ContainsKey(item.Id))
+                        ItemsData[item.Id] = item;
                     else
-                        _items.Add(item.Id, item);
+                        ItemsData.Add(item.Id, item);
                 }
             }
-            Logger.Info("{0} items loaded!\t\t", _items.Count);
+            Logger.Info("{0} items loaded!\t\t", ItemsData.Count);
         }
 
         private void LoadMaps()
@@ -138,15 +140,16 @@ namespace Rhisis.World
                     continue;
                 }
 
-                if (!_defines.TryGetValue(mapId, out int id))
+                if (!Defines.TryGetValue(mapId, out int id))
                 {
-                    Logger.Warning("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.", mapId);
+                    Logger.Warning("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
+                        mapId);
                     continue;
                 }
-                
-                var map = Map.Load(Path.Combine(DataPath, "maps", mapName), mapName, id);
 
-                foreach (var type in systemTypes)
+                Map map = Map.Load(Path.Combine(DataPath, "maps", mapName), mapName, id);
+
+                foreach (Type type in systemTypes)
                     map.Context.AddSystem(Activator.CreateInstance(type, map.Context) as ISystem);
 
                 map.Start();
@@ -158,9 +161,11 @@ namespace Rhisis.World
 
         private IEnumerable<Type> LoadSystems()
         {
-            return from x in Assembly.GetExecutingAssembly().GetTypes()
-                   where x.GetTypeInfo().GetCustomAttribute<SystemAttribute>() != null && typeof(ISystem).IsAssignableFrom(x)
-                   select x;
+            ChatSystem.InitializeCommands();
+
+            return Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.GetTypeInfo().GetCustomAttribute<SystemAttribute>() != null && typeof(ISystem).IsAssignableFrom(x));
         }
 
         private IDictionary<string, string> LoadWorldScript()
@@ -178,8 +183,8 @@ namespace Rhisis.World
 
         private void CleanUp()
         {
-            _defines.Clear();
-            _texts.Clear();
+            Defines.Clear();
+            Texts.Clear();
         }
     }
 }
