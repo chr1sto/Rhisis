@@ -73,9 +73,9 @@ namespace Rhisis.World.Systems
         /// <returns></returns>
         private string[] GetCommandParameters(string command, string commandName)
         {
-            command = command.Remove(0, commandName.Length);
+            string commandParameters = command.Remove(0, commandName.Length);
 
-            return Regex.Matches(command, @"[\""].+?[\""]|[^ ]+").Select(m => m.Value.Trim('"')).ToArray();
+            return Regex.Matches(commandParameters, @"[\""].+?[\""]|[^ ]+").Select(m => m.Value.Trim('"')).ToArray();
         }
 
         /// <summary>
