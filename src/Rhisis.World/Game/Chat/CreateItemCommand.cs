@@ -1,4 +1,6 @@
-﻿using Rhisis.Core.IO;
+﻿using System.Linq;
+using Rhisis.Core.IO;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems;
 using Rhisis.World.Systems.Events.Inventory;
@@ -29,7 +31,12 @@ namespace Rhisis.World.Game.Chat
             var quantity = 1;
 
             if (!int.TryParse(parameters[0], out int itemId))
-                return;
+            {
+                ItemData itemData = WorldServer.Items.Values.FirstOrDefault(x =>
+                    string.Equals(x.Name, parameters[0], System.StringComparison.OrdinalIgnoreCase));
+
+                itemId = itemData?.Id ?? -1;
+            }
 
             if (parameters.Length >= 2)
                 int.TryParse(parameters[1], out quantity);
