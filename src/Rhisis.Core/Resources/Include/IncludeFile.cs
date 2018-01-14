@@ -27,12 +27,18 @@ namespace Rhisis.Core.Resources.Include
             string token = null;
             while ((token = this._scanner.GetToken()) != null)
             {
-                if (token == "{")
-                    this._statements.Add(this.ParseBlock());
-                else if (token == "(")
-                    this._statements.Add(this.ParseInstruction());
-                else if (token == "=")
-                    this._statements.Add(this.ParseVariable());
+                switch (token)
+                {
+                    case "{":
+                        this._statements.Add(this.ParseBlock());
+                        break;
+                    case "(":
+                        this._statements.Add(this.ParseInstruction());
+                        break;
+                    case "=":
+                        this._statements.Add(this.ParseVariable());
+                        break;
+                }
             }
         }
 
@@ -48,14 +54,21 @@ namespace Rhisis.Core.Resources.Include
             {
                 if (token == null)
                     break;
-                if (token == "{")
-                    block.AddStatement(this.ParseBlock());
-                else if (token == "(")
-                    block.AddStatement(this.ParseInstruction());
-                else if (token == "=")
-                    block.AddStatement(this.ParseVariable());
-                else
-                    block.AddUnknowStatement(token);
+                switch (token)
+                {
+                    case "{":
+                        block.AddStatement(this.ParseBlock());
+                        break;
+                    case "(":
+                        block.AddStatement(this.ParseInstruction());
+                        break;
+                    case "=":
+                        block.AddStatement(this.ParseVariable());
+                        break;
+                    default:
+                        block.AddUnknowStatement(token);
+                        break;
+                }
             }
 
             return block;
@@ -64,7 +77,7 @@ namespace Rhisis.Core.Resources.Include
         private Instruction ParseInstruction()
         {
             string parameter = null;
-            var instruction = new Instruction()
+            var instruction = new Instruction
             {
                 Name = this._scanner.GetPreviousToken()
             };
@@ -91,10 +104,9 @@ namespace Rhisis.Core.Resources.Include
 
         public void Dispose()
         {
-            foreach (var statement in this._statements)
+            foreach (IStatement statement in this._statements)
             {
-                if (statement is IDisposable disposable)
-                    disposable.Dispose();
+                statement.Dispose();
             }
 
             this._statements.Clear();

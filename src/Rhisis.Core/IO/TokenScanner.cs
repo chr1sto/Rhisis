@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ namespace Rhisis.Core.IO
         private static readonly string SingleLineComment = "//";
         private static readonly string MultiLineCommentBegin = "/*";
         private static readonly string MultiLineCommentEnd = "*/";
-        private static readonly char[] SplitCharacters = new[] { '\n', '\r' };
+        private static readonly char[] SplitCharacters = { '\n', '\r' };
 
         private readonly string _filePath;
         private readonly string _splitRegex;
@@ -43,7 +44,7 @@ namespace Rhisis.Core.IO
                 string[] splitFileContent = fileContent.Split(SplitCharacters, StringSplitOptions.RemoveEmptyEntries);
                 this._comments = new string[splitFileContent.Length];
 
-                for (int i = 0; i < splitFileContent.Length; ++i)
+                for (var i = 0; i < splitFileContent.Length; ++i)
                 {
                     string line = splitFileContent[i];
 
@@ -55,31 +56,30 @@ namespace Rhisis.Core.IO
                     }
 
                     if (line.Contains(SingleLineComment))
-                        splitFileContent[i] = line.Remove(line.IndexOf(SingleLineComment));
+                        splitFileContent[i] = line.Remove(line.IndexOf(SingleLineComment, StringComparison.Ordinal));
 
                     if (line.Contains(MultiLineCommentBegin))
                     {
                         // Special case if the end of multi comment is on the same line
                         if (line.Contains(MultiLineCommentEnd))
                         {
-                            splitFileContent[i] = line.Remove(line.IndexOf(MultiLineCommentBegin), line.IndexOf(MultiLineCommentEnd)).Trim();
+                            splitFileContent[i] = line.Remove(line.IndexOf(MultiLineCommentBegin, StringComparison.Ordinal), line.IndexOf(MultiLineCommentEnd, StringComparison.Ordinal)).Trim();
                             continue;
                         }
-                        splitFileContent[i] = line.Remove(line.IndexOf(MultiLineCommentBegin)).Trim();
+                        splitFileContent[i] = line.Remove(line.IndexOf(MultiLineCommentBegin, StringComparison.Ordinal)).Trim();
                         while (!splitFileContent[i].Contains(MultiLineCommentEnd))
                         {
                             splitFileContent[i] = string.Empty;
                             i++;
-                            continue;
                         }
-                        int removeStartIndex = splitFileContent[i].IndexOf(MultiLineCommentEnd) + MultiLineCommentEnd.Length;
+                        int removeStartIndex = splitFileContent[i].IndexOf(MultiLineCommentEnd, StringComparison.Ordinal) + MultiLineCommentEnd.Length;
                         splitFileContent[i] = splitFileContent[i].Substring(removeStartIndex).Trim();
                     }
                 }
 
-                var tokens = from x in splitFileContent
-                             where !string.IsNullOrEmpty(x)
-                             select x;
+                IEnumerable<string> tokens = from x in splitFileContent
+                                             where !string.IsNullOrEmpty(x)
+                                             select x;
 
                 fileContent = string.Join("", tokens);
 
@@ -98,10 +98,7 @@ namespace Rhisis.Core.IO
         /// <returns></returns>
         public string GetToken()
         {
-            if (this._currentTokenIndex + 1 > this._tokens.Count())
-                return null;
-
-            return this._tokens[this._currentTokenIndex++];
+            return this._currentTokenIndex + 1 > this._tokens.Count() ? null : this._tokens[this._currentTokenIndex++];
         }
 
         /// <summary>
@@ -110,10 +107,7 @@ namespace Rhisis.Core.IO
         /// <returns></returns>
         public string GetPreviousToken()
         {
-            if (this._currentTokenIndex <= 0)
-                return null;
-
-            return this._tokens[this._currentTokenIndex - 2];
+            return this._currentTokenIndex <= 0 ? null : this._tokens[this._currentTokenIndex - 2];
         }
 
         /// <summary>
