@@ -17,7 +17,7 @@ namespace Rhisis.World.Game.Structures
         /// <summary>
         /// Gets the item Id.
         /// </summary>
-        public int Id { get; private set; }
+        public int Id { get; }
 
         /// <summary>
         /// Gets the item unique Id.
@@ -126,7 +126,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="slot">Item slot</param>
         /// <param name="uniqueId">Item unique id</param>
         public Item(int id, int quantity, int creatorId, int slot, int uniqueId)
-            : this(id, quantity, creatorId, slot, -1, 0)
+            : this(id, quantity, creatorId, slot, uniqueId, 0)
         {
         }
 
@@ -191,25 +191,26 @@ namespace Rhisis.World.Game.Structures
         public void Serialize(NetPacketBase packet)
         {
             packet.Write(this.Id);
-            packet.Write(0);
-            packet.Write(0);
+            packet.Write(0); // Serial number
+            packet.Write(this.Data.Name);
             packet.Write((short)this.Quantity);
-            packet.Write<byte>(0);
-            packet.Write(0);
-            packet.Write(0);
-            packet.Write<byte>(0);
+            packet.Write<byte>(0); // Repair number
+            packet.Write(0); // Hp
+            packet.Write(0); // Repair
+            packet.Write<byte>(0); // flag ?
             packet.Write((int)this.Refine);
             packet.Write(0); // guild id (cloaks?)
             packet.Write(this.Element);
             packet.Write((int)this.ElementRefine);
-            packet.Write(0);
-            packet.Write(0);
-            packet.Write(0);
-            packet.Write(0);
-            packet.Write<long>(0);
-            packet.Write<long>(0);
-            packet.Write<byte>(0);
-            packet.Write(0);
+            packet.Write(0); // m_nResistSMItemId
+            packet.Write(0); // Piercing size
+            packet.Write(0); // Ultimate piercing size
+            packet.Write(0); // Pet vis
+            packet.Write(0); // charged
+            packet.Write<long>(0); // m_iRandomOptItemId
+            packet.Write(0); // m_dwKeepTime
+            packet.Write<byte>(0); // pet
+            packet.Write(0); // m_bTranformVisPet
         }
 
 

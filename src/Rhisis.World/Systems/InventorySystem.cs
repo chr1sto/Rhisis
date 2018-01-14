@@ -8,11 +8,12 @@ using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Events;
+using Rhisis.World.Systems.Events.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Rhisis.Core.Structures.Game;
 
 namespace Rhisis.World.Systems
 {
@@ -46,24 +47,33 @@ namespace Rhisis.World.Systems
         /// <param name="e"></param>
         public override void Execute(IEntity entity, EventArgs e)
         {
-            if (e is InventoryEventArgs inventoryEvent)
+            if (!(e is InventoryEventArgs inventoryEvent))
+                return;
+
+            var playerEntity = entity as IPlayerEntity;
+
+            Logger.Debug("Execute inventory action: {0}", inventoryEvent.ActionType.ToString());
+
+            switch (inventoryEvent.ActionType)
             {
-                var playerEntity = entity as IPlayerEntity;
-
-                Logger.Debug("Execute inventory action: {0}", inventoryEvent.ActionType.ToString());
-
-                switch (inventoryEvent.ActionType)
-                {
-                    case InventoryActionType.Initialize:
-                        this.InitializeInventory(playerEntity, inventoryEvent.Arguments);
-                        break;
-                    case InventoryActionType.MoveItem:
-                        this.MoveItem(playerEntity, inventoryEvent.Arguments);
-                        break;
-                    case InventoryActionType.Equip:
-                        this.EquipItem(playerEntity, inventoryEvent.Arguments);
-                        break;
-                }
+                case InventoryActionType.Initialize:
+                    this.InitializeInventory(playerEntity, inventoryEvent.Arguments);
+                    break;
+                case InventoryActionType.MoveItem:
+                    this.MoveItem(playerEntity, inventoryEvent.Arguments);
+                    break;
+                case InventoryActionType.Equip:
+                    this.EquipItem(playerEntity, inventoryEvent.Arguments);
+                    break;
+                case InventoryActionType.CreateItem:
+                    this.CreateItem(playerEntity, inventoryEvent as InventoryCreateItemEventArgs);
+                    break;
+                case InventoryActionType.Unknown:
+                    // Nothing to do.
+                    break;
+                default:
+                    Logger.Warning("Unknown inventory action type: {0} for player {1} ", inventoryEvent.ActionType.ToString(), entity.ObjectComponent.Name);
+                    break;
             }
         }
 
@@ -71,7 +81,7 @@ namespace Rhisis.World.Systems
         /// Initialize the player's inventory.
         /// </summary>
         /// <param name="player">Current player</param>
-        /// <param name="dbItems">Player's item stored in database</param>
+        /// <param name="args">Command arguments</param>
         private void InitializeInventory(IPlayerEntity player, object[] args)
         {
             Logger.Debug("Initialize inventory");
@@ -84,7 +94,7 @@ namespace Rhisis.World.Systems
 
             ItemContainerComponent inventory = player.InventoryComponent;
 
-            for (int i = 0; i < MaxItems; ++i)
+            for (var i = 0; i < MaxItems; ++i)
             {
                 inventory.Items[i] = new Item
                 {
@@ -92,9 +102,9 @@ namespace Rhisis.World.Systems
                 };
             }
 
-            if (args[0] is IEnumerable<Database.Structures.Item> dbItems && dbItems.Count() > 0)
+            if (args[0] is IEnumerable<Database.Structures.Item> dbItems && dbItems.Any())
             {
-                foreach (var item in dbItems)
+                foreach (Database.Structures.Item item in dbItems)
                 {
                     int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
 
@@ -126,25 +136,37 @@ namespace Rhisis.World.Systems
 
             int sourceSlot = Convert.ToInt32(args[0]);
             int destinationSlot = Convert.ToInt32(args[1]);
-            var sourceItem = player.InventoryComponent.Items[sourceSlot];
-            var destItem = player.InventoryComponent.Items[destinationSlot];
+            List<Item> items = player.InventoryComponent.Items;
+
+            if (sourceSlot < 0 || sourceSlot >= MaxItems || destinationSlot < 0 || destinationSlot >= MaxItems)
+                return;
+
+            if (items[sourceSlot].Id == -1 || items[sourceSlot].UniqueId == -1 || items[destinationSlot].UniqueId == -1)
+                return;
+            
+            Item sourceItem = items[sourceSlot];
+            Item destItem = items[destinationSlot];
             
             Logger.Debug("Moving item from {0} to {1}", sourceSlot, destinationSlot);
 
-            bool stackable = sourceItem.Id == destItem.Id && sourceItem.Data.PackMax > 1;
-
-            if (stackable)
+            if (sourceItem.Id == destItem.Id && sourceItem.Data.IsStackable)
             {
                 // TODO: stack items
             }
             else
             {
+                Logger.Debug("SourceItem: {0}", sourceItem);
+                Logger.Debug("DestItem: {0}", destItem);
                 sourceItem.Slot = destinationSlot;
 
                 if (destItem.Slot != -1)
                     destItem.Slot = sourceSlot;
 
-                player.InventoryComponent.Items.Swap(sourceSlot, destinationSlot);
+                items.Swap(sourceSlot, destinationSlot);
+                Logger.Debug("==== After swap ====");
+                Logger.Debug("SourceItem: {0}", items[sourceSlot]);
+                Logger.Debug("DestItem: {0}", items[destinationSlot]);
+
                 WorldPacketFactory.SendItemMove(player, (byte)sourceSlot, (byte)destinationSlot);
             }
         }
@@ -173,7 +195,7 @@ namespace Rhisis.World.Systems
                 return;
             }
 
-            var item = player.InventoryComponent.GetItem(uniqueId);
+            Item item = player.InventoryComponent.GetItem(uniqueId);
 
             if (item == null)
                 return;
@@ -205,7 +227,7 @@ namespace Rhisis.World.Systems
 
                 int sourceSlot = item.Slot;
                 int equipedItemSlot = item.Data.Parts + EquipOffset;
-                var equipedItem = player.InventoryComponent.GetItemBySlot(equipedItemSlot);
+                Item equipedItem = player.InventoryComponent.GetItemBySlot(equipedItemSlot);
                 
                 if (equipedItem != null && equipedItem.Slot != -1)
                 {
@@ -232,7 +254,7 @@ namespace Rhisis.World.Systems
         private void UnequipItem(IPlayerEntity player, Item item)
         {
             int sourceSlot = item.Slot;
-            int availableSlot = player.InventoryComponent.GetAvailableSlot();
+            int availableSlot = this.GetAvailableSlot(player);
             Logger.Debug("Available slot: {0}", availableSlot);
 
             if (availableSlot == -1)
@@ -251,6 +273,59 @@ namespace Rhisis.World.Systems
 
                 WorldPacketFactory.SendItemEquip(player, item, parts, false);
             }
+        }
+
+        private void CreateItem(IPlayerEntity player, InventoryCreateItemEventArgs eventArgs)
+        {
+            if (eventArgs == null)
+                throw new ArgumentNullException(nameof(eventArgs));
+
+            Logger.Debug(eventArgs.ToString());
+
+            if (!WorldServer.Items.TryGetValue(eventArgs.ItemId, out ItemData itemData))
+                throw new ArgumentException($"Cannot find item with Id: {eventArgs.ItemId}.");
+
+            if (itemData.IsStackable)
+            {
+                // TODO: stackable items
+            }
+            else
+            {
+                for (var i = 0; i < eventArgs.Quantity; i++)
+                {
+                    int availableSlot = this.GetAvailableSlot(player);
+
+                    if (availableSlot < 0)
+                    {
+                        // TODO: send message, no available slots
+                        break;
+                    }
+
+                    Logger.Debug("Available slot: {0}", availableSlot);
+
+                    var newItem = new Item(eventArgs.ItemId, 1, eventArgs.CreatorId)
+                    {
+                        Slot = availableSlot,
+                        UniqueId = player.InventoryComponent.Items[availableSlot].UniqueId
+                    };
+
+                    player.InventoryComponent.Items[availableSlot] = newItem;
+                    WorldPacketFactory.SendItemCreation(player, newItem);
+                }
+            }
+        }
+
+        private int GetAvailableSlot(IPlayerEntity player)
+        {
+            for (var i = 0; i < EquipOffset; i++)
+            {
+                if (player.InventoryComponent.Items[i] != null && player.InventoryComponent.Items[i].Id == -1)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

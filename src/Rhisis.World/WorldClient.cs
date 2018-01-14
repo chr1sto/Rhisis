@@ -70,6 +70,10 @@ namespace Rhisis.World
             catch (RhisisPacketException packetException)
             {
                 Logger.Error(packetException.Message);
+
+                if (packetException.InnerException != null)
+                    Logger.Error("Inner Exception: {0}", packetException.InnerException.Message);
+
 #if DEBUG
                 Logger.Debug("STACK TRACE");
                 Logger.Debug(packetException.InnerException?.StackTrace);
@@ -133,7 +137,6 @@ namespace Rhisis.World
                                 dbItem.Refine = item.Refine;
                                 dbItem.Element = item.Element;
                                 dbItem.ElementRefine = item.ElementRefine;
-
                             }
                             else
                             {

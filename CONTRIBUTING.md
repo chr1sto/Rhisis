@@ -37,12 +37,12 @@ Once you've realised these steps, your Pull Request will be reviewed by the proj
 
 **Warnings**
 
-When your feature / bug fix is ready, you need to rebase your solution on `upstream/master`. Eventually, between the time you have develop your feature and the time you are submitting it, some commits could have been merged. So you will potentially have conflicts. More informations [here](https://git-scm.com/docs/git-rebase).
+When your feature / bug fix is ready, you need to rebase your solution on `upstream/develop`. Eventually, between the time you have develop your feature and the time you are submitting it, some commits could have been merged. So you will potentially have conflicts. More informations [here](https://git-scm.com/docs/git-rebase).
 
 Follow this commands:
 ```
 $> git fetch
-$> git rebase upstream/master
+$> git rebase upstream/develop
 ```
 If there is conflicts, resolve them and then execute the command:
 ```

@@ -38,5 +38,7 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwParts")]
         public int Parts { get; set; }
+
+        public bool IsStackable => this.PackMax > 1;
     }
 }

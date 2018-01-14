@@ -39,5 +39,21 @@ namespace Rhisis.World.Packets
                 SendToVisible(packet, entity);
             }
         }
+
+        public static void SendItemCreation(IPlayerEntity entity, Item item)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.CREATEITEM);
+                packet.Write<byte>(0);
+                packet.Write(-1); // object id
+                item.Serialize(packet);
+                packet.Write<byte>(1);
+                packet.Write((byte)item.UniqueId);
+                packet.Write((short)item.Quantity);
+
+                entity.Connection.Send(packet);
+            }
+        }
     }
 }
