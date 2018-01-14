@@ -42,9 +42,10 @@ namespace Rhisis.World.Systems
         /// <param name="e"></param>
         public override void Execute(IEntity entity, EventArgs e)
         {
-            var chatEvent = e as ChatEventArgs;
-
-            if (string.IsNullOrEmpty(chatEvent?.Message))
+            if (!(e is ChatEventArgs chatEvent))
+                return;
+            
+            if (string.IsNullOrEmpty(chatEvent.Message))
                 return;
             
             var player = entity as IPlayerEntity;

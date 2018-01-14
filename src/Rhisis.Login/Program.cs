@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Runtime.Loader;
 
 namespace Rhisis.Login
 {
     public static class Program
     {
-        private static readonly string ProgramTitle = "Rhisis - LoginServer";
-        private static LoginServer Server = null;
+        private const string ProgramTitle = "Rhisis - LoginServer";
+        private static LoginServer _server;
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             Console.Title = ProgramTitle;
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 
             try
             {
-                Server = new LoginServer();
-                Server.Start();
+                _server = new LoginServer();
+                _server.Start();
             }
             catch (Exception e)
             {
@@ -27,13 +26,13 @@ namespace Rhisis.Login
             }
             finally
             {
-                Server.Dispose();
+                _server.Dispose();
             }
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
-            Server?.Dispose();
+            _server?.Dispose();
         }
     }
 }
