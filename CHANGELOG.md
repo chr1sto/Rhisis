@@ -14,18 +14,39 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - Custom exceptions
 - Logger
 - FlyFF Network packet handler
-- IPC structures and packet headers
+- ISC structures and packet headers
 
 [Database]
 - Multi-DB support (MySQL and MsSQL)
 
 [Login]
-- IPC authentication process
+- ISC authentication process
 - Client authentication process
 - Send server list to connected client
 
 [Cluster]
-- IPC authentication
+- Inter-Server authentication (ISC)
+- Character list
+- Create character
+- Delete character
+- 2nd password verification
+- Pre join
+
+[World]
+- Inter-Server authentication (ISC)
+- Connect to the world
+- Load resources
+   - Defines & texts
+   - Movers
+   - Maps
+- Spawn monsters and NPC
+- Visibility System
+- Mobility System
+- Chat System
+- Inventory System
+	- Move items
+	- Equip/Unequip items
+	- Save inventory
 
 
 ## [Released]

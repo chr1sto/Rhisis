@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rhisis.World.Systems.Events
+namespace Rhisis.World.Systems.Events.Inventory
 {
     public class InventoryEventArgs : EventArgs
     {
