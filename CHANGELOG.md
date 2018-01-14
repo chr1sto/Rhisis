@@ -43,6 +43,8 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - Visibility System
 - Mobility System
 - Chat System
+	- Chat commands:
+		- Create item : `/ci` or `/createitem`
 - Inventory System
 	- Move items
 	- Equip/Unequip items
