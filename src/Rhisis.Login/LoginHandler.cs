@@ -52,8 +52,8 @@ namespace Rhisis.Login
                     client.Disconnect();
                     return;
                 }
-
-                LoginPacketFactory.SendServerList(client, user.Username, client.ClustersConnected);
+                Logger.Info(certify.Username);
+                LoginPacketFactory.SendServerList(client, certify.Username, client.ClustersConnected);
             }
         }
     }
