@@ -1,0 +1,42 @@
+﻿<metro:MetroWindow x:Class="Rhisis.Installer.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Rhisis.Installer.ViewModels"
+        xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="Rhisis Installer" Height="550" Width="450">
+
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Grid Grid.Row="0">
+            
+        </Grid>
+        
+        <!-- Main content -->
+        <Grid Grid.Row="1">
+            <Frame Content=""></Frame>
+        </Grid>
+
+        <!-- Footer -->
+        <Grid Grid.Row="2" Margin="12">
+            <WrapPanel HorizontalAlignment="Right">
+                <Button Content="Cancel" Margin="8,0" />
+                <Button Content="Install" Margin="8,0" />
+            </WrapPanel>
+        </Grid>
+    </Grid>
+</metro:MetroWindow>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Rhisis.Tools.Properties
+namespace Rhisis.Installer.Properties
 {
 
 

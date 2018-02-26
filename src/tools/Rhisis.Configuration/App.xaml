@@ -1,7 +1,7 @@
-﻿<Application x:Class="Rhisis.Configuration.App"
+﻿<Application x:Class="Rhisis.Tools.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Rhisis.Configuration"
+             xmlns:local="clr-namespace:Rhisis.Tools"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
          

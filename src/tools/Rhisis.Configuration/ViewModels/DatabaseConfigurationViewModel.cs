@@ -1,4 +1,4 @@
-﻿using Rhisis.Configuration.Core.MVVM;
+﻿using Rhisis.Tools.Core.MVVM;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using System;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 
-namespace Rhisis.Configuration.ViewModels
+namespace Rhisis.Tools.ViewModels
 {
     public sealed class DatabaseConfigurationViewModel : ViewModelBase
     {

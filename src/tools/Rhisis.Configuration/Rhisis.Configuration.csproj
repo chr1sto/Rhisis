@@ -144,11 +144,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Core\MVVM\Command.cs" />
-    <Compile Include="Core\MVVM\ViewModelBase.cs" />
-    <Compile Include="Core\ViewFactory.cs" />
-    <Compile Include="Services\DialogService.cs" />
-    <Compile Include="Services\IDialogService.cs" />
     <Compile Include="ViewModels\ClusterConfigurationViewModel.cs" />
     <Compile Include="ViewModels\DatabaseConfigurationViewModel.cs" />
     <Compile Include="ViewModels\LoginConfigurationViewModel.cs" />
@@ -208,6 +203,10 @@
     <ProjectReference Include="..\..\Rhisis.Database\Rhisis.Database.csproj">
       <Project>{bcebc9e7-33d1-48d6-9760-8eb582ff631b}</Project>
       <Name>Rhisis.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rhisis.Tools.Core\Rhisis.Tools.Core.csproj">
+      <Project>{bec2afbb-87f5-46c8-a75c-0191614b7707}</Project>
+      <Name>Rhisis.Tools.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

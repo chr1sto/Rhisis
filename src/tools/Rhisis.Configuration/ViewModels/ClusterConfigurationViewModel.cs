@@ -1,6 +1,6 @@
-﻿using Rhisis.Configuration.Core.MVVM;
+﻿using Rhisis.Tools.Core.MVVM;
 
-namespace Rhisis.Configuration.ViewModels
+namespace Rhisis.Tools.ViewModels
 {
     public sealed class ClusterConfigurationViewModel : ViewModelBase
     {
