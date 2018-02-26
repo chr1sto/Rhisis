@@ -9,7 +9,6 @@ namespace Rhisis.Installer
     {
         public App()
         {
-            ViewFactory.Register<LoadingView, LoadingViewModel>();
         }
     }
 }

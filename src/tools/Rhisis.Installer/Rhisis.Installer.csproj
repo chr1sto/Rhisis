@@ -63,7 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\LoadingView.xaml">
+    <Page Include="Resources\Styles\AppStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -75,11 +75,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ViewModels\LoadingViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="Views\LoadingView.xaml.cs">
-      <DependentUpon>LoadingView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -117,6 +113,22 @@
       <Project>{bec2afbb-87f5-46c8-a75c-0191614b7707}</Project>
       <Name>Rhisis.Tools.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\flyff_logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Translate\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\console_ko.png" />
+    <Resource Include="Resources\Images\console_ok.png" />
+    <Resource Include="Resources\Images\db_configuration_ko.png" />
+    <Resource Include="Resources\Images\db_configuration_ok.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\english.png" />
+    <Resource Include="Resources\Images\french.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -13,29 +13,89 @@
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
+
+    <metro:MetroWindow.RightWindowCommands>
+        <metro:WindowCommands>
+            <Button Style="{DynamicResource LanguageButtonStyle}">
+                <Image Source="../Resources/Images/english.png"></Image>
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="English">
+                            <MenuItem.Icon>
+                                <Image Height="42" Source="../Resources/Images/english.png"></Image>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Français">
+                            <MenuItem.Icon>
+                                <Image Height="42" Source="../Resources/Images/french.png"></Image>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+        </metro:WindowCommands>
+    </metro:MetroWindow.RightWindowCommands>
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="0.3*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
         <!-- Header -->
-        <Grid Grid.Row="0">
-            
+        <Grid Grid.Row="0" HorizontalAlignment="Center">
+            <Image Source="../Resources/Images/flyff_logo.png" Margin="0,8,0,0" />
         </Grid>
         
         <!-- Main content -->
-        <Grid Grid.Row="1">
-            <Frame Content=""></Frame>
+        <Grid Grid.Row="1" Margin="12,32,12,0" IsEnabled="{Binding IsFolderValid}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="0.4*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Database configuration -->
+            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" Margin="0,8,0,0">
+                <Image Source="/Resources/Images/db_configuration_ko.png" Width="32" />
+                <TextBlock Text="Database" VerticalAlignment="Center" FontSize="14" Margin="4,0" />
+            </StackPanel>
+            <Button Grid.Column="1" Grid.Row="0" Content="Configure" Padding="4" Margin="0,8,0,0" Command="{Binding ConfigureCommand}" CommandParameter="database" />
+
+            <!-- Login Server and ISC configuration -->
+            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0">
+                <Image Source="/Resources/Images/console_ko.png" Width="32" />
+                <TextBlock Text="Login Server and ISC" VerticalAlignment="Center" FontSize="14" Margin="4,0" />
+            </StackPanel>
+            <Button Grid.Column="1" Grid.Row="1" Content="Configure" Padding="4" Margin="0,8,0,0" Command="{Binding ConfigureCommand}" CommandParameter="login" />
+
+            <!-- Cluster Server -->
+            <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,0">
+                <Image Source="/Resources/Images/console_ko.png" Width="32" />
+                <TextBlock Text="Cluster Server" VerticalAlignment="Center" FontSize="14" Margin="4,0" />
+            </StackPanel>
+            <Button Grid.Column="1" Grid.Row="2" Content="Configure" Padding="4" Margin="0,8,0,0" Command="{Binding ConfigureCommand}" CommandParameter="cluster" />
+
+            <!-- World Server -->
+            <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" Margin="0,8,0,0">
+                <Image Source="/Resources/Images/console_ko.png" Width="32" />
+                <TextBlock Text="World Server" VerticalAlignment="Center" FontSize="14" Margin="4,0" />
+            </StackPanel>
+            <Button Grid.Column="1" Grid.Row="3" Content="Configure" Padding="4" Margin="0,8,0,0" Command="{Binding ConfigureCommand}" CommandParameter="world" />
         </Grid>
 
         <!-- Footer -->
         <Grid Grid.Row="2" Margin="12">
             <WrapPanel HorizontalAlignment="Right">
                 <Button Content="Cancel" Margin="8,0" />
-                <Button Content="Install" Margin="8,0" />
+                <Button Content="Start Installation" Margin="8,0" />
             </WrapPanel>
         </Grid>
     </Grid>
