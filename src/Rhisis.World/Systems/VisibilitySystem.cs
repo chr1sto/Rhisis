@@ -5,6 +5,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using System;
 using System.Linq.Expressions;
+using Rhisis.Core.IO;
 
 namespace Rhisis.World.Systems
 {
