@@ -39,7 +39,7 @@ namespace Rhisis.World
         /// </summary>
         public WorldServer()
         {
-            Logger.Initialize();
+            Logger.Initialize("world");
             this.LoadConfiguration();
         }
 

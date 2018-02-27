@@ -28,7 +28,7 @@ namespace Rhisis.Login
         public LoginServer()
         {
             Console.Title = "Rhisis - Login Server";
-            Logger.Initialize();
+            Logger.Initialize("login");
             this.LoadConfiguration();
         }
 
