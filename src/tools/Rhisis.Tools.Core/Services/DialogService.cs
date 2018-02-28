@@ -1,9 +1,8 @@
-﻿using Rhisis.Tools.Core;
-using System;
+﻿using System;
 using System.Windows;
 using WinForm = System.Windows.Forms;
 
-namespace Rhisis.Tools.Services
+namespace Rhisis.Tools.Core.Services
 {
     public class DialogService : IDialogService
     {
@@ -47,9 +46,11 @@ namespace Rhisis.Tools.Services
         }
 
         /// <summary>
-        /// Shows a window based on the type passed as parameter.
+        /// Asks a YesNo question to the user.
         /// </summary>
-        /// <param name="viewModelType"></param>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <returns>Yes: true, No: false</returns>
         public bool ShowQuestion(string title, string message)
         {
             MessageBoxResult result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -57,18 +58,19 @@ namespace Rhisis.Tools.Services
             return result == MessageBoxResult.Yes;
         }
 
+
         /// <summary>
-        /// Asks a YesNo question to the user.
+        /// Shows a window based on the type passed as parameter.
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="message"></param>
-        /// <returns>Yes: true, No: false</returns>
+        /// <param name="viewModelType"></param>
         public void ShowWindow(Type viewModelType)
         {
-            var window = ViewFactory.CreateInstance(viewModelType) as Window;
-            window.DataContext = Activator.CreateInstance(viewModelType);
-            
-            window.ShowDialog();
+            if (ViewFactory.CreateInstance(viewModelType) is Window window)
+            {
+                window.DataContext = Activator.CreateInstance(viewModelType);
+
+                window.ShowDialog();
+            }
         }
     }
 }

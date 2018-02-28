@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\tools\Rhisis.Installer\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +28,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\tools\Rhisis.Installer\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -67,6 +67,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DatabaseConfigurationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -75,7 +79,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Enums\ConfigurationType.cs" />
+    <Compile Include="ViewModels\DatabaseConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\DatabaseConfigurationWindow.xaml.cs">
+      <DependentUpon>DatabaseConfigurationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -109,6 +118,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Rhisis.Core\Rhisis.Core.csproj">
+      <Project>{8E25C9DB-9DE2-4198-83A0-1F37CAEC14A7}</Project>
+      <Name>Rhisis.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rhisis.Database\Rhisis.Database.csproj">
+      <Project>{BCEBC9E7-33D1-48D6-9760-8EB582FF631B}</Project>
+      <Name>Rhisis.Database</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rhisis.Tools.Core\Rhisis.Tools.Core.csproj">
       <Project>{bec2afbb-87f5-46c8-a75c-0191614b7707}</Project>
       <Name>Rhisis.Tools.Core</Name>
@@ -129,6 +146,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\english.png" />
     <Resource Include="Resources\Images\french.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\db_configuration.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

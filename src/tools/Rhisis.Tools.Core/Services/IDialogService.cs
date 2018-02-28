@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rhisis.Tools.Services
+namespace Rhisis.Tools.Core.Services
 {
     public interface IDialogService
     {

@@ -1,4 +1,4 @@
-﻿using Rhisis.Tools.Services;
+﻿using Rhisis.Tools.Core.Services;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;

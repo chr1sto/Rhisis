@@ -10,8 +10,8 @@ namespace Rhisis.Tools.Core.MVVM
         
         public event EventHandler CanExecuteChanged
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Rhisis.Tools.Core.MVVM
         /// <param name="canExecute"></param>
         public Command(Action<object> execute, Predicate<object> canExecute)
         {
-            this._execute = execute ?? throw new ArgumentNullException("execute");
+            this._execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this._canExecute = canExecute;
         }
 
@@ -39,12 +39,12 @@ namespace Rhisis.Tools.Core.MVVM
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public bool CanExecute(Object parameter) => this._canExecute == null ? true : this._canExecute(parameter);
+        public bool CanExecute(object parameter) => this._canExecute?.Invoke(parameter) ?? true;
 
         /// <summary>
         /// Execute the command action.
         /// </summary>
         /// <param name="parameter"></param>
-        public void Execute(Object parameter) => this._execute(parameter);
+        public void Execute(object parameter) => this._execute(parameter);
     }
 }

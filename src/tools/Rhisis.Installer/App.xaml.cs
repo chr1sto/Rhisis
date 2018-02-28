@@ -9,6 +9,7 @@ namespace Rhisis.Installer
     {
         public App()
         {
+            ViewFactory.Register<DatabaseConfigurationWindow, DatabaseConfigurationViewModel>();
         }
     }
 }
