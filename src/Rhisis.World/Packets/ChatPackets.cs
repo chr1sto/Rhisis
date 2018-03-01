@@ -2,7 +2,7 @@
 using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Entities;
 
-namespace Rhisis.World.Packets
+namespace Rhisis.World.Handlers
 {
     public static partial class WorldPacketFactory
     {

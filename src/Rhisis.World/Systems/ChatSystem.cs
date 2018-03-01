@@ -5,7 +5,7 @@ using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
+using Rhisis.World.Handlers;
 using Rhisis.World.Systems.Events;
 using System;
 using System.Collections.Generic;

@@ -8,7 +8,7 @@ using Rhisis.World.Systems;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.World.Packets
+namespace Rhisis.World.Handlers
 {
     public static partial class WorldPacketFactory
     {
@@ -60,10 +60,12 @@ namespace Rhisis.World.Packets
                 packet.Write((byte)player.HumanComponent.FaceId);
                 packet.Write(player.PlayerComponent.Id);
                 packet.Write((byte)1); // Job
-                packet.Write((short)15); // STR
-                packet.Write((short)15); // STA
-                packet.Write((short)15); // DEX
-                packet.Write((short)15); // INT
+
+                packet.Write((short) player.StatisticsComponent.Strenght);
+                packet.Write((short) player.StatisticsComponent.Stamina);
+                packet.Write((short) player.StatisticsComponent.Dexterity);
+                packet.Write((short) player.StatisticsComponent.Intelligence);
+
                 packet.Write((short)1); // Levels
                 packet.Write(-1); // Fuel
                 packet.Write(0); // Actuel fuel
@@ -125,7 +127,7 @@ namespace Rhisis.World.Packets
                 packet.Write<byte>(0);
 
                 packet.Write(42); // murderer id
-                packet.Write<short>((short)0); // stat points
+                packet.Write((short)player.StatisticsComponent.StatPoints); // stat points
                 packet.Write<short>(0); // always 0
 
                 // item mask

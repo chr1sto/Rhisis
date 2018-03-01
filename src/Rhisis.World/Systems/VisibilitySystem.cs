@@ -2,7 +2,7 @@
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
+using Rhisis.World.Handlers;
 using System;
 using System.Linq.Expressions;
 using Rhisis.Core.IO;

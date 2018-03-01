@@ -9,9 +9,9 @@ using Rhisis.Database;
 using Rhisis.Database.Structures;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
+using Rhisis.World.Handlers;
 using Rhisis.World.Systems;
-using Rhisis.World.Systems.Events.Inventory;
+using Rhisis.World.Systems.Events.Statistics;
 
 namespace Rhisis.World.Handlers
 {
@@ -81,6 +81,8 @@ namespace Rhisis.World.Handlers
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
+
+            client.Player.StatisticsComponent = new StatisticsComponent(character);
 
             client.Player.Connection = client;
 

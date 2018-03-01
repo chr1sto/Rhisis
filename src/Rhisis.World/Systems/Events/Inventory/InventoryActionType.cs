@@ -1,4 +1,4 @@
-﻿namespace Rhisis.World.Systems.Events.Inventory
+﻿namespace Rhisis.World.Systems.Events.Statistics
 {
     public enum InventoryActionType
     {
