@@ -1,9 +1,7 @@
-﻿using Rhisis.Core.Helpers;
-using Rhisis.Database;
+﻿using Rhisis.Database;
 using Rhisis.Tools.Core.MVVM;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Windows.Input;
 
@@ -11,9 +9,6 @@ namespace Rhisis.Installer.ViewModels
 {
     public class DatabaseConfigurationViewModel : ViewModelBase
     {
-        private const string DatabaseConfigFile = "config/database.json";
-        private static readonly string DatabaseConfigFileFullPath = Path.Combine(Environment.CurrentDirectory, DatabaseConfigFile);
-
         /// <summary>
         /// Gets the Ok command.
         /// </summary>
@@ -42,15 +37,13 @@ namespace Rhisis.Installer.ViewModels
         /// <summary>
         /// Creates a new <see cref="DatabaseConfigurationViewModel"/> instance.
         /// </summary>
-        public DatabaseConfigurationViewModel()
+        public DatabaseConfigurationViewModel(DatabaseConfiguration configuration)
         {
             this.OkCommand = new Command(this.OnOk);
             this.CancelCommand = new Command(this.OnCancel);
             this.TestCommand = new Command(this.OnTest);
-            this.Providers = Enum.GetValues(typeof(DatabaseProvider)).Cast<DatabaseProvider>().ToList();
-            this.Configuration = File.Exists(DatabaseConfigFileFullPath)
-                ? ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFileFullPath)
-                : new DatabaseConfiguration();
+            this.Providers = Enum.GetValues(typeof(DatabaseProvider)).Cast<DatabaseProvider>();
+            this.Configuration = configuration;
         }
 
         private void OnOk(object param)

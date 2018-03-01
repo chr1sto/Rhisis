@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Input;
+using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using Rhisis.Installer.Enums;
 using Rhisis.Tools.Core;
@@ -10,7 +12,7 @@ namespace Rhisis.Installer.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly IDictionary<ConfigurationType, Type> _configurationViewModelsTypes;
+        private readonly DatabaseConfiguration _databaseConfiguration;
 
         public ICommand ConfigureCommand { get; }
 
@@ -20,10 +22,7 @@ namespace Rhisis.Installer.ViewModels
 
         public MainViewModel()
         {
-            this._configurationViewModelsTypes = new Dictionary<ConfigurationType, Type>
-            {
-                { ConfigurationType.Database, typeof(DatabaseConfigurationViewModel) },
-            };
+            this._databaseConfiguration = this.LoadConfiguration<DatabaseConfiguration>("config/database.json");
             this.ConfigureCommand = new Command(o => this.OnConfigure((ConfigurationType)o));
             this.StartInstallCommand = new Command(this.OnStartInstall);
             this.CancelInstallCommand = new Command(this.OnCancelInstall);
@@ -31,25 +30,33 @@ namespace Rhisis.Installer.ViewModels
 
         private void OnConfigure(ConfigurationType parameter)
         {
-            if (this._configurationViewModelsTypes.TryGetValue(parameter, out Type viewModelType))
-            {
-                if (Activator.CreateInstance(viewModelType) is ViewModelBase viewModel)
-                {
-                    viewModel.ShowDialog();
+            ViewModelBase selectedOptionViewModel = null;
 
-                    // TODO: switch with pattern matching
-                }
+            switch (parameter)
+            {
+                case ConfigurationType.Database:
+                    selectedOptionViewModel = new DatabaseConfigurationViewModel(this._databaseConfiguration);
+                    break;
             }
+
+            selectedOptionViewModel?.ShowDialog();
         }
 
         private void OnStartInstall(object parameter)
         {
-
+            // TODO: start writing configuration
         }
 
         private void OnCancelInstall(object parameter)
         {
-            
+            // TODO: exit program
+        }
+
+        private T LoadConfiguration<T>(string path) where T : class, new()
+        {
+            string fullPath = Path.Combine(Environment.CurrentDirectory, path);
+
+            return File.Exists(fullPath) ? ConfigurationHelper.Load<T>(fullPath) : new T();
         }
     }
 }
