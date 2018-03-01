@@ -8,13 +8,13 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="Database Configuration" Height="365" Width="300">
+        Title="Database Configuration" Height="375" Width="300">
     
     <Window.Resources>
-        <vm:DatabaseConfigurationViewModel x:Key="viewModel" />
+        <vm:DatabaseConfigurationViewModel x:Key="ViewModel" />
     </Window.Resources>
-    
-    <Grid Margin="8" d:DataContext="{Binding Source={StaticResource viewModel}}">
+
+    <Grid Margin="8" d:DataContext="{Binding Source={StaticResource ViewModel}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />

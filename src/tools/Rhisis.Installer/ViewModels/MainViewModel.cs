@@ -36,6 +36,8 @@ namespace Rhisis.Installer.ViewModels
                 if (Activator.CreateInstance(viewModelType) is ViewModelBase viewModel)
                 {
                     viewModel.ShowDialog();
+
+                    // TODO: switch with pattern matching
                 }
             }
         }
