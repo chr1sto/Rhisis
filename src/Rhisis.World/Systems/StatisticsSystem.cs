@@ -48,7 +48,8 @@ namespace Rhisis.World.Systems
                     // Nothing to do.
                     break;
                 default:
-                    Logger.Warning("Unknown statistics action type: {0} for player {1} ", statisticsEvent.ActionType.ToString(), entity.ObjectComponent.Name);
+                    Logger.Warning("Unknown statistics action type: {0} for player {1} ",
+                        statisticsEvent.ActionType.ToString(), entity.ObjectComponent.Name);
                     break;
             }
 
@@ -58,14 +59,14 @@ namespace Rhisis.World.Systems
         private void ModifyStatus(IPlayerEntity player, object[] args)
         {
             Logger.Debug("Modify sttus");
-
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
-
             if (args.Length < 0)
                 throw new ArgumentException("Statistics event arguments cannot be empty.", nameof(args));
+            if (!(args[0] is ModifyStatusPacket msPacket))
+                throw new ArgumentException("Statistics event arguments can only be a ModifyStatusPacket.",
+                    nameof(args));
 
-            var msPacket = args[0] as ModifyStatusPacket;
             var total = msPacket.StrenghtCount + msPacket.StaminaCount + msPacket.DexterityCount +
                         msPacket.IntelligenceCount;
 
@@ -77,10 +78,11 @@ namespace Rhisis.World.Systems
             }
 
             if (msPacket.StrenghtCount > statsPoints || msPacket.StaminaCount > statsPoints ||
-                msPacket.DexterityCount > statsPoints || msPacket.IntelligenceCount > statsPoints ||
-                total <= 0 || total > ushort.MaxValue)
+                msPacket.DexterityCount > statsPoints || msPacket.IntelligenceCount > statsPoints || total <= 0 ||
+                total > ushort.MaxValue)
             {
-                Logger.Error("Invalid upgrade request due to bad total calculation (trying to dupe) {0}.", player.ObjectComponent.Name);
+                Logger.Error("Invalid upgrade request due to bad total calculation (trying to dupe) {0}.",
+                    player.ObjectComponent.Name);
                 return;
             }
 
@@ -88,7 +90,7 @@ namespace Rhisis.World.Systems
             player.StatisticsComponent.Stamina += msPacket.StaminaCount;
             player.StatisticsComponent.Dexterity += msPacket.DexterityCount;
             player.StatisticsComponent.Intelligence += msPacket.IntelligenceCount;
-            player.StatisticsComponent.StatPoints -= (ushort)total;
+            player.StatisticsComponent.StatPoints -= (ushort) total;
         }
     }
 }
