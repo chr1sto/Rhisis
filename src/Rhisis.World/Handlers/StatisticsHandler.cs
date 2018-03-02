@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Ether.Network.Packets;
+﻿using Ether.Network.Packets;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;

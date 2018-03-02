@@ -7,20 +7,20 @@ namespace Rhisis.Core.Network.Packets.World
 {
     public class ModifyStatusPacket
     {
-        public readonly int StrenghtCount;
+        public readonly ushort StrenghtCount;
 
-        public readonly int StaminaCount;
+        public readonly ushort StaminaCount;
 
-        public readonly int DexterityCount;
+        public readonly ushort DexterityCount;
 
-        public readonly int IntelligenceCount;
+        public readonly ushort IntelligenceCount;
 
         public ModifyStatusPacket(NetPacketBase packet)
         {
-            this.StrenghtCount = packet.Read<int>();
-            this.StaminaCount = packet.Read<int>();
-            this.DexterityCount = packet.Read<int>();
-            this.IntelligenceCount = packet.Read<int>();
+            this.StrenghtCount = (ushort)packet.Read<int>();
+            this.StaminaCount = (ushort)packet.Read<int>();
+            this.DexterityCount = (ushort)packet.Read<int>();
+            this.IntelligenceCount = (ushort)packet.Read<int>();
         }
     }
 }

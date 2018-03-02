@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Rhisis.Core.Structures.Game;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems
 {

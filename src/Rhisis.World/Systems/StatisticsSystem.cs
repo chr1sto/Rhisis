@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network.Packets.World;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Handlers;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems.Events.Statistics;
 
 namespace Rhisis.World.Systems
@@ -72,26 +70,25 @@ namespace Rhisis.World.Systems
                         msPacket.IntelligenceCount;
 
             var statsPoints = player.StatisticsComponent.StatPoints;
-
-            if (statsPoints <= 0)
+            if (statsPoints <= 0 || total > statsPoints)
+            {
+                Logger.Error("No statspoints available, but trying to upgrade {0}.", player.ObjectComponent.Name);
                 return;
-
-            if (total <= 0 || total > statsPoints)
-                return;
-
-            if (msPacket.StrenghtCount < 0 || msPacket.StaminaCount < 0 || msPacket.DexterityCount < 0 ||
-                msPacket.IntelligenceCount < 0)
-                return;
+            }
 
             if (msPacket.StrenghtCount > statsPoints || msPacket.StaminaCount > statsPoints ||
-                msPacket.DexterityCount > statsPoints || msPacket.IntelligenceCount > statsPoints)
+                msPacket.DexterityCount > statsPoints || msPacket.IntelligenceCount > statsPoints ||
+                total <= 0 || total > ushort.MaxValue)
+            {
+                Logger.Error("Invalid upgrade request due to bad total calculation (trying to dupe) {0}.", player.ObjectComponent.Name);
                 return;
-            
+            }
+
             player.StatisticsComponent.Strenght += msPacket.StrenghtCount;
             player.StatisticsComponent.Stamina += msPacket.StaminaCount;
             player.StatisticsComponent.Dexterity += msPacket.DexterityCount;
             player.StatisticsComponent.Intelligence += msPacket.IntelligenceCount;
-            player.StatisticsComponent.StatPoints -= total;
+            player.StatisticsComponent.StatPoints -= (ushort)total;
         }
     }
 }

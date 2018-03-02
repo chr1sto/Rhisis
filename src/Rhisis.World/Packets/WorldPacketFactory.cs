@@ -8,7 +8,7 @@ using Rhisis.World.Game.Entities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.World.Handlers
+namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
