@@ -9,10 +9,10 @@ using Rhisis.Database;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
 using Rhisis.World.Systems;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World
 {
@@ -109,8 +109,14 @@ namespace Rhisis.World
                     character.SkinSetId = this.Player.HumanComponent.SkinSetId;
                     character.Level = this.Player.ObjectComponent.Level;
 
+                    character.Strength = this.Player.StatisticsComponent.Strenght;
+                    character.Stamina = this.Player.StatisticsComponent.Stamina;
+                    character.Dexterity = this.Player.StatisticsComponent.Dexterity;
+                    character.Intelligence = this.Player.StatisticsComponent.Intelligence;
+                    character.StatPoints = this.Player.StatisticsComponent.StatPoints;
+
                     // Save inventory
-                    
+
                     // Delete items
                     for (int i = character.Items.Count - 1; i > 0; i--)
                     {

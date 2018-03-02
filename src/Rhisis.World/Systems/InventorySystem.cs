@@ -7,13 +7,13 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Packets;
-using Rhisis.World.Systems.Events.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Rhisis.Core.Structures.Game;
+using Rhisis.World.Packets;
+using Rhisis.World.Systems.Events.Inventory;
 
 namespace Rhisis.World.Systems
 {
@@ -92,7 +92,8 @@ namespace Rhisis.World.Systems
             if (args.Length < 0)
                 throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
 
-            ItemContainerComponent inventory = player.InventoryComponent;
+            player.InventoryComponent = new ItemContainerComponent();
+            var inventory = player.InventoryComponent;
 
             for (var i = 0; i < MaxItems; ++i)
             {
