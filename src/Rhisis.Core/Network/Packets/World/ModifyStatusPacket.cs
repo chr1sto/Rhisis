@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Ether.Network.Packets;
+﻿using Ether.Network.Packets;
 
 namespace Rhisis.Core.Network.Packets.World
 {
     public class ModifyStatusPacket
     {
-        public readonly ushort StrenghtCount;
+        public ushort StrenghtCount { get; }
 
-        public readonly ushort StaminaCount;
+        public ushort StaminaCount { get; }
 
-        public readonly ushort DexterityCount;
+        public ushort DexterityCount { get; }
 
-        public readonly ushort IntelligenceCount;
+        public ushort IntelligenceCount { get; }
 
         public ModifyStatusPacket(NetPacketBase packet)
         {
