@@ -5,7 +5,6 @@ using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Handlers;
 using Rhisis.World.Systems.Events;
 using System;
 using System.Collections.Generic;
@@ -13,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems
 {

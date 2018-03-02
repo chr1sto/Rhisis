@@ -9,10 +9,9 @@ using Rhisis.Database;
 using Rhisis.Database.Structures;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Handlers;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
-using Rhisis.World.Systems.Events.Statistics;
+using Rhisis.World.Systems.Events.Inventory;
 
 namespace Rhisis.World.Handlers
 {

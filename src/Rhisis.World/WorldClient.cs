@@ -9,10 +9,10 @@ using Rhisis.Database;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Handlers;
 using Rhisis.World.Systems;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World
 {
