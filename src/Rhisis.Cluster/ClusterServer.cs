@@ -40,7 +40,7 @@ namespace Rhisis.Cluster
         /// </summary>
         public ClusterServer()
         {
-            Logger.Initialize();
+            Logger.Initialize("cluster");
             this.LoadConfiguration();
         }
 

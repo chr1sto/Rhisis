@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 
 namespace Rhisis.Core.IO
@@ -17,16 +18,43 @@ namespace Rhisis.Core.IO
             Loading
         }
 
-        private static readonly object syncRoot = new object();
+        private static readonly object SyncRoot = new object();
+        private static readonly string LogFolder;
+        private static readonly DateTime LogStartedTime;
+        private static string _programName;
+        private static StreamWriter _logStream;
+        
+        /// <summary>
+        /// Creates and initialize the static readonly fields of the <see cref="Logger"/>.
+        /// </summary>
+        static Logger()
+        {
+            LogStartedTime = DateTime.Now;
+            LogFolder = $"{LogStartedTime.Month}-{LogStartedTime.Day}-{LogStartedTime.Year}";
+        }
 
         /// <summary>
         /// Initialize the <see cref="Logger"/>.
         /// </summary>
-        public static void Initialize()
+        public static void Initialize(string programName)
         {
 #if !NET45
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
+            _programName = programName;
+            InitializeStream();
+        }
+
+        /// <summary>
+        /// Dispose the Logger.
+        /// </summary>
+        public static void Dispose()
+        {
+            lock (SyncRoot)
+            {
+                _logStream.Close();
+                _logStream.Dispose();
+            }
         }
 
         /// <summary>
@@ -89,7 +117,7 @@ namespace Rhisis.Core.IO
         /// <param name="text">Text</param>
         private static void Write(LogType type, string text)
         {
-            lock (syncRoot)
+            lock (SyncRoot)
             {
                 switch (type)
                 {
@@ -117,7 +145,32 @@ namespace Rhisis.Core.IO
                         Console.WriteLine(text);
                         break;
                 }
+
+                WriteStream(type, text);
             }
+        }
+
+        private static void WriteStream(LogType type, string text)
+        {
+            string formattedText = $"<#> [{DateTime.Now:MM/dd/yyyy HH:ss}] [{type.ToString()}] - {text}";
+
+            if (DateTime.Now.Day != LogStartedTime.Day)
+                InitializeStream();
+            
+            _logStream.WriteLine(formattedText);
+            _logStream.Flush();
+        }
+
+        private static void InitializeStream()
+        {
+            string logFolder = Path.Combine(Environment.CurrentDirectory, "logs", LogFolder);
+            string logPath = Path.Combine(logFolder, $"{_programName}.log");
+
+            if (!Directory.Exists(logFolder))
+                Directory.CreateDirectory(logFolder);
+            
+            _logStream?.Close();
+            _logStream = !File.Exists(logPath) ? File.CreateText(logPath) : new StreamWriter(logPath);
         }
 
         /// <summary>

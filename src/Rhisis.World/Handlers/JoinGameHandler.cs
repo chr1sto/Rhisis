@@ -82,6 +82,8 @@ namespace Rhisis.World.Handlers
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
+            client.Player.StatisticsComponent = new StatisticsComponent(character);
+
             client.Player.Connection = client;
 
             // Initialize the inventory

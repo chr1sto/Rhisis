@@ -17,15 +17,13 @@ namespace Rhisis.World.Game.Entities
 
         public ItemContainerComponent InventoryComponent { get; set; }
 
+        public StatisticsComponent StatisticsComponent { get; set; }
+
         public NetConnection Connection { get; set; }
 
         public PlayerEntity(IContext context)
             : base(context)
         {
-            this.HumanComponent = new HumanComponent();
-            this.PlayerComponent = new PlayerComponent();
-            this.MovableComponent = new MovableComponent();
-            this.InventoryComponent = new ItemContainerComponent();
         }
     }
 }

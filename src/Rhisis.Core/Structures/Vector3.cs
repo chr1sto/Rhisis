@@ -120,7 +120,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public Vector3 Normalize()
         {
-            float sqLength = this.SquaredLength;
+            var sqLength = this.SquaredLength;
 
             if (sqLength <= 0)
                 throw new InvalidOperationException("Cannot normalize a vector of zero length.");
@@ -160,34 +160,26 @@ namespace Rhisis.Core.Structures
         }
 
         /// <summary>
-        /// Compares two <see cref="Vector3"/> instance.
+        /// Returns the HashCode for this Vector3D
+        /// </summary>
+        /// <returns> 
+        /// int - the HashCode for this Vector3D
+        /// </returns> 
+        public override int GetHashCode()
+        {
+            return this._x.GetHashCode() ^
+                   this._y.GetHashCode() ^
+                   this._z.GetHashCode();
+        }
+
+        /// <summary>
+        /// Compares two vectors.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (obj is null)
-                return false;
-
-            if (ReferenceEquals(this, obj))
-                return true;
-
-            return obj.GetType() == this.GetType() && this.Equals((Vector3)obj);
-        }
-
-        /// <summary>
-        /// Gets the hashcode of this instance.
-        /// </summary>
-        /// <returns>Hashcode</returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = this._x.GetHashCode();
-                hashCode = (hashCode * 397) ^ this._y.GetHashCode();
-                hashCode = (hashCode * 397) ^ this._z.GetHashCode();
-                return hashCode;
-            }
+            return this == (Vector3)obj;
         }
 
         /// <summary>
@@ -275,9 +267,6 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public static bool operator ==(Vector3 a, Vector3 b)
         {
-            if (a == null || b == null)
-                return false;
-
             return Math.Ceiling(a.X - b.X) < 0.01 && Math.Ceiling(a.Y - b.Y) < 0.01 && Math.Ceiling(a.Z - b.Z) < 0.01;
         }
 
@@ -300,8 +289,8 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public static float AngleBetween(Vector3 a, Vector3 b)
         {
-            Vector3 dist = b - a;
-            var angle = (float)Math.Atan2(dist.X, -dist.Z);
+            var dist = b - a;
+            float angle = (float)Math.Atan2(dist.X, -dist.Z);
 
             angle = MathHelper.ToDegree(angle);
             if (angle < 0)
@@ -321,8 +310,8 @@ namespace Rhisis.Core.Structures
         public static Vector3 GetRandomPositionInCircle(Vector3 center, float radius)
         {
             Vector3 newVector = center.Clone();
-            float power = RandomHelper.FloatRandom(0f, radius);
             var angle = (float)(RandomHelper.FloatRandom(0f, 360f) * Math.PI / 180f);
+            float power = RandomHelper.FloatRandom(0f, radius);
 
             newVector.X += (float)Math.Sin(angle) * power;
             newVector.Z += (float)Math.Cos(angle) * power;
