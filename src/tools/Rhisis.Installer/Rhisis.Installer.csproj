@@ -150,6 +150,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Translations\App.fr.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Translations\App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DatabaseConfigurationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -162,6 +170,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Enums\ConfigurationType.cs" />
     <Compile Include="ViewModels\DatabaseConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -217,9 +226,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\flyff_logo.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\Translate\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\console_ko.png" />
     <Resource Include="Resources\Images\console_ok.png" />

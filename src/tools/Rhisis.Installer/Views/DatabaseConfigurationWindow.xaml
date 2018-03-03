@@ -6,9 +6,10 @@
         xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:vm="clr-namespace:Rhisis.Installer.ViewModels"
         mc:Ignorable="d"
+        ShowCloseButton="False"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="Database Configuration" Height="375" Width="300">
+        Title="{DynamicResource DbConfigTitle}" Height="375" Width="320">
     
     <Window.Resources>
         <vm:DatabaseConfigurationViewModel x:Key="ViewModel" />
@@ -24,7 +25,7 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Resources/Images/db_configuration.png" Width="32" />
-                    <TextBlock Text="Configure the Rhisis database access." VerticalAlignment="Center" Margin="8,0,0,0" />
+                    <TextBlock Text="{DynamicResource DbConfigInfo}" VerticalAlignment="Center" Margin="8,0,0,0" TextWrapping="Wrap" />
                 </StackPanel>
 
                 <Grid Margin="0,12,0,0">
@@ -42,23 +43,23 @@
                     </Grid.RowDefinitions>
 
                     <!-- Host -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Host:" Margin="0,8,0,0" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource DbConfigHost}" Margin="0,8,0,0" />
                     <TextBox Grid.Row="0" Grid.Column="1" Margin="0,8,0,0" Text="{Binding Configuration.Host, Mode=TwoWay}" />
 
                     <!-- Database name -->
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Database name:" Margin="0,8,0,0" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource DbConfigDatabaseName}" Margin="0,8,0,0" />
                     <TextBox Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Text="{Binding Configuration.Database, Mode=TwoWay}"/>
 
                     <!-- Username -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Username:" Margin="0,8,0,0" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource DbConfigDatabaseUser}" Margin="0,8,0,0" />
                     <TextBox Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Text="{Binding Configuration.Username, Mode=TwoWay}" />
 
                     <!-- Password -->
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Password:" Margin="0,8,0,0" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource DbConfigDatabasePass}" Margin="0,8,0,0" />
                     <TextBox Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Text="{Binding Configuration.Password, Mode=TwoWay}" />
 
                     <!-- Provider -->
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Provider:" Margin="0,8,0,0" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource DbConfigDatabaseProvider}" Margin="0,8,0,0" />
                     <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" ItemsSource="{Binding Providers}" SelectedItem="{Binding Configuration.Provider, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -68,17 +69,17 @@
                     </ComboBox>
 
                     <!-- Port -->
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Port:" Margin="0,8,0,0" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource DbConfigDatabasePort}" Margin="0,8,0,0" />
                     <TextBox Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Text="{Binding Configuration.Port, Mode=TwoWay}" />
                 </Grid>
 
-                <Button Content="Test the connection" Margin="0,8,0,0" Command="{Binding TestCommand}" />
+                <Button Content="{DynamicResource DbConfigTest}" Margin="0,8,0,0" Command="{Binding TestCommand}" />
             </StackPanel>
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="OK" Width="75" Margin="0,0,10,0" Command="{Binding OkCommand}" />
-            <Button Content="Cancel" Width="75" Command="{Binding CancelCommand}" />
+            <Button Content="{DynamicResource Ok}" Width="75" Margin="0,0,10,0" Command="{Binding OkCommand}" />
+            <Button Content="{DynamicResource Cancel}" Width="75" Command="{Binding CancelCommand}" />
         </StackPanel>
     </Grid>
 </metro:MetroWindow>

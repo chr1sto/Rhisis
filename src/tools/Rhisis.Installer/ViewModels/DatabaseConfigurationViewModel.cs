@@ -9,6 +9,8 @@ namespace Rhisis.Installer.ViewModels
 {
     public class DatabaseConfigurationViewModel : ViewModelBase
     {
+        private readonly DatabaseConfiguration _databaseConfigurationCopy;
+
         /// <summary>
         /// Gets the Ok command.
         /// </summary>
@@ -37,6 +39,14 @@ namespace Rhisis.Installer.ViewModels
         /// <summary>
         /// Creates a new <see cref="DatabaseConfigurationViewModel"/> instance.
         /// </summary>
+        public DatabaseConfigurationViewModel()
+            : this(new DatabaseConfiguration())
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="DatabaseConfigurationViewModel"/> instance.
+        /// </summary>
         public DatabaseConfigurationViewModel(DatabaseConfiguration configuration)
         {
             this.OkCommand = new Command(this.OnOk);
@@ -44,16 +54,28 @@ namespace Rhisis.Installer.ViewModels
             this.TestCommand = new Command(this.OnTest);
             this.Providers = Enum.GetValues(typeof(DatabaseProvider)).Cast<DatabaseProvider>();
             this.Configuration = configuration;
+            this._databaseConfigurationCopy = new DatabaseConfiguration
+            {
+                Database = this.Configuration.Database,
+                Host = this.Configuration.Host,
+                Password = this.Configuration.Password,
+                Port = this.Configuration.Port,
+                Provider = this.Configuration.Provider,
+                Username = this.Configuration.Username
+            };
         }
 
-        private void OnOk(object param)
-        {
-
-        }
+        private void OnOk(object param) => this.Close();
 
         private void OnCancel(object param)
         {
-            
+            this.Configuration.Database = this._databaseConfigurationCopy.Database;
+            this.Configuration.Host = this._databaseConfigurationCopy.Host;
+            this.Configuration.Password = this._databaseConfigurationCopy.Password;
+            this.Configuration.Port = this._databaseConfigurationCopy.Port;
+            this.Configuration.Provider = this._databaseConfigurationCopy.Provider;
+            this.Configuration.Username = this._databaseConfigurationCopy.Username;
+            this.Close();
         }
 
         private void OnTest(object param)
