@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- General -->
+    <sys:String x:Key="Ok">OK</sys:String>
+    <sys:String x:Key="Cancel">Annuler</sys:String>
+
+    <!-- Main Window -->
+    <sys:String x:Key="Configure">Configurer</sys:String>
+    <sys:String x:Key="LoginServer">Serveur de connexion et ISC</sys:String>
+    <sys:String x:Key="ClusterServer">Serveur de personnages</sys:String>
+    <sys:String x:Key="WorldServer">Serveur de jeu</sys:String>
+    <sys:String x:Key="Database">Base de données</sys:String>
+    <sys:String x:Key="StartInstall">Commencer installation</sys:String>
+
+    <!-- Database configuration window -->
+    <sys:String x:Key="DbConfigTitle">Configuration base de données</sys:String>
+    <sys:String x:Key="DbConfigInfo">Configurer les accès à la base de données Rhisis.</sys:String>
+    <sys:String x:Key="DbConfigHost">Hôte</sys:String>
+    <sys:String x:Key="DbConfigDatabaseName">Nom de la base</sys:String>
+    <sys:String x:Key="DbConfigDatabaseUser">Nom d'utilisateur</sys:String>
+    <sys:String x:Key="DbConfigDatabasePass">Mot de passe</sys:String>
+    <sys:String x:Key="DbConfigDatabaseProvider">Fournisseur</sys:String>
+    <sys:String x:Key="DbConfigDatabasePort">Port</sys:String>
+    <sys:String x:Key="DbConfigTest">Tester la connexion</sys:String>
+
+</ResourceDictionary>

@@ -1,10 +1,10 @@
-﻿using Rhisis.Configuration.Core.MVVM;
+﻿using Rhisis.Tools.Core.MVVM;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
 
-namespace Rhisis.Configuration.ViewModels
+namespace Rhisis.Tools.ViewModels
 {
     public sealed class MainViewModel : ViewModelBase
     {

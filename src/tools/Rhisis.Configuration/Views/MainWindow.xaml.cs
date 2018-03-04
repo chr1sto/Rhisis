@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Rhisis.Configuration.Views
+namespace Rhisis.Tools.Views
 {
     public partial class MainWindow : Window
     {

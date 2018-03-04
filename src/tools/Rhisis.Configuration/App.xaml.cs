@@ -1,9 +1,9 @@
-﻿using Rhisis.Configuration.Core;
-using Rhisis.Configuration.ViewModels;
-using Rhisis.Configuration.Views;
+﻿using Rhisis.Tools.Core;
+using Rhisis.Tools.ViewModels;
+using Rhisis.Tools.Views;
 using System.Windows;
 
-namespace Rhisis.Configuration
+namespace Rhisis.Tools
 {
     public partial class App : Application
     {
