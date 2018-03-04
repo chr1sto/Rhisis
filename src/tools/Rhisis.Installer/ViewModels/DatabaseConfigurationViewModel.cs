@@ -9,7 +9,7 @@ namespace Rhisis.Installer.ViewModels
 {
     public class DatabaseConfigurationViewModel : ViewModelBase
     {
-        private readonly DatabaseConfiguration _databaseConfigurationCopy;
+        private readonly DatabaseConfiguration _databaseConfigurationCopy = new DatabaseConfiguration();
 
         /// <summary>
         /// Gets the Ok command.
@@ -65,9 +65,9 @@ namespace Rhisis.Installer.ViewModels
             };
         }
 
-        private void OnOk(object param) => this.Close();
+        protected void OnOk() => this.Close();
 
-        private void OnCancel(object param)
+        protected void OnCancel()
         {
             this.Configuration.Database = this._databaseConfigurationCopy.Database;
             this.Configuration.Host = this._databaseConfigurationCopy.Host;
@@ -78,7 +78,7 @@ namespace Rhisis.Installer.ViewModels
             this.Close();
         }
 
-        private void OnTest(object param)
+        protected void OnTest()
         {
             DatabaseContext context = null;
 
@@ -94,7 +94,6 @@ namespace Rhisis.Installer.ViewModels
             catch (Exception e)
             {
                 this.DialogService.ShowError("Connection error", $"Cannot connect to database. {e.Message}");
-                //this.CreateDatabaseIfDontExists();
             }
             finally
             {

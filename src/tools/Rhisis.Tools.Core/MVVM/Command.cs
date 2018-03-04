@@ -17,6 +17,15 @@ namespace Rhisis.Tools.Core.MVVM
         /// <summary>
         /// Creates a new <see cref="Command"/>.
         /// </summary>
+        /// <param name="action">Action to execute</param>
+        public Command(Action action)
+            : this(o => action())
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Command"/>.
+        /// </summary>
         /// <param name="execute"></param>
         public Command(Action<object> execute)
             : this(execute, null)

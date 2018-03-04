@@ -2,7 +2,6 @@
 {
     public enum ConfigurationType
     {
-        None,
         Database,
         Login,
         Cluster,

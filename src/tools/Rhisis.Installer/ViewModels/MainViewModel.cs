@@ -32,64 +32,70 @@ namespace Rhisis.Installer.ViewModels
         public MainViewModel()
         {
             this._databaseConfiguration = this.LoadConfiguration<DatabaseConfiguration>("config/database.json");
-            this.ConfigureCommand = new Command(o => this.OnConfigure((ConfigurationType)o));
+            this.ConfigureCommand = new Command(this.OnConfigure);
             this.StartInstallCommand = new Command(this.OnStartInstall);
             this.CancelInstallCommand = new Command(this.OnCancelInstall);
             this.ChangeLanguageCommand = new Command(this.OnChangeLanguage);
             this.SetCurrentLanguage();
         }
 
-        private void OnConfigure(ConfigurationType parameter)
+        protected void OnConfigure(object parameter)
         {
+            if (!(parameter is ConfigurationType configurationType))
+                return;
+
             ViewModelBase selectedOptionViewModel = null;
 
-            switch (parameter)
+            switch (configurationType)
             {
                 case ConfigurationType.Database:
                     selectedOptionViewModel = new DatabaseConfigurationViewModel(this._databaseConfiguration);
                     break;
+                case ConfigurationType.Login:
+                    selectedOptionViewModel = new LoginConfigurationViewModel();
+                    break;
+                case ConfigurationType.Cluster:
+                    selectedOptionViewModel = new ClusterConfigurationViewModel();
+                    break;
+                case ConfigurationType.World:
+                    selectedOptionViewModel = new WorldConfigurationViewModel();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(parameter), parameter, null);
             }
 
             selectedOptionViewModel?.ShowDialog();
         }
 
-        private void OnStartInstall(object parameter)
+        protected void OnStartInstall()
         {
             // TODO: start writing configuration
         }
 
-        private void OnCancelInstall(object parameter)
+        protected void OnCancelInstall()
         {
             // TODO: exit program
         }
 
-        private void OnChangeLanguage(object parameter)
+        protected void OnChangeLanguage(object parameter)
         {
             App.Instance.ChangeLanguage(parameter.ToString());
             this.SetCurrentLanguage();
         }
 
-        private T LoadConfiguration<T>(string path) where T : class, new()
+        protected T LoadConfiguration<T>(string path) where T : class, new()
         {
             string fullPath = Path.Combine(Environment.CurrentDirectory, path);
 
             return File.Exists(fullPath) ? ConfigurationHelper.Load<T>(fullPath) : new T();
         }
 
-        private void SetCurrentLanguage()
+        protected void SetCurrentLanguage()
         {
-            switch (Thread.CurrentThread.CurrentUICulture.ToString())
-            {
-                case "en":
-                    this.CurrentLanguage = "/Rhisis.Installer;component/Resources/Images/english.png";
-                    break;
-                case "fr":
-                    this.CurrentLanguage = "/Rhisis.Installer;component/Resources/Images/french.png";
-                    break;
-                default:
-                    this.CurrentLanguage = "/Rhisis.Installer;component/Resources/Images/english.png";
-                    break;
-            }
+            if (Thread.CurrentThread.CurrentUICulture.ToString() == "fr")
+                this.CurrentLanguage = "/Rhisis.Installer;component/Resources/Images/french.png";
+            else
+                this.CurrentLanguage = "/Rhisis.Installer;component/Resources/Images/english.png";
         }
     }
 }

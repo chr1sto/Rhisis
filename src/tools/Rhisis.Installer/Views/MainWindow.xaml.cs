@@ -12,8 +12,10 @@ namespace Rhisis.Installer.Views
             this.InitializeComponent();
         }
 
-        private void OnChangeLanguage(object sender, RoutedEventArgs e)
+        protected void OnChangeLanguage(object sender, RoutedEventArgs e)
         {
+            e.Handled = true;
+
             if (this.DataContext is MainViewModel vm && sender is MenuItem menu)
             {
                 vm.ChangeLanguageCommand?.Execute(menu.Tag);
