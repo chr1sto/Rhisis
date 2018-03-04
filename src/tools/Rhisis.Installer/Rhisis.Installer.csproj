@@ -159,6 +159,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\CreateAccountWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DatabaseConfigurationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -173,12 +177,17 @@
     </Compile>
     <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Enums\ConfigurationType.cs" />
+    <Compile Include="Models\AccountModel.cs" />
     <Compile Include="Models\AppConfiguration.cs" />
     <Compile Include="ViewModels\ClusterConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\CreateAccountViewModel.cs" />
     <Compile Include="ViewModels\DatabaseConfigurationViewModel.cs" />
     <Compile Include="ViewModels\LoginConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\WorldConfigurationViewModel.cs" />
+    <Compile Include="Views\CreateAccountWindow.xaml.cs">
+      <DependentUpon>CreateAccountWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DatabaseConfigurationWindow.xaml.cs">
       <DependentUpon>DatabaseConfigurationWindow.xaml</DependentUpon>
     </Compile>
@@ -231,7 +240,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\flyff_logo.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\users.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\console_ko.png" />
     <Resource Include="Resources\Images\console_ok.png" />

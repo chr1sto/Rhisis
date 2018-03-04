@@ -24,5 +24,16 @@
     <sys:String x:Key="DbConfigDatabaseProvider">Fournisseur</sys:String>
     <sys:String x:Key="DbConfigDatabasePort">Port</sys:String>
     <sys:String x:Key="DbConfigTest">Tester la connexion</sys:String>
+    <sys:String x:Key="DbConfigCreateAccount">Créer un compte administrateur</sys:String>
+
+    <!-- Create account window -->
+    <sys:String x:Key="CreateAccountTitle">Création de compte</sys:String>
+    <sys:String x:Key="CreateAccountInfo">Créer un nouveau compte utilisateur.</sys:String>
+    <sys:String x:Key="CreateAccountUsername">Nom d'utilisateur</sys:String>
+    <sys:String x:Key="CreateAccountPassword">Mot de passe</sys:String>
+    <sys:String x:Key="CreateAccountPasswordConfirm">Confirmation</sys:String>
+    <sys:String x:Key="CreateAccountAuthority">Authorité</sys:String>
+    <sys:String x:Key="CreateAccountErrorTitle">Création de compte : Erreur</sys:String>
+    <sys:String x:Key="CreateAccountErrorPassNotMatching">Les mots de passes ne correspondent pas.</sys:String>
 
 </ResourceDictionary>

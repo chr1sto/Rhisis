@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using Rhisis.Installer.Enums;
+using Rhisis.Installer.Models;
 using Rhisis.Tools.Core.MVVM;
 
 namespace Rhisis.Installer.ViewModels
@@ -12,6 +13,7 @@ namespace Rhisis.Installer.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private readonly DatabaseConfiguration _databaseConfiguration;
+        private readonly AccountModel _accountModel;
 
         private string _currentLanguage;
 
@@ -25,16 +27,14 @@ namespace Rhisis.Installer.ViewModels
 
         public ICommand StartInstallCommand { get; }
 
-        public ICommand CancelInstallCommand { get; }
-
         public ICommand ChangeLanguageCommand { get; }
 
         public MainViewModel()
         {
             this._databaseConfiguration = this.LoadConfiguration<DatabaseConfiguration>("config/database.json");
+            this._accountModel = new AccountModel();
             this.ConfigureCommand = new Command(this.OnConfigure);
             this.StartInstallCommand = new Command(this.OnStartInstall);
-            this.CancelInstallCommand = new Command(this.OnCancelInstall);
             this.ChangeLanguageCommand = new Command(this.OnChangeLanguage);
             this.SetCurrentLanguage();
         }
@@ -49,7 +49,7 @@ namespace Rhisis.Installer.ViewModels
             switch (configurationType)
             {
                 case ConfigurationType.Database:
-                    selectedOptionViewModel = new DatabaseConfigurationViewModel(this._databaseConfiguration);
+                    selectedOptionViewModel = new DatabaseConfigurationViewModel(this._databaseConfiguration, this._accountModel);
                     break;
                 case ConfigurationType.Login:
                     selectedOptionViewModel = new LoginConfigurationViewModel();
@@ -70,11 +70,6 @@ namespace Rhisis.Installer.ViewModels
         protected void OnStartInstall()
         {
             // TODO: start writing configuration
-        }
-
-        protected void OnCancelInstall()
-        {
-            // TODO: exit program
         }
 
         protected void OnChangeLanguage(object parameter)

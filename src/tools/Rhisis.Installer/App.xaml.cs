@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using Rhisis.Core.Helpers;
@@ -23,6 +24,7 @@ namespace Rhisis.Installer
         {
             Instance = this;
             ViewFactory.Register<DatabaseConfigurationWindow, DatabaseConfigurationViewModel>();
+            ViewFactory.Register<CreateAccountWindow, CreateAccountViewModel>();
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -61,6 +63,13 @@ namespace Rhisis.Installer
 
             this.Configuration.Culture = culture;
             ConfigurationHelper.Save(this._configurationFile, this.Configuration);
+        }
+
+        public string GetTranslation(string key)
+        {
+            ResourceDictionary languageDictionary = this.Resources.MergedDictionaries.Last();
+
+            return languageDictionary.Contains(key) ? languageDictionary[key].ToString() : null;
         }
     }
 }
