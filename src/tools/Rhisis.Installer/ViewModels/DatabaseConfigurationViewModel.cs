@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using Rhisis.Installer.Models;
 
 namespace Rhisis.Installer.ViewModels
 {
     public class DatabaseConfigurationViewModel : ViewModelBase
     {
-        private readonly DatabaseConfiguration _databaseConfigurationCopy = new DatabaseConfiguration();
+        private readonly DatabaseConfiguration _databaseConfigurationCopy;
+        private readonly AccountModel _account;
 
         /// <summary>
         /// Gets the Ok command.
@@ -27,6 +29,11 @@ namespace Rhisis.Installer.ViewModels
         public ICommand TestCommand { get; }
 
         /// <summary>
+        /// Gets the create account command.
+        /// </summary>
+        public ICommand CreateAccountCommand { get; }
+
+        /// <summary>
         /// Gets the database configuration.
         /// </summary>
         public DatabaseConfiguration Configuration { get; }
@@ -40,18 +47,19 @@ namespace Rhisis.Installer.ViewModels
         /// Creates a new <see cref="DatabaseConfigurationViewModel"/> instance.
         /// </summary>
         public DatabaseConfigurationViewModel()
-            : this(new DatabaseConfiguration())
+            : this(new DatabaseConfiguration(), new AccountModel())
         {
         }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseConfigurationViewModel"/> instance.
         /// </summary>
-        public DatabaseConfigurationViewModel(DatabaseConfiguration configuration)
+        public DatabaseConfigurationViewModel(DatabaseConfiguration configuration, AccountModel account)
         {
             this.OkCommand = new Command(this.OnOk);
             this.CancelCommand = new Command(this.OnCancel);
             this.TestCommand = new Command(this.OnTest);
+            this.CreateAccountCommand = new Command(this.OnCreateAccount);
             this.Providers = Enum.GetValues(typeof(DatabaseProvider)).Cast<DatabaseProvider>();
             this.Configuration = configuration;
             this._databaseConfigurationCopy = new DatabaseConfiguration
@@ -63,6 +71,7 @@ namespace Rhisis.Installer.ViewModels
                 Provider = this.Configuration.Provider,
                 Username = this.Configuration.Username
             };
+            this._account = account;
         }
 
         protected void OnOk() => this.Close();
@@ -100,6 +109,18 @@ namespace Rhisis.Installer.ViewModels
                 context?.Dispose();
                 DatabaseService.UnloadConfiguration();
             }
+        }
+
+        protected void OnCreateAccount()
+        {
+            var viewModel = new CreateAccountViewModel();
+            viewModel.ShowDialog();
+
+            this._account.Username = viewModel.Account.Username;
+            this._account.Password = viewModel.Account.Password;
+            this._account.PasswordConfirmation = viewModel.Account.PasswordConfirmation;
+            this._account.Type = viewModel.Account.Type;
+            this._account.IsValid = viewModel.Account.IsValid;
         }
     }
 }

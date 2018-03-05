@@ -102,7 +102,6 @@
         <!-- Footer -->
         <Grid Grid.Row="2" Margin="12">
             <WrapPanel HorizontalAlignment="Right">
-                <Button Content="{DynamicResource Cancel}" Margin="8,0" Command="{Binding CancelInstallCommand}" />
                 <Button Content="{DynamicResource StartInstall}" Margin="8,0" Command="{Binding StartInstallCommand}" />
             </WrapPanel>
         </Grid>

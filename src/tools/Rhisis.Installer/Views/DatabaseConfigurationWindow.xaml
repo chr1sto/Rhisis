@@ -9,7 +9,7 @@
         ShowCloseButton="False"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="{DynamicResource DbConfigTitle}" Height="375" Width="320">
+        Title="{DynamicResource DbConfigTitle}" Height="414.329" Width="320">
     
     <Window.Resources>
         <vm:DatabaseConfigurationViewModel x:Key="ViewModel" />
@@ -74,6 +74,7 @@
                 </Grid>
 
                 <Button Content="{DynamicResource DbConfigTest}" Margin="0,8,0,0" Command="{Binding TestCommand}" />
+                <Button Content="{DynamicResource DbConfigCreateAccount}" Margin="0,8,0,0" Command="{Binding CreateAccountCommand}" />
             </StackPanel>
         </Grid>
 

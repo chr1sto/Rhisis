@@ -24,5 +24,17 @@
     <sys:String x:Key="DbConfigDatabaseProvider">Provider</sys:String>
     <sys:String x:Key="DbConfigDatabasePort">Port</sys:String>
     <sys:String x:Key="DbConfigTest">Test the connection</sys:String>
+    <sys:String x:Key="DbConfigCreateAccount">Create administrator account</sys:String>
+
+    <!-- Create account window -->
+    <sys:String x:Key="CreateAccountTitle">Create account</sys:String>
+    <sys:String x:Key="CreateAccountInfo">Create a new user account.</sys:String>
+    <sys:String x:Key="CreateAccountUsername">Username</sys:String>
+    <sys:String x:Key="CreateAccountPassword">Password</sys:String>
+    <sys:String x:Key="CreateAccountPasswordConfirm">Confirm password</sys:String>
+    <sys:String x:Key="CreateAccountAuthority">Authority</sys:String>
+    <sys:String x:Key="CreateAccountErrorTitle">Create account error</sys:String>
+    <sys:String x:Key="CreateAccountErrorPassNotMatching">Passwords are not matching.</sys:String>
+    
 
 </ResourceDictionary>
