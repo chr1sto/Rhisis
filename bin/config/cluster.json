@@ -1,4 +1,7 @@
 {
+  "id": 1,
+  "name": "Rhisis",
+  "enableLoginProtect": true,
   "isc": {
     "password": "4fded1464736e77865df232cbcb4cd19",
     "host": "127.0.0.1",
@@ -12,9 +15,9 @@
     "dexterity": 15,
     "intelligence": 15,
     "mapId": 1,
-    "posX": 6968,
-    "posY": 100,
-    "posZ": 3328,
+    "posX": 6968.0,
+    "posY": 100.0,
+    "posZ": 3328.0,
     "man": {
       "startWeapon": 21,
       "startSuit": 502,
@@ -30,9 +33,6 @@
       "startHat": -1
     }
   },
-  "id": 1,
-  "name": "Rhisis",
-  "enableLoginProtect": true,
   "host": "127.0.0.1",
   "port": 28000
 }

@@ -29,5 +29,8 @@ namespace Rhisis.Database
         [DataMember(Name = "provider")]
         [DefaultValue(DatabaseProvider.MySQL)]
         public DatabaseProvider Provider { get; set; }
+
+        [IgnoreDataMember]
+        public bool IsValid { get; set; }
     }
 }

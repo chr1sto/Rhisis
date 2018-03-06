@@ -5,6 +5,8 @@
     <!-- General -->
     <sys:String x:Key="Ok">OK</sys:String>
     <sys:String x:Key="Cancel">Annuler</sys:String>
+    <sys:String x:Key="NotImplementedTitle">Non disponible</sys:String>
+    <sys:String x:Key="NotImplementedMessage">Cette fonctionnalité n'est pas encore disponible.</sys:String>
 
     <!-- Main Window -->
     <sys:String x:Key="Configure">Configurer</sys:String>
@@ -13,6 +15,15 @@
     <sys:String x:Key="WorldServer">Serveur de jeu</sys:String>
     <sys:String x:Key="Database">Base de données</sys:String>
     <sys:String x:Key="StartInstall">Commencer installation</sys:String>
+
+    <!-- Install process -->
+    <sys:String x:Key="ConfigureDatabase">Configuration de la abse de données...</sys:String>
+    <sys:String x:Key="NoDatabaseTitle">Base de données non trouvée.</sys:String>
+    <sys:String x:Key="NoDatabaseMessage">Impossible de trouver la base de données '{0}'. Voulez-vous la créer ?</sys:String>
+    <sys:String x:Key="ConfigureCreateAccount">Création du compte utilisateur...</sys:String>
+    <sys:String x:Key="ConfigureLogin">Configuration du serveur de Login...</sys:String>
+    <sys:String x:Key="ConfigureCluster">Configuration du serveur de Cluster...</sys:String>
+    <sys:String x:Key="ConfigureWorld">Configuration du serveur de World...</sys:String>    
 
     <!-- Database configuration window -->
     <sys:String x:Key="DbConfigTitle">Configuration base de données</sys:String>

@@ -44,6 +44,7 @@ namespace Rhisis.Core.Structures.Configuration
         public ClusterConfiguration()
         {
             this.ISC = new ISCConfiguration();
+            this.DefaultCharacter = new DefaultCharacter();
         }
     }
 }

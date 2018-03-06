@@ -176,6 +176,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\ImageConverter.cs" />
+    <Compile Include="Converters\InvertBooleanConvert.cs" />
+    <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Enums\ConfigurationType.cs" />
     <Compile Include="Models\AccountModel.cs" />
     <Compile Include="Models\AppConfiguration.cs" />
