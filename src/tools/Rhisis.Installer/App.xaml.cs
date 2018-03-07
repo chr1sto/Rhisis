@@ -65,11 +65,11 @@ namespace Rhisis.Installer
             ConfigurationHelper.Save(this._configurationFile, this.Configuration);
         }
 
-        public string GetTranslation(string key)
+        public string GetTranslation(string key, params object[] args)
         {
             ResourceDictionary languageDictionary = this.Resources.MergedDictionaries.Last();
 
-            return languageDictionary.Contains(key) ? languageDictionary[key].ToString() : null;
+            return languageDictionary.Contains(key) ? string.Format(languageDictionary[key].ToString(), args) : null;
         }
     }
 }

@@ -2,8 +2,11 @@
 using Rhisis.Tools.Core.MVVM;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Windows.Input;
+using MySql.Data.MySqlClient;
 using Rhisis.Installer.Models;
 
 namespace Rhisis.Installer.ViewModels
@@ -98,11 +101,12 @@ namespace Rhisis.Installer.ViewModels
                 context = DatabaseService.GetContext();
                 context.OpenConnection();
 
+                this.Configuration.IsValid = true;
                 this.DialogService.ShowInformation("Connection success", "The connection has succeeded");
             }
-            catch (Exception e)
+            catch (DbException e)
             {
-                this.DialogService.ShowError("Connection error", $"Cannot connect to database. {e.Message}");
+                this.DialogService.ShowInformation("Connection error", $"Cannot find database. {e.Message}");
             }
             finally
             {

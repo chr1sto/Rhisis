@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media.Imaging;
 
 namespace Rhisis.Installer.Converters
 {
-    public class ImageConverter : IValueConverter
+    public class InvertBooleanConvert : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is string image))
-                return null;
+            if (value is bool boolean)
+            {
+                return !boolean;
+            }
 
-            var imageUri = new Uri(image, UriKind.RelativeOrAbsolute);
-
-            return new BitmapImage(imageUri);
+            throw new ArgumentException(nameof(value));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -20,6 +20,8 @@
     
     <Window.Resources>
         <converters:ImageConverter x:Key="ImageConverter" />
+        <converters:VisibilityConverter x:Key="VisbilityConverter" />
+        <converters:InvertBooleanConvert x:Key="InvertBooleanConvert" />
     </Window.Resources>
 
     <metro:MetroWindow.RightWindowCommands>
@@ -46,7 +48,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.3*" />
+            <RowDefinition Height="0.7*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -57,7 +60,7 @@
         </Grid>
 
         <!-- Main content -->
-        <Grid Grid.Row="1" Margin="12,32,12,0">
+        <Grid Grid.Row="1" Margin="12,32,12,32" IsEnabled="{Binding InstallVisible, Converter={StaticResource InvertBooleanConvert}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="0.4*"/>
@@ -99,10 +102,16 @@
             <Button Grid.Column="1" Grid.Row="3" Content="{DynamicResource Configure}" Padding="4" Margin="0,8,0,0" Command="{Binding ConfigureCommand}" CommandParameter="{x:Static enum:ConfigurationType.World}" />
         </Grid>
 
+        <StackPanel Grid.Row="2" Margin="12" Visibility="{Binding InstallVisible, Converter={StaticResource VisbilityConverter}}">
+            <TextBlock Text="{Binding CurrentStepInfo}" Margin="0,4"></TextBlock>
+            <metro:MetroProgressBar Margin="0,4" IsIndeterminate="True"></metro:MetroProgressBar>
+            <ProgressBar Margin="0,4" Maximum="5" Value="{Binding CurrentStep}"></ProgressBar>
+        </StackPanel>
+
         <!-- Footer -->
-        <Grid Grid.Row="2" Margin="12">
+        <Grid Grid.Row="3" Margin="12">
             <WrapPanel HorizontalAlignment="Right">
-                <Button Content="{DynamicResource StartInstall}" Margin="8,0" Command="{Binding StartInstallCommand}" />
+                <Button Content="{DynamicResource StartInstall}" Margin="8,0" Command="{Binding StartInstallCommand}" IsEnabled="{Binding InstallVisible, Converter={StaticResource InvertBooleanConvert}}" />
             </WrapPanel>
         </Grid>
     </Grid>
