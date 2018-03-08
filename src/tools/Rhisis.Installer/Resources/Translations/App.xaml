@@ -35,7 +35,7 @@
     <sys:String x:Key="DbConfigDatabaseProvider">Provider</sys:String>
     <sys:String x:Key="DbConfigDatabasePort">Port</sys:String>
     <sys:String x:Key="DbConfigTest">Test the connection</sys:String>
-    <sys:String x:Key="DbConfigCreateAccount">Create administrator account</sys:String>
+    <sys:String x:Key="DbConfigCreateAccount">Create account</sys:String>
 
     <!-- Create account window -->
     <sys:String x:Key="CreateAccountTitle">Create account</sys:String>
@@ -46,6 +46,11 @@
     <sys:String x:Key="CreateAccountAuthority">Authority</sys:String>
     <sys:String x:Key="CreateAccountErrorTitle">Create account error</sys:String>
     <sys:String x:Key="CreateAccountErrorPassNotMatching">Passwords are not matching.</sys:String>
-    
+    <sys:String x:Key="CreateAccountErrorUserAlreadyExists">User '{0}' already exists.</sys:String>
+
+    <!-- Password generation window -->
+    <sys:String x:Key="GeneratePasswordMd5Salt">MD5 Salt</sys:String>
+    <sys:String x:Key="GeneratedPasswordText">Generated password</sys:String>
+    <sys:String x:Key="GeneratePasswordText">Generate password</sys:String>
 
 </ResourceDictionary>

@@ -57,9 +57,9 @@ namespace Rhisis.Installer.ViewModels
 
             if (!string.IsNullOrEmpty(viewModel.GeneratedPassword))
             {
-                // TODO: view not refreshed
                 this.Account.Password = viewModel.GeneratedPassword;
                 this.Account.PasswordConfirmation = viewModel.GeneratedPassword;
+                this.OnPropertyChanged(nameof(this.Account));
             }
         }
     }

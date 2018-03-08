@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using Rhisis.Database.Structures;
 using Rhisis.Installer.Enums;
 using Rhisis.Installer.Models;
 using Rhisis.Tools.Core.MVVM;
@@ -76,7 +77,7 @@ namespace Rhisis.Installer.ViewModels
             this.InstallVisible = false;
         }
 
-        protected void OnConfigure(object parameter)
+        private void OnConfigure(object parameter)
         {
             if (!(parameter is ConfigurationType configurationType))
                 return;
@@ -100,44 +101,38 @@ namespace Rhisis.Installer.ViewModels
             selectedOptionViewModel?.ShowDialog();
         }
 
-        protected async Task OnStartInstall()
+        private async Task OnStartInstall()
         {
             this.InstallVisible = true;
-            await Task.Delay(500);
-            this.SetupDatabase();
-            await Task.Delay(500);
-            this.CreateAccount();
-            await Task.Delay(500);
-            this.SetupLogin();
-            await Task.Delay(500);
-            this.SetupCluster();
-            await Task.Delay(500);
-            this.SetupWorld();
-            await Task.Delay(500);
+            await this.SetupDatabase();
+            await this.CreateAccount();
+            await this.SetupLogin();
+            await this.SetupCluster();
+            await this.SetupWorld();
             this.InstallVisible = false;
             this.DialogService.ShowInformation("Configuration success", "Rhisis has been configured!");
         }
 
-        protected void OnChangeLanguage(object parameter)
+        private void OnChangeLanguage(object parameter)
         {
             App.Instance.ChangeLanguage(parameter.ToString());
             this.SetCurrentLanguage();
         }
 
-        protected T LoadConfiguration<T>(string path) where T : class, new()
+        private T LoadConfiguration<T>(string path) where T : class, new()
         {
             string fullPath = Path.Combine(Environment.CurrentDirectory, path);
 
             return File.Exists(fullPath) ? ConfigurationHelper.Load<T>(fullPath) : new T();
         }
 
-        protected void CheckConfigDirectory()
+        private void CheckConfigDirectory()
         {
             if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "config")))
                 Directory.CreateDirectory("config");
         }
 
-        protected void SetCurrentLanguage()
+        private void SetCurrentLanguage()
         {
             if (Thread.CurrentThread.CurrentUICulture.ToString() == "fr")
                 this.CurrentLanguage = "/Rhisis.Installer;component/Resources/Images/french.png";
@@ -145,7 +140,7 @@ namespace Rhisis.Installer.ViewModels
                 this.CurrentLanguage = "/Rhisis.Installer;component/Resources/Images/english.png";
         }
 
-        protected void SetupDatabase()
+        private async Task SetupDatabase()
         {
             this.CurrentStepInfo = App.Instance.GetTranslation("ConfigureDatabase");
 
@@ -169,17 +164,50 @@ namespace Rhisis.Installer.ViewModels
             }
 
             DatabaseService.UnloadConfiguration();
+            await Task.Delay(500);
 
             this.CurrentStep++;
         }
 
-        protected void CreateAccount()
+        private async Task CreateAccount()
         {
             this.CurrentStepInfo = App.Instance.GetTranslation("ConfigureCreateAccount");
+
+            if (this._accountModel.IsValid)
+            {
+                DatabaseService.Configure(this._databaseConfiguration);
+
+                using (DatabaseContext context = DatabaseService.GetContext())
+                {
+                    User user = context.Users.Get(x => x.Username == this._accountModel.Username);
+
+                    if (user != null)
+                    {
+                        this.DialogService.ShowError(
+                            App.Instance.GetTranslation("CreateAccountErrorTitle"), 
+                            App.Instance.GetTranslation("CreateAccountErrorUserAlreadyExists", this._accountModel.Username));
+                    }
+                    else
+                    {
+                        context.Users.Create(new User
+                        {
+                            Authority = (int)this._accountModel.Type,
+                            Username = this._accountModel.Username,
+                            Password = this._accountModel.Password
+                        });
+
+                        context.SaveChanges();
+                    }
+                }
+
+                DatabaseService.UnloadConfiguration();
+            }
+
+            await Task.Delay(500);
             this.CurrentStep++;
         }
 
-        protected void SetupLogin()
+        private async Task SetupLogin()
         {
             this.CurrentStepInfo = App.Instance.GetTranslation("ConfigureLogin");
 
@@ -194,11 +222,12 @@ namespace Rhisis.Installer.ViewModels
             this._loginConfiguration.ISC.Password = "4fded1464736e77865df232cbcb4cd19";
 
             ConfigurationHelper.Save(LoginConfigurationPath, this._loginConfiguration);
+            await Task.Delay(500);
 
             this.CurrentStep++;
         }
 
-        protected void SetupCluster()
+        private async Task SetupCluster()
         {
             this.CurrentStepInfo = App.Instance.GetTranslation("ConfigureCluster");
 
@@ -233,11 +262,12 @@ namespace Rhisis.Installer.ViewModels
             this._clusterConfiguration.DefaultCharacter.Woman.StartHat = -1;
 
             ConfigurationHelper.Save(ClusterConfigurationPath, this._clusterConfiguration);
+            await Task.Delay(500);
 
             this.CurrentStep++;
         }
 
-        protected void SetupWorld()
+        private async Task SetupWorld()
         {
             this.CurrentStepInfo = App.Instance.GetTranslation("ConfigureWorld");
 
@@ -252,6 +282,7 @@ namespace Rhisis.Installer.ViewModels
             this._worldConfiguration.Maps = new[] { "WI_WORLD_MADRIGAL" };
 
             ConfigurationHelper.Save(WorldConfigurationPath, this._worldConfiguration);
+            await Task.Delay(500);
 
             this.CurrentStep++;
         }

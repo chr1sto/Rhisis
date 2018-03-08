@@ -1,5 +1,6 @@
 ﻿using Rhisis.Tools.Core.MVVM;
 using System.Windows.Input;
+using Rhisis.Core.Cryptography;
 
 namespace Rhisis.Installer.ViewModels
 {
@@ -53,9 +54,9 @@ namespace Rhisis.Installer.ViewModels
 
         private void OnGeneratePassword()
         {
-            var password = string.Concat(this.Salt, this.Password);
+            string password = string.Concat(this.Salt, this.Password);
 
-            this.GeneratedPassword = "dfgsfd"; // TODO: generate MD5
+            this.GeneratedPassword = Md5.GetMd5Hash(password);
         }
     }
 }
