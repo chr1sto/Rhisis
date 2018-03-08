@@ -167,6 +167,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\GeneratePasswordWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -184,6 +188,7 @@
     <Compile Include="ViewModels\ClusterConfigurationViewModel.cs" />
     <Compile Include="ViewModels\CreateAccountViewModel.cs" />
     <Compile Include="ViewModels\DatabaseConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\GeneratePasswordViewModel.cs" />
     <Compile Include="ViewModels\LoginConfigurationViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\WorldConfigurationViewModel.cs" />
@@ -192,6 +197,9 @@
     </Compile>
     <Compile Include="Views\DatabaseConfigurationWindow.xaml.cs">
       <DependentUpon>DatabaseConfigurationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GeneratePasswordWindow.xaml.cs">
+      <DependentUpon>GeneratePasswordWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
