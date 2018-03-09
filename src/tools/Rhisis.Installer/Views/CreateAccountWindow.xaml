@@ -10,7 +10,7 @@
     ShowCloseButton="False"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
-    Title="{DynamicResource CreateAccountTitle}" Height="300" Width="300">
+    Title="{DynamicResource CreateAccountTitle}" Height="315" Width="300">
 
     <Window.Resources>
         <vm:CreateAccountViewModel x:Key="ViewModel" />
@@ -63,6 +63,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Grid>
+                <Button Content="Create password" Margin="0,8,0,0" Command="{Binding CreatePasswordCommand}" />
             </StackPanel>
         </Grid>
 

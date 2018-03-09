@@ -25,6 +25,7 @@ namespace Rhisis.Installer
             Instance = this;
             ViewFactory.Register<DatabaseConfigurationWindow, DatabaseConfigurationViewModel>();
             ViewFactory.Register<CreateAccountWindow, CreateAccountViewModel>();
+            ViewFactory.Register<GeneratePasswordWindow, GeneratePasswordViewModel>();
         }
 
         protected override void OnStartup(StartupEventArgs e)
