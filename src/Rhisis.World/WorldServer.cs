@@ -84,8 +84,6 @@ namespace Rhisis.World
         /// <param name="connection"></param>
         protected override void OnClientDisconnected(WorldClient connection)
         {
-            connection.Dispose();
-
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
 

@@ -5,6 +5,7 @@ using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems.Events;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems
 {
@@ -42,18 +42,16 @@ namespace Rhisis.World.Systems
         /// <param name="e"></param>
         public override void Execute(IEntity entity, EventArgs e)
         {
-            if (!(e is ChatEventArgs chatEvent))
+            if (!(e is ChatEventArgs chatEvent) || !(entity is IPlayerEntity player))
                 return;
             
-            if (string.IsNullOrEmpty(chatEvent.Message))
+            if (!chatEvent.CheckArguments())
                 return;
-            
-            var player = entity as IPlayerEntity;
 
             if (chatEvent.Message.StartsWith("/"))
             {
                 string commandName = chatEvent.Message.Split(' ').FirstOrDefault();
-                string[] commandParameters = this.GetCommandParameters(chatEvent.Message, commandName);
+                string[] commandParameters = GetCommandParameters(chatEvent.Message, commandName);
 
                 if (ChatCommands.ContainsKey(commandName))
                     ChatCommands[commandName].Invoke(player, commandParameters);
@@ -72,7 +70,7 @@ namespace Rhisis.World.Systems
         /// <param name="command">Command line</param>
         /// <param name="commandName">Command name</param>
         /// <returns></returns>
-        private string[] GetCommandParameters(string command, string commandName)
+        private static string[] GetCommandParameters(string command, string commandName)
         {
             string commandParameters = command.Remove(0, commandName.Length);
 
