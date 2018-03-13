@@ -11,6 +11,8 @@ using System.Linq;
 using System.Reflection;
 using Rhisis.World.Game.Chat;
 using Rhisis.World.Systems;
+using Rhisis.Core.Resources.Include;
+using Newtonsoft.Json.Linq;
 
 namespace Rhisis.World
 {
@@ -22,6 +24,8 @@ namespace Rhisis.World
         private static readonly IDictionary<string, string> Texts = new Dictionary<string, string>();
         private static readonly IDictionary<int, MoverData> MoversData = new Dictionary<int, MoverData>();
         private static readonly IDictionary<int, ItemData> ItemsData = new Dictionary<int, ItemData>();
+        private static readonly IDictionary<string, NpcData> NpcData = new Dictionary<string, NpcData>();
+        private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
 
         /// <summary>
         /// Gets the Movers data.
@@ -34,6 +38,11 @@ namespace Rhisis.World
         public static IReadOnlyDictionary<int, ItemData> Items => ItemsData as IReadOnlyDictionary<int, ItemData>;
 
         /// <summary>
+        /// Gets the Npcs data.
+        /// </summary>
+        public static IReadOnlyDictionary<string, NpcData> Npcs => NpcData as IReadOnlyDictionary<string, NpcData>;
+
+        /// <summary>
         /// Loads the server's resources.
         /// </summary>
         private void LoadResources()
@@ -44,6 +53,7 @@ namespace Rhisis.World
             this.LoadDefinesAndTexts();
             this.LoadMovers();
             this.LoadItems();
+            this.LoadNpc();
             this.LoadMaps();
             this.CleanUp();
 
@@ -104,6 +114,92 @@ namespace Rhisis.World
                 }
             }
             Logger.Info("{0} movers loaded!\t\t", MoversData.Count);
+        }
+
+        private void LoadNpc()
+        {
+            IEnumerable<string> files = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
+                                        where Path.GetFileName(x).StartsWith("character") && x.EndsWith(".inc")
+                                        select x;
+
+            Logger.Loading("Loading npcs...");
+
+            this.LoadNpcShops();
+
+            foreach (string file in files)
+            {
+                using (var npcFile = new IncludeFile(file))
+                {
+                    foreach (IStatement npcStatement in npcFile.Statements)
+                    {
+                        if (!(npcStatement is Block npcBlock))
+                            continue;
+
+                        string npcId = npcStatement.Name;
+                        string npcName = npcId;
+
+                        foreach (IStatement npcInfoStatement in npcBlock.Statements)
+                        {
+                            if (npcInfoStatement is Instruction instruction && npcInfoStatement.Name == "SetName")
+                            {
+                                if (instruction.Parameters.Count > 0 && 
+                                    Texts.TryGetValue(instruction.Parameters.First().ToString(), out string value))
+                                {
+                                    npcName = value;
+                                }
+                            }
+                        }
+
+                        ShopData shop = ShopData.ContainsKey(npcId) ? ShopData[npcId] : null;
+                        var newNpc = new NpcData(npcId, npcName, shop);
+
+                        if (!NpcData.ContainsKey(newNpc.Id))
+                            NpcData.Add(newNpc.Id, newNpc);
+                        else
+                            NpcData[newNpc.Id] = newNpc;
+                    }
+                }
+            }
+
+            Logger.Info("{0} npcs loaded!\t\t", NpcData.Count);
+        }
+
+        private void LoadNpcShops()
+        {
+            string shopsPath = Path.Combine(DataPath, "shops");
+
+            if (!Directory.Exists(shopsPath))
+            {
+                Logger.Warning("Cannot find {0} directory.", shopsPath);
+                return;
+            }
+
+            string[] shopsFiles = Directory.GetFiles(shopsPath);
+
+            foreach (string shopFile in shopsFiles)
+            {
+                string shopFileContent = File.ReadAllText(shopFile);
+                JToken shopsParsed = JToken.Parse(shopFileContent, new JsonLoadSettings
+                {
+                    CommentHandling = CommentHandling.Ignore
+                });
+
+                if (shopsParsed.Type == JTokenType.Array)
+                {
+                    var shops = shopsParsed.ToObject<ShopData[]>();
+
+                    foreach (ShopData shop in shops)
+                        if (!ShopData.ContainsKey(shop.Name))
+                            ShopData.Add(shop.Name, shop);
+                }
+                else
+                {
+                    var shop = shopsParsed.ToObject<ShopData>();
+
+                    if (!ShopData.ContainsKey(shop.Name))
+                        ShopData.Add(shop.Name, shop);
+                }
+            }
         }
 
         private void LoadItems()
