@@ -1,0 +1,32 @@
+﻿using Ether.Network.Packets;
+using System;
+
+namespace Rhisis.Core.Network.Packets.World
+{
+    /// <summary>
+    /// Defines the <see cref="OpenShopWindowPacket"/> packet structure.
+    /// </summary>
+    public struct OpenShopWindowPacket : IEquatable<OpenShopWindowPacket>
+    {
+        /// <summary>
+        /// Gets the selected object id.
+        /// </summary>
+        public int ObjectId { get; }
+
+        /// <summary>
+        /// Creates a new <see cref="OpenShopWindowPacket"/> instance.
+        /// </summary>
+        /// <param name="packet">Incoming packet</param>
+        public OpenShopWindowPacket(NetPacketBase packet)
+        {
+            this.ObjectId = packet.Read<int>();
+        }
+
+        /// <summary>
+        /// Compare two <see cref="OpenShopWindowPacket"/> instances.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Equals(OpenShopWindowPacket other) => this.ObjectId == other.ObjectId;
+    }
+}
