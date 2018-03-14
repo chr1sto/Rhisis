@@ -1,8 +1,9 @@
 ﻿using System;
+using Rhisis.World.Game.Core;
 
 namespace Rhisis.World.Systems.Events
 {
-    public class ChatEventArgs : EventArgs
+    public sealed class ChatEventArgs : SystemEventArgs
     {
         /// <summary>
         /// Gets the chat message.
@@ -12,10 +13,17 @@ namespace Rhisis.World.Systems.Events
         /// <summary>
         /// Creates a <see cref="ChatEventArgs"/> instance.
         /// </summary>
-        /// <param name="message">Chat message</param>
-        public ChatEventArgs(string message)
+        /// <param name="args">System arguments</param>
+        public ChatEventArgs(params object[] args)
+            : base(args)
         {
-            this.Message = message;
+            this.Message = this.GetArgument<string>(0);
         }
+
+        /// <summary>
+        /// Check system arguments.
+        /// </summary>
+        /// <returns></returns>
+        public override bool CheckArguments() => !string.IsNullOrEmpty(this.Message);
     }
 }

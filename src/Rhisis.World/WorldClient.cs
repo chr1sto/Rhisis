@@ -9,10 +9,10 @@ using Rhisis.Database;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.World.Packets;
 
 namespace Rhisis.World
 {
@@ -146,7 +146,7 @@ namespace Rhisis.World
                             }
                             else
                             {
-                                dbItem = new Rhisis.Database.Structures.Item()
+                                dbItem = new Rhisis.Database.Structures.Item
                                 {
                                     CharacterId = this.Player.PlayerComponent.Id,
                                     CreatorId = item.CreatorId,
