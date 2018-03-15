@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
@@ -14,6 +15,10 @@ namespace Rhisis.World.Handlers
         {
             var chatPacket = new ChatPacket(packet);
             var chatEvent = new ChatEventArgs(chatPacket.Message);
+
+            var entity = client.Server.GetPlayerEntity(client.Player.Id);
+
+            Logger.Debug("is equal ? : {0}", entity == client.Player); // TRUE
 
             client.Player.Context.NotifySystem<ChatSystem>(client.Player, chatEvent);
         }
