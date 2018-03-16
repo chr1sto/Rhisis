@@ -25,6 +25,8 @@ namespace Rhisis.World
         /// </summary>
         public IPlayerEntity Player { get; set; }
 
+        public IWorldServer Server { get; private set; }
+
         /// <summary>
         /// Creates a new <see cref="WorldClient"/> instance.
         /// </summary>
@@ -36,8 +38,9 @@ namespace Rhisis.World
         /// <summary>
         /// Initialize the client and send welcome packet.
         /// </summary>
-        public void InitializeClient()
+        public void InitializeClient(IWorldServer server)
         {
+            this.Server = server;
             CommonPacketFactory.SendWelcome(this, this._sessionId);
         }
 

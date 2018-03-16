@@ -7,12 +7,14 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
 using Rhisis.World.Game;
+using Rhisis.World.Game.Entities;
 using Rhisis.World.ISC;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World
 {
-    public sealed partial class WorldServer : NetServer<WorldClient>
+    public sealed partial class WorldServer : NetServer<WorldClient>, IWorldServer
     {
         private static readonly string WorldConfigFile = "config/world.json";
         private static readonly string DatabaseConfigFile = "config/database.json";
@@ -73,7 +75,7 @@ namespace Rhisis.World
         /// <param name="connection"></param>
         protected override void OnClientConnected(WorldClient connection)
         {
-            connection.InitializeClient();
+            connection.InitializeClient(this);
 
             Logger.Info("New client connected: {0}", connection.Id);
         }
@@ -109,6 +111,13 @@ namespace Rhisis.World
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+        }
+
+        public IPlayerEntity GetPlayerEntity(int id)
+        {
+            WorldClient client =  this.Clients.FirstOrDefault(x => x.Player.Id == id);
+
+            return client?.Player;
         }
 
         /// <summary>
