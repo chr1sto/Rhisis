@@ -6,7 +6,6 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ using System.Linq.Expressions;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Events.Inventory;
+using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Systems
 {
@@ -92,16 +92,8 @@ namespace Rhisis.World.Systems
             if (args.Length < 0)
                 throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
 
-            player.InventoryComponent = new ItemContainerComponent();
-            var inventory = player.InventoryComponent;
-
-            for (var i = 0; i < MaxItems; ++i)
-            {
-                inventory.Items[i] = new Item
-                {
-                    UniqueId = i
-                };
-            }
+            player.Inventory = new ItemContainerComponent(MaxItems);
+            ItemContainerComponent inventory = player.Inventory;
 
             if (args[0] is IEnumerable<Database.Structures.Item> dbItems && dbItems.Any())
             {
@@ -137,7 +129,7 @@ namespace Rhisis.World.Systems
 
             int sourceSlot = Convert.ToInt32(args[0]);
             int destinationSlot = Convert.ToInt32(args[1]);
-            List<Item> items = player.InventoryComponent.Items;
+            List<Item> items = player.Inventory.Items;
 
             if (sourceSlot < 0 || sourceSlot >= MaxItems || destinationSlot < 0 || destinationSlot >= MaxItems)
                 return;
@@ -196,7 +188,7 @@ namespace Rhisis.World.Systems
                 return;
             }
 
-            Item item = player.InventoryComponent.GetItem(uniqueId);
+            Item item = player.Inventory.GetItem(uniqueId);
 
             if (item == null)
                 return;
@@ -228,7 +220,7 @@ namespace Rhisis.World.Systems
 
                 int sourceSlot = item.Slot;
                 int equipedItemSlot = item.Data.Parts + EquipOffset;
-                Item equipedItem = player.InventoryComponent.GetItemBySlot(equipedItemSlot);
+                Item equipedItem = player.Inventory.GetItemBySlot(equipedItemSlot);
                 
                 if (equipedItem != null && equipedItem.Slot != -1)
                 {
@@ -237,7 +229,7 @@ namespace Rhisis.World.Systems
 
                 // Move item
                 item.Slot = equipedItemSlot;
-                player.InventoryComponent.Items.Swap(sourceSlot, equipedItemSlot);
+                player.Inventory.Items.Swap(sourceSlot, equipedItemSlot);
 
                 WorldPacketFactory.SendItemEquip(player, item, item.Data.Parts, true);
             }
@@ -270,7 +262,7 @@ namespace Rhisis.World.Systems
                 int parts = Math.Abs(sourceSlot - EquipOffset);
 
                 item.Slot = availableSlot;
-                player.InventoryComponent.Items.Swap(sourceSlot, availableSlot);
+                player.Inventory.Items.Swap(sourceSlot, availableSlot);
 
                 WorldPacketFactory.SendItemEquip(player, item, parts, false);
             }
@@ -307,10 +299,10 @@ namespace Rhisis.World.Systems
                     var newItem = new Item(eventArgs.ItemId, 1, eventArgs.CreatorId)
                     {
                         Slot = availableSlot,
-                        UniqueId = player.InventoryComponent.Items[availableSlot].UniqueId
+                        UniqueId = player.Inventory.Items[availableSlot].UniqueId
                     };
 
-                    player.InventoryComponent.Items[availableSlot] = newItem;
+                    player.Inventory.Items[availableSlot] = newItem;
                     WorldPacketFactory.SendItemCreation(player, newItem);
                 }
             }
@@ -320,7 +312,7 @@ namespace Rhisis.World.Systems
         {
             for (var i = 0; i < EquipOffset; i++)
             {
-                if (player.InventoryComponent.Items[i] != null && player.InventoryComponent.Items[i].Id == -1)
+                if (player.Inventory.Items[i] != null && player.Inventory.Items[i].Id == -1)
                 {
                     return i;
                 }

@@ -15,7 +15,7 @@ namespace Rhisis.World.Game.Entities
 
         public MovableComponent MovableComponent { get; set; }
 
-        public ItemContainerComponent InventoryComponent { get; set; }
+        public ItemContainerComponent Inventory { get; set; }
 
         public StatisticsComponent StatisticsComponent { get; set; }
 

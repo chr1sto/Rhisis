@@ -2,6 +2,7 @@
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
+using Rhisis.World.Systems.NpcShop;
 
 namespace Rhisis.World.Handlers
 {
@@ -12,8 +13,7 @@ namespace Rhisis.World.Handlers
         {
             var openShopPacket = new OpenShopWindowPacket(packet);
 
-            // TODO: Get the correct NPC from the global context
-            // TODO: Send NPC shop to client
+            client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, new NpcShopOpenEventArgs(openShopPacket.ObjectId));
         }
     }
 }

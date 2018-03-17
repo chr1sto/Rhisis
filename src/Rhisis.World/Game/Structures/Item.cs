@@ -7,17 +7,12 @@ namespace Rhisis.World.Game.Structures
     /// <summary>
     /// FlyFF item structure.
     /// </summary>
-    public class Item
+    public class Item : ItemBase
     {
         /// <summary>
         /// Flyff item refine table.
         /// </summary>
         public static readonly IReadOnlyCollection<int> RefineTable = new[] { 0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24 };
-
-        /// <summary>
-        /// Gets the item Id.
-        /// </summary>
-        public int Id { get; }
 
         /// <summary>
         /// Gets the item unique Id.
@@ -38,31 +33,6 @@ namespace Rhisis.World.Game.Structures
         /// Gets the item current slot.
         /// </summary>
         public int Slot { get; set; }
-
-        /// <summary>
-        /// Gets or sets the item refine.
-        /// </summary>
-        public byte Refine { get; set; }
-
-        /// <summary>
-        /// Gets or sets the item element. (Fire, water, electricity, etc...)
-        /// </summary>
-        public byte Element { get; set; }
-
-        /// <summary>
-        /// Gets or sets the item element refine.
-        /// </summary>
-        public byte ElementRefine { get; set; }
-
-        /// <summary>
-        /// Gets the items refine options.
-        /// </summary>
-        public int Refines => Refine & Element & ElementRefine;
-
-        /// <summary>
-        /// Gets the item data informations.
-        /// </summary>
-        public ItemData Data { get; }
 
         /// <summary>
         /// Creates an empty <see cref="Item"/>.

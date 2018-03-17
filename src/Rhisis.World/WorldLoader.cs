@@ -1,18 +1,17 @@
-﻿using Rhisis.Core.IO;
+﻿using Newtonsoft.Json.Linq;
+using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
+using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Systems;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Rhisis.World.Game.Chat;
-using Rhisis.World.Systems;
-using Rhisis.Core.Resources.Include;
-using Newtonsoft.Json.Linq;
 
 namespace Rhisis.World
 {
@@ -281,6 +280,7 @@ namespace Rhisis.World
         {
             Defines.Clear();
             Texts.Clear();
+            ShopData.Clear();
         }
     }
 }

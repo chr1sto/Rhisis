@@ -10,6 +10,11 @@ namespace Rhisis.Core.Structures.Game
     public class ShopData
     {
         /// <summary>
+        /// Gets the default shop tab count.
+        /// </summary>
+        public const int DefaultTabCount = 4;
+
+        /// <summary>
         /// Gets or sets the shop name.
         /// </summary>
         [DataMember(Name = "name")]
@@ -19,16 +24,21 @@ namespace Rhisis.Core.Structures.Game
         /// Gets or sets the shop items.
         /// </summary>
         [DataMember(Name = "items")]
-        public List<ShopItemData>[] Items { get; set; }
+        public List<ItemBase>[] Items { get; set; }
 
-        public ShopData(string shopName, int shopTabs = 4)
+        /// <summary>
+        /// Creates a new <see cref="ShopData"/> instance.
+        /// </summary>
+        /// <param name="shopName">Npc shop name</param>
+        /// <param name="shopTabs">Npc shop tabs data</param>
+        public ShopData(string shopName, int shopTabs = DefaultTabCount)
         {
             this.Name = shopName;
-            this.Items = new List<ShopItemData>[shopTabs];
+            this.Items = new List<ItemBase>[shopTabs];
 
             for (var i = 0; i < shopTabs; i++)
             {
-                this.Items[i] = new List<ShopItemData>();
+                this.Items[i] = new List<ItemBase>();
             }
         }
     }
