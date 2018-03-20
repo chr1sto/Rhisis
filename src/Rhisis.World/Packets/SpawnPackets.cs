@@ -92,7 +92,7 @@ namespace Rhisis.World.Packets
                 packet.Write(-1); // titles
                 
                 // Serialize visible effects
-                IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                IEnumerable<Item> equipedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
                 foreach (var item in equipedItems)
                     packet.Write(item.Refines);
@@ -159,25 +159,7 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // ar << m_nAngelLevel
 
                 // Serialize Inventory
-                IList<Item> items = player.InventoryComponent.Items;
-
-                for (int i = 0; i < InventorySystem.MaxItems; ++i)
-                    packet.Write(items[i].UniqueId);
-
-                packet.Write((byte)items.Count(x => x.Id != -1));
-
-                for (int i = 0; i < InventorySystem.MaxItems; ++i)
-                {
-                    if (items[i].Id > 0)
-                    {
-                        packet.Write((byte)items[i].UniqueId);
-                        packet.Write(items[i].UniqueId);
-                        items[i].Serialize(packet);
-                    }
-                }
-
-                for (int i = 0; i < InventorySystem.MaxItems; ++i)
-                    packet.Write(items[i].UniqueId);
+                player.Inventory.Serialize(packet);
 
                 // Bank
                 for (int i = 0; i < 3; ++i)
@@ -298,7 +280,7 @@ namespace Rhisis.World.Packets
                     packet.Write(-1); // titles
                     
                     // Serialize visible effects
-                    IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                    IEnumerable<Item> equipedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
                     foreach (var item in equipedItems)
                         packet.Write(item.Refines);

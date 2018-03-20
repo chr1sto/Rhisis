@@ -1,12 +1,18 @@
-﻿using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems;
+﻿using Ether.Network.Packets;
+using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Core.IO;
 
 namespace Rhisis.World.Game.Components
 {
     public class ItemContainerComponent
     {
+        /// <summary>
+        /// Gets the <see cref="ItemContainerComponent"/> max capacity.
+        /// </summary>
+        public int MaxCapacity { get; }
+
         /// <summary>
         /// Gets the list of items in this <see cref="ItemContainerComponent"/>.
         /// </summary>
@@ -15,9 +21,18 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Creates a new <see cref="ItemContainerComponent"/> instance.
         /// </summary>
-        public ItemContainerComponent()
+        public ItemContainerComponent(int maxCapacity)
         {
-            this.Items = new List<Item>(new Item[InventorySystem.MaxItems]);
+            this.MaxCapacity = maxCapacity;
+            this.Items = new List<Item>(new Item[this.MaxCapacity]);
+
+            for (var i = 0; i < this.MaxCapacity; i++)
+            {
+                this.Items[i] = new Item
+                {
+                    UniqueId = i
+                };
+            }
         }
 
         /// <summary>
@@ -54,5 +69,30 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <returns></returns>
         public bool HasAvailableSlots() => this.GetAvailableSlot() != -1;
+
+        /// <summary>
+        /// Serialize the ItemContainer.
+        /// </summary>
+        /// <param name="packet"></param>
+        public void Serialize(NetPacketBase packet)
+        {
+            for (var i = 0; i < this.MaxCapacity; ++i)
+                packet.Write(this.Items[i].UniqueId);
+
+            packet.Write((byte)this.Items.Count(x => x.Id != -1));
+
+            for (var i = 0; i < this.MaxCapacity; ++i)
+            {
+                if (this.Items[i].Id > 0)
+                {
+                    packet.Write((byte)this.Items[i].UniqueId);
+                    packet.Write(this.Items[i].UniqueId);
+                    this.Items[i].Serialize(packet);
+                }
+            }
+
+            for (var i = 0; i < this.MaxCapacity; ++i)
+                packet.Write(this.Items[i].UniqueId);
+        }
     }
 }

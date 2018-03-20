@@ -124,7 +124,7 @@ namespace Rhisis.World
                     for (int i = character.Items.Count - 1; i > 0; i--)
                     {
                         var dbItem = character.Items.ElementAt(i);
-                        var inventoryItem = this.Player.InventoryComponent.GetItemBySlot(dbItem.ItemSlot);
+                        var inventoryItem = this.Player.Inventory.GetItemBySlot(dbItem.ItemSlot);
 
                         if (inventoryItem != null && inventoryItem.Id == -1)
                             character.Items.Remove(dbItem);
@@ -132,7 +132,7 @@ namespace Rhisis.World
                     }
 
                     // Add or update items
-                    foreach (var item in this.Player.InventoryComponent.Items)
+                    foreach (var item in this.Player.Inventory.Items)
                     {
                         if (item.Id != -1)
                         {

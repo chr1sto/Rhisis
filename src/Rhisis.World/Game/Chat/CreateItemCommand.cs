@@ -22,7 +22,7 @@ namespace Rhisis.World.Game.Chat
                 return;
             }
 
-            if (!player.InventoryComponent.HasAvailableSlots())
+            if (!player.Inventory.HasAvailableSlots())
             {
                 // TODO: send message to tell there is no available slots
                 return;

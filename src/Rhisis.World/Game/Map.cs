@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Game
 {
@@ -88,23 +90,8 @@ namespace Rhisis.World.Game
             {
                 IEnumerable<NpcDyoElement> npcElements = dyoFile.GetElements<NpcDyoElement>();
 
-                foreach (var element in npcElements)
-                {
-                    var npc = map.Context.CreateEntity<NpcEntity>();
-
-                    npc.ObjectComponent = new ObjectComponent
-                    {
-                        MapId = map.Id,
-                        ModelId = element.Index,
-                        Name = element.Name,
-                        Angle = element.Angle,
-                        Type = WorldObjectType.Mover,
-                        Position = element.Position.Clone(),
-                        Size = (short)(DefaultMoverSize * element.Scale.X),
-                        Spawned = true,
-                        Level = 1
-                    };
-                }
+                foreach (NpcDyoElement element in npcElements)
+                    CreateNpc(map, element);
             }
 
             // Load monsters
@@ -144,6 +131,49 @@ namespace Rhisis.World.Game
             // TODO: load revival zones
 
             return map;
+        }
+
+        /// <summary>
+        /// Creates and initializes a new NPC.
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="element"></param>
+        private static void CreateNpc(Map map, NpcDyoElement element)
+        {
+            var npc = map.Context.CreateEntity<NpcEntity>();
+
+            npc.ObjectComponent = new ObjectComponent
+            {
+                MapId = map.Id,
+                ModelId = element.Index,
+                Name = element.Name,
+                Angle = element.Angle,
+                Type = WorldObjectType.Mover,
+                Position = element.Position.Clone(),
+                Size = (short)(DefaultMoverSize * element.Scale.X),
+                Spawned = true,
+                Level = 1
+            };
+
+            if (WorldServer.Npcs.TryGetValue(npc.ObjectComponent.Name, out NpcData npcData))
+            {
+                if (npcData.HasShop)
+                {
+                    npc.Shop = new ItemContainerComponent[npcData.Shop.Items.Length];
+
+                    for (int i = 0; i < npcData.Shop.Items.Length; i++)
+                    {
+                        npc.Shop[i] = new ItemContainerComponent(100);
+
+                        for (int j = 0; j < npcData.Shop.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
+                        {
+                            ItemBase item = npcData.Shop.Items[i][j];
+
+                            npc.Shop[i].Items[j] = new Item(item.Id, WorldServer.Items[item.Id].PackMax, -1, j, j, item.Refine, item.Element, item.ElementRefine);
+                        }
+                    }
+                }
+            }
         }
     }
 }
