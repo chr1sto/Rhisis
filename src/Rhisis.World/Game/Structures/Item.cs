@@ -1,4 +1,5 @@
-﻿using Ether.Network.Packets;
+﻿using System;
+using Ether.Network.Packets;
 using Rhisis.Core.Structures.Game;
 using System.Collections.Generic;
 
@@ -162,7 +163,7 @@ namespace Rhisis.World.Game.Structures
         {
             packet.Write(this.Id);
             packet.Write(0); // Serial number
-            packet.Write(this.Data.Name);
+            packet.Write(this.Data.Name.Substring(0, this.Data.Name.Length > 31 ? 31 : this.Data.Name.Length));
             packet.Write((short)this.Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp

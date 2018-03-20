@@ -2,6 +2,7 @@
 using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Core.IO;
 
 namespace Rhisis.World.Game.Components
 {
