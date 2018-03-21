@@ -1,18 +1,13 @@
-﻿using System;
+﻿using Rhisis.World.Game.Core;
 
-namespace Rhisis.World.Systems.Events.Inventory
+namespace Rhisis.World.Systems.Inventory
 {
-    public class InventoryEventArgs : EventArgs
+    public class InventoryEventArgs : SystemEventArgs
     {
         /// <summary>
         /// Gets the <see cref="InventoryEventArgs"/> action type to execute.
         /// </summary>
         public InventoryActionType ActionType { get; }
-        
-        /// <summary>
-        /// Gets the <see cref="InventoryEventArgs"/> optional arguments.
-        /// </summary>
-        public object[] Arguments { get; }
 
         /// <summary>
         /// Creates a new <see cref="InventoryEventArgs"/> instance.
@@ -20,9 +15,12 @@ namespace Rhisis.World.Systems.Events.Inventory
         /// <param name="type">Action type to execute</param>
         /// <param name="args">Optional arguments</param>
         public InventoryEventArgs(InventoryActionType type, params object[] args)
+            : base(args)
         {
             this.ActionType = type;
-            this.Arguments = args;
         }
+
+        /// <inheritdoc />
+        public override bool CheckArguments() => true;
     }
 }

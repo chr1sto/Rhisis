@@ -42,7 +42,7 @@ namespace Rhisis.World.Game.Core.Interfaces
         /// </summary>
         /// <param name="id">Entity id</param>
         /// <returns>The found entity</returns>
-        IEntity FindEntity(int id);
+        T FindEntity<T>(int id) where T : IEntity;
 
         /// <summary>
         /// Starts the context update.
@@ -73,6 +73,6 @@ namespace Rhisis.World.Game.Core.Interfaces
         /// <typeparam name="T">System type</typeparam>
         /// <param name="entity">Entity</param>
         /// <param name="e">Arguments</param>
-        void NotifySystem<T>(IEntity entity, EventArgs e) where T : class, INotifiableSystem;
+        void NotifySystem<T>(IEntity entity, SystemEventArgs e) where T : class, INotifiableSystem;
     }
 }

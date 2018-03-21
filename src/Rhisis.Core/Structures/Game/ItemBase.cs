@@ -6,6 +6,11 @@ namespace Rhisis.Core.Structures.Game
     public class ItemBase
     {
         /// <summary>
+        /// Gets the item database id.
+        /// </summary>
+        public int DbId { get; protected set; }
+
+        /// <summary>
         /// Gets the item Id.
         /// </summary>
         [DataMember(Name = "itemId")]

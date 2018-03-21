@@ -6,7 +6,7 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Core.Interfaces;
-using Rhisis.World.Systems;
+using Rhisis.World.Systems.Chat;
 using System;
 using System.Collections.Generic;
 using System.IO;

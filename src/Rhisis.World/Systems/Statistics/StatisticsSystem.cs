@@ -7,30 +7,26 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Events.Statistics;
 
-namespace Rhisis.World.Systems
+namespace Rhisis.World.Systems.Statistics
 {
     [System]
     public class StatisticsSystem : NotifiableSystemBase
     {
-
-        /// <summary>
-        /// Gets the <see cref="InventorySystem"/> match filter.
-        /// </summary>
+        /// <inheritdoc />
         protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
 
+        /// <summary>
+        /// Creates a new <see cref="StatisticsSystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public StatisticsSystem(IContext context) :
             base(context)
         {
         }
 
-        /// <summary>
-        /// Executes the <see cref="StatisticsSystem"/> logic.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="e"></param>
-        public override void Execute(IEntity entity, EventArgs e)
+        /// <inheritdoc />
+        public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(e is StatisticsEventArgs statisticsEvent))
                 return;
