@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Rhisis.World.Game.Core;
 
-namespace Rhisis.World.Systems.Events.Statistics
+namespace Rhisis.World.Systems.Statistics
 {
-    public class StatisticsEventArgs : EventArgs
+    public class StatisticsEventArgs : SystemEventArgs
     {
         /// <summary>
         /// Gets the <see cref="StatisticsActionType"/> action type to execute.
@@ -20,9 +20,17 @@ namespace Rhisis.World.Systems.Events.Statistics
         /// <param name="type">Action type to execute</param>
         /// <param name="args">Optional arguments</param>
         public StatisticsEventArgs(StatisticsActionType type, params object[] args)
+            : base(args)
         {
             this.ActionType = type;
             this.Arguments = args;
+        }
+
+        /// <inheritdoc />
+        public override bool CheckArguments()
+        {
+            // TODO
+            return true;
         }
     }
 }

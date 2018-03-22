@@ -7,6 +7,11 @@ namespace Rhisis.World.Game.Core
         private readonly object[] _arguments;
 
         /// <summary>
+        /// Gets the number of arguments.
+        /// </summary>
+        public int ArgumentCount => this._arguments.Length;
+
+        /// <summary>
         /// Creates a new <see cref="SystemEventArgs"/> instance.
         /// </summary>
         /// <param name="args">System arguments</param>
@@ -27,7 +32,7 @@ namespace Rhisis.World.Game.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected T GetArgument<T>(int index)
+        public T GetArgument<T>(int index)
         {
             if (index < 0 || index >= this._arguments.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));

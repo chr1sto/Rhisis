@@ -2,8 +2,7 @@
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
-using Rhisis.World.Systems;
-using Rhisis.World.Systems.Events;
+using Rhisis.World.Systems.Chat;
 
 namespace Rhisis.World.Handlers
 {

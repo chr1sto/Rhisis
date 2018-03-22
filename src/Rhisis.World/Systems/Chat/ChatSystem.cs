@@ -6,7 +6,6 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace Rhisis.World.Systems
+namespace Rhisis.World.Systems.Chat
 {
     [System]
     public class ChatSystem : NotifiableSystemBase
@@ -40,7 +39,7 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="e"></param>
-        public override void Execute(IEntity entity, EventArgs e)
+        public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(e is ChatEventArgs chatEvent) || !(entity is IPlayerEntity player))
                 return;

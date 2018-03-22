@@ -1,7 +1,6 @@
-﻿using System;
-using Rhisis.World.Game.Core;
+﻿using Rhisis.World.Game.Core;
 
-namespace Rhisis.World.Systems.Events
+namespace Rhisis.World.Systems.Chat
 {
     public sealed class ChatEventArgs : SystemEventArgs
     {

@@ -15,6 +15,6 @@ namespace Rhisis.World.Game.Core.Interfaces
         /// </summary>
         /// <param name="entity">Entity</param>
         /// <param name="e">Arguments</param>
-        void Execute(IEntity entity, EventArgs e);
+        void Execute(IEntity entity, SystemEventArgs e);
     }
 }

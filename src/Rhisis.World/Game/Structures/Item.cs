@@ -1,5 +1,4 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Ether.Network.Packets;
 using Rhisis.Core.Structures.Game;
 using System.Collections.Generic;
 
@@ -153,6 +152,16 @@ namespace Rhisis.World.Game.Structures
             this.Element = element;
             this.ElementRefine = elementRefine;
             this.Data = WorldServer.Items.ContainsKey(this.Id) ? WorldServer.Items[this.Id] : null;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Item"/> based on a database item.
+        /// </summary>
+        /// <param name="dbItem">Database item</param>
+        public Item(Database.Structures.Item dbItem)
+            : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine, dbItem.Element, dbItem.ElementRefine)
+        {
+            this.DbId = dbItem.Id;   
         }
 
         /// <summary>

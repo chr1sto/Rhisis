@@ -12,9 +12,9 @@ namespace Rhisis.World.Game.Core
     /// <summary>
     /// Implementation of a context.
     /// </summary>
-    public class Context : IContext, IDisposable
+    public class Context : IContext
     {
-        private static readonly object _syncPlayersLock = new object();
+        private static readonly object SyncPlayersLock = new object();
 
         private bool _disposedValue;
 
@@ -24,19 +24,13 @@ namespace Rhisis.World.Game.Core
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        /// <summary>
-        /// Gets the context update time.
-        /// </summary>
+        /// <inheritdoc />
         public double Time { get; private set; }
 
-        /// <summary>
-        /// Gets a read-only collection of the systems of this context.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyList<ISystem> Systems => this._systems as IReadOnlyList<ISystem>;
 
-        /// <summary>
-        /// Gets a read-only collection of the entities of this context.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyList<IEntity> Entities => this._entities.Values as IReadOnlyList<IEntity>;
 
         /// <summary>
@@ -51,20 +45,19 @@ namespace Rhisis.World.Game.Core
             this._cancellationToken = this._cancellationTokenSource.Token;
         }
 
-        /// <summary>
-        /// Creates a new entity.
-        /// </summary>
-        /// <typeparam name="TEntity">Entity concrete type.</typeparam>
-        /// <returns>New entity</returns>
+        /// <inheritdoc />
         public TEntity CreateEntity<TEntity>() where TEntity : class, IEntity
         {
             var entity = Activator.CreateInstance(typeof(TEntity), this) as IEntity;
+
+            if (entity == null)
+                return null;
 
             this._entities.Add(entity.Id, entity);
 
             if (entity.Type == WorldEntityType.Player)
             {
-                lock (_syncPlayersLock)
+                lock (SyncPlayersLock)
                 {
                     this._playersEntities.Add(entity);
                 }
@@ -73,18 +66,14 @@ namespace Rhisis.World.Game.Core
             return (TEntity)entity;
         }
 
-        /// <summary>
-        /// Deletes an entity.
-        /// </summary>
-        /// <param name="entity">Entity to delete</param>
-        /// <returns>Deleted state</returns>
+        /// <inheritdoc />
         public bool DeleteEntity(IEntity entity)
         {
             bool removed = this._entities.Remove(entity.Id);
 
             if (entity.Type == WorldEntityType.Player)
             {
-                lock (_syncPlayersLock)
+                lock (SyncPlayersLock)
                 {
                     removed = this._playersEntities.Remove(entity);
                 }
@@ -93,23 +82,14 @@ namespace Rhisis.World.Game.Core
             return removed;
         }
 
-        /// <summary>
-        /// Finds an entity by his id.
-        /// </summary>
-        /// <param name="id">Entity id</param>
-        /// <returns>The found entity</returns>
-        public IEntity FindEntity(int id) => this._entities.TryGetValue(id, out IEntity value) ? value : null;
+        /// <inheritdoc />
+        public T FindEntity<T>(int id) where T : IEntity => this._entities.TryGetValue(id, out IEntity value) ? (T)value : default(T);
 
-        /// <summary>
-        /// Starts the context update.
-        /// </summary>
-        /// <param name="delay"></param>
+        /// <inheritdoc />
         public void StartSystemUpdate(int delay)
         {
             Task.Run(async () =>
             {
-                double deltaTime = 0f;
-                double currentTime = 0f;
                 double previousTime = 0f;
 
                 while (true)
@@ -117,15 +97,15 @@ namespace Rhisis.World.Game.Core
                     if (this._cancellationToken.IsCancellationRequested)
                         break;
 
-                    currentTime = Rhisis.Core.IO.Time.TimeInMilliseconds();
-                    deltaTime = currentTime - previousTime;
+                    double currentTime = Rhisis.Core.IO.Time.TimeInMilliseconds();
+                    double deltaTime = currentTime - previousTime;
                     previousTime = currentTime;
 
                     this.Time = deltaTime / 1000f;
 
                     try
                     {
-                        lock (_syncPlayersLock)
+                        lock (SyncPlayersLock)
                         {
                             foreach (var entity in this._playersEntities)
                             {
@@ -143,47 +123,31 @@ namespace Rhisis.World.Game.Core
                         Logger.Debug(e.StackTrace);
                     }
 
-                    await Task.Delay(delay).ConfigureAwait(false);
+                    await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }
 
-        /// <summary>
-        /// Stops the context update.
-        /// </summary>
+        /// <inheritdoc />
         public void StopSystemUpdate()
         {
             this._cancellationTokenSource.Cancel();
         }
 
-        /// <summary>
-        /// Adds a new system to the context.
-        /// </summary>
-        /// <param name="system">System</param>
+        /// <inheritdoc />
         public void AddSystem(ISystem system) => this._systems.Add(system);
 
-        /// <summary>
-        /// Removes a system from the context.
-        /// </summary>
-        /// <param name="system"></param>
+        /// <inheritdoc />
         public void RemoveSystem(ISystem system) => this._systems.Remove(system);
 
-        /// <summary>
-        /// Notify a system of this context to be executed.
-        /// </summary>
-        /// <typeparam name="T">System type</typeparam>
-        /// <param name="entity">Entity</param>
-        /// <param name="e">Arguments</param>
-        public void NotifySystem<T>(IEntity entity, EventArgs e) where T : class, INotifiableSystem
+        /// <inheritdoc />
+        public void NotifySystem<T>(IEntity entity, SystemEventArgs e) where T : class, INotifiableSystem
         {
             if (this._systems.FirstOrDefault(x => x.GetType() == typeof(T)) is INotifiableSystem system && system.Match(entity))
                 system.Execute(entity, e);
         }
 
-        /// <summary>
-        /// Dispose the resources of this context.
-        /// </summary>
-        /// <param name="disposing"></param>
+        /// <inheritdoc />
         protected virtual void Dispose(bool disposing)
         {
             if (!this._disposedValue)
@@ -203,9 +167,7 @@ namespace Rhisis.World.Game.Core
             }
         }
 
-        /// <summary>
-        /// Dispose the resources of this context.
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             this.Dispose(true);

@@ -4,9 +4,9 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Packets
 {

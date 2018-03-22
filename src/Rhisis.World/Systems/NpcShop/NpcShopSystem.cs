@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using Rhisis.Core.IO;
-using Rhisis.Core.Structures.Game;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
@@ -23,7 +22,7 @@ namespace Rhisis.World.Systems.NpcShop
         }
 
         /// <inheritdoc />
-        public override void Execute(IEntity entity, EventArgs e)
+        public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity player) || !(e is NpcShopEventArgs shopEvent))
             {
@@ -57,7 +56,7 @@ namespace Rhisis.World.Systems.NpcShop
         /// <param name="e"></param>
         private void OpenShop(IPlayerEntity player, NpcShopOpenEventArgs e)
         {
-            var npc = player.Context.FindEntity(e.NpcObjectId) as INpcEntity;
+            var npc = player.Context.FindEntity<INpcEntity>(e.NpcObjectId);
 
             if (npc == null)
             {

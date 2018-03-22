@@ -6,8 +6,10 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Database;
+using Rhisis.Database.Structures;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
@@ -94,9 +96,9 @@ namespace Rhisis.World
 
             this.Player.ObjectComponent.Spawned = false;
 
-            using (var db = DatabaseService.GetContext())
+            using (DatabaseContext db = DatabaseService.GetContext())
             {
-                var character = db.Characters.Get(this.Player.PlayerComponent.Id);
+                Character character = db.Characters.Get(this.Player.PlayerComponent.Id);
 
                 if (character != null)
                 {
@@ -128,15 +130,15 @@ namespace Rhisis.World
 
                         if (inventoryItem != null && inventoryItem.Id == -1)
                             character.Items.Remove(dbItem);
-                        
+
                     }
 
                     // Add or update items
-                    foreach (var item in this.Player.Inventory.Items)
+                    foreach (Game.Structures.Item item in this.Player.Inventory.Items)
                     {
                         if (item.Id != -1)
                         {
-                            var dbItem = character.Items.FirstOrDefault(x => x.ItemId == item.Id);
+                            Item dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
 
                             if (dbItem != null)
                             {
@@ -149,7 +151,7 @@ namespace Rhisis.World
                             }
                             else
                             {
-                                dbItem = new Rhisis.Database.Structures.Item
+                                dbItem = new Item
                                 {
                                     CharacterId = this.Player.PlayerComponent.Id,
                                     CreatorId = item.CreatorId,
@@ -177,11 +179,11 @@ namespace Rhisis.World
         /// <param name="currentMap"></param>
         private void DespawnPlayer(Map currentMap)
         {
-            var entitiesAround = from x in currentMap.Context.Entities
-                                 where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange) && x != this.Player
-                                 select x;
+            IEnumerable<IEntity> entitiesAround = from x in currentMap.Context.Entities
+                                                  where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange) && x != this.Player
+                                                  select x;
 
-            foreach (var entity in entitiesAround)
+            foreach (IEntity entity in entitiesAround)
             {
                 if (entity.Type == WorldEntityType.Player)
                 {
