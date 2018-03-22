@@ -8,13 +8,13 @@ namespace Rhisis.World.ISC
     public static class ISCHandler
     {
         [PacketHandler(InterPacketType.Welcome)]
-        public static void OnWelcome(ISCClient client, NetPacketBase packet)
+        public static void OnWelcome(ISCClient client, INetPacketStream packet)
         {
-            ISCPackets.SendAuthentication(client, client.Configuration);
+            ISCPackets.SendAuthentication(client, client.WorldConfiguration);
         }
 
         [PacketHandler(InterPacketType.AuthenticationResult)]
-        public static void OnAuthenticationResult(ISCClient client, NetPacketBase packet)
+        public static void OnAuthenticationResult(ISCClient client, INetPacketStream packet)
         {
             var authenticationResult = packet.Read<uint>();
 

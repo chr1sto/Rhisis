@@ -4,9 +4,9 @@ namespace Rhisis.Cluster
 {
     public static class Program
     {
-        private static readonly string ProgramTitle = "Rhisis - ClusterServer";
+        private const string ProgramTitle = "Rhisis - ClusterServer";
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             Console.Title = ProgramTitle;
 

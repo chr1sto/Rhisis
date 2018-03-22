@@ -32,7 +32,7 @@ namespace Rhisis.Core.Network.Packets.World
         /// Creates a new <see cref="SetDestPositionPacket"/> instance.
         /// </summary>
         /// <param name="packet">Incoming packet</param>
-        public SetDestPositionPacket(NetPacketBase packet)
+        public SetDestPositionPacket(INetPacketStream packet)
         {
             this.X = packet.Read<float>();
             this.Y = packet.Read<float>();

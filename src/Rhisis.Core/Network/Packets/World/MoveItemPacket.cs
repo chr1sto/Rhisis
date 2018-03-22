@@ -27,7 +27,7 @@ namespace Rhisis.Core.Network.Packets.World
         /// Creates a new <see cref="MoveItemPacket"/> instance.
         /// </summary>
         /// <param name="packet"></param>
-        public MoveItemPacket(NetPacketBase packet)
+        public MoveItemPacket(INetPacketStream packet)
         {
             this.ItemType = packet.Read<byte>();
             this.SourceSlot = packet.Read<byte>();

@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Packets;
@@ -14,7 +14,7 @@ namespace Rhisis.Cluster.ISC
         /// <param name="id">Server Id</param>
         /// <param name="host">Server Host</param>
         /// <param name="name">Server name</param>
-        public static void SendAuthentication(INetClient client, int id, string host, string name)
+        public static void SendAuthentication(INetUser client, int id, string host, string name)
         {
             using (var packet = new NetPacket())
             {

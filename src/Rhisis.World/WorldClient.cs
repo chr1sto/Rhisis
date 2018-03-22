@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Rhisis.World
 {
-    public sealed class WorldClient : NetConnection
+    public sealed class WorldClient : NetUser
     {
         private readonly uint _sessionId;
 
@@ -27,7 +27,10 @@ namespace Rhisis.World
         /// </summary>
         public IPlayerEntity Player { get; set; }
 
-        public IWorldServer Server { get; private set; }
+        /// <summary>
+        /// Gets the world server's instance.
+        /// </summary>
+        public IWorldServer WorldServer { get; private set; }
 
         /// <summary>
         /// Creates a new <see cref="WorldClient"/> instance.
@@ -42,24 +45,14 @@ namespace Rhisis.World
         /// </summary>
         public void InitializeClient(IWorldServer server)
         {
-            this.Server = server;
+            this.WorldServer = server;
             CommonPacketFactory.SendWelcome(this, this._sessionId);
         }
-
-        /// <summary>
-        /// Handles incoming messages.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public override void HandleMessage(NetPacketBase packet)
+        
+        /// <inheritdoc />
+        public override void HandleMessage(INetPacketStream packet)
         {
             var pak = packet as FFPacket;
-            var packetHeader = new PacketHeader(pak);
-
-            if (!FFPacket.VerifyPacketHeader(packetHeader, (int)this._sessionId))
-            {
-                Logger.Warning("Invalid header for packet: {0}", packetHeader.Header);
-                return;
-            }
 
             packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
             var packetHeaderNumber = packet.Read<uint>();
@@ -125,8 +118,8 @@ namespace Rhisis.World
                     // Delete items
                     for (int i = character.Items.Count - 1; i > 0; i--)
                     {
-                        var dbItem = character.Items.ElementAt(i);
-                        var inventoryItem = this.Player.Inventory.GetItemBySlot(dbItem.ItemSlot);
+                        Item dbItem = character.Items.ElementAt(i);
+                        Game.Structures.Item inventoryItem = this.Player.Inventory.GetItemBySlot(dbItem.ItemSlot);
 
                         if (inventoryItem != null && inventoryItem.Id == -1)
                             character.Items.Remove(dbItem);
@@ -198,18 +191,20 @@ namespace Rhisis.World
             currentMap.Context.DeleteEntity(this.Player);
         }
 
-        /// <summary>
-        /// Disposes the <see cref="WorldClient"/> resources.
-        /// </summary>
-        public override void Dispose()
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            if (this.Player != null && WorldServer.Maps.TryGetValue(this.Player.ObjectComponent.MapId, out Map currentMap))
+            if (disposing)
             {
-                this.DespawnPlayer(currentMap);
+                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.ObjectComponent.MapId, out Map currentMap))
+                {
+                    this.DespawnPlayer(currentMap);
+                }
+
+                this.Save();
             }
 
-            this.Save();
-            base.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

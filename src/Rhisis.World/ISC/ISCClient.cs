@@ -1,30 +1,36 @@
-﻿using Ether.Network;
-using System.Collections.Generic;
+﻿using Ether.Network.Client;
 using Ether.Network.Packets;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Core.IO;
-using Rhisis.Core.Network;
 using Rhisis.Core.Exceptions;
+using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Packets;
+using Rhisis.Core.Network;
+using Rhisis.Core.Structures.Configuration;
+using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace Rhisis.World.ISC
 {
     public sealed class ISCClient : NetClient
     {
-        private readonly WorldConfiguration _worldConfiguration;
-
         /// <summary>
         /// Gets the world server's configuration.
         /// </summary>
-        public WorldConfiguration Configuration => this._worldConfiguration;
+        public WorldConfiguration WorldConfiguration { get; }
 
+        /// <summary>
+        /// Creates a new <see cref="ISCClient"/> instance.
+        /// </summary>
+        /// <param name="worldConfiguration"></param>
         public ISCClient(WorldConfiguration worldConfiguration) 
-            : base(worldConfiguration.ISC.Host, worldConfiguration.ISC.Port, 1024)
         {
-            this._worldConfiguration = worldConfiguration;
+            this.WorldConfiguration = worldConfiguration;
+            this.Configuration.Host = this.WorldConfiguration.ISC.Host;
+            this.Configuration.Port = this.WorldConfiguration.ISC.Port;
+            this.Configuration.BufferSize = 1024;
         }
 
-        protected override void HandleMessage(NetPacketBase packet)
+        /// <inheritdoc />
+        public override void HandleMessage(INetPacketStream packet)
         {
             var packetHeaderNumber = packet.Read<uint>();
 
@@ -46,14 +52,22 @@ namespace Rhisis.World.ISC
             }
         }
 
+        /// <inheritdoc />
         protected override void OnConnected()
         {
             // Nothing to do.
         }
 
+        /// <inheritdoc />
         protected override void OnDisconnected()
         {
             Logger.Info("Disconnected from Inter-Server.");
+        }
+
+        /// <inheritdoc />
+        protected override void OnSocketError(SocketError socketError)
+        {
+            Logger.Error("ISC client error: {0}", socketError);
         }
     }
 }

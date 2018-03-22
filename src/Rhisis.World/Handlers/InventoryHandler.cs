@@ -9,7 +9,7 @@ namespace Rhisis.World.Handlers
     public static class InventoryHandler
     {
         [PacketHandler(PacketType.MOVEITEM)]
-        public static void OnMoveItem(WorldClient client, NetPacketBase packet)
+        public static void OnMoveItem(WorldClient client, INetPacketStream packet)
         {
             var moveItemPacket = new MoveItemPacket(packet);
             var inventoryEvent = new InventoryEventArgs(InventoryActionType.MoveItem, moveItemPacket.SourceSlot, moveItemPacket.DestinationSlot);
@@ -18,7 +18,7 @@ namespace Rhisis.World.Handlers
         }
 
         [PacketHandler(PacketType.DOEQUIP)]
-        public static void OnDoEquip(WorldClient client, NetPacketBase packet)
+        public static void OnDoEquip(WorldClient client, INetPacketStream packet)
         {
             var equipItemPacket = new EquipItemPacket(packet);
             var inventoryEvent = new InventoryEventArgs(InventoryActionType.Equip, equipItemPacket.UniqueId, equipItemPacket.Part);

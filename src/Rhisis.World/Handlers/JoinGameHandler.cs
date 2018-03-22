@@ -17,7 +17,7 @@ namespace Rhisis.World.Handlers
     public static class JoinGameHandler
     {
         [PacketHandler(PacketType.JOIN)]
-        public static void OnJoin(WorldClient client, NetPacketBase packet)
+        public static void OnJoin(WorldClient client, INetPacketStream packet)
         {
             var joinPacket = new JoinPacket(packet);
             Character character = null;

@@ -5,9 +5,9 @@ namespace Rhisis.Core.Network.Packets
 {
     public struct PingPacket : IEquatable<PingPacket>
     {
-        public int Time { get; private set; }
+        public int Time { get; }
 
-        public PingPacket(NetPacketBase packet)
+        public PingPacket(INetPacketStream packet)
         {
             this.Time = packet.Read<int>();
         }

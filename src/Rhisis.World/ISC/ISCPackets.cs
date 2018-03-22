@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Client;
 using Ether.Network.Packets;
 using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Packets;

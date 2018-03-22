@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
@@ -19,7 +19,7 @@ namespace Rhisis.World.Game.Entities
 
         public StatisticsComponent StatisticsComponent { get; set; }
 
-        public NetConnection Connection { get; set; }
+        public NetUser Connection { get; set; }
 
         public PlayerEntity(IContext context)
             : base(context)

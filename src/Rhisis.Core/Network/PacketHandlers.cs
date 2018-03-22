@@ -10,7 +10,7 @@ namespace Rhisis.Core.Network
 {
     public static class PacketHandler<T>
     {
-        private static readonly Dictionary<object, Action<T, NetPacketBase>> Handlers = new Dictionary<object, Action<T, NetPacketBase>>();
+        private static readonly Dictionary<object, Action<T, INetPacketStream>> Handlers = new Dictionary<object, Action<T, INetPacketStream>>();
 
         private struct PacketMethodHandler : IEquatable<PacketMethodHandler>
         {
@@ -51,14 +51,14 @@ namespace Rhisis.Core.Network
                     if (parameters.Count() < 2 || parameters.First().ParameterType != typeof(T))
                         continue;
 
-                    var action = methodHandler.Method.CreateDelegate(typeof(Action<T, NetPacketBase>)) as Action<T, NetPacketBase>;
+                    var action = methodHandler.Method.CreateDelegate(typeof(Action<T, INetPacketStream>)) as Action<T, INetPacketStream>;
 
                     Handlers.Add(methodHandler.Attribute.Header, action);
                 }
             }
         }
 
-        public static void Invoke(T invoker, NetPacketBase packet, object packetHeader)
+        public static void Invoke(T invoker, INetPacketStream packet, object packetHeader)
         {
             if (!Handlers.ContainsKey(packetHeader))
                 throw new KeyNotFoundException();

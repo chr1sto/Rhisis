@@ -17,7 +17,7 @@ namespace Rhisis.Core.Network.Packets.World
         /// Creates a new <see cref="OpenShopWindowPacket"/> instance.
         /// </summary>
         /// <param name="packet">Incoming packet</param>
-        public OpenShopWindowPacket(NetPacketBase packet)
+        public OpenShopWindowPacket(INetPacketStream packet)
         {
             this.ObjectId = packet.Read<int>();
         }

@@ -9,13 +9,13 @@ namespace Rhisis.Cluster.ISC
     public static class ISCHandler
     {
         [PacketHandler(InterPacketType.Welcome)]
-        public static void OnWelcome(ISCClient client, NetPacketBase packet)
+        public static void OnWelcome(ISCClient client, INetPacketStream packet)
         {
-            ISCPackets.SendAuthentication(client, client.Configuration.Id, client.Configuration.Host, client.Configuration.Name);
+            ISCPackets.SendAuthentication(client, client.ClusterConfiguration.Id, client.ClusterConfiguration.Host, client.ClusterConfiguration.Name);
         }
 
         [PacketHandler(InterPacketType.AuthenticationResult)]
-        public static void OnAuthenticationResult(ISCClient client, NetPacketBase packet)
+        public static void OnAuthenticationResult(ISCClient client, INetPacketStream packet)
         {
             var authenticationResult = packet.Read<uint>();
 
@@ -23,7 +23,7 @@ namespace Rhisis.Cluster.ISC
         }
 
         [PacketHandler(InterPacketType.UpdateClusterWorldsList)]
-        public static void OnUpdateClusterWorldsList(ISCClient client, NetPacketBase packet)
+        public static void OnUpdateClusterWorldsList(ISCClient client, INetPacketStream packet)
         {
             client.Worlds.Clear();
             var worldsCount = packet.Read<int>();
@@ -35,7 +35,7 @@ namespace Rhisis.Cluster.ISC
                 var worldName = packet.Read<string>();
                 var worldParentClusterId = packet.Read<int>();
 
-                if (worldParentClusterId != client.Configuration.Id)
+                if (worldParentClusterId != client.ClusterConfiguration.Id)
                     continue;
 
                 client.Worlds.Add(new WorldServerInfo(worldId, worldHost, worldName, worldParentClusterId));

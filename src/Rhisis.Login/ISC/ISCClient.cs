@@ -1,5 +1,4 @@
-﻿using Ether.Network;
-using Ether.Network.Packets;
+﻿using Ether.Network.Common;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.IO;
 using Rhisis.Core.ISC;
@@ -7,12 +6,12 @@ using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Login.ISC.Packets;
-using System;
 using System.Collections.Generic;
+using Ether.Network.Packets;
 
 namespace Rhisis.Login.ISC
 {
-    public sealed class ISCClient : NetConnection
+    public sealed class ISCClient : NetUser
     {
         private ISCServer _server;
         
@@ -20,7 +19,7 @@ namespace Rhisis.Login.ISC
 
         public BaseServerInfo ServerInfo { get; internal set; }
 
-        public ISCServer Server => this._server;
+        public ISCServer IcsServer => this._server;
 
         public void Initialize(ISCServer server)
         {
@@ -28,7 +27,7 @@ namespace Rhisis.Login.ISC
             PacketFactory.SendWelcome(this);
         }
 
-        public override void HandleMessage(NetPacketBase packet)
+        public override void HandleMessage(INetPacketStream packet)
         {
             var packetHeaderNumber = packet.Read<uint>();
 

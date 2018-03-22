@@ -9,7 +9,7 @@ namespace Rhisis.World.Handlers
     public static class ChatHandler
     {
         [PacketHandler(PacketType.CHAT)]
-        public static void OnChat(WorldClient client, NetPacketBase packet)
+        public static void OnChat(WorldClient client, INetPacketStream packet)
         {
             var chatPacket = new ChatPacket(packet);
             var chatEvent = new ChatEventArgs(chatPacket.Message);

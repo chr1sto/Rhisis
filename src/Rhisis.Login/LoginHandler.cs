@@ -13,7 +13,7 @@ namespace Rhisis.Login
     public static class LoginHandler
     {
         [PacketHandler(PacketType.PING)]
-        public static void OnPing(LoginClient client, NetPacketBase packet)
+        public static void OnPing(LoginClient client, INetPacketStream packet)
         {
             var pingPacket = new PingPacket(packet);
 
@@ -21,7 +21,7 @@ namespace Rhisis.Login
         }
 
         [PacketHandler(PacketType.CERTIFY)]
-        public static void OnLogin(LoginClient client, NetPacketBase packet)
+        public static void OnLogin(LoginClient client, INetPacketStream packet)
         {
             var certify = new CertifyPacket(packet, client.Configuration.PasswordEncryption, client.Configuration.EncryptionKey);
 
@@ -33,7 +33,7 @@ namespace Rhisis.Login
                 return;
             }
 
-            using (var db = DatabaseService.GetContext())
+            using (DatabaseContext db = DatabaseService.GetContext())
             {
                 User user = db.Users.Get(x => x.Username.Equals(certify.Username, StringComparison.OrdinalIgnoreCase));
 
@@ -52,7 +52,7 @@ namespace Rhisis.Login
                     client.Disconnect();
                     return;
                 }
-                Logger.Info(certify.Username);
+
                 LoginPacketFactory.SendServerList(client, certify.Username, client.ClustersConnected);
             }
         }

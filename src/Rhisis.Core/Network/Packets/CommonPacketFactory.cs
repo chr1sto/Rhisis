@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 
 namespace Rhisis.Core.Network.Packets
 {
@@ -12,7 +12,7 @@ namespace Rhisis.Core.Network.Packets
         /// </summary>
         /// <param name="client">Client</param>
         /// <param name="sessionId">Session id</param>
-        public static void SendWelcome(NetConnection client, uint sessionId)
+        public static void SendWelcome(INetUser client, uint sessionId)
         {
             using (var packet = new FFPacket())
             {
@@ -28,7 +28,7 @@ namespace Rhisis.Core.Network.Packets
         /// </summary>
         /// <param name="client">Client</param>
         /// <param name="time">Current time</param>
-        public static void SendPong(NetConnection client, int time)
+        public static void SendPong(INetUser client, int time)
         {
             using (var packet = new FFPacket())
             {

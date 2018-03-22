@@ -5,15 +5,15 @@ namespace Rhisis.Core.Network.Packets.Cluster
 {
     public struct PreJoinPacket : IEquatable<PreJoinPacket>
     {
-        public string Username { get; private set; }
+        public string Username { get; }
 
-        public int CharacterId { get; private set; }
+        public int CharacterId { get; }
 
-        public string CharacterName { get; private set; }
+        public string CharacterName { get; }
 
-        public int BankCode { get; private set; }
+        public int BankCode { get; }
 
-        public PreJoinPacket(NetPacketBase packet)
+        public PreJoinPacket(INetPacketStream packet)
         {
             this.Username = packet.Read<string>();
             this.CharacterId = packet.Read<int>();
