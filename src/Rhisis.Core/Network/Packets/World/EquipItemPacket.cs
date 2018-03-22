@@ -19,7 +19,7 @@ namespace Rhisis.Core.Network.Packets.World
         /// Creates a new <see cref="EquipItemPacket"/> instance.
         /// </summary>
         /// <param name="packet"></param>
-        public EquipItemPacket(NetPacketBase packet)
+        public EquipItemPacket(INetPacketStream packet)
         {
             this.UniqueId = packet.Read<int>();
             this.Part = packet.Read<int>();

@@ -12,7 +12,7 @@ namespace Rhisis.Core.Network.Packets.World
 
         public ushort IntelligenceCount { get; }
 
-        public ModifyStatusPacket(NetPacketBase packet)
+        public ModifyStatusPacket(INetPacketStream packet)
         {
             this.StrenghtCount = (ushort)packet.Read<int>();
             this.StaminaCount = (ushort)packet.Read<int>();

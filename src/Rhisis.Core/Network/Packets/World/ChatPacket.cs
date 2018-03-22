@@ -17,7 +17,7 @@ namespace Rhisis.Core.Network.Packets.World
         /// Creates a new <see cref="ChatPacket"/> instance.
         /// </summary>
         /// <param name="packet">Incoming packet</param>
-        public ChatPacket(NetPacketBase packet)
+        public ChatPacket(INetPacketStream packet)
         {
             this.Message = packet.Read<string>();
         }

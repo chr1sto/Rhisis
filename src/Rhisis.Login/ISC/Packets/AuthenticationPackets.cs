@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Packets;
@@ -10,7 +10,7 @@ namespace Rhisis.Login.ISC.Packets
 {
     public static class PacketFactory
     {
-        public static void SendWelcome(NetConnection client)
+        public static void SendWelcome(INetUser client)
         {
             using (var packet = new NetPacket())
             {
@@ -20,7 +20,7 @@ namespace Rhisis.Login.ISC.Packets
             }
         }
 
-        public static void SendAuthenticationResult(NetConnection client, InterServerError error)
+        public static void SendAuthenticationResult(INetUser client, InterServerError error)
         {
             using (var packet = new NetPacket())
             {
@@ -31,7 +31,7 @@ namespace Rhisis.Login.ISC.Packets
             }
         }
 
-        public static void SendUpdateWorldList(NetConnection client, IEnumerable<WorldServerInfo> worlds)
+        public static void SendUpdateWorldList(INetUser client, IEnumerable<WorldServerInfo> worlds)
         {
             Logger.Warning("Cluster connected: {0}", client.Socket.Connected);
 

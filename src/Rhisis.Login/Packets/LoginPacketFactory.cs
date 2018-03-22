@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
@@ -9,7 +9,12 @@ namespace Rhisis.Login.Packets
 {
     public static class LoginPacketFactory
     {
-        public static void SendLoginError(NetConnection client, ErrorType error)
+        /// <summary>
+        /// Sends a login error.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="error"></param>
+        public static void SendLoginError(INetUser client, ErrorType error)
         {
             using (var packet = new FFPacket())
             {
@@ -20,7 +25,13 @@ namespace Rhisis.Login.Packets
             }
         }
 
-        public static void SendServerList(NetConnection client, string username, IEnumerable<ClusterServerInfo> clusters)
+        /// <summary>
+        /// Sends the available server list.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="username"></param>
+        /// <param name="clusters"></param>
+        public static void SendServerList(INetUser client, string username, IEnumerable<ClusterServerInfo> clusters)
         {
             using (var packet = new FFPacket())
             {

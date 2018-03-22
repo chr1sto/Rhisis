@@ -5,17 +5,17 @@ namespace Rhisis.Core.Network.Packets.Cluster
 {
     public struct DeletePlayerPacket : IEquatable<DeletePlayerPacket>
     {
-        public string Username { get; private set; }
+        public string Username { get; }
 
-        public string Password { get; private set; }
+        public string Password { get; }
 
-        public string PasswordConfirmation { get; private set; }
+        public string PasswordConfirmation { get; }
 
-        public int CharacterId { get; private set; }
+        public int CharacterId { get; }
 
-        public int AuthenticationKey { get; private set; }
+        public int AuthenticationKey { get; }
 
-        public DeletePlayerPacket(NetPacketBase packet)
+        public DeletePlayerPacket(INetPacketStream packet)
         {
             this.Username = packet.Read<string>();
             this.Password = packet.Read<string>();

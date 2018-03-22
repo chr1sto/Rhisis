@@ -11,10 +11,11 @@ using Rhisis.Core.Structures.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ether.Network.Common;
 
 namespace Rhisis.Cluster
 {
-    public sealed class ClusterClient : NetConnection
+    public sealed class ClusterClient : NetUser
     {
         private readonly uint _sessionId;
         private ClusterServer _clusterServer;
@@ -61,16 +62,9 @@ namespace Rhisis.Cluster
         /// Handle the incoming mesages.
         /// </summary>
         /// <param name="packet">Incoming packet</param>
-        public override void HandleMessage(NetPacketBase packet)
+        public override void HandleMessage(INetPacketStream packet)
         {
             var pak = packet as FFPacket;
-            var packetHeader = new PacketHeader(pak);
-
-            if (!FFPacket.VerifyPacketHeader(packetHeader, (int)this._sessionId))
-            {
-                Logger.Warning("Invalid header for packet: {0}", packetHeader.Header);
-                return;
-            }
 
             packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
             var packetHeaderNumber = packet.Read<uint>();

@@ -1,5 +1,4 @@
-﻿using Ether.Network;
-using Ether.Network.Packets;
+﻿using Ether.Network.Server;
 using Rhisis.Cluster.ISC;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
@@ -11,13 +10,14 @@ using Rhisis.Database.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ether.Network.Packets;
 
 namespace Rhisis.Cluster
 {
     public sealed class ClusterServer : NetServer<ClusterClient>
     {
-        private static readonly string ClusterConfigFile = "config/cluster.json";
-        private static readonly string DatabaseConfigFile = "config/database.json";
+        private const string ClusterConfigFile = "config/cluster.json";
+        private const string DatabaseConfigFile = "config/database.json";
         private static ISCClient _client;
 
         /// <summary>
@@ -26,14 +26,17 @@ namespace Rhisis.Cluster
         public static ISCClient InterClient => _client;
 
         /// <summary>
+        /// Gets the list of the connected world servers of this cluster.
+        /// </summary>
+        public static IReadOnlyCollection<WorldServerInfo> Worlds => InterClient.Worlds as IReadOnlyCollection<WorldServerInfo>;
+
+        /// <summary>
         /// Gets the cluster server's configuration.
         /// </summary>
         public ClusterConfiguration ClusterConfiguration { get; private set; }
 
-        /// <summary>
-        /// Gets the list of the connected world servers of this cluster.
-        /// </summary>
-        public static IReadOnlyCollection<WorldServerInfo> Worlds => InterClient.Worlds as IReadOnlyCollection<WorldServerInfo>;
+        /// <inheritdoc />
+        protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
 
         /// <summary>
         /// Creates a new <see cref="ClusterServer"/> instance.
@@ -44,9 +47,7 @@ namespace Rhisis.Cluster
             this.LoadConfiguration();
         }
 
-        /// <summary>
-        /// Initialize the cluster server resources.
-        /// </summary>
+        /// <inheritdoc />
         protected override void Initialize()
         {
             PacketHandler<ClusterClient>.Initialize();
@@ -58,38 +59,29 @@ namespace Rhisis.Cluster
             if (!DatabaseService.GetContext().DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
-            ConnectToISC(this.ClusterConfiguration);
+            _client = new ISCClient(this.ClusterConfiguration);
+            _client.Connect();
 
             Logger.Info("Rhisis cluster server is up");
         }
 
-        /// <summary>
-        /// Fired when a client is connected to the cluster server.
-        /// </summary>
-        /// <param name="connection"></param>
+        /// <inheritdoc />
         protected override void OnClientConnected(ClusterClient connection)
         {
             Logger.Info("New client connected: {0}", connection.Id);
             connection.InitializeClient(this);
         }
 
-        /// <summary>
-        /// Fired when a client disconnects from this cluster server.
-        /// </summary>
-        /// <param name="connection"></param>
+        /// <inheritdoc />
         protected override void OnClientDisconnected(ClusterClient connection)
         {
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
 
-        /// <summary>
-        /// Split the incoming network data into flyff packets.
-        /// </summary>
-        /// <param name="buffer">Incoming buffer</param>
-        /// <returns></returns>
-        protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
+        /// <inheritdoc />
+        protected override void OnError(Exception exception)
         {
-            return FFPacket.SplitPackets(buffer);
+            Logger.Error("ClusterServer Error: {0}", exception.Message);
         }
 
         /// <summary>
@@ -112,15 +104,5 @@ namespace Rhisis.Cluster
         /// <param name="id">World Server id</param>
         /// <returns></returns>
         public static WorldServerInfo GetWorldServerById(int id) => Worlds.FirstOrDefault(x => x.Id == id);
-
-        /// <summary>
-        /// Connects to the ISC.
-        /// </summary>
-        /// <param name="configuration"></param>
-        private static void ConnectToISC(ClusterConfiguration configuration)
-        {
-            _client = new ISCClient(configuration);
-            _client.Connect();
-        }
     }
 }

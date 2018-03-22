@@ -1,5 +1,5 @@
-﻿using Ether.Network;
-using Ether.Network.Packets;
+﻿using Ether.Network.Packets;
+using Ether.Network.Server;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
@@ -10,21 +10,32 @@ using Rhisis.Database.Exceptions;
 using Rhisis.Login.ISC;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Rhisis.Login
 {
     public sealed class LoginServer : NetServer<LoginClient>
     {
-        private static readonly string LoginConfigFile = "config/login.json";
-        private static readonly string DatabaseConfigFile = "config/database.json";
+        private const string LoginConfigFile = "config/login.json";
+        private const string DatabaseConfigFile = "config/database.json";
 
         private ISCServer _interServer;
         
+        /// <summary>
+        /// Gets the login sever's configuration.
+        /// </summary>
         public LoginConfiguration LoginConfiguration { get; private set; }
 
+        /// <summary>
+        /// Gets the list of the connected clusters.
+        /// </summary>
         public IEnumerable<ClusterServerInfo> ClustersConnected => this._interServer?.Clusters;
 
+        /// <inheritdoc />
+        protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
+
+        /// <summary>
+        /// Creates a new <see cref="LoginServer"/> instance.
+        /// </summary>
         public LoginServer()
         {
             Console.Title = "Rhisis - Login Server";
@@ -32,41 +43,43 @@ namespace Rhisis.Login
             this.LoadConfiguration();
         }
 
+        /// <inheritdoc />
         protected override void Initialize()
         {
             PacketHandler<LoginClient>.Initialize();
-            
+
             var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
 
             DatabaseService.Configure(databaseConfiguration);
             if (!DatabaseService.GetContext().DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
 
-            Task.Run(() =>
-            {
-                this._interServer = new ISCServer(this.LoginConfiguration.ISC);
-                this._interServer.Start();
-            });
+            this._interServer = new ISCServer(this.LoginConfiguration.ISC);
+            this._interServer.Start();
 
             Logger.Info("Rhisis login server is up");
         }
 
+        /// <inheritdoc />
         protected override void OnClientConnected(LoginClient connection)
         {
             Logger.Info("New client connected: {0}", connection.Id);
             connection.InitializeClient(this);
         }
 
+        /// <inheritdoc />
         protected override void OnClientDisconnected(LoginClient connection)
         {
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
 
-        protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
+        /// <inheritdoc />
+        protected override void OnError(Exception exception)
         {
-            return FFPacket.SplitPackets(buffer);
+            Logger.Error(exception.Message);
         }
-
+        
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (this._interServer != null)
@@ -78,6 +91,9 @@ namespace Rhisis.Login
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Loads the login server's configuration.
+        /// </summary>
         private void LoadConfiguration()
         {
             this.LoginConfiguration = ConfigurationHelper.Load<LoginConfiguration>(LoginConfigFile, true);

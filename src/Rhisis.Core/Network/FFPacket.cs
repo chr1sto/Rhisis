@@ -1,9 +1,7 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.Cryptography;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network.Packets;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -12,35 +10,24 @@ namespace Rhisis.Core.Network
     /// <summary>
     /// Represents a FlyFF packet.
     /// </summary>
-    public class FFPacket : NetPacketBase
+    public class FFPacket : NetPacketStream
     {
-        private static readonly byte FlyFFPacketHeader = 0x5E;
+        public const byte FlyFFPacketHeader = 0x5E;
         
         private short _mergedPacketCount;
 
         /// <summary>
         /// Gets the FFPacket buffer.
         /// </summary>
-        public override byte[] Buffer
-        {
-            get
-            {
-                long oldPointer = this.Position;
-                this.Position = 1;
-                this.Write(this.Size - 5);
-                this.Position = oldPointer;
-
-                return this.GetBuffer();
-            }
-        }
+        public override byte[] Buffer => this.BuildPacketBuffer();
 
         /// <summary>
         /// Creates a new FFPacket in write-only mode.
         /// </summary>
         public FFPacket()
         {
-            this.Write(FlyFFPacketHeader);
-            this.Write(0);
+            base.Write(FlyFFPacketHeader);
+            base.Write(0);
         }
 
         /// <summary>
@@ -66,10 +53,7 @@ namespace Rhisis.Core.Network
         /// Write packet header.
         /// </summary>
         /// <param name="packetHeader">FFPacket header</param>
-        public void WriteHeader(object packetHeader)
-        {
-            this.Write((uint)packetHeader);
-        }
+        public void WriteHeader(object packetHeader) => this.Write((uint)packetHeader);
 
         /// <summary>
         /// Write data into a packet.
@@ -84,7 +68,7 @@ namespace Rhisis.Core.Network
                 return;
             }
 
-            base.Write<T>(value);
+            base.Write(value);
         }
 
         /// <summary>
@@ -106,12 +90,9 @@ namespace Rhisis.Core.Network
         /// <returns></returns>
         private string ReadString()
         {
-            int size = this.Read<int>();
+            var size = this.Read<int>();
 
-            if (size == 0)
-                return string.Empty;
-
-            return Encoding.GetEncoding(1252).GetString(this.MemoryReader.ReadBytes(size));
+            return size == 0 ? string.Empty : Encoding.GetEncoding(1252).GetString(this.ReadBytes(size));
         }
 
         /// <summary>
@@ -119,10 +100,7 @@ namespace Rhisis.Core.Network
         /// </summary>
         /// <param name="count">Number of bytes to read</param>
         /// <returns></returns>
-        public byte[] ReadBytes(int count)
-        {
-            return this.MemoryReader.ReadBytes(count);
-        }
+        public byte[] ReadBytes(int count) => this.ReadArray<byte>(count);
 
         /// <summary>
         /// Write FF string.
@@ -130,9 +108,23 @@ namespace Rhisis.Core.Network
         /// <param name="value"></param>
         private void WriteString(string value)
         {
-            this.Write(value.Length);
             if (value.Length > 0)
-                this.Write(Encoding.GetEncoding(0).GetBytes(value));
+                base.Write(Encoding.GetEncoding(0).GetBytes(value));
+        }
+
+        /// <summary>
+        /// Builds the packet buffer.
+        /// </summary>
+        /// <returns></returns>
+        private byte[] BuildPacketBuffer()
+        {
+            long oldPointer = this.Position;
+
+            this.Seek(1, SeekOrigin.Begin);
+            base.Write(this.Size - 5);
+            this.Seek(oldPointer, SeekOrigin.Begin);
+
+            return base.Buffer;
         }
 
         /// <summary>
@@ -141,9 +133,9 @@ namespace Rhisis.Core.Network
         /// <param name="moverId"></param>
         /// <param name="command"></param>
         /// <param name="mainCommand"></param>
-        public void StartNewMergedPacket(int moverID, object command, uint mainCommand)
+        public void StartNewMergedPacket(int moverId, object command, uint mainCommand)
         {
-            uint packet = (uint)command;
+            var packet = (uint)command;
 
             if (this._mergedPacketCount == 0)
             {
@@ -153,12 +145,12 @@ namespace Rhisis.Core.Network
             }
             else
             {
-                this.MemoryStream.Seek(13, SeekOrigin.Begin);
+                this.Seek(13, SeekOrigin.Begin);
                 this.Write(++this._mergedPacketCount);
-                this.MemoryStream.Seek(0, SeekOrigin.End);
+                this.Seek(0, SeekOrigin.End);
             }
 
-            this.Write(moverID);
+            this.Write(moverId);
             this.Write((short)packet);
         }
 
@@ -167,10 +159,7 @@ namespace Rhisis.Core.Network
         /// </summary>
         /// <param name="moverId"></param>
         /// <param name="command"></param>
-        public void StartNewMergedPacket(int moverId, object command)
-        {
-            this.StartNewMergedPacket(moverId, command, 0xFFFFFF00);
-        }
+        public void StartNewMergedPacket(int moverId, object command) => this.StartNewMergedPacket(moverId, command, 0xFFFFFF00);
 
         /// <summary>
         /// Indicates if the packet of type T is unknown or just not implemented.
@@ -184,55 +173,6 @@ namespace Rhisis.Core.Network
                 Logger.Warning("Unimplemented packet {0} (0x{1})", Enum.GetName(typeof(T), header), header.ToString("X" + digits));
             else
                 Logger.Warning("Unknow packet 0x{0}", header.ToString("X" + digits));
-        }
-
-        /// <summary>
-        /// Split the buffer into multiple packets.
-        /// </summary>
-        /// <param name="buffer">Incoming buffer</param>
-        /// <returns>Packets</returns>
-        public static IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
-        {
-            int packetSize = 0;
-            var packets = new List<NetPacketBase>();
-
-            using (MemoryStream memoryStream = new MemoryStream(buffer))
-            using (BinaryReader reader = new BinaryReader(memoryStream))
-            {
-                while (reader.BaseStream.Position < reader.BaseStream.Length)
-                {
-                    reader.BaseStream.Position += 5;
-                    packetSize = reader.ReadInt32();
-
-                    if (packetSize <= 0)
-                        break;
-
-                    reader.BaseStream.Position += 4;
-                    packetSize += 13;
-
-                    if (packetSize > (buffer.Length - reader.BaseStream.Position + 13))
-                        packetSize = buffer.Length;
-
-                    reader.BaseStream.Position -= 13;
-                    packets.Add(new FFPacket(reader.ReadBytes(packetSize)));
-                }
-            }
-
-            return packets;
-        }
-
-        /// <summary>
-        /// Verify the packet header hash.
-        /// </summary>
-        /// <param name="packetHeader">Packet header</param>
-        /// <param name="sessionKey">Client session key</param>
-        /// <returns></returns>
-        public static bool VerifyPacketHeader(PacketHeader packetHeader, int sessionKey)
-        {
-            if (packetHeader.Header != FlyFFPacketHeader)
-                return false;
-
-            return true;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Ether.Network.Packets;
 using Rhisis.Cluster.Packets;
-using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
@@ -16,7 +15,7 @@ namespace Rhisis.Cluster
     public static class ClusterHandler
     {
         [PacketHandler(PacketType.PING)]
-        public static void OnPing(ClusterClient client, NetPacketBase packet)
+        public static void OnPing(ClusterClient client, INetPacketStream packet)
         {
             var pingPacket = new PingPacket(packet);
 
@@ -24,7 +23,7 @@ namespace Rhisis.Cluster
         }
 
         [PacketHandler(PacketType.GETPLAYERLIST)]
-        public static void OnGetPlayerList(ClusterClient client, NetPacketBase packet)
+        public static void OnGetPlayerList(ClusterClient client, INetPacketStream packet)
         {
             var getPlayerListPacket = new GetPlayerListPacket(packet);
             WorldServerInfo selectedServer = ClusterServer.GetWorldServerById(getPlayerListPacket.ServerId);
@@ -53,7 +52,7 @@ namespace Rhisis.Cluster
         }
 
         [PacketHandler(PacketType.CREATE_PLAYER)]
-        public static void OnCreatePlayer(ClusterClient client, NetPacketBase packet)
+        public static void OnCreatePlayer(ClusterClient client, INetPacketStream packet)
         {
             var createPlayerPacket = new CreatePlayerPacket(packet);
 
@@ -124,7 +123,7 @@ namespace Rhisis.Cluster
         }
 
         [PacketHandler(PacketType.DEL_PLAYER)]
-        public static void OnDeletePlayer(ClusterClient client, NetPacketBase packet)
+        public static void OnDeletePlayer(ClusterClient client, INetPacketStream packet)
         {
             var deletePlayerPacket = new DeletePlayerPacket(packet);
 
@@ -161,7 +160,7 @@ namespace Rhisis.Cluster
         }
 
         [PacketHandler(PacketType.PRE_JOIN)]
-        public static void OnPreJoin(ClusterClient client, NetPacketBase packet)
+        public static void OnPreJoin(ClusterClient client, INetPacketStream packet)
         {
             if (client.Configuration.EnableLoginProtect)
             {

@@ -1,47 +1,43 @@
-﻿using Ether.Network;
-using System.Collections.Generic;
+﻿using Ether.Network.Client;
 using Ether.Network.Packets;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Core.Network;
-using Rhisis.Core.ISC.Packets;
-using Rhisis.Core.IO;
 using Rhisis.Core.Exceptions;
+using Rhisis.Core.IO;
+using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
+using Rhisis.Core.Network;
+using Rhisis.Core.Structures.Configuration;
+using System.Collections.Generic;
 using System.Net.Sockets;
 
 namespace Rhisis.Cluster.ISC
 {
     public sealed class ISCClient : NetClient
     {
-        private readonly ClusterConfiguration _configuration;
-        private readonly IList<WorldServerInfo> _worlds;
-
         /// <summary>
         /// Gets the cluster configuration.
         /// </summary>
-        public ClusterConfiguration Configuration => this._configuration;
+        public ClusterConfiguration ClusterConfiguration { get; }
 
         /// <summary>
         /// Gets the world server's informations connected to this cluster.
         /// </summary>
-        public IList<WorldServerInfo> Worlds => this._worlds;
+        public IList<WorldServerInfo> Worlds { get; }
 
         /// <summary>
         /// Creates a new <see cref="ISCClient"/> instance.
         /// </summary>
         /// <param name="configuration">Cluster Server configuration</param>
-        public ISCClient(ClusterConfiguration configuration) 
-            : base(configuration.ISC.Host, configuration.ISC.Port, 1024)
+        public ISCClient(ClusterConfiguration configuration)
         {
-            this._configuration = configuration;
-            this._worlds = new List<WorldServerInfo>();
+            this.ClusterConfiguration = configuration;
+            this.Worlds = new List<WorldServerInfo>();
+            this.Configuration.Host = this.ClusterConfiguration.ISC.Host;
+            this.Configuration.Port = this.ClusterConfiguration.ISC.Port;
+            this.Configuration.BufferSize = 512;
         }
 
-        /// <summary>
-        /// Handles the incoming messages.
-        /// </summary>
-        /// <param name="packet"></param>
-        protected override void HandleMessage(NetPacketBase packet)
+        /// <inheritdoc />
+        public override void HandleMessage(INetPacketStream packet)
         {
             var packetHeaderNumber = packet.Read<uint>();
 
@@ -63,14 +59,22 @@ namespace Rhisis.Cluster.ISC
             }
         }
 
+        /// <inheritdoc />
         protected override void OnConnected()
         {
             // Nothing to do.
         }
 
+        /// <inheritdoc />
         protected override void OnDisconnected()
         {
             Logger.Info("Disconnected from InterServer.");
+        }
+
+        /// <inheritdoc />
+        protected override void OnSocketError(SocketError socketError)
+        {
+            Logger.Error("ISC client Socket Error: {0}", socketError);
         }
     }
 }

@@ -5,35 +5,35 @@ namespace Rhisis.Core.Network.Packets.Cluster
 {
     public struct CreatePlayerPacket : IEquatable<CreatePlayerPacket>
     {
-        public string Username { get; private set; }
+        public string Username { get; }
 
-        public string Password { get; private set; }
+        public string Password { get; }
 
-        public int Slot { get; private set; }
+        public int Slot { get; }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public int FaceId { get; private set; }
+        public int FaceId { get; }
 
-        public int CostumeId { get; private set; }
+        public int CostumeId { get; }
 
-        public int SkinSet { get; private set; }
+        public int SkinSet { get; }
 
-        public int HairMeshId { get; private set; }
+        public int HairMeshId { get; }
 
-        public uint HairColor { get; private set; }
+        public uint HairColor { get; }
 
-        public byte Gender { get; private set; }
+        public byte Gender { get; }
 
-        public int Job { get; private set; }
+        public int Job { get; }
 
-        public int HeadMesh { get; private set; }
+        public int HeadMesh { get; }
 
-        public int BankPassword { get; private set; }
+        public int BankPassword { get; }
 
-        public int AuthenticationKey { get; private set; }
+        public int AuthenticationKey { get; }
 
-        public CreatePlayerPacket(NetPacketBase packet)
+        public CreatePlayerPacket(INetPacketStream packet)
         {
             this.Username = packet.Read<string>();
             this.Password = packet.Read<string>();
