@@ -1,5 +1,5 @@
-﻿using Ether.Network;
-using Ether.Network.Packets;
+﻿using Ether.Network.Packets;
+using Ether.Network.Server;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
@@ -9,6 +9,7 @@ using Rhisis.Database.Exceptions;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.ISC;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,10 +17,11 @@ namespace Rhisis.World
 {
     public sealed partial class WorldServer : NetServer<WorldClient>, IWorldServer
     {
-        private static readonly string WorldConfigFile = "config/world.json";
-        private static readonly string DatabaseConfigFile = "config/database.json";
+        private const string WorldConfigFile = "config/world.json";
+        private const string DatabaseConfigFile = "config/database.json";
+
+        private static readonly IDictionary<int, Map> _maps = new Dictionary<int, Map>();
         private static ISCClient _client;
-        private static IDictionary<int, Map> _maps = new Dictionary<int, Map>();
 
         /// <summary>
         /// Gets the World server maps.
@@ -36,6 +38,9 @@ namespace Rhisis.World
         /// </summary>
         public WorldConfiguration WorldConfiguration { get; private set; }
 
+        /// <inheritdoc />
+        protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
+
         /// <summary>
         /// Creates a new <see cref="WorldServer"/> instance.
         /// </summary>
@@ -45,9 +50,7 @@ namespace Rhisis.World
             this.LoadConfiguration();
         }
 
-        /// <summary>
-        /// Initialize the world server's resources.
-        /// </summary>
+        /// <inheritdoc />
         protected override void Initialize()
         {
             PacketHandler<WorldClient>.Initialize();
@@ -64,15 +67,14 @@ namespace Rhisis.World
             }
 
             this.LoadResources();
-            ConnectToISC(this.WorldConfiguration);
+
+            _client = new ISCClient(this.WorldConfiguration);
+            _client.Connect();
 
             Logger.Info("Rhisis world server is up");
         }
 
-        /// <summary>
-        /// Fired when a client is connected to the world server.
-        /// </summary>
-        /// <param name="connection"></param>
+        /// <inheritdoc />
         protected override void OnClientConnected(WorldClient connection)
         {
             connection.InitializeClient(this);
@@ -80,23 +82,16 @@ namespace Rhisis.World
             Logger.Info("New client connected: {0}", connection.Id);
         }
 
-        /// <summary>
-        /// Fired when a client disconnects from this cluster server.
-        /// </summary>
-        /// <param name="connection"></param>
+        /// <inheritdoc />
         protected override void OnClientDisconnected(WorldClient connection)
         {
             Logger.Info("Client {0} disconnected.", connection.Id);
         }
 
-        /// <summary>
-        /// Split the incoming network data into flyff packets.
-        /// </summary>
-        /// <param name="buffer">Incoming buffer</param>
-        /// <returns></returns>
-        protected override IReadOnlyCollection<NetPacketBase> SplitPackets(byte[] buffer)
+        /// <inheritdoc />
+        protected override void OnError(Exception exception)
         {
-            return FFPacket.SplitPackets(buffer);
+            Logger.Error("WorldServer Error: {0}", exception.Message);
         }
 
         /// <summary>
@@ -113,21 +108,16 @@ namespace Rhisis.World
             this.Configuration.BufferSize = 4096;
         }
 
+        /// <summary>
+        /// Gets a player entity by his id.
+        /// </summary>
+        /// <param name="id">Player id</param>
+        /// <returns></returns>
         public IPlayerEntity GetPlayerEntity(int id)
         {
             WorldClient client =  this.Clients.FirstOrDefault(x => x.Player.Id == id);
 
             return client?.Player;
-        }
-
-        /// <summary>
-        /// Connects to the ISC.
-        /// </summary>
-        /// <param name="configuration"></param>
-        private static void ConnectToISC(WorldConfiguration configuration)
-        {
-            _client = new ISCClient(configuration);
-            _client.Connect();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Rhisis.World.Handlers
     public static class StatisticsHandler
     {
         [PacketHandler(PacketType.MODIFY_STATUS)]
-        public static void OnModifyStatus(WorldClient client, NetPacketBase packet)
+        public static void OnModifyStatus(WorldClient client, INetPacketStream packet)
         {
             var msPacket = new ModifyStatusPacket(packet);
 

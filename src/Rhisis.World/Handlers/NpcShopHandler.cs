@@ -9,7 +9,7 @@ namespace Rhisis.World.Handlers
     public static class NpcShopHandler
     {
         [PacketHandler(PacketType.OPENSHOPWND)]
-        public static void OnOpenShopWindow(WorldClient client, NetPacketBase packet)
+        public static void OnOpenShopWindow(WorldClient client, INetPacketStream packet)
         {
             var openShopPacket = new OpenShopWindowPacket(packet);
 

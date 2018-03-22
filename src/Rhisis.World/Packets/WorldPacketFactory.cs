@@ -1,4 +1,4 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
@@ -12,7 +12,7 @@ namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendToVisible(NetPacketBase packet, IEntity player)
+        public static void SendToVisible(INetPacketStream packet, IEntity player)
         {
             IEnumerable<IPlayerEntity> visiblePlayers = from x in player.ObjectComponent.Entities
                                                         where x.Type == WorldEntityType.Player
@@ -22,7 +22,7 @@ namespace Rhisis.World.Packets
                 visiblePlayer.Connection.Send(packet);
         }
 
-        public static void SendDestinationPosition(NetConnection client, IMovableEntity movableEntity)
+        public static void SendDestinationPosition(NetUser client, IMovableEntity movableEntity)
         {
             using (var packet = new FFPacket())
             {

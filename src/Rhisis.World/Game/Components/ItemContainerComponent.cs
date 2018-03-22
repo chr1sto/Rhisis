@@ -74,7 +74,7 @@ namespace Rhisis.World.Game.Components
         /// Serialize the ItemContainer.
         /// </summary>
         /// <param name="packet"></param>
-        public void Serialize(NetPacketBase packet)
+        public void Serialize(INetPacketStream packet)
         {
             for (var i = 0; i < this.MaxCapacity; ++i)
                 packet.Write(this.Items[i].UniqueId);

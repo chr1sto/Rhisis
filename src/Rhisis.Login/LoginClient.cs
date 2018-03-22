@@ -1,13 +1,13 @@
 ﻿using Ether.Network.Common;
+using Ether.Network.Packets;
 using Rhisis.Core.Exceptions;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
-using System;
 using System.Collections.Generic;
-using Ether.Network.Packets;
 
 namespace Rhisis.Login
 {
@@ -31,7 +31,7 @@ namespace Rhisis.Login
         /// </summary>
         public LoginClient()
         {
-            this._sessionId = (uint)(new Random().Next(0, int.MaxValue));
+            this._sessionId = RandomHelper.GenerateSessionKey();
         }
 
         /// <summary>

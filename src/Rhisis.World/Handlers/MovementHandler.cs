@@ -7,7 +7,7 @@ namespace Rhisis.World.Handlers
 {
     public static class MovementHandler
     {
-        public static void OnSnapshotSetDestPosition(WorldClient client, NetPacketBase packet)
+        public static void OnSnapshotSetDestPosition(WorldClient client, INetPacketStream packet)
         {
             var setDestPositionPacket = new SetDestPositionPacket(packet);
 

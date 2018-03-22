@@ -168,7 +168,7 @@ namespace Rhisis.World.Game.Structures
         /// Serialize the item into the packet.
         /// </summary>
         /// <param name="packet"></param>
-        public void Serialize(NetPacketBase packet)
+        public void Serialize(INetPacketStream packet)
         {
             packet.Write(this.Id);
             packet.Write(0); // Serial number

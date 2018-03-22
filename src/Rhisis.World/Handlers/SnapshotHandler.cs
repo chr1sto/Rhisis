@@ -10,7 +10,7 @@ namespace Rhisis.World.Handlers
     public static class SnapshotHandler
     {
         [PacketHandler(PacketType.SNAPSHOT)]
-        public static void OnSnapshot(WorldClient client, NetPacketBase packet)
+        public static void OnSnapshot(WorldClient client, INetPacketStream packet)
         {
             var snapshotCount = packet.Read<byte>();
 
