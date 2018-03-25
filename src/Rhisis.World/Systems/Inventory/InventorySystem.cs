@@ -149,18 +149,12 @@ namespace Rhisis.World.Systems.Inventory
             }
             else
             {
-                Logger.Debug("SourceItem: {0}", sourceItem);
-                Logger.Debug("DestItem: {0}", destItem);
                 sourceItem.Slot = destinationSlot;
 
                 if (destItem.Slot != -1)
                     destItem.Slot = sourceSlot;
 
                 items.Swap(sourceSlot, destinationSlot);
-                Logger.Debug("==== After swap ====");
-                Logger.Debug("SourceItem: {0}", items[sourceSlot]);
-                Logger.Debug("DestItem: {0}", items[destinationSlot]);
-
                 WorldPacketFactory.SendItemMove(player, sourceSlot, destinationSlot);
             }
         }
@@ -245,13 +239,13 @@ namespace Rhisis.World.Systems.Inventory
         private void UnequipItem(IPlayerEntity player, Item item)
         {
             int sourceSlot = item.Slot;
-            int availableSlot = this.GetAvailableSlot(player);
+            int availableSlot = player.Inventory.GetAvailableSlot();
             Logger.Debug("Available slot: {0}", availableSlot);
 
-            if (availableSlot == -1)
+            if (availableSlot < 0)
             {
                 Logger.Debug("No available slots.");
-                // TODO: send error to client. No more space in inventory.
+                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
 
@@ -281,11 +275,11 @@ namespace Rhisis.World.Systems.Inventory
             {
                 for (var i = 0; i < eventArgs.Quantity; i++)
                 {
-                    int availableSlot = this.GetAvailableSlot(player);
+                    int availableSlot = player.Inventory.GetAvailableSlot();
 
                     if (availableSlot < 0)
                     {
-                        // TODO: send message, no available slots
+                        WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                         break;
                     }
 
@@ -294,26 +288,13 @@ namespace Rhisis.World.Systems.Inventory
                     var newItem = new Item(eventArgs.ItemId, 1, eventArgs.CreatorId)
                     {
                         Slot = availableSlot,
-                        UniqueId = player.Inventory.Items[availableSlot].UniqueId
+                        UniqueId = availableSlot,
                     };
 
                     player.Inventory.Items[availableSlot] = newItem;
                     WorldPacketFactory.SendItemCreation(player, newItem);
                 }
             }
-        }
-
-        private int GetAvailableSlot(IPlayerEntity player)
-        {
-            for (var i = 0; i < EquipOffset; i++)
-            {
-                if (player.Inventory.Items[i] != null && player.Inventory.Items[i].Id == -1)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
         }
     }
 }

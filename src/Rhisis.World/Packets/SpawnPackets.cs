@@ -106,7 +106,7 @@ namespace Rhisis.World.Packets
                 packet.Write((short)0); // FP
                 packet.Write(0); // tutorial state
                 packet.Write(0); // fly experience
-                packet.Write(0); // Gold
+                packet.Write(player.PlayerComponent.Gold); // Gold
                 packet.Write((long)0); // exp
                 packet.Write(0); // skill level
                 packet.Write(0); // skill points

@@ -2,7 +2,6 @@
 using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Core.IO;
 
 namespace Rhisis.World.Game.Components
 {
@@ -55,7 +54,7 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public int GetAvailableSlot()
         {
-            for (int i = 0; i < this.Items.Count; i++)
+            for (var i = 0; i < this.Items.Count; i++)
             {
                 if (this.Items[i] != null && this.Items[i].Slot == -1)
                     return i;
@@ -69,6 +68,28 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <returns></returns>
         public bool HasAvailableSlots() => this.GetAvailableSlot() != -1;
+
+        /// <summary>
+        /// Creates an item in this item container.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool CreateItem(Item item)
+        {
+            if (item?.Data == null)
+                return false;
+
+            int availableSlot = this.GetAvailableSlot();
+
+            if (availableSlot < 0)
+                return false;
+
+            item.Slot = availableSlot;
+            item.UniqueId = this.Items[availableSlot].UniqueId;
+            this.Items[availableSlot] = item;
+
+            return true;
+        }
 
         /// <summary>
         /// Serialize the ItemContainer.

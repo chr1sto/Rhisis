@@ -70,7 +70,8 @@ namespace Rhisis.World.Handlers
             client.Player.PlayerComponent = new PlayerComponent
             {
                 Id = character.Id,
-                Slot = character.Slot
+                Slot = character.Slot,
+                Gold = character.Gold
             };
 
             client.Player.MovableComponent = new MovableComponent
