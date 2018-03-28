@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using Rhisis.Core.Data;
+﻿using Rhisis.Core.Data;
 using Rhisis.Core.IO;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Core;
@@ -9,6 +7,8 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
+using System;
+using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems.NpcShop
 {
@@ -179,7 +179,7 @@ namespace Rhisis.World.Systems.NpcShop
 
         private void SellItem(IPlayerEntity player, NpcShopEventArgs e)
         {
-            
+            throw new NotImplementedException();
         }
     }
 }
