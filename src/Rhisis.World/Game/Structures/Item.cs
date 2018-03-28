@@ -12,7 +12,7 @@ namespace Rhisis.World.Game.Structures
         /// <summary>
         /// Flyff item refine table.
         /// </summary>
-        public static readonly IReadOnlyCollection<int> RefineTable = new[] { 0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24 };
+        public static readonly IReadOnlyCollection<int> RefineTable = new[] {0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24};
 
         /// <summary>
         /// Gets the item unique Id.
@@ -141,7 +141,8 @@ namespace Rhisis.World.Game.Structures
         /// <param name="refine">Item refine</param>
         /// <param name="element">Item element</param>
         /// <param name="elementRefine">Item element refine</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element, byte elementRefine)
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element,
+            byte elementRefine)
         {
             this.Id = id;
             this.Quantity = quantity;
@@ -159,9 +160,10 @@ namespace Rhisis.World.Game.Structures
         /// </summary>
         /// <param name="dbItem">Database item</param>
         public Item(Database.Structures.Item dbItem)
-            : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine, dbItem.Element, dbItem.ElementRefine)
+            : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
+                dbItem.Element, dbItem.ElementRefine)
         {
-            this.DbId = dbItem.Id;   
+            this.DbId = dbItem.Id;
         }
 
         /// <summary>
@@ -173,15 +175,15 @@ namespace Rhisis.World.Game.Structures
             packet.Write(this.Id);
             packet.Write(0); // Serial number
             packet.Write(this.Data.Name.Substring(0, this.Data.Name.Length > 31 ? 31 : this.Data.Name.Length));
-            packet.Write((short)this.Quantity);
+            packet.Write((short) this.Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp
             packet.Write(0); // Repair
             packet.Write<byte>(0); // flag ?
-            packet.Write((int)this.Refine);
+            packet.Write((int) this.Refine);
             packet.Write(0); // guild id (cloaks?)
             packet.Write(this.Element);
-            packet.Write((int)this.ElementRefine);
+            packet.Write((int) this.ElementRefine);
             packet.Write(0); // m_nResistSMItemId
             packet.Write(0); // Piercing size
             packet.Write(0); // Ultimate piercing size
@@ -200,7 +202,21 @@ namespace Rhisis.World.Game.Structures
         /// <returns></returns>
         public Item Clone()
         {
-            return new Item(this.Id, this.Quantity, this.CreatorId, this.Slot, this.UniqueId, this.Refine, this.Element, this.ElementRefine);
+            return new Item(this.Id, this.Quantity, this.CreatorId, this.Slot, this.UniqueId, this.Refine, this.Element,
+                this.ElementRefine);
+        }
+
+        /// <summary>
+        /// Reset the item.
+        /// </summary>
+        public void Reset()
+        {
+            this.Id = -1;
+            this.Quantity = 0;
+            this.CreatorId = -1;
+            this.Refine = 0;
+            this.Element = 0;
+            this.ElementRefine = 0;
         }
 
         /// <summary>

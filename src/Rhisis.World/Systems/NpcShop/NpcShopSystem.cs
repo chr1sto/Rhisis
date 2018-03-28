@@ -179,7 +179,20 @@ namespace Rhisis.World.Systems.NpcShop
 
         private void SellItem(IPlayerEntity player, NpcShopEventArgs e)
         {
-            throw new NotImplementedException();
+            if (!(e is NpcShopSellItemEventArgs npcEvent))
+                throw new ArgumentException("ShopSystem: Invalid event arguments for SellItem action.");
+
+            Item itemToSell = player.Inventory.GetItem(npcEvent.ItemUniqueId);
+
+            if (itemToSell?.Data == null)
+                throw new InvalidOperationException($"Cannot find item with unique id: {npcEvent.ItemUniqueId}");
+
+            if (npcEvent.Quantity > itemToSell.Data.PackMax)
+                throw new InvalidOperationException($"Cannot sell more items than the pack max value. {npcEvent.Quantity} > {itemToSell.Data.PackMax}");
+
+            int sellPrice = itemToSell.Data.Cost / 4;
+
+            Logger.Debug("Selling item: '{0}' for {1}", itemToSell.Data.Name, sellPrice);
         }
     }
 }

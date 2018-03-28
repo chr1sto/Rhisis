@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Rhisis.Core.Structures.Game;
 
 namespace Rhisis.World.Systems.NpcShop
