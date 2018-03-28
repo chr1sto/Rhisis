@@ -107,6 +107,8 @@ namespace Rhisis.World
                     character.SkinSetId = this.Player.HumanComponent.SkinSetId;
                     character.Level = this.Player.ObjectComponent.Level;
 
+                    character.Gold = this.Player.PlayerComponent.Gold;
+
                     character.Strength = this.Player.StatisticsComponent.Strenght;
                     character.Stamina = this.Player.StatisticsComponent.Stamina;
                     character.Dexterity = this.Player.StatisticsComponent.Dexterity;
@@ -123,7 +125,6 @@ namespace Rhisis.World
 
                         if (inventoryItem != null && inventoryItem.Id == -1)
                             character.Items.Remove(dbItem);
-
                     }
 
                     // Add or update items
@@ -135,12 +136,14 @@ namespace Rhisis.World
 
                             if (dbItem != null)
                             {
+                                dbItem.CharacterId = this.Player.PlayerComponent.Id;
                                 dbItem.ItemId = item.Id;
                                 dbItem.ItemCount = item.Quantity;
                                 dbItem.ItemSlot = item.Slot;
                                 dbItem.Refine = item.Refine;
                                 dbItem.Element = item.Element;
                                 dbItem.ElementRefine = item.ElementRefine;
+                                db.Items.Update(dbItem);
                             }
                             else
                             {
@@ -156,7 +159,7 @@ namespace Rhisis.World
                                     ElementRefine = item.ElementRefine
                                 };
 
-                                character.Items.Add(dbItem);
+                                db.Items.Create(dbItem);
                             }
                         }
                     }

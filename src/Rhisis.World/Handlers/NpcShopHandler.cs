@@ -15,5 +15,13 @@ namespace Rhisis.World.Handlers
 
             client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, new NpcShopOpenEventArgs(openShopPacket.ObjectId));
         }
+
+        [PacketHandler(PacketType.BUYITEM)]
+        public static void OnBuyItem(WorldClient client, INetPacketStream packet)
+        {
+            var buyItemPacket = new BuyItemPacket(packet);
+
+            client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, new NpcShopBuyItemEventArgs(buyItemPacket.ItemId, buyItemPacket.Quantity));
+        }
     }
 }
