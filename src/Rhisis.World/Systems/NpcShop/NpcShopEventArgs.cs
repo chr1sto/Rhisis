@@ -14,7 +14,7 @@ namespace Rhisis.World.Systems.NpcShop
         /// </summary>
         /// <param name="type"></param>
         /// <param name="args"></param>
-        protected NpcShopEventArgs(NpcShopActionType type, params object[] args) 
+        public NpcShopEventArgs(NpcShopActionType type, params object[] args) 
             : base(args)
         {
             this.ActionType = type;

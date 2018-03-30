@@ -3,6 +3,7 @@
     public enum NpcShopActionType
     {
         Open,
+        Close,
         Buy,
         Sell
     }

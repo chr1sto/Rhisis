@@ -17,11 +17,17 @@ namespace Rhisis.World.Handlers
             client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, npcEvent);
         }
 
+        [PacketHandler(PacketType.CLOSESHOPWND)]
+        public static void OnCloseShopWindow(WorldClient client, INetPacketStream packet)
+        {
+            client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, new NpcShopEventArgs(NpcShopActionType.Close));
+        }
+
         [PacketHandler(PacketType.BUYITEM)]
         public static void OnBuyItem(WorldClient client, INetPacketStream packet)
         {
             var buyItemPacket = new BuyItemPacket(packet);
-            var npcShopEvent = new NpcShopBuyItemEventArgs(buyItemPacket.ItemId, buyItemPacket.Quantity);
+            var npcShopEvent = new NpcShopBuyItemEventArgs(buyItemPacket.ItemId, buyItemPacket.Quantity, buyItemPacket.Tab, buyItemPacket.Slot);
 
             client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, npcShopEvent);
         }
