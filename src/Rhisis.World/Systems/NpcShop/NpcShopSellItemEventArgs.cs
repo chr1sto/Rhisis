@@ -25,6 +25,6 @@
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments() => this.Quantity > 0 && this.ItemUniqueId > 0;
+        public override bool CheckArguments() => this.Quantity > 0;
     }
 }

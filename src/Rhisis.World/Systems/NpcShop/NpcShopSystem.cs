@@ -255,7 +255,7 @@ namespace Rhisis.World.Systems.NpcShop
 
             Logger.Debug("Selling item: '{0}' for {1}", itemToSell.Data.Name, sellPrice);
 
-            player.PlayerComponent.Gold += sellPrice;
+            player.PlayerComponent.Gold += sellPrice * npcEvent.Quantity;
             itemToSell.Quantity -= npcEvent.Quantity;
 
             WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToSell.UniqueId, itemToSell.Quantity);
