@@ -30,7 +30,7 @@ namespace Rhisis.Core.IO
         static Logger()
         {
             LogStartedTime = DateTime.Now;
-            LogFolder = $"{LogStartedTime.Month}-{LogStartedTime.Day}-{LogStartedTime.Year}";
+            LogFolder = DateTime.Now.ToString("MM-dd-yyyy");
         }
 
         /// <summary>
@@ -150,6 +150,11 @@ namespace Rhisis.Core.IO
             }
         }
 
+        /// <summary>
+        /// Writes the text to the stream.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="text"></param>
         private static void WriteStream(LogType type, string text)
         {
             string formattedText = $"<#> [{DateTime.Now:MM/dd/yyyy HH:ss}] [{type.ToString()}] - {text}";
@@ -161,6 +166,9 @@ namespace Rhisis.Core.IO
             _logStream.Flush();
         }
 
+        /// <summary>
+        /// Initialize the log stream.
+        /// </summary>
         private static void InitializeStream()
         {
             string logFolder = Path.Combine(Environment.CurrentDirectory, "logs", LogFolder);
@@ -170,7 +178,9 @@ namespace Rhisis.Core.IO
                 Directory.CreateDirectory(logFolder);
             
             _logStream?.Close();
-            _logStream = !File.Exists(logPath) ? File.CreateText(logPath) : new StreamWriter(logPath);
+            _logStream = !File.Exists(logPath) ? File.CreateText(logPath) : new StreamWriter(logPath, true);
+            _logStream.WriteLine($"{Environment.NewLine}################## NEW SESSION STARTED : {DateTime.UtcNow:MM/dd/yyyy HH:mm:ss} ##################");
+            _logStream.Flush();
         }
 
         /// <summary>
