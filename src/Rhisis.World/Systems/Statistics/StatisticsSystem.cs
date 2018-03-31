@@ -45,7 +45,7 @@ namespace Rhisis.World.Systems.Statistics
                     break;
                 default:
                     Logger.Warning("Unknown statistics action type: {0} for player {1} ",
-                        statisticsEvent.ActionType.ToString(), entity.ObjectComponent.Name);
+                        statisticsEvent.ActionType.ToString(), entity.Object.Name);
                     break;
             }
 
@@ -66,10 +66,10 @@ namespace Rhisis.World.Systems.Statistics
             var total = msPacket.StrenghtCount + msPacket.StaminaCount + msPacket.DexterityCount +
                         msPacket.IntelligenceCount;
 
-            var statsPoints = player.StatisticsComponent.StatPoints;
+            var statsPoints = player.Statistics.StatPoints;
             if (statsPoints <= 0 || total > statsPoints)
             {
-                Logger.Error("No statspoints available, but trying to upgrade {0}.", player.ObjectComponent.Name);
+                Logger.Error("No statspoints available, but trying to upgrade {0}.", player.Object.Name);
                 return;
             }
 
@@ -78,15 +78,15 @@ namespace Rhisis.World.Systems.Statistics
                 total > ushort.MaxValue)
             {
                 Logger.Error("Invalid upgrade request due to bad total calculation (trying to dupe) {0}.",
-                    player.ObjectComponent.Name);
+                    player.Object.Name);
                 return;
             }
 
-            player.StatisticsComponent.Strenght += msPacket.StrenghtCount;
-            player.StatisticsComponent.Stamina += msPacket.StaminaCount;
-            player.StatisticsComponent.Dexterity += msPacket.DexterityCount;
-            player.StatisticsComponent.Intelligence += msPacket.IntelligenceCount;
-            player.StatisticsComponent.StatPoints -= (ushort) total;
+            player.Statistics.Strenght += msPacket.StrenghtCount;
+            player.Statistics.Stamina += msPacket.StaminaCount;
+            player.Statistics.Dexterity += msPacket.DexterityCount;
+            player.Statistics.Intelligence += msPacket.IntelligenceCount;
+            player.Statistics.StatPoints -= (ushort) total;
         }
     }
 }

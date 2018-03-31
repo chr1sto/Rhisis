@@ -45,7 +45,7 @@ namespace Rhisis.World.Handlers
             client.Player = map.Context.CreateEntity<PlayerEntity>();
 
             // 2nd: create and initialize the components
-            client.Player.ObjectComponent = new ObjectComponent
+            client.Player.Object = new ObjectComponent
             {
                 ModelId = character.Gender == 0 ? 11 : 12,
                 Type = WorldObjectType.Mover,
@@ -58,7 +58,7 @@ namespace Rhisis.World.Handlers
                 Level = character.Level
             };
 
-            client.Player.HumanComponent = new HumanComponent
+            client.Player.VisualAppearance = new VisualAppearenceComponent
             {
                 Gender = character.Gender,
                 SkinSetId = character.SkinSetId,
@@ -67,7 +67,7 @@ namespace Rhisis.World.Handlers
                 FaceId = character.FaceId,
             };
 
-            client.Player.PlayerComponent = new PlayerComponent
+            client.Player.PlayerData = new PlayerComponent
             {
                 Id = character.Id,
                 Slot = character.Slot,
@@ -76,13 +76,13 @@ namespace Rhisis.World.Handlers
 
             client.Player.MovableComponent = new MovableComponent
             {
-                Speed = WorldServer.Movers[client.Player.ObjectComponent.ModelId].Speed,
-                DestinationPosition = client.Player.ObjectComponent.Position.Clone(),
+                Speed = WorldServer.Movers[client.Player.Object.ModelId].Speed,
+                DestinationPosition = client.Player.Object.Position.Clone(),
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
-            client.Player.StatisticsComponent = new StatisticsComponent(character);
+            client.Player.Statistics = new StatisticsComponent(character);
 
             client.Player.Connection = client;
 
@@ -94,7 +94,7 @@ namespace Rhisis.World.Handlers
             WorldPacketFactory.SendPlayerSpawn(client.Player);
 
             // 4th: player is now spawned
-            client.Player.ObjectComponent.Spawned = true;
+            client.Player.Object.Spawned = true;
         }
     }
 }

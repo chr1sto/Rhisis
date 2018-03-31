@@ -82,11 +82,11 @@ namespace Rhisis.World.Systems.NpcShop
 
             if (npc.Shop == null)
             {
-                Logger.Error("ShopSystem: NPC '{0}' doesn't have a shop.", npc.ObjectComponent.Name);
+                Logger.Error("ShopSystem: NPC '{0}' doesn't have a shop.", npc.Object.Name);
                 return;
             }
-
-            player.PlayerComponent.CurrentShopName = npc.ObjectComponent.Name;
+            
+            player.PlayerData.CurrentShopName = npc.Object.Name;
 
             WorldPacketFactory.SendNpcShop(player, npc);
         }
@@ -98,7 +98,7 @@ namespace Rhisis.World.Systems.NpcShop
         /// <param name="e"></param>
         private void CloseShop(IPlayerEntity player, NpcShopEventArgs e)
         {
-            player.PlayerComponent.CurrentShopName = null;
+            player.PlayerData.CurrentShopName = null;
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace Rhisis.World.Systems.NpcShop
             if (!(e is NpcShopBuyItemEventArgs npcEvent))
                 throw new ArgumentException("ShopSystem: Invalid event arguments for BuyItem action.");
 
-            if (!WorldServer.Npcs.TryGetValue(player.PlayerComponent.CurrentShopName, out NpcData npcData))
+            if (!WorldServer.Npcs.TryGetValue(player.PlayerData.CurrentShopName, out NpcData npcData))
             {
-                Logger.Error($"ShopSystem: Cannot find NPC: {player.PlayerComponent.CurrentShopName}");
+                Logger.Error($"ShopSystem: Cannot find NPC: {player.PlayerData.CurrentShopName}");
                 return;
             }
 
@@ -135,13 +135,13 @@ namespace Rhisis.World.Systems.NpcShop
 
             if (shopItem.Id != npcEvent.ItemId)
             {
-                Logger.Error($"ShopSystem: Shop item id doens't match the item id that {player.ObjectComponent.Name} is trying to buy.");
+                Logger.Error($"ShopSystem: Shop item id doens't match the item id that {player.Object.Name} is trying to buy.");
                 return;
             }
 
-            if (player.PlayerComponent.Gold < npcEvent.ItemData.Cost)
+            if (player.PlayerData.Gold < npcEvent.ItemData.Cost)
             {
-                Logger.Info($"ShopSystem: {player.ObjectComponent.Name} doens't have enough gold to buy item {npcEvent.ItemData.Name} at {npcEvent.ItemData.Cost}.");
+                Logger.Info($"ShopSystem: {player.Object.Name} doens't have enough gold to buy item {npcEvent.ItemData.Name} at {npcEvent.ItemData.Cost}.");
                 WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
                 return;
             }
@@ -163,16 +163,16 @@ namespace Rhisis.World.Systems.NpcShop
 
                             quantity -= boughtQuantity;
                             inventoryItem.Quantity = inventoryItem.Data.PackMax;
-                            player.PlayerComponent.Gold -= cost * boughtQuantity;
+                            player.PlayerData.Gold -= cost * boughtQuantity;
                         }
                         else
                         {
                             inventoryItem.Quantity += quantity;
-                            player.PlayerComponent.Gold -= cost * quantity;
+                            player.PlayerData.Gold -= cost * quantity;
                             quantity = 0;
                         }
 
-                        WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerComponent.Gold);
+                        WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
                         WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
                     }
                 }
@@ -189,9 +189,9 @@ namespace Rhisis.World.Systems.NpcShop
 
                         if (player.Inventory.CreateItem(item))
                         {
-                            player.PlayerComponent.Gold -= cost;
+                            player.PlayerData.Gold -= cost;
                             WorldPacketFactory.SendItemCreation(player, item);
-                            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerComponent.Gold);
+                            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
                         }
                         else
                         {
@@ -214,9 +214,9 @@ namespace Rhisis.World.Systems.NpcShop
 
                     if (player.Inventory.CreateItem(item))
                     {
-                        player.PlayerComponent.Gold -= cost;
+                        player.PlayerData.Gold -= cost;
                         WorldPacketFactory.SendItemCreation(player, item);
-                        WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerComponent.Gold);
+                        WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
                     }
                     else
                     {
@@ -255,11 +255,11 @@ namespace Rhisis.World.Systems.NpcShop
 
             Logger.Debug("Selling item: '{0}' for {1}", itemToSell.Data.Name, sellPrice);
 
-            player.PlayerComponent.Gold += sellPrice * npcEvent.Quantity;
+            player.PlayerData.Gold += sellPrice * npcEvent.Quantity;
             itemToSell.Quantity -= npcEvent.Quantity;
 
             WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToSell.UniqueId, itemToSell.Quantity);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerComponent.Gold);
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
 
             if (itemToSell.Quantity <= 0)
                 itemToSell.Reset();

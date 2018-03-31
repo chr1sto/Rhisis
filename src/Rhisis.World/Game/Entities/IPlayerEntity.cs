@@ -6,13 +6,13 @@ namespace Rhisis.World.Game.Entities
 {
     public interface IPlayerEntity : IEntity, IMovableEntity
     {
-        HumanComponent HumanComponent { get; set; }
+        VisualAppearenceComponent VisualAppearance { get; set; }
 
-        PlayerComponent PlayerComponent { get; set; }
+        PlayerComponent PlayerData { get; set; }
 
         ItemContainerComponent Inventory { get; set; }
 
-        StatisticsComponent StatisticsComponent { get; set; }
+        StatisticsComponent Statistics { get; set; }
         
         NetUser Connection { get; set; }
     }

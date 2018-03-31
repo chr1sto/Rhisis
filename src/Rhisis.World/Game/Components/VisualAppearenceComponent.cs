@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.World.Game.Components
 {
-    public class HumanComponent
+    public class VisualAppearenceComponent
     {
         public byte Gender { get; set; }
 

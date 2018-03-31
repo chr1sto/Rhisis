@@ -45,16 +45,16 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
-            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.ObjectComponent.Position, 0.1f))
+            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
-                Logger.Debug("{0} arrived to destination", entity.ObjectComponent.Name);
+                Logger.Debug("{0} arrived to destination", entity.Object.Name);
                 entity.MovableComponent.DestinationPosition.Reset();
             }
             else
             {
                 double speed = ((entity.MovableComponent.Speed * 100) * this.Context.Time);
-                float distanceX = entity.MovableComponent.DestinationPosition.X - entity.ObjectComponent.Position.X;
-                float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.ObjectComponent.Position.Z;
+                float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
+                float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
                 // Normalize
@@ -68,8 +68,8 @@ namespace Rhisis.World.Systems
                 if (Math.Abs(offsetZ) > Math.Abs(distanceZ))
                     offsetZ = distanceZ;
 
-                entity.ObjectComponent.Position.X += (float)offsetX;
-                entity.ObjectComponent.Position.Z += (float)offsetZ;
+                entity.Object.Position.X += (float)offsetX;
+                entity.Object.Position.Z += (float)offsetZ;
             }
         }
     }

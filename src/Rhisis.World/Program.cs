@@ -5,9 +5,9 @@ namespace Rhisis.World
 {
     public static class Program
     {
-        private static readonly string ProgramTitle = "Rhisis - WorldServer";
+        private const string ProgramTitle = "Rhisis - WorldServer";
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             Console.Title = ProgramTitle;
             CultureInfo.CurrentCulture = new CultureInfo("en-US");

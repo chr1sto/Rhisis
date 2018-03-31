@@ -15,12 +15,12 @@ namespace Rhisis.World.Packets
             {
                 packet.StartNewMergedPacket(player.Id, SnapshotType.SETSTATE);
 
-                packet.Write<uint>(player.StatisticsComponent.Strenght);
-                packet.Write<uint>(player.StatisticsComponent.Stamina);
-                packet.Write<uint>(player.StatisticsComponent.Dexterity);
-                packet.Write<uint>(player.StatisticsComponent.Intelligence);
+                packet.Write<uint>(player.Statistics.Strenght);
+                packet.Write<uint>(player.Statistics.Stamina);
+                packet.Write<uint>(player.Statistics.Dexterity);
+                packet.Write<uint>(player.Statistics.Intelligence);
                 packet.Write(0);
-                packet.Write<uint>(player.StatisticsComponent.StatPoints);
+                packet.Write<uint>(player.Statistics.StatPoints);
 
                 player.Connection.Send(packet);
             }

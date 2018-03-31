@@ -87,33 +87,33 @@ namespace Rhisis.World
             if (this.Player == null)
                 return;
 
-            this.Player.ObjectComponent.Spawned = false;
+            this.Player.Object.Spawned = false;
 
             using (DatabaseContext db = DatabaseService.GetContext())
             {
-                Character character = db.Characters.Get(this.Player.PlayerComponent.Id);
+                Character character = db.Characters.Get(this.Player.PlayerData.Id);
 
                 if (character != null)
                 {
-                    character.PosX = this.Player.ObjectComponent.Position.X;
-                    character.PosY = this.Player.ObjectComponent.Position.Y;
-                    character.PosZ = this.Player.ObjectComponent.Position.Z;
-                    character.Angle = this.Player.ObjectComponent.Angle;
-                    character.MapId = this.Player.ObjectComponent.MapId;
-                    character.Gender = this.Player.HumanComponent.Gender;
-                    character.HairColor = this.Player.HumanComponent.HairColor;
-                    character.HairId = this.Player.HumanComponent.HairId;
-                    character.FaceId = this.Player.HumanComponent.FaceId;
-                    character.SkinSetId = this.Player.HumanComponent.SkinSetId;
-                    character.Level = this.Player.ObjectComponent.Level;
+                    character.PosX = this.Player.Object.Position.X;
+                    character.PosY = this.Player.Object.Position.Y;
+                    character.PosZ = this.Player.Object.Position.Z;
+                    character.Angle = this.Player.Object.Angle;
+                    character.MapId = this.Player.Object.MapId;
+                    character.Gender = this.Player.VisualAppearance.Gender;
+                    character.HairColor = this.Player.VisualAppearance.HairColor;
+                    character.HairId = this.Player.VisualAppearance.HairId;
+                    character.FaceId = this.Player.VisualAppearance.FaceId;
+                    character.SkinSetId = this.Player.VisualAppearance.SkinSetId;
+                    character.Level = this.Player.Object.Level;
 
-                    character.Gold = this.Player.PlayerComponent.Gold;
+                    character.Gold = this.Player.PlayerData.Gold;
 
-                    character.Strength = this.Player.StatisticsComponent.Strenght;
-                    character.Stamina = this.Player.StatisticsComponent.Stamina;
-                    character.Dexterity = this.Player.StatisticsComponent.Dexterity;
-                    character.Intelligence = this.Player.StatisticsComponent.Intelligence;
-                    character.StatPoints = this.Player.StatisticsComponent.StatPoints;
+                    character.Strength = this.Player.Statistics.Strenght;
+                    character.Stamina = this.Player.Statistics.Stamina;
+                    character.Dexterity = this.Player.Statistics.Dexterity;
+                    character.Intelligence = this.Player.Statistics.Intelligence;
+                    character.StatPoints = this.Player.Statistics.StatPoints;
 
                     // Save inventory
 
@@ -136,7 +136,7 @@ namespace Rhisis.World
 
                             if (dbItem != null)
                             {
-                                dbItem.CharacterId = this.Player.PlayerComponent.Id;
+                                dbItem.CharacterId = this.Player.PlayerData.Id;
                                 dbItem.ItemId = item.Id;
                                 dbItem.ItemCount = item.Quantity;
                                 dbItem.ItemSlot = item.Slot;
@@ -149,7 +149,7 @@ namespace Rhisis.World
                             {
                                 dbItem = new Item
                                 {
-                                    CharacterId = this.Player.PlayerComponent.Id,
+                                    CharacterId = this.Player.PlayerData.Id,
                                     CreatorId = item.CreatorId,
                                     ItemId = item.Id,
                                     ItemCount = item.Quantity,
@@ -176,7 +176,7 @@ namespace Rhisis.World
         private void DespawnPlayer(Map currentMap)
         {
             IEnumerable<IEntity> entitiesAround = from x in currentMap.Context.Entities
-                                                  where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange) && x != this.Player
+                                                  where this.Player.Object.Position.IsInCircle(x.Object.Position, VisibilitySystem.VisibilityRange) && x != this.Player
                                                   select x;
 
             foreach (IEntity entity in entitiesAround)
@@ -188,7 +188,7 @@ namespace Rhisis.World
                     WorldPacketFactory.SendDespawnObjectTo(otherPlayerEntity, this.Player);
                 }
 
-                entity.ObjectComponent.Entities.Remove(this.Player);
+                entity.Object.Entities.Remove(this.Player);
             }
 
             currentMap.Context.DeleteEntity(this.Player);
@@ -199,7 +199,7 @@ namespace Rhisis.World
         {
             if (disposing)
             {
-                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.ObjectComponent.MapId, out Map currentMap))
+                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.Object.MapId, out Map currentMap))
                 {
                     this.DespawnPlayer(currentMap);
                 }

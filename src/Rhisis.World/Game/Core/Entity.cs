@@ -31,7 +31,7 @@ namespace Rhisis.World.Game.Core
         /// <summary>
         /// Gets the entity object component.
         /// </summary>
-        public ObjectComponent ObjectComponent { get; set; }
+        public ObjectComponent Object { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="Entity"/> instance.
@@ -41,7 +41,7 @@ namespace Rhisis.World.Game.Core
         {
             this.Id = RandomHelper.GenerateUniqueId();
             this.Context = context;
-            this.ObjectComponent = new ObjectComponent();
+            this.Object = new ObjectComponent();
         }
 
         /// <summary>
