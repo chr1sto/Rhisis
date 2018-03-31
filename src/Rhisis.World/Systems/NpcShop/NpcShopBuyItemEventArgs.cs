@@ -16,16 +16,28 @@ namespace Rhisis.World.Systems.NpcShop
         public int Quantity { get; }
 
         /// <summary>
+        /// Gets the tab id where the item is located.
+        /// </summary>
+        public int Tab { get; }
+
+        /// <summary>
+        /// Gets the slot id where the item is located.
+        /// </summary>
+        public int Slot { get; }
+
+        /// <summary>
         /// Gets the item data.
         /// </summary>
         public ItemData ItemData { get; private set; }
 
         /// <inheritdoc />
-        public NpcShopBuyItemEventArgs(int itemId, int quantity)
-            : base(NpcShopActionType.Buy, itemId, quantity)
+        public NpcShopBuyItemEventArgs(int itemId, int quantity, int tab, int slot)
+            : base(NpcShopActionType.Buy, itemId, quantity, tab, slot)
         {
             this.ItemId = itemId;
             this.Quantity = quantity;
+            this.Tab = tab;
+            this.Slot = slot;
         }
 
         /// <inheritdoc />
@@ -36,7 +48,9 @@ namespace Rhisis.World.Systems.NpcShop
 
             this.ItemData = itemData;
 
-            return this.ItemId > 0 && this.Quantity > 0 && this.Quantity <= this.ItemData.PackMax;
+            return this.ItemId > 0 
+                && this.Quantity > 0 && this.Quantity <= this.ItemData.PackMax 
+                && this.Tab >= 0 && this.Tab < ShopData.DefaultTabCount;
         }
     }
 }

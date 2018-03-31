@@ -7,5 +7,7 @@
         public int Slot { get; set; }
 
         public int Gold { get; set; }
+
+        public string CurrentShopName { get; set; }
     }
 }

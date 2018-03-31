@@ -36,12 +36,8 @@ namespace Rhisis.Core.Network.Packets.World
             this.Quantity = packet.Read<short>();
             this.ItemId = packet.Read<int>();
         }
-
-        /// <summary>
-        /// Compares two <see cref="BuyItemPacket"/> instances.
-        /// </summary>
-        /// <param name="other">Other packet</param>
-        /// <returns></returns>
+        
+        /// <inheritdoc />
         public bool Equals(BuyItemPacket other)
         {
             return this.Tab == other.Tab 

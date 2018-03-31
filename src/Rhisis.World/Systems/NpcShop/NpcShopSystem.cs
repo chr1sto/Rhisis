@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.Core.IO;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
@@ -45,6 +46,10 @@ namespace Rhisis.World.Systems.NpcShop
                     this.OpenShop(player, shopEvent);
                     break;
 
+                case NpcShopActionType.Close:
+                    this.CloseShop(player, shopEvent);
+                    break;
+
                 case NpcShopActionType.Buy:
                     this.BuyItem(player, shopEvent);
                     break;
@@ -60,7 +65,7 @@ namespace Rhisis.World.Systems.NpcShop
         /// <summary>
         /// Opens the NPC Shop.
         /// </summary>
-        /// <param name="player"></param>
+        /// <param name="player">Player entity</param>
         /// <param name="e"></param>
         private void OpenShop(IPlayerEntity player, NpcShopEventArgs e)
         {
@@ -71,26 +76,72 @@ namespace Rhisis.World.Systems.NpcShop
 
             if (npc == null)
             {
-                Logger.Error("Cannot find NPC with object id : {0}", npcEvent.NpcObjectId);
+                Logger.Error("ShopSystem: Cannot find NPC with object id : {0}", npcEvent.NpcObjectId);
                 return;
             }
 
             if (npc.Shop == null)
             {
-                Logger.Error("NPC '{0}' doesn't have a shop.", npc.ObjectComponent.Name);
+                Logger.Error("ShopSystem: NPC '{0}' doesn't have a shop.", npc.ObjectComponent.Name);
                 return;
             }
+
+            player.PlayerComponent.CurrentShopName = npc.ObjectComponent.Name;
 
             WorldPacketFactory.SendNpcShop(player, npc);
         }
 
+        /// <summary>
+        /// Closes the current shop.
+        /// </summary>
+        /// <param name="player">Player entity</param>
+        /// <param name="e"></param>
+        private void CloseShop(IPlayerEntity player, NpcShopEventArgs e)
+        {
+            player.PlayerComponent.CurrentShopName = null;
+        }
+
+        /// <summary>
+        /// Buys an item from the current shop.
+        /// </summary>
+        /// <param name="player">Player entity</param>
+        /// <param name="e"></param>
         private void BuyItem(IPlayerEntity player, NpcShopEventArgs e)
         {
             if (!(e is NpcShopBuyItemEventArgs npcEvent))
                 throw new ArgumentException("ShopSystem: Invalid event arguments for BuyItem action.");
 
+            if (!WorldServer.Npcs.TryGetValue(player.PlayerComponent.CurrentShopName, out NpcData npcData))
+            {
+                Logger.Error($"ShopSystem: Cannot find NPC: {player.PlayerComponent.CurrentShopName}");
+                return;
+            }
+
+            if (!npcData.HasShop)
+            {
+                Logger.Error($"ShopSystem: NPC {npcData.Name} doesn't have a shop.");
+                return;
+            }
+
+            var currentTab = npcData.Shop.Items[npcEvent.Tab];
+
+            if (npcEvent.Slot < 0 || npcEvent.Slot > currentTab.Count - 1)
+            {
+                Logger.Error($"ShopSystem: Item slot index was out of tab bounds. Slot: {npcEvent.Slot}");
+                return;
+            }
+
+            var shopItem = currentTab[npcEvent.Slot];
+
+            if (shopItem.Id != npcEvent.ItemId)
+            {
+                Logger.Error($"ShopSystem: Shop item id doens't match the item id that {player.ObjectComponent.Name} is trying to buy.");
+                return;
+            }
+
             if (player.PlayerComponent.Gold < npcEvent.ItemData.Cost)
             {
+                Logger.Info($"ShopSystem: {player.ObjectComponent.Name} doens't have enough gold to buy item {npcEvent.ItemData.Name} at {npcEvent.ItemData.Cost}.");
                 WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
                 return;
             }
@@ -177,9 +228,41 @@ namespace Rhisis.World.Systems.NpcShop
             }
         }
 
+        /// <summary>
+        /// Sells an item to a NPC shop.
+        /// </summary>
+        /// <param name="player">Player entity</param>
+        /// <param name="e"></param>
         private void SellItem(IPlayerEntity player, NpcShopEventArgs e)
         {
-            throw new NotImplementedException();
+            if (!(e is NpcShopSellItemEventArgs npcEvent))
+                throw new ArgumentException("ShopSystem: Invalid event arguments for SellItem action.");
+
+            Item itemToSell = player.Inventory.GetItem(npcEvent.ItemUniqueId);
+
+            if (itemToSell?.Data == null)
+                throw new InvalidOperationException($"ShopSystem: Cannot find item with unique id: {npcEvent.ItemUniqueId}");
+
+            if (npcEvent.Quantity > itemToSell.Data.PackMax)
+                throw new InvalidOperationException($"ShopSystem: Cannot sell more items than the pack max value. {npcEvent.Quantity} > {itemToSell.Data.PackMax}");
+
+            // TODO: make more checks:
+            // is a quest item
+            // is sealed to character
+            // ect...
+
+            int sellPrice = itemToSell.Data.Cost / 4;
+
+            Logger.Debug("Selling item: '{0}' for {1}", itemToSell.Data.Name, sellPrice);
+
+            player.PlayerComponent.Gold += sellPrice * npcEvent.Quantity;
+            itemToSell.Quantity -= npcEvent.Quantity;
+
+            WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToSell.UniqueId, itemToSell.Quantity);
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerComponent.Gold);
+
+            if (itemToSell.Quantity <= 0)
+                itemToSell.Reset();
         }
     }
 }
