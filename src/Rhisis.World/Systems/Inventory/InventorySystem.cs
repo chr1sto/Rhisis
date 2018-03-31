@@ -75,7 +75,7 @@ namespace Rhisis.World.Systems.Inventory
                     // Nothing to do.
                     break;
                 default:
-                    Logger.Warning("Unknown inventory action type: {0} for player {1} ", inventoryEvent.ActionType.ToString(), entity.ObjectComponent.Name);
+                    Logger.Warning("Unknown inventory action type: {0} for player {1} ", inventoryEvent.ActionType.ToString(), entity.Object.Name);
                     break;
             }
         }
@@ -194,14 +194,14 @@ namespace Rhisis.World.Systems.Inventory
                 Logger.Debug("Item: {0}", item.ToString());
 
                 // TODO: check if the player fits the item requirements
-                if (item.Data.ItemKind1 == ItemKind1.ARMOR && item.Data.ItemSex != player.HumanComponent.Gender)
+                if (item.Data.ItemKind1 == ItemKind1.ARMOR && item.Data.ItemSex != player.VisualAppearance.Gender)
                 {
                     Logger.Debug("Wrong sex for armor");
                     // TODO: Send invalid sex error
                     return;
                 }
 
-                if (player.ObjectComponent.Level < item.Data.LimitLevel)
+                if (player.Object.Level < item.Data.LimitLevel)
                 {
                     Logger.Debug("Player level to low");
                     // TODO: Send low level error

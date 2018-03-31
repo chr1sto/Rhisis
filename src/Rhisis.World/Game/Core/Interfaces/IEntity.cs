@@ -27,6 +27,6 @@ namespace Rhisis.World.Game.Core.Interfaces
         /// <summary>
         /// Gets the entity object component.
         /// </summary>
-        ObjectComponent ObjectComponent { get; set; }
+        ObjectComponent Object { get; set; }
     }
 }

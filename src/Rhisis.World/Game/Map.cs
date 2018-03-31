@@ -107,7 +107,7 @@ namespace Rhisis.World.Game
                         {
                             var monster = map.Context.CreateEntity<MonsterEntity>();
 
-                            monster.ObjectComponent = new ObjectComponent
+                            monster.Object = new ObjectComponent
                             {
                                 MapId = mapId,
                                 ModelId = rgnElement.Model,
@@ -142,7 +142,7 @@ namespace Rhisis.World.Game
         {
             var npc = map.Context.CreateEntity<NpcEntity>();
 
-            npc.ObjectComponent = new ObjectComponent
+            npc.Object = new ObjectComponent
             {
                 MapId = map.Id,
                 ModelId = element.Index,
@@ -155,7 +155,7 @@ namespace Rhisis.World.Game
                 Level = 1
             };
 
-            if (WorldServer.Npcs.TryGetValue(npc.ObjectComponent.Name, out NpcData npcData))
+            if (WorldServer.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
                 if (npcData.HasShop)
                 {

@@ -35,16 +35,16 @@ namespace Rhisis.World.Systems
         {
             foreach (var otherEntity in this.Context.Entities)
             {
-                if (entity.Id != otherEntity.Id && otherEntity.ObjectComponent.Spawned)
+                if (entity.Id != otherEntity.Id && otherEntity.Object.Spawned)
                 {
                     if (this.CanSee(entity, otherEntity))
                     {
-                        if (!entity.ObjectComponent.Entities.Contains(otherEntity))
+                        if (!entity.Object.Entities.Contains(otherEntity))
                             this.SpawnOtherEntity(entity, otherEntity);
                     }
                     else
                     {
-                        if (entity.ObjectComponent.Entities.Contains(otherEntity))
+                        if (entity.Object.Entities.Contains(otherEntity))
                             this.DespawnOtherEntity(entity, otherEntity);
                     }
                 }
@@ -60,14 +60,14 @@ namespace Rhisis.World.Systems
         {
             var player = entity as IPlayerEntity;
 
-            entity.ObjectComponent.Entities.Add(otherEntity);
+            entity.Object.Entities.Add(otherEntity);
             WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
 
-            if (otherEntity.Type != WorldEntityType.Player && !otherEntity.ObjectComponent.Entities.Contains(entity))
-                otherEntity.ObjectComponent.Entities.Add(entity);
+            if (otherEntity.Type != WorldEntityType.Player && !otherEntity.Object.Entities.Contains(entity))
+                otherEntity.Object.Entities.Add(entity);
 
             if (otherEntity is IMovableEntity movableEntity &&
-                movableEntity.MovableComponent.DestinationPosition != movableEntity.ObjectComponent.Position)
+                movableEntity.MovableComponent.DestinationPosition != movableEntity.Object.Position)
                 WorldPacketFactory.SendDestinationPosition(player.Connection, movableEntity);
         }
 
@@ -81,10 +81,10 @@ namespace Rhisis.World.Systems
             var player = entity as IPlayerEntity;
 
             WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
-            entity.ObjectComponent.Entities.Remove(otherEntity);
+            entity.Object.Entities.Remove(otherEntity);
             
-            if (otherEntity.Type != WorldEntityType.Player && otherEntity.ObjectComponent.Entities.Contains(entity))
-                otherEntity.ObjectComponent.Entities.Remove(entity);
+            if (otherEntity.Type != WorldEntityType.Player && otherEntity.Object.Entities.Contains(entity))
+                otherEntity.Object.Entities.Remove(entity);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Rhisis.World.Systems
         /// <returns>Can see or not the other entity</returns>
         private bool CanSee(IEntity entity, IEntity otherEntity)
         {
-            return entity.ObjectComponent.Position.IsInCircle(otherEntity.ObjectComponent.Position, VisibilityRange) 
+            return entity.Object.Position.IsInCircle(otherEntity.Object.Position, VisibilityRange) 
                 && entity != otherEntity;
         }
     }

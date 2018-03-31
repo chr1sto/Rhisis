@@ -13,7 +13,7 @@ namespace Rhisis.World.Game.Chat
         [ChatCommand("/item")]
         public static void CreateItem(IPlayerEntity player, string[] parameters)
         {
-            Logger.Debug("{0} want to create an item", player.ObjectComponent.Name);
+            Logger.Debug("{0} want to create an item", player.Object.Name);
 
             if (parameters.Length <= 0)
             {
@@ -40,7 +40,7 @@ namespace Rhisis.World.Game.Chat
             if (parameters.Length >= 2)
                 int.TryParse(parameters[1], out quantity);
 
-            var createItemEvent = new InventoryCreateItemEventArgs(itemId, quantity, player.PlayerComponent.Id);
+            var createItemEvent = new InventoryCreateItemEventArgs(itemId, quantity, player.PlayerData.Id);
             player.Context.NotifySystem<InventorySystem>(player, createItemEvent);
         }
     }

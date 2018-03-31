@@ -15,7 +15,7 @@ namespace Rhisis.World.Packets
     {
         public static void SendToVisible(INetPacketStream packet, IEntity player)
         {
-            IEnumerable<IPlayerEntity> visiblePlayers = from x in player.ObjectComponent.Entities
+            IEnumerable<IPlayerEntity> visiblePlayers = from x in player.Object.Entities
                                                         where x.Type == WorldEntityType.Player
                                                         select x as IPlayerEntity;
 

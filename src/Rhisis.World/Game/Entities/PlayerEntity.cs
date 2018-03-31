@@ -9,15 +9,15 @@ namespace Rhisis.World.Game.Entities
     {
         public override WorldEntityType Type => WorldEntityType.Player;
         
-        public HumanComponent HumanComponent { get; set; }
+        public VisualAppearenceComponent VisualAppearance { get; set; }
 
-        public PlayerComponent PlayerComponent { get; set; }
+        public PlayerComponent PlayerData { get; set; }
 
         public MovableComponent MovableComponent { get; set; }
 
         public ItemContainerComponent Inventory { get; set; }
 
-        public StatisticsComponent StatisticsComponent { get; set; }
+        public StatisticsComponent Statistics { get; set; }
 
         public NetUser Connection { get; set; }
 
