@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Components;
+﻿using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core.Interfaces;
 
 namespace Rhisis.World.Game.Entities
@@ -12,5 +13,10 @@ namespace Rhisis.World.Game.Entities
         /// One item container represents one shop tab.
         /// </remarks>
         ItemContainerComponent[] Shop { get; set; }
+
+        /// <summary>
+        /// Gets the NPC data.
+        /// </summary>
+        NpcData Data { get; }
     }
 }

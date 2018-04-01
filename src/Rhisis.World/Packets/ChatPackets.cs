@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
+using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Packets
@@ -20,6 +21,17 @@ namespace Rhisis.World.Packets
 
                 player.Connection.Send(packet);
                 SendToVisible(packet, player);
+            }
+        }
+
+        public static void SendChatTo(IEntity fromEntity, IPlayerEntity toPlayer, string message)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(fromEntity.Id, SnapshotType.CHAT);
+                packet.Write(message);
+
+                toPlayer.Connection.Send(packet);
             }
         }
     }

@@ -157,6 +157,8 @@ namespace Rhisis.World.Game
 
             if (WorldServer.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
+                npc.Data = npcData;
+
                 if (npcData.HasShop)
                 {
                     npc.Shop = new ItemContainerComponent[npcData.Shop.Items.Length];

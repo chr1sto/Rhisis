@@ -15,7 +15,7 @@ namespace Rhisis.World.Game.Core
         /// Creates a new <see cref="SystemEventArgs"/> instance.
         /// </summary>
         /// <param name="args">System arguments</param>
-        protected SystemEventArgs(object[] args)
+        protected SystemEventArgs(params object[] args)
         {
             this._arguments = args;            
         }
