@@ -50,13 +50,23 @@ namespace Rhisis.Core.Structures.Game
         public bool HasShop => this.Shop != null;
 
         /// <summary>
+        /// Gets the NPC Dialog.
+        /// </summary>
+        public DialogData Dialog { get; }
+
+        /// <summary>
+        /// Gets a value that indicates if the NPC has a dialog.
+        /// </summary>
+        public bool HasDialog => this.Dialog != null;
+
+        /// <summary>
         /// Creates a new <see cref="NpcData"/> instance.
         /// </summary>
         /// <param name="id">Npc id</param>
         /// <param name="name">Npc Name</param>
         public NpcData(string id, string name)
-            : this(id, name, null)
-        {   
+            : this(id, name, null, null)
+        {
         }
 
         /// <summary>
@@ -66,10 +76,23 @@ namespace Rhisis.Core.Structures.Game
         /// <param name="name">Npc Name</param>
         /// <param name="shop">Npc Shop</param>
         public NpcData(string id, string name, ShopData shop)
+            : this(id, name, shop, null)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="NpcData"/> instance.
+        /// </summary>
+        /// <param name="id">Npc id</param>
+        /// <param name="name">Npc Name</param>
+        /// <param name="shop">Npc Shop</param>
+        /// <param name="dialog">Npc dialog</param>
+        public NpcData(string id, string name, ShopData shop, DialogData dialog)
         {
             this.Id = id;
             this.Name = name;
             this.Shop = shop;
+            this.Dialog = dialog;
         }
     }
 }

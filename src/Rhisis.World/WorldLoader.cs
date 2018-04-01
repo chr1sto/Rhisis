@@ -25,6 +25,7 @@ namespace Rhisis.World
         private static readonly IDictionary<int, ItemData> ItemsData = new Dictionary<int, ItemData>();
         private static readonly IDictionary<string, NpcData> NpcData = new Dictionary<string, NpcData>();
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
+        private static readonly IDictionary<string, DialogData> DialogData = new Dictionary<string, DialogData>();
 
         /// <summary>
         /// Gets the Movers data.
@@ -124,6 +125,7 @@ namespace Rhisis.World
             Logger.Loading("Loading npcs...");
 
             this.LoadNpcShops();
+            this.LoadNpcDialogs();
 
             foreach (string file in files)
             {
@@ -149,8 +151,10 @@ namespace Rhisis.World
                             }
                         }
 
-                        ShopData shop = ShopData.ContainsKey(npcId) ? ShopData[npcId] : null;
-                        var newNpc = new NpcData(npcId, npcName, shop);
+                        ShopData.TryGetValue(npcId, out ShopData shop);
+                        DialogData.TryGetValue(npcId, out DialogData dialog);
+
+                        var newNpc = new NpcData(npcId, npcName, shop, dialog);
 
                         if (!NpcData.ContainsKey(newNpc.Id))
                             NpcData.Add(newNpc.Id, newNpc);
@@ -197,6 +201,44 @@ namespace Rhisis.World
 
                     if (!ShopData.ContainsKey(shop.Name))
                         ShopData.Add(shop.Name, shop);
+                }
+            }
+        }
+
+        private void LoadNpcDialogs()
+        {
+            string dialogsPath = Path.Combine(DataPath, "dialogs", this.WorldConfiguration.Language);
+
+            if (!Directory.Exists(dialogsPath))
+            {
+                Logger.Warning("Cannot find {0} directory.", dialogsPath);
+                return;
+            }
+
+            string[] dialogFiles = Directory.GetFiles(dialogsPath);
+
+            foreach (string dialogFile in dialogFiles)
+            {
+                string dialogFileContent = File.ReadAllText(dialogFile);
+                JToken dialogsParsed = JToken.Parse(dialogFileContent, new JsonLoadSettings
+                {
+                    CommentHandling = CommentHandling.Ignore
+                });
+
+                if (dialogsParsed.Type == JTokenType.Array)
+                {
+                    var dialogs = dialogsParsed.ToObject<DialogData[]>();
+
+                    foreach (DialogData dialog in dialogs)
+                        if (!DialogData.ContainsKey(dialog.Name))
+                            DialogData.Add(dialog.Name, dialog);
+                }
+                else
+                {
+                    var dialog = dialogsParsed.ToObject<DialogData>();
+
+                    if (!DialogData.ContainsKey(dialog.Name))
+                        DialogData.Add(dialog.Name, dialog);
                 }
             }
         }
