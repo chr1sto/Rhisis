@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Components;
+﻿using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 
@@ -12,6 +13,9 @@ namespace Rhisis.World.Game.Entities
         /// <inheritdoc />
         public ItemContainerComponent[] Shop { get; set; }
 
+        /// <inheritdoc />
+        public NpcData Data { get; set; }
+        
         /// <summary>
         /// Creates a new <see cref="NpcEntity"/> instance.
         /// </summary>
