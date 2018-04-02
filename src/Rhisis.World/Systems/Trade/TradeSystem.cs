@@ -67,10 +67,22 @@ namespace Rhisis.World.Systems.Trade
 
             if (!(args[0] is int target))
                 throw new ArgumentException("Trade request argument have to be an integer.", nameof(args));
-            
+
+            if (target == player.Id)
+            {
+                Logger.Error($"Can't start a Trade with ourselve ({target})");
+                return;
+            }
+
             if (!(player.Context.FindEntity<IPlayerEntity>(target) is IPlayerEntity targetEntity))
             {
                 Logger.Error($"Can't find entity of id {target}");
+                return;
+            }
+
+            if (player.Trade.TargetId != 0 || targetEntity.Trade.TargetId != 0)
+            {
+                Logger.Error($"Can't start a Trade when one is already in progress ({target})");
                 return;
             }
 
@@ -90,9 +102,21 @@ namespace Rhisis.World.Systems.Trade
             if (!(args[0] is int target))
                 throw new ArgumentException("Trade request argument have to be an integer.", nameof(args));
 
+            if (target == player.Id)
+            {
+                Logger.Error($"Can't start a Trade with ourselve ({target})");
+                return;
+            }
+
             if (!(player.Context.FindEntity<IPlayerEntity>(target) is IPlayerEntity targetEntity))
             {
                 Logger.Error($"Can't find entity of id {target}");
+                return;
+            }
+
+            if (player.Trade.TargetId != 0 || targetEntity.Trade.TargetId != 0)
+            {
+                Logger.Error($"Can't start a Trade when one is already in progress ({target})");
                 return;
             }
 
