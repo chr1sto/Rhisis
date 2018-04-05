@@ -4,6 +4,7 @@ using System.Text;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Systems.Trade;
 
 namespace Rhisis.World.Packets
 {
@@ -19,13 +20,30 @@ namespace Rhisis.World.Packets
             }
         }
 
-        public static void SendTrade(IPlayerEntity player, int traderId, int playerId)
+        public static void SendTrade(IPlayerEntity player, IPlayerEntity target, int playerId)
         {
             using (var packet = new FFPacket())
             {
-                packet.StartNewMergedPacket(traderId, SnapshotType.TRADE);
+                packet.StartNewMergedPacket(target.Id, SnapshotType.TRADE);
 
                 packet.Write(playerId);
+
+                target.Inventory.Serialize(packet);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        public static void SendTradePut(IPlayerEntity player, int traderId, byte slot, byte itemType, byte id, short count)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(traderId, SnapshotType.TRADEPUT);
+
+                packet.Write(slot);
+                packet.Write(itemType);
+                packet.Write(id);
+                packet.Write(count);
 
                 player.Connection.Send(packet);
             }

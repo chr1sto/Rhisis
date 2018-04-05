@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Ether.Network.Packets;
+﻿using Ether.Network.Packets;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Network.Packets.World;
-using Rhisis.World.Systems;
+using Rhisis.Core.Network.Packets.World.Trade;
 using Rhisis.World.Systems.Trade;
 
 namespace Rhisis.World.Handlers
@@ -16,7 +12,7 @@ namespace Rhisis.World.Handlers
         public static void OnTradeRequest(WorldClient client, INetPacketStream packet)
         {
             var tradePacket = new TradeRequestPacket(packet);
-            var tradeEvent = new TradeEventArgs(TradeActionType.TradeRequest, tradePacket.Target);
+            var tradeEvent = new TradeRequestEventArgs(tradePacket.Target);
 
             client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
         }
@@ -25,7 +21,17 @@ namespace Rhisis.World.Handlers
         public static void OnTrade(WorldClient client, INetPacketStream packet)
         {
             var tradePacket = new TradeRequestPacket(packet);
-            var tradeEvent = new TradeEventArgs(TradeActionType.Trade, tradePacket.Target);
+            var tradeEvent = new TradeBeginEventArgs(tradePacket.Target);
+
+            client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
+        }
+
+        [PacketHandler(PacketType.TRADEPUT)]
+        public static void OnTradePut(WorldClient client, INetPacketStream packet)
+        {
+            var tradePacket = new TradePutPacket(packet);
+            var tradeEvent = new TradePutEventArgs(tradePacket.Position, tradePacket.ItemType, tradePacket.ItemId,
+                tradePacket.Count);
 
             client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
         }

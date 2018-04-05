@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Rhisis.Database.Structures;
+using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Game.Components
 {
@@ -13,6 +14,8 @@ namespace Rhisis.World.Game.Components
 
         public int TargetId { get; set; }
 
+        public ItemContainerComponent Items { get; private set; }
+
         /// <summary>
         /// Confirmation state
         /// </summary>
@@ -23,15 +26,12 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public TradeState State { get; set; }
 
-        public TradeComponent(Character character)
+        public TradeComponent()
         {
             this.TargetId = 0;
             Confirm = TradeConfirm.Error;
             State = TradeState.Item;
-        }
-
-        public TradeComponent()
-        {
+            Items = new ItemContainerComponent(InventorySystem.MaxItems);
         }
     }
 }
