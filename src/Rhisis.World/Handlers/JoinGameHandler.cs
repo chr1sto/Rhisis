@@ -83,7 +83,7 @@ namespace Rhisis.World.Handlers
 
             client.Player.StatisticsComponent = new StatisticsComponent(character);
 
-            client.Player.Trade = new TradeComponent(character);
+            client.Player.Trade = new TradeComponent();
 
             client.Player.Connection = client;
 

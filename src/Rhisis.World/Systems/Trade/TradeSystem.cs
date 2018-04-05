@@ -5,6 +5,8 @@ using Rhisis.World.Game.Entities;
 using System;
 using System.Linq.Expressions;
 using Rhisis.World.Core.Systems;
+using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems.Trade
@@ -12,6 +14,8 @@ namespace Rhisis.World.Systems.Trade
     [System]
     internal sealed class TradeSystem : NotifiableSystemBase
     {
+        public static int MaxTrade = 25;
+
         /// <summary>
         /// Gets the <see cref="TradeSystem"/> match filter.
         /// </summary>
@@ -30,101 +34,114 @@ namespace Rhisis.World.Systems.Trade
         /// <param name="e"></param>
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
-            if (!(e is TradeEventArgs tradeEvent))
-                return;
-
-            var playerEntity = entity as IPlayerEntity;
-
-            Logger.Debug("Execute trade action: {0}", tradeEvent.ActionType.ToString());
-
-            switch (tradeEvent.ActionType)
+            if (!e.CheckArguments() || !(entity is IPlayerEntity playerEntity))
             {
-                case TradeActionType.TradeRequest:
-                    this.TradeRequest(playerEntity, tradeEvent.Arguments);
+                return;
+            }
+
+            switch (e)
+            {
+                case TradeRequestEventArgs tradeRequestEventArgs:
+                    this.TradeRequest(playerEntity, tradeRequestEventArgs);
                     break;
-                case TradeActionType.Trade:
-                    this.Trade(playerEntity, tradeEvent.Arguments);
+                case TradeBeginEventArgs tradeBeginEventArgs:
+                    this.Trade(playerEntity, tradeBeginEventArgs);
                     break;
-                case TradeActionType.Unknown:
-                    // Nothing to do.
+                case TradePutEventArgs tradePutEventArgs:
+                    this.PutItem(playerEntity, tradePutEventArgs);
                     break;
                 default:
                     Logger.Warning("Unknown trade action type: {0} for player {1} ",
-                        tradeEvent.ActionType.ToString(), entity.ObjectComponent.Name);
+                        e.GetType(), entity.ObjectComponent.Name);
                     break;
             }
         }
         
-        private void TradeRequest(IPlayerEntity player, object[] args)
+        private void TradeRequest(IPlayerEntity player, TradeRequestEventArgs e)
         {
             Logger.Debug("Trade request");
 
-            if (args == null)
-                throw new ArgumentNullException(nameof(args));
-
-            if (args.Length < 0)
-                throw new ArgumentException("Trade event arguments cannot be empty.", nameof(args));
-
-            if (!(args[0] is int target))
-                throw new ArgumentException("Trade request argument have to be an integer.", nameof(args));
-
-            if (target == player.Id)
+            if (e.TargetId == player.Id)
             {
-                Logger.Error($"Can't start a Trade with ourselve ({target})");
-                return;
+                throw new Exception($"Can't start a Trade with ourselve ({e.TargetId})");
             }
 
-            if (!(player.Context.FindEntity<IPlayerEntity>(target) is IPlayerEntity targetEntity))
+            if (!(player.Context.FindEntity<IPlayerEntity>(e.TargetId) is IPlayerEntity target))
             {
-                Logger.Error($"Can't find entity of id {target}");
-                return;
+                throw new Exception($"Can't find entity of id {e.TargetId}");
             }
 
-            if (player.Trade.TargetId != 0 || targetEntity.Trade.TargetId != 0)
+            if (player.Trade.TargetId != 0 || target.Trade.TargetId != 0)
             {
-                Logger.Error($"Can't start a Trade when one is already in progress ({target})");
-                return;
+                throw new Exception($"Can't start a Trade when one is already in progress ({player.Trade.TargetId})");
             }
 
-            WorldPacketFactory.SendTradeRequest(targetEntity, player.Id);
+            WorldPacketFactory.SendTradeRequest(target, player.Id);
         }
 
-        private void Trade(IPlayerEntity player, object[] args)
+        private void Trade(IPlayerEntity player, TradeBeginEventArgs e)
         {
-            Logger.Debug("Trade");
-
-            if (args == null)
-                throw new ArgumentNullException(nameof(args));
-
-            if (args.Length < 0)
-                throw new ArgumentException("Trade event arguments cannot be empty.", nameof(args));
-
-            if (!(args[0] is int target))
-                throw new ArgumentException("Trade request argument have to be an integer.", nameof(args));
-
-            if (target == player.Id)
+            if (e.TargetId == player.Id)
             {
-                Logger.Error($"Can't start a Trade with ourselve ({target})");
+                throw new Exception($"Can't start a Trade with ourselve ({e.TargetId})");
+            }
+
+            if (!(player.Context.FindEntity<IPlayerEntity>(e.TargetId) is IPlayerEntity target))
+            {
+                throw new Exception($"Can't find entity of id {e.TargetId}");
+            }
+
+            if (player.Trade.TargetId != 0 || target.Trade.TargetId != 0)
+            {
+                throw new Exception($"Can't start a Trade when one is already in progress ({player.Trade.TargetId})");
+            }
+
+            player.Trade.TargetId = target.Id;
+            target.Trade.TargetId = player.Id;
+
+            WorldPacketFactory.SendTrade(player, target, player.Id);
+            WorldPacketFactory.SendTrade(target, player, player.Id);
+        }
+
+        private void PutItem(IPlayerEntity player, TradePutEventArgs e)
+        {
+            Logger.Debug("PutItem");
+
+            if (player.Trade.TargetId == 0)
+            {
+                throw new Exception($"No trade target {player.ObjectComponent.Name}");
+            }
+
+            if (!(player.Context.FindEntity<IPlayerEntity>(player.Trade.TargetId) is IPlayerEntity target))
+            {
+                throw new Exception($"Can't find entity of id {player.Trade.TargetId}");
+            }
+
+            if (player.Trade.State != TradeComponent.TradeState.Item || target.Trade.State != TradeComponent.TradeState.Item)
+            {
+                throw new Exception($"Not the right trade state {player.Trade.TargetId}");
+            }
+
+            var item = player.Inventory.GetItem(e.ItemId);
+            if (item == null)
+            {
+                throw new NullReferenceException($"TradeSystem: Cannot find item with unique id: {e.ItemId}");
+            }
+
+            if (e.Count > item.Quantity)
+            {
+                throw new ArgumentException($"TradeSystem: More quantity than available for: {e.ItemId}");
+            }
+
+            var slotItem = player.Trade.Items.GetItemBySlot(e.Slot);
+            if (slotItem != null && slotItem.Id != -1)
+            {
                 return;
             }
 
-            if (!(player.Context.FindEntity<IPlayerEntity>(target) is IPlayerEntity targetEntity))
-            {
-                Logger.Error($"Can't find entity of id {target}");
-                return;
-            }
-
-            if (player.Trade.TargetId != 0 || targetEntity.Trade.TargetId != 0)
-            {
-                Logger.Error($"Can't start a Trade when one is already in progress ({target})");
-                return;
-            }
-
-            player.Trade.TargetId = targetEntity.PlayerComponent.Id;
-            targetEntity.Trade.TargetId = player.PlayerComponent.Id;
-
-            WorldPacketFactory.SendTrade(player, targetEntity.Id, player.Id);
-            WorldPacketFactory.SendTrade(targetEntity, player.Id, player.Id);
+            player.Trade.Items.Items[e.Slot] = item;
+            WorldPacketFactory.SendTradePut(player, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
+            WorldPacketFactory.SendTradePut(target, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
         }
     }
 }

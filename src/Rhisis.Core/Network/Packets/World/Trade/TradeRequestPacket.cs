@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Ether.Network.Packets;
 
-namespace Rhisis.Core.Network.Packets.World
+namespace Rhisis.Core.Network.Packets.World.Trade
 {
     public class TradeRequestPacket
     {
