@@ -288,13 +288,9 @@ namespace Rhisis.World
 
                 map.StartSystemUpdate(100);
 
-
-                //Map map = Map.Load(Path.Combine(DataPath, "maps", mapName), mapName, id);
-
                 foreach (Type type in systemTypes)
                     map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
-
-                //map.Start();
+                
                 _maps.Add(id, map);
             }
 

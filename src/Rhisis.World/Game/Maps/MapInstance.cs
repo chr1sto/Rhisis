@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Common;
+﻿using System;
+using Rhisis.Core.Common;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
@@ -17,9 +18,9 @@ namespace Rhisis.World.Game.Maps
     /// <inheritdoc />
     public class MapInstance : Context, IMapInstance
     {
-        private const short DefaultMoverSize = 100;
         private readonly string _mapPath;
-        private readonly IList<IRegion> _regions;
+        private readonly List<IMapLayer> _layers;
+        private readonly List<IRegion> _regions;
 
         /// <inheritdoc />
         public int Id { get; }
@@ -28,7 +29,10 @@ namespace Rhisis.World.Game.Maps
         public string Name { get; }
 
         /// <inheritdoc />
-        public IList<IMapLayer> Layers { get; }
+        public IReadOnlyList<IMapLayer> Layers => this._layers;
+
+        /// <inheritdoc />
+        public IReadOnlyList<IRegion> Regions => this._regions;
 
         /// <summary>
         /// Creates a new <see cref="MapInstance"/>.
@@ -41,8 +45,8 @@ namespace Rhisis.World.Game.Maps
             this.Id = id;
             this.Name = name;
             this._mapPath = mapPath;
+            this._layers = new List<IMapLayer>();
             this._regions = new List<IRegion>();
-            this.Layers = new List<IMapLayer>();
         }
 
         /// <inheritdoc />
@@ -66,21 +70,50 @@ namespace Rhisis.World.Game.Maps
 
             using (var rgnFile = new RgnFile(rgn))
             {
-                IEnumerable<RgnRespawn7> monsterRegions = rgnFile.Elements.Where(r => r is RgnRespawn7).Cast<RgnRespawn7>();
+                IEnumerable<IRegion> monsterRegions = rgnFile.Elements
+                        .Where(x => x is RgnRespawn7)
+                        .Cast<RgnRespawn7>()
+                        .Select(x => new RespawnerRegion(x.Left, x.Top, x.Right, x.Bottom, x.Time, x.Type, x.Model, x.Count));
 
-                foreach (RgnRespawn7 rgnElement in monsterRegions)
-                {
-                    var respawner = new RespawnerRegion(rgnElement.Left, rgnElement.Top, rgnElement.Right, rgnElement.Bottom, rgnElement.Time);
-
-                    if (rgnElement.Type == (int)WorldObjectType.Mover)
-                    {
-                        for (var i = 0; i < rgnElement.Count; ++i)
-                            this.CreateMonster(rgnElement, respawner);
-                    }
-
-                    this._regions.Add(respawner);
-                }
+                this._regions.AddRange(monsterRegions);
             }
+        }
+
+        /// <inheritdoc />
+        public IMapLayer CreateMapLayer()
+        {
+            var mapLayer = new MapLayer(this, 1);
+
+            this._layers.Add(mapLayer);
+
+            return mapLayer;
+        }
+
+        /// <inheritdoc />
+        public IMapLayer CreateMapLayer(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public IMapLayerInstance CreaMapLayerInstance(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public IMapLayer GetMapLayer(int id) => this._layers.FirstOrDefault(x => x.Id == id);
+
+        /// <inheritdoc />
+        public void DeleteMapLayer(int id)
+        {
+            IMapLayer layer = this.GetMapLayer(id);
+
+            if (layer == null)
+                return;
+
+            layer.Dispose();
+            this._layers.Remove(layer);
         }
 
         /// <summary>
@@ -99,7 +132,7 @@ namespace Rhisis.World.Game.Maps
                 Angle = element.Angle,
                 Type = WorldObjectType.Mover,
                 Position = element.Position.Clone(),
-                Size = (short)(DefaultMoverSize * element.Scale.X),
+                Size = (short)(ObjectComponent.DefaultObjectSize * element.Scale.X),
                 Spawned = true,
                 Level = 1
             };
@@ -128,29 +161,6 @@ namespace Rhisis.World.Game.Maps
         }
 
         /// <summary>
-        /// Creates a monster.
-        /// </summary>
-        /// <param name="rgnElement"></param>
-        /// <param name="respawner"></param>
-        private void CreateMonster(RgnRespawn7 rgnElement, Region respawner)
-        {
-            var monster = this.CreateEntity<MonsterEntity>();
-
-            monster.Object = new ObjectComponent
-            {
-                MapId = this.Id,
-                ModelId = rgnElement.Model,
-                Type = WorldObjectType.Mover,
-                Position = respawner.GetRandomPosition(),
-                Angle = RandomHelper.FloatRandom(0, 360f),
-                Name = WorldServer.Movers[rgnElement.Model].Name,
-                Size = DefaultMoverSize,
-                Spawned = true,
-                Level = WorldServer.Movers[rgnElement.Model].Level
-            };
-        }
-
-        /// <summary>
         /// Creates and loads a new map.
         /// </summary>
         /// <param name="mapPath">Map path</param>
@@ -161,8 +171,10 @@ namespace Rhisis.World.Game.Maps
         {
             IMapInstance map = new MapInstance(mapId, mapName, mapPath);
 
+            // TODO: Load map heights, revival zones
             map.LoadDyo();
             map.LoadRgn();
+            map.CreateMapLayer();
 
             return map;
         }
