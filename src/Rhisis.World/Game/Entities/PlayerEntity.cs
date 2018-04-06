@@ -21,6 +21,8 @@ namespace Rhisis.World.Game.Entities
 
         public TradeComponent Trade { get; set; }
 
+        public TradeComponent Trade { get; set; }
+
         public NetUser Connection { get; set; }
 
         public PlayerEntity(IContext context)
