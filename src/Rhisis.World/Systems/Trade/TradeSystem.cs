@@ -55,7 +55,7 @@ namespace Rhisis.World.Systems.Trade
                     break;
                 default:
                     Logger.Warning("Unknown trade action type: {0} for player {1} ",
-                        e.GetType(), entity.ObjectComponent.Name);
+                        e.GetType(), entity.Object.Name);
                     break;
             }
         }
@@ -81,7 +81,6 @@ namespace Rhisis.World.Systems.Trade
 
             WorldPacketFactory.SendTradeRequest(target, player.Id);
         }
-
         private void Trade(IPlayerEntity player, TradeBeginEventArgs e)
         {
             if (e.TargetId == player.Id)
@@ -112,7 +111,7 @@ namespace Rhisis.World.Systems.Trade
 
             if (player.Trade.TargetId == 0)
             {
-                throw new Exception($"No trade target {player.ObjectComponent.Name}");
+                throw new Exception($"No trade target {player.Object.Name}");
             }
 
             if (!(player.Context.FindEntity<IPlayerEntity>(player.Trade.TargetId) is IPlayerEntity target))
@@ -153,7 +152,7 @@ namespace Rhisis.World.Systems.Trade
 
             if (player.Trade.TargetId == 0)
             {
-                throw new Exception($"No trade target {player.ObjectComponent.Name}");
+                throw new Exception($"No trade target {player.Object.Name}");
             }
 
             if (!(player.Context.FindEntity<IPlayerEntity>(player.Trade.TargetId) is IPlayerEntity target))
@@ -165,6 +164,14 @@ namespace Rhisis.World.Systems.Trade
             {
                 throw new Exception($"Not the right trade state {player.Trade.TargetId}");
             }
+
+            player.PlayerData.Gold -= (int)e.Gold;
+            //TODO: Updating golds clientside
+
+            player.Trade.Gold += e.Gold;
+
+            WorldPacketFactory.SendTradePutGold(player, player.Id, player.Trade.Gold);
+            WorldPacketFactory.SendTradePutGold(target, player.Id, player.Trade.Gold);
         }
     }
 }

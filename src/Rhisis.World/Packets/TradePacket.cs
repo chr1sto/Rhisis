@@ -48,5 +48,17 @@ namespace Rhisis.World.Packets
                 player.Connection.Send(packet);
             }
         }
+
+        public static void SendTradePutGold(IPlayerEntity player, int traderId, uint gold)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(traderId, SnapshotType.TRADEPUTGOLD);
+
+                packet.Write(gold);
+
+                player.Connection.Send(packet);
+            }
+        }
     }
 }

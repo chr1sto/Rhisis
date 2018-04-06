@@ -16,6 +16,8 @@ namespace Rhisis.World.Game.Components
 
         public ItemContainerComponent Items { get; private set; }
 
+        public uint Gold { get; set; }
+
         /// <summary>
         /// Confirmation state
         /// </summary>
@@ -32,6 +34,7 @@ namespace Rhisis.World.Game.Components
             Confirm = TradeConfirm.Error;
             State = TradeState.Item;
             Items = new ItemContainerComponent(InventorySystem.MaxItems);
+            Gold = 0;
         }
     }
 }
