@@ -50,6 +50,9 @@ namespace Rhisis.World.Systems.Trade
                 case TradePutEventArgs tradePutEventArgs:
                     this.PutItem(playerEntity, tradePutEventArgs);
                     break;
+                case TradePutGoldEventArgs tradePutGoldEventArgs:
+                    this.PutGold(playerEntity, tradePutGoldEventArgs);
+                    break;
                 default:
                     Logger.Warning("Unknown trade action type: {0} for player {1} ",
                         e.GetType(), entity.ObjectComponent.Name);
@@ -142,6 +145,26 @@ namespace Rhisis.World.Systems.Trade
             player.Trade.Items.Items[e.Slot] = item;
             WorldPacketFactory.SendTradePut(player, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
             WorldPacketFactory.SendTradePut(target, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
+        }
+
+        private void PutGold(IPlayerEntity player, TradePutGoldEventArgs e)
+        {
+            Logger.Debug("PutGold");
+
+            if (player.Trade.TargetId == 0)
+            {
+                throw new Exception($"No trade target {player.ObjectComponent.Name}");
+            }
+
+            if (!(player.Context.FindEntity<IPlayerEntity>(player.Trade.TargetId) is IPlayerEntity target))
+            {
+                throw new Exception($"Can't find entity of id {player.Trade.TargetId}");
+            }
+
+            if (player.Trade.State != TradeComponent.TradeState.Item || target.Trade.State != TradeComponent.TradeState.Item)
+            {
+                throw new Exception($"Not the right trade state {player.Trade.TargetId}");
+            }
         }
     }
 }

@@ -35,5 +35,14 @@ namespace Rhisis.World.Handlers
 
             client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
         }
+
+        [PacketHandler(PacketType.TRADEPUTGOLD)]
+        public static void OnTradePutGold(WorldClient client, INetPacketStream packet)
+        {
+            var tradePacket = new TradePutGoldPacket(packet);
+            var tradeEvent = new TradePutGoldEventArgs(tradePacket.Gold);
+
+            client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
+        }
     }
 }
