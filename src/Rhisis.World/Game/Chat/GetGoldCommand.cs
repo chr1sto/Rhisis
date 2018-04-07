@@ -10,7 +10,7 @@ namespace Rhisis.World.Game.Chat
         [ChatCommand("/getgold")]
         public static void GetGoldCommand(IPlayerEntity player, string[] parameters)
         {
-            Logger.Debug("{0} want to get penyas", player.PlayerData.Gold);
+            Logger.Debug("{0} want to get penyas", player.Object.Name);
 
             if (parameters.Length == 1)
             {
@@ -23,7 +23,6 @@ namespace Rhisis.World.Game.Chat
             else
             {
                 Logger.Error("Chat: /getgold command must have only one parameter.");
-                return;
             }
         }
     }
