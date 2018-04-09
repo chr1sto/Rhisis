@@ -25,17 +25,19 @@ namespace Rhisis.World.Game.Chat
                     return;
                 }
 
+                int.TryParse(parameters[0], out int mapIdValue);
                 float.TryParse(parameters[2], out float thirdValue);
+ 
 
                 if (parameters.Length == 3)
                 {
-                    player.Object.Position.Y = secondValue;
+                    player.Object.MapId = mapIdValue;
+                    player.Object.Position.X = secondValue;
                     player.Object.Position.Z = thirdValue;
                     WorldPacketFactory.SendPlayerSpawn(player);
                     return;
                 }
 
-                int.TryParse(parameters[0], out int mapIdValue);
                 float.TryParse(parameters[3], out float forthValue);
                    
                 if (parameters.Length == 4)
