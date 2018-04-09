@@ -12,7 +12,7 @@ namespace Rhisis.World.Game.Chat
         {
             Logger.Debug("{0} want to teleport", player.Object.Name);
 
-            if (parameters.Length >= 2 || parameters.Length <= 4)
+            if (parameters.Length >= 2 && parameters.Length <= 4)
             {
                 float.TryParse(parameters[0], out float firstValue);
                 float.TryParse(parameters[1], out float secondValue);
