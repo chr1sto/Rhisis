@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Rhisis.Core.Network;
+﻿using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Systems.Trade;
 
 namespace Rhisis.World.Packets
 {
@@ -15,6 +11,16 @@ namespace Rhisis.World.Packets
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(traderId, SnapshotType.CONFIRMTRADE);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        public static void SendTradeRequestCancel(IPlayerEntity player, int traderId)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(traderId, SnapshotType.CONFIRMTRADECANCEL);
 
                 player.Connection.Send(packet);
             }
@@ -56,6 +62,59 @@ namespace Rhisis.World.Packets
                 packet.StartNewMergedPacket(traderId, SnapshotType.TRADEPUTGOLD);
 
                 packet.Write(gold);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        public static void SendTradeCancel(IPlayerEntity player, int traderId, int mode)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(traderId, SnapshotType.TRADECANCEL);
+
+                packet.Write(traderId);
+                packet.Write(mode);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        public static void SendTradeOk(IPlayerEntity player, int traderId)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(traderId, SnapshotType.TRADEOK);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        public static void SendTradeLastConfirm(IPlayerEntity player)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(0, SnapshotType.TRADELASTCONFIRM);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        public static void SendTradeLastConfirmOk(IPlayerEntity player, int traderId)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(traderId, SnapshotType.TRADELASTCONFIRMOK);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        public static void SendTradeConsent(IPlayerEntity player)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(0, SnapshotType.TRADECONSENT);
 
                 player.Connection.Send(packet);
             }

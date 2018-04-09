@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Rhisis.Database.Structures;
-using Rhisis.World.Systems.Inventory;
+﻿using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Game.Components
 {

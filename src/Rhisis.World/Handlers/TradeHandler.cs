@@ -17,6 +17,15 @@ namespace Rhisis.World.Handlers
             client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
         }
 
+        [PacketHandler(PacketType.CONFIRMTRADECANCEL)]
+        public static void OnTradeRequestCancel(WorldClient client, INetPacketStream packet)
+        {
+            var tradePacket = new TradeRequestPacket(packet);
+            var tradeEvent = new TradeRequestCancelEventArgs(tradePacket.Target);
+
+            client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
+        }
+
         [PacketHandler(PacketType.TRADE)]
         public static void OnTrade(WorldClient client, INetPacketStream packet)
         {
@@ -43,6 +52,27 @@ namespace Rhisis.World.Handlers
             var tradeEvent = new TradePutGoldEventArgs(tradePacket.Gold);
 
             client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
+        }
+
+        [PacketHandler(PacketType.TRADECANCEL)]
+        public static void OnTradeCancel(WorldClient client, INetPacketStream packet)
+        {
+            var tradePacket = new TradeCancelPacket(packet);
+            var tradeEvent = new TradeCancelEventArgs(tradePacket.Mode);
+
+            client.Player.Context.NotifySystem<TradeSystem>(client.Player, tradeEvent);
+        }
+
+        [PacketHandler(PacketType.TRADEOK)]
+        public static void OnTradeOk(WorldClient client, INetPacketStream packet)
+        {
+            client.Player.Context.NotifySystem<TradeSystem>(client.Player, new TradeOkEventArgs());
+        }
+
+        [PacketHandler(PacketType.TRADECONFIRM)]
+        public static void OnTradeConfirm(WorldClient client, INetPacketStream packet)
+        {
+            client.Player.Context.NotifySystem<TradeSystem>(client.Player, new TradeConfirmEventArgs());
         }
     }
 }
