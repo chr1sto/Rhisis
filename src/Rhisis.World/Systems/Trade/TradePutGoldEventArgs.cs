@@ -6,9 +6,9 @@ namespace Rhisis.World.Systems.Trade
 {
     public class TradePutGoldEventArgs : TradeEventArgs
     {
-        public uint Gold { get; private set; }
+        public int Gold { get; private set; }
 
-        public TradePutGoldEventArgs(uint gold)
+        public TradePutGoldEventArgs(int gold)
         {
             Gold = gold;
         }

@@ -35,6 +35,23 @@ namespace Rhisis.World.Game.Components
         }
 
         /// <summary>
+        /// Gets the valid items count
+        /// </summary>
+        /// <returns></returns>
+        public int GetItemCount()
+        {
+            var count = 0;
+
+            for (var i = 0; i < MaxCapacity; i++)
+            {
+                if (Items[i] != null && Items[i].Slot != -1)
+                    count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Gets the item by the unique id.
         /// </summary>
         /// <param name="uniqueId"></param>

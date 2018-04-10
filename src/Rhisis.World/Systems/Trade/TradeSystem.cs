@@ -166,6 +166,7 @@ namespace Rhisis.World.Systems.Trade
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
+                CancelTrade(player);
                 throw new Exception($"Target is not trading {target.Object.Name}");
             }
 
@@ -193,6 +194,7 @@ namespace Rhisis.World.Systems.Trade
             }
 
             player.Trade.Items.Items[e.Slot] = item;
+            player.Trade.ItemCount++;
             WorldPacketFactory.SendTradePut(player, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
             WorldPacketFactory.SendTradePut(target, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
         }
@@ -214,6 +216,7 @@ namespace Rhisis.World.Systems.Trade
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
+                CancelTrade(player);
                 throw new Exception($"Target is not trading {target.Object.Name}");
             }
 
@@ -223,7 +226,7 @@ namespace Rhisis.World.Systems.Trade
                 throw new Exception($"Not the right trade state {player.Object.Name}");
             }
 
-            player.PlayerData.Gold -= (int)e.Gold;
+            player.PlayerData.Gold -= e.Gold;
             player.Trade.Gold += e.Gold;
 
             WorldPacketFactory.SendTradePutGold(player, player.Id, player.Trade.Gold);
@@ -250,17 +253,7 @@ namespace Rhisis.World.Systems.Trade
                 throw new Exception($"Target is not trading {target.Object.Name}");
             }
 
-            player.PlayerData.Gold += (int)player.Trade.Gold;
-            target.PlayerData.Gold += (int)target.Trade.Gold;
-
-            player.Trade = new TradeComponent();
-            target.Trade = new TradeComponent();
-
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-            WorldPacketFactory.SendUpdateAttributes(target, DefineAttributes.GOLD, target.PlayerData.Gold);
-
-            WorldPacketFactory.SendTradeCancel(player, player.Id, e.Mode);
-            WorldPacketFactory.SendTradeCancel(target, player.Id, e.Mode);
+            CancelTrade(player, target, e.Mode);
         }
 
         /// <summary>
@@ -280,6 +273,7 @@ namespace Rhisis.World.Systems.Trade
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
+                CancelTrade(player);
                 throw new Exception($"Target is not trading {target.Object.Name}");
             }
 
@@ -300,7 +294,7 @@ namespace Rhisis.World.Systems.Trade
 
         private static void TradeConfirm(IPlayerEntity player, TradeConfirmEventArgs e)
         {
-            Logger.Debug("Trade ok");
+            Logger.Debug("Trade confirm");
 
             if (IsNotTrading(player))
             {
@@ -310,23 +304,76 @@ namespace Rhisis.World.Systems.Trade
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
+                CancelTrade(player);
                 throw new Exception($"Target is not trading {target.Object.Name}");
             }
 
             if (IsNotTradeState(player, TradeComponent.TradeState.Ok))
                 return;
 
-            if (IsTradeState(player, TradeComponent.TradeState.Ok))
+            if (IsTradeState(target, TradeComponent.TradeState.Ok))
             {
                 player.Trade.State = TradeComponent.TradeState.Confirm;
 
                 WorldPacketFactory.SendTradeLastConfirmOk(player, player.Id);
                 WorldPacketFactory.SendTradeLastConfirmOk(target, player.Id);
             }
-            else
+            else if (IsTradeState(target, TradeComponent.TradeState.Confirm))
             {
+                var tradeResultConfirm = CheckTradeGold(player, target);
+                if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
+                {
+                    CancelTrade(player, target);
+                    return;
+                }
+
+                if (target.Inventory.MaxCapacity - target.Inventory.GetItemCount() < player.Trade.ItemCount)
+                    tradeResultConfirm = TradeComponent.TradeConfirm.Error;
+                else if (player.Inventory.MaxCapacity - player.Inventory.GetItemCount() < target.Trade.ItemCount)
+                    tradeResultConfirm = TradeComponent.TradeConfirm.Error;
+
+                if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
+                {
+                    CancelTrade(player, target);
+                    return;
+                }
                 
+                player.PlayerData.Gold += target.Trade.Gold;
+                target.PlayerData.Gold += player.Trade.Gold;
+                
+                ResetTrade(player);
+                ResetTrade(target);
+                WorldPacketFactory.SendTradeConsent(player);
+                WorldPacketFactory.SendTradeConsent(target);
             }
+        }
+
+        /// <summary>
+        /// Check if player has enough money and if target can receive it
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private static TradeComponent.TradeConfirm CheckTradeGold(IPlayerEntity player, IPlayerEntity target)
+        {
+            var playerTradeGold = player.Trade.Gold;
+            var targetTradeGold = target.Trade.Gold;
+            var playerGold = player.PlayerData.Gold;
+            var targetGold = player.PlayerData.Gold;
+
+            if (player.PlayerData.Gold < playerTradeGold)
+                return TradeComponent.TradeConfirm.Error;
+
+            if (target.PlayerData.Gold < targetTradeGold)
+                return TradeComponent.TradeConfirm.Error;
+
+            if (targetGold + playerTradeGold < 0)
+                return TradeComponent.TradeConfirm.Error;
+
+            if (playerGold + targetTradeGold < 0)
+                return TradeComponent.TradeConfirm.Error;
+
+            return TradeComponent.TradeConfirm.Ok;
         }
 
         /// <summary>
@@ -363,6 +410,31 @@ namespace Rhisis.World.Systems.Trade
         private static bool IsNotTradeState(IPlayerEntity player, TradeComponent.TradeState state)
         {
             return player.Trade.State != state;
+        }
+
+        private static void ResetTrade(IPlayerEntity player)
+        {
+            player.Trade = new TradeComponent();
+        }
+
+        private static void RefundPlayer(IPlayerEntity player)
+        {
+            player.PlayerData.Gold += player.Trade.Gold;
+            player.Trade.Gold = 0;
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+        }
+
+        private static void CancelTrade(IPlayerEntity player, int mode = 0)
+        {
+            RefundPlayer(player);
+            ResetTrade(player);
+            WorldPacketFactory.SendTradeCancel(player, player.Id, mode);
+        }
+
+        private static void CancelTrade(IPlayerEntity player, IPlayerEntity target, int mode = 0)
+        {
+            CancelTrade(player, mode);
+            CancelTrade(target, mode);
         }
     }
 }

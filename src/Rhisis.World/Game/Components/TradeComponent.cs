@@ -12,12 +12,9 @@ namespace Rhisis.World.Game.Components
 
         public ItemContainerComponent Items { get; private set; }
 
-        public uint Gold { get; set; }
+        public ushort ItemCount { get; set; }
 
-        /// <summary>
-        /// Confirmation state
-        /// </summary>
-        public TradeConfirm Confirm { get; set; }
+        public int Gold { get; set; }
 
         /// <summary>
         /// Exchange state/progress
@@ -27,9 +24,9 @@ namespace Rhisis.World.Game.Components
         public TradeComponent()
         {
             this.TargetId = 0;
-            Confirm = TradeConfirm.Error;
             State = TradeState.Item;
             Items = new ItemContainerComponent(InventorySystem.MaxItems);
+            ItemCount = 0;
             Gold = 0;
         }
     }

@@ -55,7 +55,7 @@ namespace Rhisis.World.Packets
             }
         }
 
-        public static void SendTradePutGold(IPlayerEntity player, int traderId, uint gold)
+        public static void SendTradePutGold(IPlayerEntity player, int traderId, int gold)
         {
             using (var packet = new FFPacket())
             {
