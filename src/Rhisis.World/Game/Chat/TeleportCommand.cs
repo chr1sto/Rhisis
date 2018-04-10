@@ -56,7 +56,6 @@ namespace Rhisis.World.Game.Chat
                     player.Object.Position.Y = thirdValue;
                     player.Object.Position.Z = forthValue;
                     WorldPacketFactory.SendPlayerTeleport(player);
-                    return;
                 }
             }
             else
