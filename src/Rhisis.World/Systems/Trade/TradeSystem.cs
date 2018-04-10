@@ -193,6 +193,7 @@ namespace Rhisis.World.Systems.Trade
                 return;
             }
 
+            item.ExtraUsed = e.Count;
             player.Trade.Items.Items[e.Slot] = item;
             player.Trade.ItemCount++;
             WorldPacketFactory.SendTradePut(player, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
@@ -320,32 +321,63 @@ namespace Rhisis.World.Systems.Trade
             }
             else if (IsTradeState(target, TradeComponent.TradeState.Confirm))
             {
-                var tradeResultConfirm = CheckTradeGold(player, target);
-                if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
-                {
-                    CancelTrade(player, target);
-                    return;
-                }
-
-                if (target.Inventory.MaxCapacity - target.Inventory.GetItemCount() < player.Trade.ItemCount)
-                    tradeResultConfirm = TradeComponent.TradeConfirm.Error;
-                else if (player.Inventory.MaxCapacity - player.Inventory.GetItemCount() < target.Trade.ItemCount)
-                    tradeResultConfirm = TradeComponent.TradeConfirm.Error;
-
-                if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
-                {
-                    CancelTrade(player, target);
-                    return;
-                }
-                
-                player.PlayerData.Gold += target.Trade.Gold;
-                target.PlayerData.Gold += player.Trade.Gold;
-                
-                ResetTrade(player);
-                ResetTrade(target);
-                WorldPacketFactory.SendTradeConsent(player);
-                WorldPacketFactory.SendTradeConsent(target);
+                FinalizeTrade(player, target);
             }
+        }
+
+        /// <summary>
+        /// Get the specified entity from the player's context
+        /// Throw if cannot find it
+        /// </summary>
+        /// <exception cref="Exception"></exception>
+        /// <param name="player"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private static IPlayerEntity GetEntityFromContextOf(IPlayerEntity player, int id)
+        {
+            if (player.Context.FindEntity<IPlayerEntity>(id) is IPlayerEntity entity)
+                return entity;
+
+            throw new Exception($"Can't find entity of id {id}");
+        }
+
+        private static bool IsTrading(IPlayerEntity entity) =>
+            entity.Trade.TargetId != 0;
+
+        private static bool IsNotTrading(IPlayerEntity entity) =>
+            entity.Trade.TargetId == 0;
+
+        private static bool IsTradeState(IPlayerEntity player, TradeComponent.TradeState state) =>
+            player.Trade.State == state;
+
+        private static bool IsNotTradeState(IPlayerEntity player, TradeComponent.TradeState state) =>
+            player.Trade.State != state;
+
+        private static void ResetTrade(IPlayerEntity player) =>
+            player.Trade = new TradeComponent();
+
+        /// <summary>
+        /// Remove pending gold and send it back
+        /// </summary>
+        /// <param name="player"></param>
+        private static void RefundPlayer(IPlayerEntity player)
+        {
+            player.PlayerData.Gold += player.Trade.Gold;
+            player.Trade.Gold = 0;
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+        }
+
+        private static void CancelTrade(IPlayerEntity player, int mode = 0)
+        {
+            RefundPlayer(player);
+            ResetTrade(player);
+            WorldPacketFactory.SendTradeCancel(player, player.Id, mode);
+        }
+
+        private static void CancelTrade(IPlayerEntity player, IPlayerEntity target, int mode = 0)
+        {
+            CancelTrade(player, mode);
+            CancelTrade(target, mode);
         }
 
         /// <summary>
@@ -377,64 +409,122 @@ namespace Rhisis.World.Systems.Trade
         }
 
         /// <summary>
-        /// Get the specified entity from the player's context
-        /// Throw if cannot find it
+        /// Process gold check & transfer
         /// </summary>
-        /// <exception cref="Exception"></exception>
         /// <param name="player"></param>
-        /// <param name="id"></param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        private static IPlayerEntity GetEntityFromContextOf(IPlayerEntity player, int id)
+        private static bool FinalizeTradeGold(IPlayerEntity player, IPlayerEntity target)
         {
-            if (player.Context.FindEntity<IPlayerEntity>(id) is IPlayerEntity entity)
-                return entity;
+            if (player.Trade.Gold == 0 && target.Trade.Gold == 0)
+            {
+                return true;
+            }
 
-            throw new Exception($"Can't find entity of id {id}");
+            var tradeResultConfirm = CheckTradeGold(player, target);
+            if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
+            {
+                CancelTrade(player, target);
+                return false;
+            }
+
+            player.PlayerData.Gold += target.Trade.Gold;
+            target.PlayerData.Gold += player.Trade.Gold;
+            return true;
         }
 
-        private static bool IsTrading(IPlayerEntity entity)
+        /// <summary>
+        /// Transfer items
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        private static void ProcessItemTransfer(IPlayerEntity player, IPlayerEntity target)
         {
-            return entity.Trade.TargetId != 0;
+            for (var i = 0; i < player.Trade.Items.Items.Count; ++i)
+            {
+                var item = player.Trade.Items.Items[i];
+                if (item == null || item.Slot == -1)
+                {
+                    continue;
+                }
+
+                if (item.Data.IsStackable)
+                {
+                    var futureQuantity = item.Quantity - item.ExtraUsed;
+                    if (futureQuantity < 0)
+                    {
+                        continue;
+                    }
+
+                    if (futureQuantity == 0)
+                    {
+                        player.Inventory.Items.RemoveAt(i);
+                    }
+
+                    var newItem = item.Clone();
+
+                    item.Quantity = futureQuantity;
+                    newItem.Quantity = item.ExtraUsed;
+                    item.ExtraUsed = 0;
+
+                    target.Inventory.CreateItem(newItem);
+                }
+                else
+                {
+                    player.Inventory.Items.RemoveAt(i);
+
+                    item.ExtraUsed = 0;
+
+                    var newItem = item.Clone();
+                    target.Inventory.CreateItem(newItem);
+                }
+            }
         }
 
-        private static bool IsNotTrading(IPlayerEntity entity)
+        /// <summary>
+        /// Process items check & transfer
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private static bool FinalizeTradeItems(IPlayerEntity player, IPlayerEntity target)
         {
-            return entity.Trade.TargetId == 0;
+            var tradeResultConfirm = TradeComponent.TradeConfirm.Ok;
+            if (target.Inventory.MaxCapacity - target.Inventory.GetItemCount() < player.Trade.ItemCount)
+                tradeResultConfirm = TradeComponent.TradeConfirm.Error;
+            else if (player.Inventory.MaxCapacity - player.Inventory.GetItemCount() < target.Trade.ItemCount)
+                tradeResultConfirm = TradeComponent.TradeConfirm.Error;
+
+            if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
+            {
+                CancelTrade(player, target);
+                return false;
+            }
+
+            ProcessItemTransfer(player, target);
+            ProcessItemTransfer(target, player);
+            return true;
         }
 
-        private static bool IsTradeState(IPlayerEntity player, TradeComponent.TradeState state)
+        /// <summary>
+        /// Start the trade process and finalize it
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        private static void FinalizeTrade(IPlayerEntity player, IPlayerEntity target)
         {
-            return player.Trade.State == state;
-        }
-
-        private static bool IsNotTradeState(IPlayerEntity player, TradeComponent.TradeState state)
-        {
-            return player.Trade.State != state;
-        }
-
-        private static void ResetTrade(IPlayerEntity player)
-        {
-            player.Trade = new TradeComponent();
-        }
-
-        private static void RefundPlayer(IPlayerEntity player)
-        {
-            player.PlayerData.Gold += player.Trade.Gold;
-            player.Trade.Gold = 0;
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-        }
-
-        private static void CancelTrade(IPlayerEntity player, int mode = 0)
-        {
-            RefundPlayer(player);
+            if (!FinalizeTradeGold(player, target) ||
+                !FinalizeTradeItems(player, target))
+            {
+                Logger.Warning($"Can't finalize trade between {player.Object.Name} and {target.Object.Name}");
+                CancelTrade(player, target);
+                return;
+            }
+            
             ResetTrade(player);
-            WorldPacketFactory.SendTradeCancel(player, player.Id, mode);
-        }
-
-        private static void CancelTrade(IPlayerEntity player, IPlayerEntity target, int mode = 0)
-        {
-            CancelTrade(player, mode);
-            CancelTrade(target, mode);
+            ResetTrade(target);
+            WorldPacketFactory.SendTradeConsent(player);
+            WorldPacketFactory.SendTradeConsent(target);
         }
     }
 }

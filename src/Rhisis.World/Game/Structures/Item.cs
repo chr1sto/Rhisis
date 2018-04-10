@@ -35,6 +35,11 @@ namespace Rhisis.World.Game.Structures
         public int Slot { get; set; }
 
         /// <summary>
+        /// Gets the current used item quantity
+        /// </summary>
+        public int ExtraUsed { get; set; }
+
+        /// <summary>
         /// Creates an empty <see cref="Item"/>.
         /// </summary>
         /// <remarks>
@@ -99,8 +104,7 @@ namespace Rhisis.World.Game.Structures
             : this(id, quantity, creatorId, slot, uniqueId, 0)
         {
         }
-
-
+        
         /// <summary>
         /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot and refine.
         /// </summary>
@@ -111,7 +115,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="uniqueId">Item unique id</param>
         /// <param name="refine">Item refine</param>
         public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine)
-            : this(id, quantity, creatorId, slot, uniqueId, refine, 0, 0)
+            : this(id, quantity, creatorId, slot, uniqueId, refine, 0)
         {
         }
 
@@ -140,9 +144,26 @@ namespace Rhisis.World.Game.Structures
         /// <param name="uniqueId">Item unique id</param>
         /// <param name="refine">Item refine</param>
         /// <param name="element">Item element</param>
+        /// <param name="elementRefine"></param>
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element, byte elementRefine)
+            : this(id, quantity, creatorId, slot, uniqueId, refine, element, elementRefine, 0)
+        {
+        }
+
+        /// <summary>
+        /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot, refine and element.
+        /// </summary>
+        /// <param name="id">Item id</param>
+        /// <param name="quantity">Itme quantity</param>
+        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
+        /// <param name="slot">Item slot</param>
+        /// <param name="uniqueId">Item unique id</param>
+        /// <param name="refine">Item refine</param>
+        /// <param name="element">Item element</param>
         /// <param name="elementRefine">Item element refine</param>
+        /// <param name="extraUsed">Item extra used quantity</param>
         public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element,
-            byte elementRefine)
+            byte elementRefine, int extraUsed)
         {
             this.Id = id;
             this.Quantity = quantity;
@@ -153,6 +174,7 @@ namespace Rhisis.World.Game.Structures
             this.Element = element;
             this.ElementRefine = elementRefine;
             this.Data = WorldServer.Items.ContainsKey(this.Id) ? WorldServer.Items[this.Id] : null;
+            this.ExtraUsed = extraUsed;
         }
 
         /// <summary>
@@ -161,7 +183,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="dbItem">Database item</param>
         public Item(Database.Structures.Item dbItem)
             : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
-                dbItem.Element, dbItem.ElementRefine)
+                dbItem.Element, dbItem.ElementRefine, 0)
         {
             this.DbId = dbItem.Id;
         }
@@ -194,8 +216,7 @@ namespace Rhisis.World.Game.Structures
             packet.Write<byte>(0); // pet
             packet.Write(0); // m_bTranformVisPet
         }
-
-
+        
         /// <summary>
         /// Clones this <see cref="Item"/>.
         /// </summary>
@@ -203,7 +224,7 @@ namespace Rhisis.World.Game.Structures
         public Item Clone()
         {
             return new Item(this.Id, this.Quantity, this.CreatorId, this.Slot, this.UniqueId, this.Refine, this.Element,
-                this.ElementRefine);
+                this.ElementRefine, this.ExtraUsed);
         }
 
         /// <summary>
@@ -217,6 +238,7 @@ namespace Rhisis.World.Game.Structures
             this.Refine = 0;
             this.Element = 0;
             this.ElementRefine = 0;
+            this.ExtraUsed = 0;
         }
 
         /// <summary>
