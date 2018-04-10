@@ -21,36 +21,45 @@ namespace Rhisis.World.Game.Chat
                 if (parameters.Length == 2)
                 {
                     player.Object.Position.Z = secondValue;
-                    WorldPacketFactory.SendPlayerSpawn(player);
+                    WorldPacketFactory.SendPlayerTeleport(player);
                     return;
                 }
 
                 int.TryParse(parameters[0], out int mapIdValue);
+
+                /*IReadOnlyDictionary<int, Map> worldId = new Dictionary<int, Map>();
+
+                if (!worldId.TryGetValue(mapIdValue, out Map MapId))
+                {
+                    Logger.Warning("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
+                        worldId);
+                    return;
+                }*/
+
                 float.TryParse(parameters[2], out float thirdValue);
- 
 
                 if (parameters.Length == 3)
                 {
                     player.Object.MapId = mapIdValue;
                     player.Object.Position.X = secondValue;
                     player.Object.Position.Z = thirdValue;
-                    WorldPacketFactory.SendPlayerSpawn(player);
+                    WorldPacketFactory.SendPlayerTeleport(player);
                     return;
                 }
 
                 float.TryParse(parameters[3], out float forthValue);
-                   
+
                 if (parameters.Length == 4)
                 {
                     player.Object.MapId = mapIdValue;
                     player.Object.Position.X = secondValue;
                     player.Object.Position.Y = thirdValue;
                     player.Object.Position.Z = forthValue;
-                    WorldPacketFactory.SendPlayerSpawn(player);
+                    WorldPacketFactory.SendPlayerTeleport(player);
                     return;
                 }
             }
-            if (parameters.Length < 2 || parameters.Length > 4)
+            else
             {
                 Logger.Error("Chat: /teleport command must have 2, 3 or 4 parameters.");
             }
