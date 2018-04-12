@@ -6,7 +6,7 @@ namespace Rhisis.World.Systems.Trade
 {
     public class TradeBeginEventArgs : TradeEventArgs
     {
-        public int TargetId { get; private set; }
+        public readonly int TargetId;
 
         public TradeBeginEventArgs(int targetId)
         {
