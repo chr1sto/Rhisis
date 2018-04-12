@@ -84,7 +84,11 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="slot"></param>
         /// <returns></returns>
-        public Item GetItemBySlot(int slot) => this.Items[slot];
+        public Item this[int slot]
+        {
+            get => Items[slot];
+            set => Items[0] = value;
+        }
 
         /// <summary>
         /// Returs the position of an available slot.

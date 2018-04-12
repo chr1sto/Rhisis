@@ -212,7 +212,7 @@ namespace Rhisis.World.Systems.Inventory
 
                 int sourceSlot = item.Slot;
                 int equipedItemSlot = item.Data.Parts + EquipOffset;
-                Item equipedItem = player.Inventory.GetItemBySlot(equipedItemSlot);
+                Item equipedItem = player.Inventory[equipedItemSlot];
                 
                 if (equipedItem != null && equipedItem.Slot != -1)
                 {

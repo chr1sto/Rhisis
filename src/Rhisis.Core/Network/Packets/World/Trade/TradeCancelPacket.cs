@@ -7,7 +7,7 @@ namespace Rhisis.Core.Network.Packets.World.Trade
 {
     public class TradeCancelPacket
     {
-        public int Mode { get; private set; }
+        public readonly int Mode;
 
         public TradeCancelPacket(INetPacketStream packet)
         {

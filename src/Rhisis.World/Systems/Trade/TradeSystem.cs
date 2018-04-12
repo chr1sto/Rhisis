@@ -5,6 +5,7 @@ using Rhisis.World.Game.Entities;
 using System;
 using System.Linq.Expressions;
 using Rhisis.Core.Data;
+using Rhisis.Core.Exceptions;
 using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Structures;
@@ -85,18 +86,18 @@ namespace Rhisis.World.Systems.Trade
 
             if (e.TargetId == player.Id)
             {
-                throw new Exception($"Can't start a Trade with ourselve ({player.Object.Name})");
+                throw new RhisisSystemException($"Can't start a Trade with ourselve ({player.Object.Name})");
             }
 
             if (IsTrading(player))
             {
-                throw new Exception($"Can't start a Trade when one is already in progress ({player.Object.Name})");
+                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({player.Object.Name})");
             }
 
             var target = GetEntityFromContextOf(player, e.TargetId);
             if (IsTrading(target))
             {
-                throw new Exception($"Can't start a Trade when one is already in progress ({target.Object.Name})");
+                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({target.Object.Name})");
             }
 
             WorldPacketFactory.SendTradeRequest(target, player.Id);
@@ -113,7 +114,7 @@ namespace Rhisis.World.Systems.Trade
 
             if (e.TargetId == player.Id)
             {
-                throw new Exception($"Can't start a Trade with ourselve ({player.Object.Name})");
+                throw new RhisisSystemException($"Can't cancel a Trade with ourselve ({player.Object.Name})");
             }
 
             var target = GetEntityFromContextOf(player, e.TargetId);
@@ -129,18 +130,18 @@ namespace Rhisis.World.Systems.Trade
         {
             if (e.TargetId == player.Id)
             {
-                throw new Exception($"Can't start a Trade with ourselve ({player.Object.Name})");
+                throw new RhisisSystemException($"Can't start a Trade with ourselve ({player.Object.Name})");
             }
 
             if (IsTrading(player))
             {
-                throw new Exception($"Can't start a Trade when one is already in progress ({player.Object.Name})");
+                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({player.Object.Name})");
             }
 
             var target = GetEntityFromContextOf(player, e.TargetId);
             if (IsTrading(target))
             {
-                throw new Exception($"Can't start a Trade when one is already in progress ({target.Object.Name})");
+                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({target.Object.Name})");
             }
 
             player.Trade.TargetId = target.Id;
@@ -161,26 +162,26 @@ namespace Rhisis.World.Systems.Trade
 
             if (IsNotTrading(player))
             {
-                throw new Exception($"No trade target {player.Object.Name}");
+                throw new RhisisSystemException($"No trade target {player.Object.Name}");
             }
             
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
                 CancelTrade(player);
-                throw new Exception($"Target is not trading {target.Object.Name}");
+                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
             }
 
             if (IsNotTradeState(player, TradeComponent.TradeState.Item) ||
                 IsNotTradeState(target, TradeComponent.TradeState.Item))
             {
-                throw new Exception($"Not the right trade state {player.Object.Name}");
+                throw new RhisisSystemException($"Not the right trade state {player.Object.Name}");
             }
 
             var item = player.Inventory.GetItem(e.ItemId);
             if (item == null)
             {
-                throw new NullReferenceException($"TradeSystem: Cannot find item with unique id: {e.ItemId}");
+                throw new ArgumentException($"TradeSystem: Cannot find item with unique id: {e.ItemId}");
             }
 
             if (e.Count > item.Quantity)
@@ -188,14 +189,14 @@ namespace Rhisis.World.Systems.Trade
                 throw new ArgumentException($"TradeSystem: More quantity than available for: {e.ItemId}");
             }
 
-            var slotItem = player.Trade.Items.GetItemBySlot(e.Slot);
+            var slotItem = player.Trade[e.Slot];
             if (slotItem != null && slotItem.Id != -1)
             {
                 return;
             }
 
             item.ExtraUsed = e.Count;
-            player.Trade.Items.Items[e.Slot] = item;
+            player.Trade[e.Slot] = item;
             player.Trade.ItemCount++;
             WorldPacketFactory.SendTradePut(player, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
             WorldPacketFactory.SendTradePut(target, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
@@ -212,20 +213,20 @@ namespace Rhisis.World.Systems.Trade
 
             if (IsNotTrading(player))
             {
-                throw new Exception($"No trade target {player.Object.Name}");
+                throw new RhisisSystemException($"No trade target {player.Object.Name}");
             }
 
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
                 CancelTrade(player);
-                throw new Exception($"Target is not trading {target.Object.Name}");
+                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
             }
 
             if (IsNotTradeState(player, TradeComponent.TradeState.Item) ||
                 IsNotTradeState(target, TradeComponent.TradeState.Item))
             {
-                throw new Exception($"Not the right trade state {player.Object.Name}");
+                throw new RhisisSystemException($"Not the right trade state {player.Object.Name}");
             }
 
             player.PlayerData.Gold -= e.Gold;
@@ -246,13 +247,13 @@ namespace Rhisis.World.Systems.Trade
 
             if (IsNotTrading(player))
             {
-                throw new Exception($"No trade target {player.Object.Name}");
+                throw new RhisisSystemException($"No trade target {player.Object.Name}");
             }
 
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
-                throw new Exception($"Target is not trading {target.Object.Name}");
+                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
             }
 
             CancelTrade(player, target, e.Mode);
@@ -269,18 +270,20 @@ namespace Rhisis.World.Systems.Trade
 
             if (IsNotTrading(player))
             {
-                throw new Exception($"No trade target {player.Object.Name}");
+                throw new RhisisSystemException($"No trade target {player.Object.Name}");
             }
 
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
                 CancelTrade(player);
-                throw new Exception($"Target is not trading {target.Object.Name}");
+                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
             }
 
             if (IsTradeState(player, TradeComponent.TradeState.Item))
+            {
                 player.Trade.State = TradeComponent.TradeState.Ok;
+            }
 
             if (IsTradeState(target, TradeComponent.TradeState.Ok))
             {
@@ -300,18 +303,20 @@ namespace Rhisis.World.Systems.Trade
 
             if (IsNotTrading(player))
             {
-                throw new Exception($"No trade target {player.Object.Name}");
+                throw new RhisisSystemException($"No trade target {player.Object.Name}");
             }
 
             var target = GetEntityFromContextOf(player, player.Trade.TargetId);
             if (IsNotTrading(target))
             {
                 CancelTrade(player);
-                throw new Exception($"Target is not trading {target.Object.Name}");
+                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
             }
 
             if (IsNotTradeState(player, TradeComponent.TradeState.Ok))
+            {
                 return;
+            }
 
             if (IsTradeState(target, TradeComponent.TradeState.Ok))
             {
@@ -330,17 +335,13 @@ namespace Rhisis.World.Systems.Trade
         /// Get the specified entity from the player's context
         /// Throw if cannot find it
         /// </summary>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="RhisisSystemException"></exception>
         /// <param name="player"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        private static IPlayerEntity GetEntityFromContextOf(IPlayerEntity player, int id)
-        {
-            if (player.Context.FindEntity<IPlayerEntity>(id) is IPlayerEntity entity)
-                return entity;
-
-            throw new Exception($"Can't find entity of id {id}");
-        }
+        private static IPlayerEntity GetEntityFromContextOf(IEntity player, int id) =>
+            player.Context.FindEntity<IPlayerEntity>(id) ??
+            throw new RhisisSystemException($"Can't find entity of id {id}");
 
         private static bool IsTrading(IPlayerEntity entity) =>
             entity.Trade.TargetId != 0;
@@ -392,18 +393,12 @@ namespace Rhisis.World.Systems.Trade
             var playerTradeGold = player.Trade.Gold;
             var targetTradeGold = target.Trade.Gold;
             var playerGold = player.PlayerData.Gold;
-            var targetGold = player.PlayerData.Gold;
+            var targetGold = target.PlayerData.Gold;
 
-            if (player.PlayerData.Gold < playerTradeGold)
-                return TradeComponent.TradeConfirm.Error;
-
-            if (target.PlayerData.Gold < targetTradeGold)
-                return TradeComponent.TradeConfirm.Error;
-
-            if (targetGold + playerTradeGold < 0)
-                return TradeComponent.TradeConfirm.Error;
-
-            if (playerGold + targetTradeGold < 0)
+            if (playerGold < playerTradeGold ||
+                targetGold < targetTradeGold ||
+                targetGold + playerTradeGold < 0 ||
+                playerGold + targetTradeGold < 0)
                 return TradeComponent.TradeConfirm.Error;
 
             return TradeComponent.TradeConfirm.Ok;
