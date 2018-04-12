@@ -9,13 +9,14 @@ using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Systems.Trade
 {
     [System]
     internal sealed class TradeSystem : NotifiableSystemBase
     {
-        public static int MaxTrade = 25;
+        public const int MaxTrade = 25;
 
         /// <summary>
         /// Gets the <see cref="TradeSystem"/> match filter.
@@ -440,13 +441,16 @@ namespace Rhisis.World.Systems.Trade
         /// <param name="target"></param>
         private static void ProcessItemTransfer(IPlayerEntity player, IPlayerEntity target)
         {
-            for (var i = 0; i < player.Trade.Items.Items.Count; ++i)
+            for (var i = 0; i < MaxTrade; ++i)
             {
                 var item = player.Trade.Items.Items[i];
                 if (item == null || item.Slot == -1)
                 {
                     continue;
                 }
+
+                var newItem = item.Clone();
+                newItem.CreatorId = -1;
 
                 if (item.Data.IsStackable)
                 {
@@ -458,24 +462,21 @@ namespace Rhisis.World.Systems.Trade
 
                     if (futureQuantity == 0)
                     {
-                        player.Inventory.Items.RemoveAt(i);
+                        player.Inventory.Items.Remove(item);
                     }
-
-                    var newItem = item.Clone();
-
+                    
                     item.Quantity = futureQuantity;
                     newItem.Quantity = item.ExtraUsed;
                     item.ExtraUsed = 0;
+                    newItem.ExtraUsed = 0;
 
                     target.Inventory.CreateItem(newItem);
                 }
                 else
                 {
-                    player.Inventory.Items.RemoveAt(i);
-
+                    player.Inventory.Items.Remove(item);
                     item.ExtraUsed = 0;
-
-                    var newItem = item.Clone();
+                    
                     target.Inventory.CreateItem(newItem);
                 }
             }
@@ -489,13 +490,17 @@ namespace Rhisis.World.Systems.Trade
         /// <returns></returns>
         private static bool FinalizeTradeItems(IPlayerEntity player, IPlayerEntity target)
         {
-            var tradeResultConfirm = TradeComponent.TradeConfirm.Ok;
-            if (target.Inventory.MaxCapacity - target.Inventory.GetItemCount() < player.Trade.ItemCount)
-                tradeResultConfirm = TradeComponent.TradeConfirm.Error;
-            else if (player.Inventory.MaxCapacity - player.Inventory.GetItemCount() < target.Trade.ItemCount)
-                tradeResultConfirm = TradeComponent.TradeConfirm.Error;
+            if (player.Trade.ItemCount > 0 &&
+                (!target.Inventory.HasAvailableSlots() ||
+                 (InventorySystem.InventorySize - target.Inventory.GetItemCount()) < player.Trade.ItemCount))
+            {
+                CancelTrade(player, target);
+                return false;
+            }
 
-            if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
+            if (target.Trade.ItemCount > 0 &&
+                (!player.Inventory.HasAvailableSlots() ||
+                 (InventorySystem.InventorySize - player.Inventory.GetItemCount()) < target.Trade.ItemCount))
             {
                 CancelTrade(player, target);
                 return false;
@@ -520,6 +525,8 @@ namespace Rhisis.World.Systems.Trade
                 CancelTrade(player, target);
                 return;
             }
+
+            // TODO : Save traders
             
             ResetTrade(player);
             ResetTrade(target);

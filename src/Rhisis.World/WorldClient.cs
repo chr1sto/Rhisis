@@ -115,52 +115,51 @@ namespace Rhisis.World
                     character.Intelligence = this.Player.Statistics.Intelligence;
                     character.StatPoints = this.Player.Statistics.StatPoints;
 
-                    // Save inventory
-
                     // Delete items
-                    for (int i = character.Items.Count - 1; i > 0; i--)
-                    {
-                        Item dbItem = character.Items.ElementAt(i);
-                        Game.Structures.Item inventoryItem = this.Player.Inventory.GetItemBySlot(dbItem.ItemSlot);
-
-                        if (inventoryItem != null && inventoryItem.Id == -1)
-                            character.Items.Remove(dbItem);
-                    }
+                    var itemsToDelete = new List<Item>(character.Items.Count);
+                    itemsToDelete.AddRange(from dbItem
+                        in character.Items
+                        let inventoryItem = this.Player.Inventory.GetItem(x => x.DbId == dbItem.Id) ?? new Game.Structures.Item()
+                        where inventoryItem.Id == -1
+                        select dbItem);
+                    itemsToDelete.ForEach(x => character.Items.Remove(x));
 
                     // Add or update items
-                    foreach (Game.Structures.Item item in this.Player.Inventory.Items)
+                    foreach (var item in this.Player.Inventory.Items)
                     {
-                        if (item.Id != -1)
+                        if (item.Id == -1)
                         {
-                            Item dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
+                            continue;
+                        }
 
-                            if (dbItem != null)
-                            {
-                                dbItem.CharacterId = this.Player.PlayerData.Id;
-                                dbItem.ItemId = item.Id;
-                                dbItem.ItemCount = item.Quantity;
-                                dbItem.ItemSlot = item.Slot;
-                                dbItem.Refine = item.Refine;
-                                dbItem.Element = item.Element;
-                                dbItem.ElementRefine = item.ElementRefine;
-                                db.Items.Update(dbItem);
-                            }
-                            else
-                            {
-                                dbItem = new Item
-                                {
-                                    CharacterId = this.Player.PlayerData.Id,
-                                    CreatorId = item.CreatorId,
-                                    ItemId = item.Id,
-                                    ItemCount = item.Quantity,
-                                    ItemSlot = item.Slot,
-                                    Refine = item.Refine,
-                                    Element = item.Element,
-                                    ElementRefine = item.ElementRefine
-                                };
+                        Item dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
 
-                                db.Items.Create(dbItem);
-                            }
+                        if (dbItem != null)
+                        {
+                            dbItem.CharacterId = this.Player.PlayerData.Id;
+                            dbItem.ItemId = item.Id;
+                            dbItem.ItemCount = item.Quantity;
+                            dbItem.ItemSlot = item.Slot;
+                            dbItem.Refine = item.Refine;
+                            dbItem.Element = item.Element;
+                            dbItem.ElementRefine = item.ElementRefine;
+                            db.Items.Update(dbItem);
+                        }
+                        else
+                        {
+                            dbItem = new Item
+                            {
+                                CharacterId = this.Player.PlayerData.Id,
+                                CreatorId = item.CreatorId,
+                                ItemId = item.Id,
+                                ItemCount = item.Quantity,
+                                ItemSlot = item.Slot,
+                                Refine = item.Refine,
+                                Element = item.Element,
+                                ElementRefine = item.ElementRefine
+                            };
+
+                            db.Items.Create(dbItem);
                         }
                     }
                 }

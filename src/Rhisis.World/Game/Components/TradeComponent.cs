@@ -1,4 +1,5 @@
 ﻿using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Trade;
 
 namespace Rhisis.World.Game.Components
 {
@@ -25,7 +26,7 @@ namespace Rhisis.World.Game.Components
         {
             this.TargetId = 0;
             State = TradeState.Item;
-            Items = new ItemContainerComponent(InventorySystem.MaxItems);
+            Items = new ItemContainerComponent(TradeSystem.MaxTrade);
             ItemCount = 0;
             Gold = 0;
         }
