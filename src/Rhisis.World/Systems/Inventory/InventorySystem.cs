@@ -92,8 +92,8 @@ namespace Rhisis.World.Systems.Inventory
             if (args.ArgumentCount < 0)
                 throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
 
-            player.Inventory = new ItemContainerComponent(MaxItems);
-            ItemContainerComponent inventory = player.Inventory;
+            player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
+            var inventory = player.Inventory;
             var dbItems = args.GetArgument<IEnumerable<Database.Structures.Item>>(0);
 
             if (dbItems != null)
@@ -212,7 +212,7 @@ namespace Rhisis.World.Systems.Inventory
 
                 int sourceSlot = item.Slot;
                 int equipedItemSlot = item.Data.Parts + EquipOffset;
-                Item equipedItem = player.Inventory.GetItemBySlot(equipedItemSlot);
+                Item equipedItem = player.Inventory[equipedItemSlot];
                 
                 if (equipedItem != null && equipedItem.Slot != -1)
                 {

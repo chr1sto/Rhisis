@@ -84,6 +84,8 @@ namespace Rhisis.World.Handlers
 
             client.Player.Statistics = new StatisticsComponent(character);
 
+            client.Player.Trade = new TradeComponent();
+
             client.Player.Connection = client;
 
             // Initialize the inventory
