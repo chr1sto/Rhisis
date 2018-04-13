@@ -17,6 +17,9 @@ namespace Rhisis.World.Systems.Trade
     [System]
     internal sealed class TradeSystem : NotifiableSystemBase
     {
+        /// <summary>
+        /// Maximum trading items per player
+        /// </summary>
         public const int MaxTrade = 25;
 
         /// <summary>
