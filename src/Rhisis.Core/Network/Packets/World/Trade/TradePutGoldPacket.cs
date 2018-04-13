@@ -4,7 +4,7 @@ namespace Rhisis.Core.Network.Packets.World.Trade
 {
     public class TradePutGoldPacket
     {
-        public readonly int Gold;
+        public int Gold { get; }
 
         public TradePutGoldPacket(INetPacketStream packet)
         {

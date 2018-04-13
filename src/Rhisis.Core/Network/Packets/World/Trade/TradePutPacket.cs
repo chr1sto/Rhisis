@@ -4,13 +4,13 @@ namespace Rhisis.Core.Network.Packets.World.Trade
 {
     public class TradePutPacket
     {
-        public readonly byte Position;
+        public byte Position { get; }
 
-        public readonly byte ItemType;
+        public byte ItemType { get; }
 
-        public readonly byte ItemId;
+        public byte ItemId { get; }
 
-        public readonly short Count;
+        public short Count { get; }
 
         public TradePutPacket(INetPacketStream packet)
         {

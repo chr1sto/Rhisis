@@ -7,7 +7,7 @@ namespace Rhisis.Core.Network.Packets.World.Trade
 {
     public class TradeRequestPacket
     {
-        public readonly int Target;
+        public int Target { get; }
 
         public TradeRequestPacket(INetPacketStream packet)
         {

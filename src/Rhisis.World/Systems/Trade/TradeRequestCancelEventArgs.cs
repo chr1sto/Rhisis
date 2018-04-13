@@ -6,7 +6,7 @@ namespace Rhisis.World.Systems.Trade
 {
     public class TradeRequestCancelEventArgs : TradeEventArgs
     {
-        public readonly int TargetId;
+        public int TargetId { get; }
 
         public TradeRequestCancelEventArgs(int targetId)
         {

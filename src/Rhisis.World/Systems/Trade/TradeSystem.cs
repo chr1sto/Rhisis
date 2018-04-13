@@ -189,14 +189,14 @@ namespace Rhisis.World.Systems.Trade
                 throw new ArgumentException($"TradeSystem: More quantity than available for: {e.ItemId}");
             }
 
-            var slotItem = player.Trade[e.Slot];
+            var slotItem = player.Trade.Items[e.Slot];
             if (slotItem != null && slotItem.Id != -1)
             {
                 return;
             }
 
             item.ExtraUsed = e.Count;
-            player.Trade[e.Slot] = item;
+            player.Trade.Items[e.Slot] = item;
             player.Trade.ItemCount++;
             WorldPacketFactory.SendTradePut(player, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
             WorldPacketFactory.SendTradePut(target, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);

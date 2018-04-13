@@ -31,16 +31,5 @@ namespace Rhisis.World.Game.Components
             ItemCount = 0;
             Gold = 0;
         }
-
-        /// <summary>
-        /// Gets the item at a specific slot
-        /// </summary>
-        /// <param name="slot"></param>
-        /// <returns></returns>
-        public Item this[int slot]
-        {
-            get => Items[slot];
-            set => Items[0] = value;
-        }
     }
 }

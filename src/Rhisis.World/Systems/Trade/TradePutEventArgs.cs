@@ -7,13 +7,13 @@ namespace Rhisis.World.Systems.Trade
 {
     public class TradePutEventArgs : TradeEventArgs
     {
-        public readonly byte Slot;
+        public byte Slot { get; }
 
-        public readonly byte ItemType;
+        public byte ItemType { get; }
 
-        public readonly byte ItemId;
+        public byte ItemId { get; }
 
-        public readonly short Count;
+        public short Count { get; }
 
         public TradePutEventArgs(byte position, byte itemType, byte itemId, short count)
         {

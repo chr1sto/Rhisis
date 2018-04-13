@@ -87,7 +87,7 @@ namespace Rhisis.World.Game.Components
         public Item this[int slot]
         {
             get => Items[slot];
-            set => Items[0] = value;
+            set => Items[slot] = value;
         }
 
         /// <summary>
