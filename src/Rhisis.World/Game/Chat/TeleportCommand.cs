@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using System;
 
@@ -30,7 +31,7 @@ namespace Rhisis.World.Game.Chat
             WorldPacketFactory.SendPlayerTeleport(player);
         }
     }
-    public static class TeleportationParameters
+    internal static class TeleportationParameters
     {
         public static void TeleportCommandTwoParam(IPlayerEntity player, string[] parameters)
         {
@@ -50,7 +51,7 @@ namespace Rhisis.World.Game.Chat
                 throw new ArgumentException("You must write numbers for teleport command's parameters");
             }
 
-            if (!WorldServer.Maps.TryGetValue(mapIdValue, out Map mapIdResult))
+            if (!WorldServer.Maps.TryGetValue(mapIdValue, out IMapInstance mapIdResult))
             {
                 Logger.Error("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
                     mapIdValue);
@@ -69,7 +70,7 @@ namespace Rhisis.World.Game.Chat
                 throw new ArgumentException("You must write numbers for teleport command's parameters");
             }
 
-            if (!WorldServer.Maps.TryGetValue(mapIdValue, out Map mapIdResult))
+            if (!WorldServer.Maps.TryGetValue(mapIdValue, out IMapInstance mapIdResult))
             {
                 Logger.Error("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
                     mapIdValue);
