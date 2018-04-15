@@ -51,21 +51,29 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 
 ### World
 - Inter-Server authentication (ISC)
+- Entity Component System architecture
 - Connect to the world
 - Load resources
    - Defines & texts
    - Movers
    - Maps
+   - NPC Data/Shops/Dialogs
 - Spawn monsters and NPC
 - Visibility System
 - Mobility System
 - Chat System
 	- Chat commands:
 		- Create item : `/ci` or `/createitem`
+		- Get gold : `/getgold`
+		- Teleport : `/teleport`
 - Inventory System
 	- Move items
 	- Equip/Unequip items
 	- Save inventory
+- Shop System
+	- Buy items
+	- Sell items
+- Trade System
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
@@ -76,8 +84,8 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 4. Edit the files in `bin/config/` (`database.json`, `login.json`, `cluster.json`, `world.json`)
 5. Create an account in your database (tool available soon)
 6. Start the emulator
-6.1. Start `login.bat`
-6.2. Start `cluster.bat`
-6.3. Start `world.bat`
+- Start `login.bat`
+- Start `cluster.bat`
+- Start `world.bat`
 
 [ethernetwork]: https://github.com/Eastrall/Ether.Network
