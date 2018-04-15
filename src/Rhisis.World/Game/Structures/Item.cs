@@ -181,7 +181,7 @@ namespace Rhisis.World.Game.Structures
         /// Creates a new <see cref="Item"/> based on a database item.
         /// </summary>
         /// <param name="dbItem">Database item</param>
-        public Item(Database.Structures.Item dbItem)
+        public Item(Database.Entities.Item dbItem)
             : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
                 dbItem.Element, dbItem.ElementRefine, 0)
         {

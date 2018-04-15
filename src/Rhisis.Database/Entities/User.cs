@@ -1,10 +1,9 @@
 ﻿using Rhisis.Database.Interfaces;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Rhisis.Database.Structures
+namespace Rhisis.Database.Entities
 {
     [Table("users")]
     public class User : IDatabaseEntity

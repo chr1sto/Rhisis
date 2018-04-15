@@ -42,8 +42,7 @@ namespace Rhisis.CLI.Commands
                     DatabaseService.Configure(databaseConfiguration);
                     using (var rhisisDbContext = DatabaseService.GetContext())
                     {
-                        if (!rhisisDbContext.DatabaseExists())
-                            rhisisDbContext.CreateDatabase();
+                        rhisisDbContext.Migrate();
                     }
                 }
                 catch (FileNotFoundException fileNotFound)

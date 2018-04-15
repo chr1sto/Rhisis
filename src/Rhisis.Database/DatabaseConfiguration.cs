@@ -27,7 +27,7 @@ namespace Rhisis.Database
         public string Database { get; set; }
 
         [DataMember(Name = "provider")]
-        [DefaultValue(DatabaseProvider.MySQL)]
+        [DefaultValue(DatabaseProvider.MySql)]
         public DatabaseProvider Provider { get; set; }
 
         [IgnoreDataMember]

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Rhisis.Database.Structures;
+using Rhisis.Database.Entities;
 
 namespace Rhisis.Database.Repositories
 {

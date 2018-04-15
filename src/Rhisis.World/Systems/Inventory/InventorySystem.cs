@@ -88,6 +88,7 @@ namespace Rhisis.World.Systems.Inventory
 
             player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
             var inventory = player.Inventory;
+            var dbItems = args.GetArgument<IEnumerable<Database.Entities.Item>>(0);
 
             if (e.Items != null)
             {
