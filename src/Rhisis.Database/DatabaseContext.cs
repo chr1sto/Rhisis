@@ -14,7 +14,7 @@ namespace Rhisis.Database
     {
         private const string MySqlConnectionString = "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
         private const string MsSqlConnectionString = "Server={0};Database={1};User Id={2};Password={3};";
-        private static readonly string DefaultConfigFile = Path.Combine("config", "database.json");
+        private static readonly string DefaultConfigFile = Path.Combine(Environment.CurrentDirectory, "..", "..", "bin", "config", "database.json");
         private readonly DatabaseConfiguration _configuration;
 
         /// <summary>
