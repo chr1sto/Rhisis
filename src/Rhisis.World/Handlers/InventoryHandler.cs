@@ -3,6 +3,7 @@ using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Inventory.EventArgs;
 
 namespace Rhisis.World.Handlers
 {

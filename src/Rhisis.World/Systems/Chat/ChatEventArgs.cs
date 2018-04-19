@@ -9,20 +9,17 @@ namespace Rhisis.World.Systems.Chat
         /// </summary>
         public string Message { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Creates a <see cref="ChatEventArgs"/> instance.
+        /// Creates a <see cref="T:Rhisis.World.Systems.Chat.ChatEventArgs" /> instance.
         /// </summary>
-        /// <param name="args">System arguments</param>
-        public ChatEventArgs(params object[] args)
-            : base(args)
+        /// <param name="message"></param>
+        public ChatEventArgs(string message)
         {
-            this.Message = this.GetArgument<string>(0);
+            this.Message = message;
         }
 
-        /// <summary>
-        /// Check system arguments.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public override bool CheckArguments() => !string.IsNullOrEmpty(this.Message);
     }
 }

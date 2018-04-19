@@ -6,11 +6,11 @@ using System;
 using System.Linq.Expressions;
 using Rhisis.Core.Data;
 using Rhisis.Core.Exceptions;
-using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Trade.EventArgs;
 
 namespace Rhisis.World.Systems.Trade
 {
