@@ -1,6 +1,12 @@
-﻿namespace Rhisis.World.Systems.NpcShop
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Core;
+
+namespace Rhisis.World.Systems.NpcShop.EventArgs
 {
-    public class NpcShopOpenEventArgs : NpcShopEventArgs
+    internal sealed class NpcShopOpenEventArgs : SystemEventArgs
     {
         /// <summary>
         /// Gets the NPC Object id.
@@ -11,10 +17,9 @@
         /// Creates a new <see cref="NpcShopOpenEventArgs"/> instance.
         /// </summary>
         /// <param name="npcObjectId"></param>
-        public NpcShopOpenEventArgs(int npcObjectId) 
-            : base(NpcShopActionType.Open, npcObjectId)
+        public NpcShopOpenEventArgs(int npcObjectId)
         {
-            this.NpcObjectId = this.GetArgument<int>(0);
+            this.NpcObjectId = npcObjectId;
         }
 
         /// <inheritdoc />
