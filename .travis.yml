@@ -7,7 +7,6 @@ dotnet: 2.0.0
 
 # Grant access to scripts
 before_script:
-  - sudo apt-get install dotnet-host=2.0.6-1
   - chmod +x ./build/build.sh
   - chmod +x ./build/build-dist.sh
   - chmod +x ./build/test.sh

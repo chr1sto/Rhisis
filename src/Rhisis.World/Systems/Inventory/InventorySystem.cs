@@ -75,35 +75,13 @@ namespace Rhisis.World.Systems.Inventory
                         e.GetType(), entity.Object.Name);
                     break;
             }
-
-            /*switch (inventoryEvent.ActionType)
-            {
-                case InventoryActionType.Initialize:
-                    this.InitializeInventory(playerEntity, inventoryEvent);
-                    break;
-                case InventoryActionType.MoveItem:
-                    this.MoveItem(playerEntity, inventoryEvent);
-                    break;
-                case InventoryActionType.Equip:
-                    this.EquipItem(playerEntity, inventoryEvent);
-                    break;
-                case InventoryActionType.CreateItem:
-                    this.CreateItem(playerEntity, inventoryEvent as InventoryCreateItemEventArgs);
-                    break;
-                case InventoryActionType.Unknown:
-                    // Nothing to do.
-                    break;
-                default:
-                    Logger.Warning("Unknown inventory action type: {0} for player {1} ", inventoryEvent.ActionType.ToString(), entity.Object.Name);
-                    break;
-            }*/
         }
 
         /// <summary>
         /// Initialize the player's inventory.
         /// </summary>
         /// <param name="player">Current player</param>
-        /// <param name="args">Command arguments</param>
+        /// <param name="e"></param>
         private void InitializeInventory(IPlayerEntity player, InventoryInitializeEventArgs e)
         {
             Logger.Debug("Initialize inventory");
@@ -137,7 +115,6 @@ namespace Rhisis.World.Systems.Inventory
         /// Move an item.
         /// </summary>
         /// <param name="player"></param>
-        /// <param name="args"></param>
         private void MoveItem(IPlayerEntity player, InventoryMoveEventArgs e)
         {
             var sourceSlot = e.SourceSlot;
@@ -175,7 +152,7 @@ namespace Rhisis.World.Systems.Inventory
         /// Equips an item.
         /// </summary>
         /// <param name="player"></param>
-        /// <param name="args"></param>
+        /// <param name="e"></param>
         private void EquipItem(IPlayerEntity player, InventoryEquipEventArgs e)
         {
             var uniqueId = e.UniqueId;
@@ -262,6 +239,11 @@ namespace Rhisis.World.Systems.Inventory
             }
         }
 
+        /// <summary>
+        /// Create a new item.
+        /// </summary>
+        /// <param name="player">Player entity</param>
+        /// <param name="e"></param>
         private void CreateItem(IPlayerEntity player, InventoryCreateItemEventArgs e)
         {
             ItemData itemData = e.ItemData;

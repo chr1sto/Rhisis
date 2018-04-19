@@ -13,7 +13,7 @@ namespace Rhisis.World.Handlers
         public static void OnMoveItem(WorldClient client, INetPacketStream packet)
         {
             var moveItemPacket = new MoveItemPacket(packet);
-            var inventoryEvent = new InventoryEventArgs(InventoryActionType.MoveItem, moveItemPacket.SourceSlot, moveItemPacket.DestinationSlot);
+            var inventoryEvent = new InventoryMoveEventArgs(moveItemPacket.SourceSlot, moveItemPacket.DestinationSlot);
 
             client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEvent);
         }
@@ -22,7 +22,7 @@ namespace Rhisis.World.Handlers
         public static void OnDoEquip(WorldClient client, INetPacketStream packet)
         {
             var equipItemPacket = new EquipItemPacket(packet);
-            var inventoryEvent = new InventoryEventArgs(InventoryActionType.Equip, equipItemPacket.UniqueId, equipItemPacket.Part);
+            var inventoryEvent = new InventoryEquipEventArgs(equipItemPacket.UniqueId, equipItemPacket.Part);
 
             client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEvent);
         }
