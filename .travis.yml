@@ -1,6 +1,5 @@
 # General build informations
 language: csharp
-dist: trusty
 sudo: required
 mono: none
 dotnet: 2.0.7
