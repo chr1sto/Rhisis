@@ -2,7 +2,7 @@
 language: csharp
 sudo: required
 mono: none
-dotnet: 2.0.7
+dotnet: 2.1.105
 
 # Grant access to scripts
 before_script:
