@@ -16,7 +16,6 @@ namespace Rhisis.World.Systems.NpcDialog
 
         /// <inheritdoc />
         public NpcDialogOpenEventArgs(int objectId, string dialogKey)
-            : base(objectId, dialogKey)
         {
             this.NpcObjectId = objectId;
             this.DialogKey = dialogKey;

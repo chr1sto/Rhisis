@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rhisis.World.Core.Systems
+namespace Rhisis.World.Game.Core
 {
     /// <summary>
     /// This attribute is used to flag classes that indicates that they are a Rhisis system.

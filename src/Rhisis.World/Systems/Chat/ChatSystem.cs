@@ -1,6 +1,5 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.Core.Reflection;
-using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;

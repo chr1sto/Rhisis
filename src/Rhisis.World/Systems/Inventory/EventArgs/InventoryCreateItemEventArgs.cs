@@ -1,9 +1,10 @@
 ﻿using System;
 using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Core;
 
-namespace Rhisis.World.Systems.Inventory
+namespace Rhisis.World.Systems.Inventory.EventArgs
 {
-    public class InventoryCreateItemEventArgs : InventoryEventArgs
+    public class InventoryCreateItemEventArgs : SystemEventArgs
     {
         /// <summary>
         /// Gets the item id to create.
@@ -25,14 +26,14 @@ namespace Rhisis.World.Systems.Inventory
         /// </summary>
         public ItemData ItemData { get; private set; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Creates a new <see cref="InventoryCreateItemEventArgs"/> instance.
+        /// Creates a new <see cref="T:Rhisis.World.Systems.Inventory.EventArgs.InventoryCreateItemEventArgs" /> instance.
         /// </summary>
         /// <param name="itemId">Item id</param>
         /// <param name="quantity">Item quantity</param>
         /// <param name="creatorId">Item creator id</param>
         public InventoryCreateItemEventArgs(int itemId, int quantity, int creatorId)
-            : base(InventoryActionType.CreateItem, itemId, quantity, creatorId)
         {
             this.ItemId = itemId;
             this.Quantity = quantity;

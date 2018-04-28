@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Rhisis.World.Systems.Inventory;
+﻿using Rhisis.World.Game.Core;
 
-namespace Rhisis.World.Systems.Trade
+namespace Rhisis.World.Systems.Trade.EventArgs
 {
-    public class TradePutEventArgs : TradeEventArgs
+    public class TradePutEventArgs : SystemEventArgs
     {
         public byte Slot { get; }
 
@@ -23,10 +20,7 @@ namespace Rhisis.World.Systems.Trade
             Count = count;
         }
 
-        public override bool CheckArguments()
-        {
-            return Slot > 0 && Slot < TradeSystem.MaxTrade &&
-                   Count > 0;
-        }
+        public override bool CheckArguments() => Slot < TradeSystem.MaxTrade &&
+                                                 Count > 0;
     }
 }

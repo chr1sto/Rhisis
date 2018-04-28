@@ -3,7 +3,6 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
-using Rhisis.World.Core.Systems;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Systems.Chat;
@@ -12,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Rhisis.World.Game.Core;
 
 namespace Rhisis.World
 {

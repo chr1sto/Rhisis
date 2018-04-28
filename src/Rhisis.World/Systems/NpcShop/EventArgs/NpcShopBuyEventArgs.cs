@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Core;
 
-namespace Rhisis.World.Systems.NpcShop
+namespace Rhisis.World.Systems.NpcShop.EventArgs
 {
-    public class NpcShopBuyItemEventArgs : NpcShopEventArgs
+    internal sealed class NpcShopBuyEventArgs : SystemEventArgs
     {
         /// <summary>
         /// Gets the item id to buy.
@@ -31,8 +34,7 @@ namespace Rhisis.World.Systems.NpcShop
         public ItemData ItemData { get; private set; }
 
         /// <inheritdoc />
-        public NpcShopBuyItemEventArgs(int itemId, int quantity, int tab, int slot)
-            : base(NpcShopActionType.Buy, itemId, quantity, tab, slot)
+        public NpcShopBuyEventArgs(int itemId, int quantity, int tab, int slot)
         {
             this.ItemId = itemId;
             this.Quantity = quantity;
@@ -48,9 +50,9 @@ namespace Rhisis.World.Systems.NpcShop
 
             this.ItemData = itemData;
 
-            return this.ItemId > 0 
-                && this.Quantity > 0 && this.Quantity <= this.ItemData.PackMax 
-                && this.Tab >= 0 && this.Tab < ShopData.DefaultTabCount;
+            return this.ItemId > 0
+                   && this.Quantity > 0 && this.Quantity <= this.ItemData.PackMax
+                   && this.Tab >= 0 && this.Tab < ShopData.DefaultTabCount;
         }
     }
 }

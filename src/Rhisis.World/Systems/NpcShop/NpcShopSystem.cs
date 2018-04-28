@@ -1,7 +1,6 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
-using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
@@ -10,6 +9,7 @@ using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using System;
 using System.Linq.Expressions;
+using Rhisis.World.Systems.NpcShop.EventArgs;
 
 namespace Rhisis.World.Systems.NpcShop
 {
@@ -28,37 +28,31 @@ namespace Rhisis.World.Systems.NpcShop
         /// <inheritdoc />
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
-            if (!(entity is IPlayerEntity player) || !(e is NpcShopEventArgs shopEvent))
+            if (!(entity is IPlayerEntity player) ||
+                !e.CheckArguments())
             {
-                Logger.Error("ShopSystem: Invalid event arguments.");
+                Logger.Error("NpcShopSystem: Invalid event arguments.");
                 return;
             }
 
-            if (!shopEvent.CheckArguments())
+            switch (e)
             {
-                Logger.Error("ShopSystem: Invalid event action arguments.");
-                return;
-            }
-
-            switch (shopEvent.ActionType)
-            {
-                case NpcShopActionType.Open:
-                    this.OpenShop(player, shopEvent);
+                case NpcShopOpenEventArgs npcShopEventArgs:
+                    this.OpenShop(player, npcShopEventArgs);
                     break;
-
-                case NpcShopActionType.Close:
-                    this.CloseShop(player, shopEvent);
+                case NpcShopCloseEventArgs npcShopEventArgs:
+                    this.CloseShop(player);
                     break;
-
-                case NpcShopActionType.Buy:
-                    this.BuyItem(player, shopEvent);
+                case NpcShopBuyEventArgs npcShopEventArgs:
+                    this.BuyItem(player, npcShopEventArgs);
                     break;
-
-                case NpcShopActionType.Sell:
-                    this.SellItem(player, shopEvent);
+                case NpcShopSellEventArgs npcShopEventArgs:
+                    this.SellItem(player, npcShopEventArgs);
                     break;
-
-                default: throw new ArgumentOutOfRangeException();
+                default:
+                    Logger.Warning("Unknown NpcShop action type: {0} for player {1} ",
+                        e.GetType(), entity.Object.Name);
+                    break;
             }
         }
 
@@ -67,16 +61,12 @@ namespace Rhisis.World.Systems.NpcShop
         /// </summary>
         /// <param name="player">Player entity</param>
         /// <param name="e"></param>
-        private void OpenShop(IPlayerEntity player, NpcShopEventArgs e)
+        private void OpenShop(IPlayerEntity player, NpcShopOpenEventArgs e)
         {
-            if (!(e is NpcShopOpenEventArgs npcEvent))
-                throw new ArgumentException("ShopSystem: Invalid event arguments for OpenShop action.");
-
-            var npc = player.Context.FindEntity<INpcEntity>(npcEvent.NpcObjectId);
-
+            var npc = player.Context.FindEntity<INpcEntity>(e.NpcObjectId);
             if (npc == null)
             {
-                Logger.Error("ShopSystem: Cannot find NPC with object id : {0}", npcEvent.NpcObjectId);
+                Logger.Error("ShopSystem: Cannot find NPC with object id : {0}", e.NpcObjectId);
                 return;
             }
 
@@ -95,8 +85,7 @@ namespace Rhisis.World.Systems.NpcShop
         /// Closes the current shop.
         /// </summary>
         /// <param name="player">Player entity</param>
-        /// <param name="e"></param>
-        private void CloseShop(IPlayerEntity player, NpcShopEventArgs e)
+        private void CloseShop(IPlayerEntity player)
         {
             player.PlayerData.CurrentShopName = null;
         }
@@ -106,11 +95,8 @@ namespace Rhisis.World.Systems.NpcShop
         /// </summary>
         /// <param name="player">Player entity</param>
         /// <param name="e"></param>
-        private void BuyItem(IPlayerEntity player, NpcShopEventArgs e)
+        private void BuyItem(IPlayerEntity player, NpcShopBuyEventArgs e)
         {
-            if (!(e is NpcShopBuyItemEventArgs npcEvent))
-                throw new ArgumentException("ShopSystem: Invalid event arguments for BuyItem action.");
-
             if (!WorldServer.Npcs.TryGetValue(player.PlayerData.CurrentShopName, out NpcData npcData))
             {
                 Logger.Error($"ShopSystem: Cannot find NPC: {player.PlayerData.CurrentShopName}");
@@ -123,41 +109,41 @@ namespace Rhisis.World.Systems.NpcShop
                 return;
             }
 
-            var currentTab = npcData.Shop.Items[npcEvent.Tab];
+            var currentTab = npcData.Shop.Items[e.Tab];
 
-            if (npcEvent.Slot < 0 || npcEvent.Slot > currentTab.Count - 1)
+            if (e.Slot < 0 || e.Slot > currentTab.Count - 1)
             {
-                Logger.Error($"ShopSystem: Item slot index was out of tab bounds. Slot: {npcEvent.Slot}");
+                Logger.Error($"ShopSystem: Item slot index was out of tab bounds. Slot: {e.Slot}");
                 return;
             }
 
-            var shopItem = currentTab[npcEvent.Slot];
+            var shopItem = currentTab[e.Slot];
 
-            if (shopItem.Id != npcEvent.ItemId)
+            if (shopItem.Id != e.ItemId)
             {
                 Logger.Error($"ShopSystem: Shop item id doens't match the item id that {player.Object.Name} is trying to buy.");
                 return;
             }
 
-            if (player.PlayerData.Gold < npcEvent.ItemData.Cost)
+            if (player.PlayerData.Gold < e.ItemData.Cost)
             {
-                Logger.Info($"ShopSystem: {player.Object.Name} doens't have enough gold to buy item {npcEvent.ItemData.Name} at {npcEvent.ItemData.Cost}.");
+                Logger.Info($"ShopSystem: {player.Object.Name} doens't have enough gold to buy item {e.ItemData.Name} at {e.ItemData.Cost}.");
                 WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
                 return;
             }
 
-            int quantity = npcEvent.Quantity;
-            int cost = npcEvent.ItemData.Cost;
+            int quantity = e.Quantity;
+            int cost = e.ItemData.Cost;
 
-            if (npcEvent.ItemData.IsStackable)
+            if (e.ItemData.IsStackable)
             {
                 for (var i = 0; i < InventorySystem.EquipOffset; i++)
                 {
                     Item inventoryItem = player.Inventory.Items[i];
 
-                    if (inventoryItem.Id == npcEvent.ItemId)
+                    if (inventoryItem.Id == e.ItemId)
                     {
-                        if (inventoryItem.Quantity + quantity > npcEvent.ItemData.PackMax)
+                        if (inventoryItem.Quantity + quantity > e.ItemData.PackMax)
                         {
                             int boughtQuantity = inventoryItem.Data.PackMax - inventoryItem.Quantity;
 
@@ -185,7 +171,7 @@ namespace Rhisis.World.Systems.NpcShop
                     }
                     else
                     {
-                        var item = new Item(npcEvent.ItemId, quantity, -1);
+                        var item = new Item(e.ItemId, quantity, -1);
 
                         if (player.Inventory.CreateItem(item))
                         {
@@ -210,7 +196,7 @@ namespace Rhisis.World.Systems.NpcShop
                         break;   
                     }
 
-                    var item = new Item(npcEvent.ItemId, 1, -1);
+                    var item = new Item(e.ItemId, 1, -1);
 
                     if (player.Inventory.CreateItem(item))
                     {
@@ -233,18 +219,15 @@ namespace Rhisis.World.Systems.NpcShop
         /// </summary>
         /// <param name="player">Player entity</param>
         /// <param name="e"></param>
-        private void SellItem(IPlayerEntity player, NpcShopEventArgs e)
+        private void SellItem(IPlayerEntity player, NpcShopSellEventArgs e)
         {
-            if (!(e is NpcShopSellItemEventArgs npcEvent))
-                throw new ArgumentException("ShopSystem: Invalid event arguments for SellItem action.");
-
-            Item itemToSell = player.Inventory.GetItem(npcEvent.ItemUniqueId);
+            Item itemToSell = player.Inventory.GetItem(e.ItemUniqueId);
 
             if (itemToSell?.Data == null)
-                throw new InvalidOperationException($"ShopSystem: Cannot find item with unique id: {npcEvent.ItemUniqueId}");
+                throw new InvalidOperationException($"ShopSystem: Cannot find item with unique id: {e.ItemUniqueId}");
 
-            if (npcEvent.Quantity > itemToSell.Data.PackMax)
-                throw new InvalidOperationException($"ShopSystem: Cannot sell more items than the pack max value. {npcEvent.Quantity} > {itemToSell.Data.PackMax}");
+            if (e.Quantity > itemToSell.Data.PackMax)
+                throw new InvalidOperationException($"ShopSystem: Cannot sell more items than the pack max value. {e.Quantity} > {itemToSell.Data.PackMax}");
 
             // TODO: make more checks:
             // is a quest item
@@ -255,8 +238,8 @@ namespace Rhisis.World.Systems.NpcShop
 
             Logger.Debug("Selling item: '{0}' for {1}", itemToSell.Data.Name, sellPrice);
 
-            player.PlayerData.Gold += sellPrice * npcEvent.Quantity;
-            itemToSell.Quantity -= npcEvent.Quantity;
+            player.PlayerData.Gold += sellPrice * e.Quantity;
+            itemToSell.Quantity -= e.Quantity;
 
             WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToSell.UniqueId, itemToSell.Quantity);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);

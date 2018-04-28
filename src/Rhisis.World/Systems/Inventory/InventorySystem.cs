@@ -2,7 +2,6 @@
 using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
-using Rhisis.World.Core.Systems;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
@@ -13,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Rhisis.World.Systems.Inventory.EventArgs;
 
 namespace Rhisis.World.Systems.Inventory
 {
@@ -39,43 +39,40 @@ namespace Rhisis.World.Systems.Inventory
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Executes the <see cref="InventorySystem"/> logic.
+        /// Executes the <see cref="T:Rhisis.World.Systems.Inventory.InventorySystem" /> logic.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="e"></param>
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
-            if (!(entity is IPlayerEntity playerEntity) || !(e is InventoryEventArgs inventoryEvent))
+            if (!(entity is IPlayerEntity playerEntity))
                 return;
             
-            if (!inventoryEvent.CheckArguments())
+            if (!e.CheckArguments())
             {
-                Logger.Error("Cannot execute inventory action: {0} due to invalid arguments.", inventoryEvent.ActionType);
+                Logger.Error("Cannot execute inventory action: {0} due to invalid arguments.", e.GetType());
                 return;
             }
-            
-            Logger.Debug("Execute inventory action: {0}", inventoryEvent.ActionType.ToString());
 
-            switch (inventoryEvent.ActionType)
+            switch (e)
             {
-                case InventoryActionType.Initialize:
-                    this.InitializeInventory(playerEntity, inventoryEvent);
+                case InventoryInitializeEventArgs inventoryInitializeEvent:
+                    this.InitializeInventory(playerEntity, inventoryInitializeEvent);
                     break;
-                case InventoryActionType.MoveItem:
-                    this.MoveItem(playerEntity, inventoryEvent);
+                case InventoryMoveEventArgs inventoryMoveEvent:
+                    this.MoveItem(playerEntity, inventoryMoveEvent);
                     break;
-                case InventoryActionType.Equip:
-                    this.EquipItem(playerEntity, inventoryEvent);
+                case InventoryEquipEventArgs inventoryEquipEvent:
+                    this.EquipItem(playerEntity, inventoryEquipEvent);
                     break;
-                case InventoryActionType.CreateItem:
-                    this.CreateItem(playerEntity, inventoryEvent as InventoryCreateItemEventArgs);
-                    break;
-                case InventoryActionType.Unknown:
-                    // Nothing to do.
+                case InventoryCreateItemEventArgs inventoryCreateItemEventArgs:
+                    this.CreateItem(playerEntity, inventoryCreateItemEventArgs);
                     break;
                 default:
-                    Logger.Warning("Unknown inventory action type: {0} for player {1} ", inventoryEvent.ActionType.ToString(), entity.Object.Name);
+                    Logger.Warning("Unknown inventory action type: {0} for player {1} ",
+                        e.GetType(), entity.Object.Name);
                     break;
             }
         }
@@ -84,21 +81,17 @@ namespace Rhisis.World.Systems.Inventory
         /// Initialize the player's inventory.
         /// </summary>
         /// <param name="player">Current player</param>
-        /// <param name="args">Command arguments</param>
-        private void InitializeInventory(IPlayerEntity player, InventoryEventArgs args)
+        /// <param name="e"></param>
+        private void InitializeInventory(IPlayerEntity player, InventoryInitializeEventArgs e)
         {
             Logger.Debug("Initialize inventory");
 
-            if (args.ArgumentCount < 0)
-                throw new ArgumentException("Inventory event arguments cannot be empty.", nameof(args));
-
             player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
             var inventory = player.Inventory;
-            var dbItems = args.GetArgument<IEnumerable<Database.Structures.Item>>(0);
 
-            if (dbItems != null)
+            if (e.Items != null)
             {
-                foreach (Database.Structures.Item item in dbItems)
+                foreach (Database.Structures.Item item in e.Items)
                 {
                     int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
 
@@ -122,14 +115,10 @@ namespace Rhisis.World.Systems.Inventory
         /// Move an item.
         /// </summary>
         /// <param name="player"></param>
-        /// <param name="args"></param>
-        private void MoveItem(IPlayerEntity player, InventoryEventArgs args)
+        private void MoveItem(IPlayerEntity player, InventoryMoveEventArgs e)
         {
-            if (args.ArgumentCount < 1)
-                throw new ArgumentException("Inventory event arguments should be equal to 2.", nameof(args));
-
-            var sourceSlot = args.GetArgument<byte>(0);
-            var destinationSlot = args.GetArgument<byte>(1);
+            var sourceSlot = e.SourceSlot;
+            var destinationSlot = e.DestinationSlot;
             List<Item> items = player.Inventory.Items;
 
             if (sourceSlot >= MaxItems || destinationSlot >= MaxItems)
@@ -163,25 +152,15 @@ namespace Rhisis.World.Systems.Inventory
         /// Equips an item.
         /// </summary>
         /// <param name="player"></param>
-        /// <param name="args"></param>
-        private void EquipItem(IPlayerEntity player, InventoryEventArgs args)
+        /// <param name="e"></param>
+        private void EquipItem(IPlayerEntity player, InventoryEquipEventArgs e)
         {
-            if (args.ArgumentCount < 1)
-                throw new ArgumentException("Inventory event arguments should be equal to 2.", nameof(args));
-
-            var uniqueId = args.GetArgument<int>(0);
-            var part = args.GetArgument<int>(1);
+            var uniqueId = e.UniqueId;
+            var part = e.Part;
 
             Logger.Debug("UniqueId: {0} | Part: {1}", uniqueId, part);
 
-            if (part >= MaxHumanParts)
-            {
-                Logger.Error("Cannot equip item with unique id: {0}. Not an equipable item.", uniqueId);
-                return;
-            }
-
             Item item = player.Inventory.GetItem(uniqueId);
-
             if (item == null)
                 return;
 
@@ -260,12 +239,14 @@ namespace Rhisis.World.Systems.Inventory
             }
         }
 
-        private void CreateItem(IPlayerEntity player, InventoryCreateItemEventArgs eventArgs)
+        /// <summary>
+        /// Create a new item.
+        /// </summary>
+        /// <param name="player">Player entity</param>
+        /// <param name="e"></param>
+        private void CreateItem(IPlayerEntity player, InventoryCreateItemEventArgs e)
         {
-            if (eventArgs == null)
-                throw new ArgumentNullException(nameof(eventArgs));
-
-            ItemData itemData = eventArgs.ItemData;
+            ItemData itemData = e.ItemData;
 
             if (itemData.IsStackable)
             {
@@ -273,7 +254,7 @@ namespace Rhisis.World.Systems.Inventory
             }
             else
             {
-                for (var i = 0; i < eventArgs.Quantity; i++)
+                for (var i = 0; i < e.Quantity; i++)
                 {
                     int availableSlot = player.Inventory.GetAvailableSlot();
 
@@ -285,7 +266,7 @@ namespace Rhisis.World.Systems.Inventory
 
                     Logger.Debug("Available slot: {0}", availableSlot);
 
-                    var newItem = new Item(eventArgs.ItemId, 1, eventArgs.CreatorId)
+                    var newItem = new Item(e.ItemId, 1, e.CreatorId)
                     {
                         Slot = availableSlot,
                         UniqueId = availableSlot,

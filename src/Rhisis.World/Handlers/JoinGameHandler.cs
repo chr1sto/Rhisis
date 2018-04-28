@@ -11,6 +11,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Inventory.EventArgs;
 
 namespace Rhisis.World.Handlers
 {
@@ -89,7 +90,7 @@ namespace Rhisis.World.Handlers
             client.Player.Connection = client;
 
             // Initialize the inventory
-            var inventoryEventArgs = new InventoryEventArgs(InventoryActionType.Initialize, character.Items);
+            var inventoryEventArgs = new InventoryInitializeEventArgs(character.Items);
             client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEventArgs);
             
             // 3rd: spawn the player

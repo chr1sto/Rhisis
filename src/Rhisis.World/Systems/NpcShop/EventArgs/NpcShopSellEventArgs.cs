@@ -1,6 +1,12 @@
-﻿namespace Rhisis.World.Systems.NpcShop
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Core;
+
+namespace Rhisis.World.Systems.NpcShop.EventArgs
 {
-    public class NpcShopSellItemEventArgs : NpcShopEventArgs
+    internal sealed class NpcShopSellEventArgs : SystemEventArgs
     {
         /// <summary>
         /// Gets the item's unique id.
@@ -13,12 +19,11 @@
         public short Quantity { get; }
 
         /// <summary>
-        /// Creates a new <see cref="NpcShopSellItemEventArgs"/> instance.
+        /// Creates a new <see cref="NpcShopSellEventArgs"/> instance.
         /// </summary>
         /// <param name="itemUniqueId">Item unique id</param>
         /// <param name="quantity">Item quantity</param>
-        public NpcShopSellItemEventArgs(byte itemUniqueId, short quantity)
-            : base(NpcShopActionType.Sell, itemUniqueId, quantity)
+        public NpcShopSellEventArgs(byte itemUniqueId, short quantity)
         {
             this.ItemUniqueId = itemUniqueId;
             this.Quantity = quantity;

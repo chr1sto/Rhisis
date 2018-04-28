@@ -11,10 +11,13 @@ namespace Rhisis.World.Handlers
         [PacketHandler(PacketType.MODIFY_STATUS)]
         public static void OnModifyStatus(WorldClient client, INetPacketStream packet)
         {
-            var msPacket = new ModifyStatusPacket(packet);
+            var modifyStatusPacket = new ModifyStatusPacket(packet);
+            var statisticsEventArgs = new StatisticsModifyEventArgs(modifyStatusPacket.Strenght,
+                modifyStatusPacket.Stamina,
+                modifyStatusPacket.Dexterity,
+                modifyStatusPacket.Intelligence);
 
-            client.Player.Context.NotifySystem<StatisticsSystem>(client.Player,
-                new StatisticsEventArgs(StatisticsActionType.ModifyStatus, msPacket));
+            client.Player.Context.NotifySystem<StatisticsSystem>(client.Player, statisticsEventArgs);
         }
     }
 }

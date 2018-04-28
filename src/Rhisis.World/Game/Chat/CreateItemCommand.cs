@@ -3,6 +3,7 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Inventory.EventArgs;
 
 namespace Rhisis.World.Game.Chat
 {
