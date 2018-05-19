@@ -51,6 +51,8 @@ namespace Rhisis.Database.Entities
         public int FaceId { get; set; }
         
         public int MapId { get; set; }
+
+        public int MapLayerId { get; set; }
         
         public float PosX { get; set; }
         
