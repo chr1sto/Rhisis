@@ -1,4 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using System;
 
@@ -18,12 +19,46 @@ namespace Rhisis.CLI.Commands
     [Command(Name = "configure", Description = "Configures the database access")]
     public class DatabaseConfigureCommand
     {
+        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
+        public string DatabaseConfigurationFile { get; set; }
+
         public void OnExecute(CommandLineApplication app, IConsole console)
         {
-            DatabaseProvider provider = DatabaseProvider.Unknown;
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = "config/database.json";
 
-            while ((provider = GetDatabaseProvider()) == DatabaseProvider.Unknown) ;
-            Console.WriteLine($"Selected provider: {provider.ToString()}");
+            var dbConfiguration = new DatabaseConfiguration();
+
+            while ((dbConfiguration.Provider = GetDatabaseProvider()) == DatabaseProvider.Unknown) ;
+
+            Console.Write("Host: ");
+            dbConfiguration.Host = Console.ReadLine();
+
+            Console.Write("Username: ");
+            dbConfiguration.Username = Console.ReadLine();
+
+            Console.Write("Password: ");
+            dbConfiguration.Password = Console.ReadLine();
+
+            Console.Write("Database name: ");
+            dbConfiguration.Database = Console.ReadLine();
+
+            Console.WriteLine("--------------------------------");
+            Console.WriteLine("Configuration:");
+            Console.WriteLine($"Database Provider: {dbConfiguration.Provider.ToString()}");
+            Console.WriteLine($"Host: {dbConfiguration.Host}");
+            Console.WriteLine($"Username: {dbConfiguration.Username}");
+            Console.WriteLine($"Database name: {dbConfiguration.Database}");
+            Console.WriteLine("--------------------------------");
+
+            Console.WriteLine("Save this configuration ? (y/n)");
+            string response = Console.ReadLine();
+
+            if (response.Equals("y", StringComparison.OrdinalIgnoreCase))
+            {
+                ConfigurationHelper.Save(DatabaseConfigurationFile, dbConfiguration);
+                Console.WriteLine($"Database configuration saved in '{DatabaseConfigurationFile}'.");
+            }
         }
 
         private DatabaseProvider GetDatabaseProvider()
@@ -55,9 +90,33 @@ namespace Rhisis.CLI.Commands
     [Command(Name = "update", Description = "Updates the database structure")]
     public class DatabaseUpdateCommand
     {
+        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
+        public string DatabaseConfigurationFile { get; set; }
+
         public void OnExecute(CommandLineApplication app, IConsole console)
         {
-            Console.WriteLine("Database update");
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = "config/database.json";
+
+            try
+            {
+                Console.WriteLine("Starting database structure update...");
+                var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+
+                DatabaseService.Configure(databaseConfiguration);
+                using (var rhisisDbContext = DatabaseService.GetContext())
+                {
+                    if (rhisisDbContext.DatabaseExists())
+                    {
+                        rhisisDbContext.Migrate();
+                        Console.WriteLine("Database updated.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }
