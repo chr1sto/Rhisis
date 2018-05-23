@@ -6,7 +6,7 @@ using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
-using Rhisis.Database.Structures;
+using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;

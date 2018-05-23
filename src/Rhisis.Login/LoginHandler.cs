@@ -4,7 +4,7 @@ using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.Login;
 using Rhisis.Database;
-using Rhisis.Database.Structures;
+using Rhisis.Database.Entities;
 using Rhisis.Login.Packets;
 using System;
 

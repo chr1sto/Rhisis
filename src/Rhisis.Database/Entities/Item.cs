@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Rhisis.Database.Structures
+namespace Rhisis.Database.Entities
 {
     [Table("items")]
     public sealed class Item : IDatabaseEntity

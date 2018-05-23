@@ -6,7 +6,7 @@ using System.Windows.Input;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
-using Rhisis.Database.Structures;
+using Rhisis.Database.Entities;
 using Rhisis.Installer.Enums;
 using Rhisis.Installer.Models;
 using Rhisis.Tools.Core.MVVM;
@@ -157,7 +157,6 @@ namespace Rhisis.Installer.ViewModels
 
                     if (result)
                     {
-                        context.CreateDatabase();
                         context.Migrate();
                     }
                 }

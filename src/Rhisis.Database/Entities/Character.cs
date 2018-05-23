@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Rhisis.Database.Structures
+namespace Rhisis.Database.Entities
 {
     [Table("characters")]
     public sealed class Character : IDatabaseEntity
@@ -51,6 +51,8 @@ namespace Rhisis.Database.Structures
         public int FaceId { get; set; }
         
         public int MapId { get; set; }
+
+        public int MapLayerId { get; set; }
         
         public float PosX { get; set; }
         

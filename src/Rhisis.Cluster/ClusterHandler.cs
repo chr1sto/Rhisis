@@ -7,7 +7,7 @@ using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.Cluster;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
-using Rhisis.Database.Structures;
+using Rhisis.Database.Entities;
 using System;
 
 namespace Rhisis.Cluster

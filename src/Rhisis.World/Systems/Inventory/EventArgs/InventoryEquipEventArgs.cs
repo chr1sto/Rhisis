@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Rhisis.Database.Structures;
-using Rhisis.World.Game.Core;
+﻿using Rhisis.World.Game.Core;
 
 namespace Rhisis.World.Systems.Inventory.EventArgs
 {

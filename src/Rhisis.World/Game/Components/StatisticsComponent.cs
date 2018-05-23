@@ -1,4 +1,4 @@
-﻿using Rhisis.Database.Structures;
+﻿using Rhisis.Database.Entities;
 
 namespace Rhisis.World.Game.Components
 {
