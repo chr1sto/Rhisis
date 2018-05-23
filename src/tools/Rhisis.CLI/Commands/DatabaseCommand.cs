@@ -29,7 +29,8 @@ namespace Rhisis.CLI.Commands
 
             var dbConfiguration = new DatabaseConfiguration();
 
-            while ((dbConfiguration.Provider = GetDatabaseProvider()) == DatabaseProvider.Unknown) ;
+            Console.WriteLine("Select one of the available providers:");
+            dbConfiguration.Provider = GetDatabaseProvider();
 
             Console.Write("Host: ");
             dbConfiguration.Host = Console.ReadLine();
@@ -65,7 +66,6 @@ namespace Rhisis.CLI.Commands
         {
             var databaseProvider = DatabaseProvider.Unknown;
 
-            Console.WriteLine("Select one of the available providers:");
             string[] providerNames = Enum.GetNames(typeof(DatabaseProvider));
             int[] providerValues = (int[])Enum.GetValues(typeof(DatabaseProvider));
 
