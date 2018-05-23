@@ -40,8 +40,15 @@ namespace Rhisis.World.Handlers
                 // Account banned so he can't connect to the game.
                 return;
             }
+            
+            if (!WorldServer.Maps.TryGetValue(character.MapId, out IMapInstance map))
+            {
+                Logger.Warning("Map with id '{0}' doesn't exist.", character.MapId);
+                // TODO: send error to client or go to default map ?
+                return;
+            }
 
-            IMapInstance map = WorldServer.Maps[character.MapId];
+            IMapLayer mapLayer = map.GetMapLayer(character.MapLayerId) ?? map.GetDefaultMapLayer();
 
             // 1st: Create the player entity with the map context
             client.Player = map.CreateEntity<PlayerEntity>();
@@ -52,7 +59,7 @@ namespace Rhisis.World.Handlers
                 ModelId = character.Gender == 0 ? 11 : 12,
                 Type = WorldObjectType.Mover,
                 MapId = character.MapId,
-                LayerId = 1,
+                LayerId = mapLayer.Id,
                 Position = new Vector3(character.PosX, character.PosY, character.PosZ),
                 Angle = character.Angle,
                 Size = 100,
@@ -74,7 +81,7 @@ namespace Rhisis.World.Handlers
             {
                 Id = character.Id,
                 Slot = character.Slot,
-                Gold = character.Gold
+                Gold = character.Gold,
             };
 
             client.Player.MovableComponent = new MovableComponent

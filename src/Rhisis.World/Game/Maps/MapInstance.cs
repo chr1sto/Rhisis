@@ -1,6 +1,4 @@
-﻿using System;
-using Rhisis.Core.Common;
-using Rhisis.Core.Helpers;
+﻿using Rhisis.Core.Common;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures.Game;
@@ -9,6 +7,7 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Regions;
 using Rhisis.World.Game.Structures;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,6 +20,8 @@ namespace Rhisis.World.Game.Maps
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
         private readonly List<IRegion> _regions;
+
+        private IMapLayer _defaultMapLayer;
 
         /// <inheritdoc />
         public int Id { get; }
@@ -82,27 +83,35 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public IMapLayer CreateMapLayer()
         {
-            var mapLayer = new MapLayer(this, 1);
+            // TODO: Generate new map layer id
 
-            this._layers.Add(mapLayer);
-
-            return mapLayer;
+            return this.CreateMapLayer(1);
         }
 
         /// <inheritdoc />
         public IMapLayer CreateMapLayer(int id)
         {
-            throw new NotImplementedException();
+            var mapLayer = new MapLayer(this, id);
+
+            this._layers.Add(mapLayer);
+
+            if (this._defaultMapLayer == null)
+                this._defaultMapLayer = mapLayer;
+
+            return mapLayer;
         }
 
         /// <inheritdoc />
-        public IMapLayerInstance CreaMapLayerInstance(int id)
+        public IMapLayerInstance CreateMapLayerInstance(int id)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
         public IMapLayer GetMapLayer(int id) => this._layers.FirstOrDefault(x => x.Id == id);
+
+        /// <inheritdoc />
+        public IMapLayer GetDefaultMapLayer() => this._defaultMapLayer;
 
         /// <inheritdoc />
         public void DeleteMapLayer(int id)

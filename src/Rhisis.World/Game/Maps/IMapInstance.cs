@@ -57,7 +57,7 @@ namespace Rhisis.World.Game.Maps
         /// </summary>
         /// <param name="id">Map layer instance id</param>
         /// <returns></returns>
-        IMapLayerInstance CreaMapLayerInstance(int id);
+        IMapLayerInstance CreateMapLayerInstance(int id);
 
         /// <summary>
         /// Gets a map layer by his id.
@@ -65,6 +65,12 @@ namespace Rhisis.World.Game.Maps
         /// <param name="id"></param>
         /// <returns></returns>
         IMapLayer GetMapLayer(int id);
+
+        /// <summary>
+        /// Gets the default map layer.
+        /// </summary>
+        /// <returns></returns>
+        IMapLayer GetDefaultMapLayer();
 
         /// <summary>
         /// Deletes a map layer by his id.
