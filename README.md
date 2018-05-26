@@ -74,6 +74,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- Buy items
 	- Sell items
 - Trade System
+- NPC Dialog System
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
@@ -87,5 +88,18 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Start `login.bat`
 - Start `cluster.bat`
 - Start `world.bat`
+
+## Contributors
+
+- Eastrall
+- Steve-Nzr
+- Freezeraid
+
+## Supporters
+
+- Ukiyo
+- Kinami
+- Sauce
+- Yothri
 
 [ethernetwork]: https://github.com/Eastrall/Ether.Network
