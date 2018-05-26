@@ -101,6 +101,7 @@ namespace Rhisis.World
                     character.PosZ = this.Player.Object.Position.Z;
                     character.Angle = this.Player.Object.Angle;
                     character.MapId = this.Player.Object.MapId;
+                    character.MapLayerId = this.Player.Object.LayerId;
                     character.Gender = this.Player.VisualAppearance.Gender;
                     character.HairColor = this.Player.VisualAppearance.HairColor;
                     character.HairId = this.Player.VisualAppearance.HairId;
