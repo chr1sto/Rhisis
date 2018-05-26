@@ -15,6 +15,7 @@ using Rhisis.World.Packets;
 using Rhisis.World.Systems;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.World.Game.Maps;
 
 namespace Rhisis.World
 {
@@ -100,6 +101,7 @@ namespace Rhisis.World
                     character.PosZ = this.Player.Object.Position.Z;
                     character.Angle = this.Player.Object.Angle;
                     character.MapId = this.Player.Object.MapId;
+                    character.MapLayerId = this.Player.Object.LayerId;
                     character.Gender = this.Player.VisualAppearance.Gender;
                     character.HairColor = this.Player.VisualAppearance.HairColor;
                     character.HairId = this.Player.VisualAppearance.HairId;
@@ -172,9 +174,9 @@ namespace Rhisis.World
         /// Despawns the current player and notify other players arround.
         /// </summary>
         /// <param name="currentMap"></param>
-        private void DespawnPlayer(Map currentMap)
+        private void DespawnPlayer(IMapInstance currentMap)
         {
-            IEnumerable<IEntity> entitiesAround = from x in currentMap.Context.Entities
+            IEnumerable<IEntity> entitiesAround = from x in currentMap.Entities
                                                   where this.Player.Object.Position.IsInCircle(x.Object.Position, VisibilitySystem.VisibilityRange) && x != this.Player
                                                   select x;
 
@@ -190,7 +192,7 @@ namespace Rhisis.World
                 entity.Object.Entities.Remove(this.Player);
             }
 
-            currentMap.Context.DeleteEntity(this.Player);
+            currentMap.DeleteEntity(this.Player);
         }
 
         /// <inheritdoc />
@@ -198,7 +200,7 @@ namespace Rhisis.World
         {
             if (disposing)
             {
-                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.Object.MapId, out Map currentMap))
+                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.Object.MapId, out IMapInstance currentMap))
                 {
                     this.DespawnPlayer(currentMap);
                 }

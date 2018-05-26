@@ -12,6 +12,7 @@ using Rhisis.World.ISC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.World.Game.Maps;
 
 namespace Rhisis.World
 {
@@ -20,13 +21,13 @@ namespace Rhisis.World
         private const string WorldConfigFile = "config/world.json";
         private const string DatabaseConfigFile = "config/database.json";
 
-        private static readonly IDictionary<int, Map> _maps = new Dictionary<int, Map>();
+        private static readonly IDictionary<int, IMapInstance> _maps = new Dictionary<int, IMapInstance>();
         private static ISCClient _client;
 
         /// <summary>
         /// Gets the World server maps.
         /// </summary>
-        public static IReadOnlyDictionary<int, Map> Maps => _maps as IReadOnlyDictionary<int, Map>;
+        public static IReadOnlyDictionary<int, IMapInstance> Maps => _maps as IReadOnlyDictionary<int, IMapInstance>;
 
         /// <summary>
         /// Gets the Inter client.

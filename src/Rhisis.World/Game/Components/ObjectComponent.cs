@@ -7,6 +7,8 @@ namespace Rhisis.World.Game.Components
 {
     public class ObjectComponent
     {
+        public const short DefaultObjectSize = 100;
+
         /// <summary>
         /// Gets or sets the model id.
         /// </summary>
@@ -21,6 +23,11 @@ namespace Rhisis.World.Game.Components
         /// Gets or sets the map id.
         /// </summary>
         public int MapId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the map layer id.
+        /// </summary>
+        public int LayerId { get; set; }
 
         /// <summary>
         /// Gets or sets the object position.

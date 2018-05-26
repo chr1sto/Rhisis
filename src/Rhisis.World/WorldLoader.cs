@@ -3,15 +3,15 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
-using Rhisis.World.Game;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems.Chat;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Rhisis.World.Game.Core;
 
 namespace Rhisis.World
 {
@@ -267,7 +267,7 @@ namespace Rhisis.World
         {
             Logger.Loading("Loading maps...\t\t");
             IEnumerable<Type> systemTypes = this.LoadSystems();
-            IDictionary<string, string> worldsPaths = this.LoadWorldScript();
+            IReadOnlyDictionary<string, string> worldsPaths = this.LoadWorldScript();
 
             foreach (string mapId in this.WorldConfiguration.Maps)
             {
@@ -284,12 +284,13 @@ namespace Rhisis.World
                     continue;
                 }
 
-                Map map = Map.Load(Path.Combine(DataPath, "maps", mapName), mapName, id);
+                IMapInstance map = MapInstance.Create(Path.Combine(DataPath, "maps", mapName), mapName, id);
+
+                map.StartSystemUpdate(100);
 
                 foreach (Type type in systemTypes)
-                    map.Context.AddSystem(Activator.CreateInstance(type, map.Context) as ISystem);
-
-                map.Start();
+                    map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
+                
                 _maps.Add(id, map);
             }
 
@@ -305,7 +306,7 @@ namespace Rhisis.World
                 .Where(x => x.GetTypeInfo().GetCustomAttribute<SystemAttribute>() != null && typeof(ISystem).IsAssignableFrom(x));
         }
 
-        private IDictionary<string, string> LoadWorldScript()
+        private IReadOnlyDictionary<string, string> LoadWorldScript()
         {
             var worldsPaths = new Dictionary<string, string>();
 
