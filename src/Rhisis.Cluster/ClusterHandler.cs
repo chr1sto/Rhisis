@@ -19,7 +19,8 @@ namespace Rhisis.Cluster
         {
             var pingPacket = new PingPacket(packet);
 
-            CommonPacketFactory.SendPong(client, pingPacket.Time);
+            if (!pingPacket.IsTimeOut)
+                CommonPacketFactory.SendPong(client, pingPacket.Time);
         }
 
         [PacketHandler(PacketType.GETPLAYERLIST)]
