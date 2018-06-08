@@ -1,33 +1,43 @@
 ﻿using Rhisis.Core.Helpers;
-using Rhisis.Core.Structures;
 
-namespace Rhisis.World.Game.Regions
+namespace Rhisis.Core.Structures
 {
     /// <summary>
-    /// Abstract implementation of a region.
+    /// This class describes the behavior of a Rectangle in a 3D environment.
     /// </summary>
-    public abstract class Region : IRegion
+    /// <remarks>
+    /// This Rectangle implementation doesn't have a Y property because in a 3D world, Y coordinate represents the heights.
+    /// </remarks>
+    public sealed class Rectangle
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the X position of the rectangle.
+        /// </summary>
         public int X { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the Z position of the rectangle.
+        /// </summary>
         public int Z { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the width of the rectangle.
+        /// </summary>
         public int Width { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the length of the rectangle.
+        /// </summary>
         public int Length { get; }
 
         /// <summary>
-        /// Creates a new <see cref="Region"/> object.
+        /// Creates a new <see cref="Rectangle"/>.
         /// </summary>
         /// <param name="x">X coordinate (X Top Left corner)</param>
         /// <param name="z">Z coordinate (Z top left corner)</param>
         /// <param name="width">Width of the region</param>
         /// <param name="length">Length of the region</param>
-        protected Region(int x, int z, int width, int length)
+        public Rectangle(int x, int z, int width, int length)
         {
             this.X = x;
             this.Z = z;
@@ -35,7 +45,10 @@ namespace Rhisis.World.Game.Regions
             this.Length = length - z;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Generates a random position inside the rectangle.
+        /// </summary>
+        /// <returns>A new <see cref="Vector3"/></returns>
         public Vector3 GetRandomPosition()
         {
             var position = new Vector3()
@@ -48,7 +61,11 @@ namespace Rhisis.World.Game.Regions
             return position;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Check if the position passed as parameter is inside the rectangle.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
         public bool Contains(Vector3 position) => position.X >= this.X && position.X <= this.X + this.Width &&
                                                   position.Z >= this.Z && position.Z <= this.Z + this.Length;
     }

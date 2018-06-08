@@ -16,7 +16,7 @@ namespace Rhisis.Installer.ViewModels
 
         public ICommand CreatePasswordCommand { get; }
 
-        public IEnumerable<AccountType> AccountTypes { get; }
+        public IEnumerable<AuthorityType> AccountTypes { get; }
 
         public AccountModel Account { get; }
 
@@ -25,7 +25,7 @@ namespace Rhisis.Installer.ViewModels
             this.OkCommand = new Command(this.OnOk);
             this.CancelCommand = new Command(this.OnCancel);
             this.CreatePasswordCommand = new Command(this.OnCreatePassword);
-            this.AccountTypes = Enum.GetValues(typeof(AccountType)).Cast<AccountType>();
+            this.AccountTypes = Enum.GetValues(typeof(AuthorityType)).Cast<AuthorityType>();
             this.Account = new AccountModel();
         }
 

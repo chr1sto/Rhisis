@@ -10,7 +10,7 @@ namespace Rhisis.Installer.Models
 
         public string PasswordConfirmation { get; set; }
 
-        public AccountType Type { get; set; }
+        public AuthorityType Type { get; set; }
 
         public bool IsValid { get; set; }
 
@@ -24,7 +24,7 @@ namespace Rhisis.Installer.Models
             this.Username = string.Empty;
             this.Password = string.Empty;
             this.PasswordConfirmation = string.Empty;
-            this.Type = AccountType.Player;
+            this.Type = AuthorityType.Player;
             this.IsValid = false;
         }
     }
