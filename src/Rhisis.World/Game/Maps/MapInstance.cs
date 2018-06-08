@@ -17,6 +17,8 @@ namespace Rhisis.World.Game.Maps
     /// <inheritdoc />
     public class MapInstance : Context, IMapInstance
     {
+        private const int DefaultMapLayerId = 1;
+
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
         private readonly List<IRegion> _regions;
@@ -83,9 +85,9 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public IMapLayer CreateMapLayer()
         {
-            // TODO: Generate new map layer id
+            int id = this.Layers.Max(x => x.Id);
 
-            return this.CreateMapLayer(1);
+            return this.CreateMapLayer(id);
         }
 
         /// <inheritdoc />
@@ -183,7 +185,7 @@ namespace Rhisis.World.Game.Maps
             // TODO: Load map heights, revival zones
             map.LoadDyo();
             map.LoadRgn();
-            map.CreateMapLayer();
+            map.CreateMapLayer(DefaultMapLayerId);
 
             return map;
         }

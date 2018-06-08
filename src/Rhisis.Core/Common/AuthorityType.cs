@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Core.Common
 {
-    public enum AccountType
+    public enum AuthorityType
     {
         Banned = 0,
         Player = 70,

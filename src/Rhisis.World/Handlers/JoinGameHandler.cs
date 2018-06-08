@@ -82,6 +82,7 @@ namespace Rhisis.World.Handlers
                 Id = character.Id,
                 Slot = character.Slot,
                 Gold = character.Gold,
+                Authority = (AuthorityType)character.User.Authority
             };
 
             client.Player.MovableComponent = new MovableComponent

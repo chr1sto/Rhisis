@@ -1,4 +1,6 @@
-﻿namespace Rhisis.World.Game.Components
+﻿using Rhisis.Core.Common;
+
+namespace Rhisis.World.Game.Components
 {
     public class PlayerComponent
     {
@@ -9,5 +11,7 @@
         public int Gold { get; set; }
 
         public string CurrentShopName { get; set; }
+
+        public AuthorityType Authority { get; set; }
     }
 }

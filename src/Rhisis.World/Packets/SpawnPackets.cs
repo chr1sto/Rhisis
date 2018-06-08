@@ -79,7 +79,7 @@ namespace Rhisis.World.Packets
 
                 packet.Write<byte>(0); // have party or not
 
-                packet.Write((byte)100); // authority
+                packet.Write((byte)player.PlayerData.Authority); // authority
                 packet.Write(0); // mode
                 packet.Write(0); // state mode
                 packet.Write(0x000001F6); // item used ??
@@ -267,7 +267,7 @@ namespace Rhisis.World.Packets
 
                     packet.Write<byte>(0); // has party
 
-                    packet.Write((byte)100); // Authority
+                    packet.Write((byte)playerEntity.PlayerData.Authority); // Authority
                     packet.Write(0); // mode
                     packet.Write(0); // state mode
                     packet.Write(0x000001F6); // item used ??
@@ -280,7 +280,7 @@ namespace Rhisis.World.Packets
                     packet.Write(-1); // titles
                     
                     // Serialize visible effects
-                    IEnumerable<Item> equipedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                    IEnumerable<Item> equipedItems = playerEntity.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
                     foreach (var item in equipedItems)
                         packet.Write(item.Refines);
