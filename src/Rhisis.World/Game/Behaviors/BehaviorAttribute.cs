@@ -13,19 +13,33 @@ namespace Rhisis.World.Game.Behaviors
         public int MoverId { get; }
 
         /// <summary>
+        /// Get the behavior type.
+        /// </summary>
+        public BehaviorType Type { get; }
+
+        /// <summary>
+        /// Gets the default state of the behavior.
+        /// </summary>
+        public bool IsDefault { get; }
+
+        /// <summary>
         /// Creates a new default <see cref="BehaviorAttribute"/> instance.
         /// </summary>
-        public BehaviorAttribute()
-            : this(DefaultMoverId)
+        /// <param name="behaviorType">Behavior type</param>
+        public BehaviorAttribute(BehaviorType behaviorType, bool IsDefault = false)
+            : this(behaviorType, DefaultMoverId, IsDefault)
         { }
 
         /// <summary>
         /// Creates a new <see cref="BehaviorAttribute"/> for a specific mover id.
         /// </summary>
+        /// <param name="behaviorType">Behavior type</param>
         /// <param name="moverId"></param>
-        public BehaviorAttribute(int moverId)
+        public BehaviorAttribute(BehaviorType behaviorType, int moverId, bool IsDefault = false)
         {
+            this.Type = behaviorType;
             this.MoverId = moverId;
+            this.IsDefault = IsDefault;
         }
     }
 }
