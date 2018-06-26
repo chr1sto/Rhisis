@@ -1,14 +1,17 @@
 ﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Game.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
     [System]
     public sealed class BehaviorSystem : SystemBase
     {
+        /// <inheritdoc />
+        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+
         /// <summary>
         /// Creates a new <see cref="BehaviorSystem"/> instance.
         /// </summary>
@@ -21,7 +24,17 @@ namespace Rhisis.World.Systems
         /// <inheritdoc />
         public override void Execute(IEntity entity)
         {
-            base.Execute(entity);
+            // TODO: instead of updating every monster of each player
+            // we need to setup map chunks that contains the monster
+            // references so we just need them instead of looping
+            // through the player's list
+            foreach (var otherEntity in entity.Object.Entities)
+            {
+                if (otherEntity is IMonsterEntity monster)
+                {
+                    monster.Behavior.Update(monster);
+                }
+            }
         }
     }
 }

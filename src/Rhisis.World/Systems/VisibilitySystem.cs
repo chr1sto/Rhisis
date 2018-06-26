@@ -90,7 +90,7 @@ namespace Rhisis.World.Systems
 
             if (otherEntity is IMovableEntity movableEntity &&
                 movableEntity.MovableComponent.DestinationPosition != movableEntity.Object.Position)
-                WorldPacketFactory.SendDestinationPosition(player.Connection, movableEntity);
+                WorldPacketFactory.SendDestinationPosition(movableEntity);
         }
 
         /// <summary>

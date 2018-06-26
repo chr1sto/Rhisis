@@ -16,6 +16,11 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public IMapInstance Parent { get; }
 
+        /// <summary>
+        /// Creates a new <see cref="MapLayer"/> instance.
+        /// </summary>
+        /// <param name="parent">Parent map instance</param>
+        /// <param name="id">Map layer id</param>
         public MapLayer(IMapInstance parent, int id)
         {
             this.Id = id;
@@ -31,6 +36,10 @@ namespace Rhisis.World.Game.Maps
             }
         }
         
+        /// <summary>
+        /// Create a new monster.
+        /// </summary>
+        /// <param name="respawner"></param>
         private void CreateMonster(RespawnerRegion respawner)
         {
             var monster = this.CreateEntity<MonsterEntity>();
@@ -48,6 +57,12 @@ namespace Rhisis.World.Game.Maps
                 Spawned = true,
                 Level = WorldServer.Movers[respawner.MoverId].Level
             };
+            monster.TimerComponent = new TimerComponent
+            {
+                LastMoveTimer = RandomHelper.LongRandom(8, 20)
+            };
+            monster.Behavior = WorldServer.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
+            monster.Region = respawner;
         }
     }
 }

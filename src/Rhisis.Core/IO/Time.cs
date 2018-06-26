@@ -20,19 +20,19 @@ namespace Rhisis.Core.IO
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public static double TimeInSeconds(DateTime date)
+        public static long TimeInSeconds(DateTime date)
         {
             if (date < Utc)
                 date = Utc;
 
-            return (date - Utc).TotalSeconds;
+            return (long)(date - Utc).TotalSeconds;
         }
 
         /// <summary>
         /// Gets the time in seconds from now.
         /// </summary>
         /// <returns></returns>
-        public static double TimeInSeconds()
+        public static long TimeInSeconds()
         {
             return TimeInSeconds(DateTime.UtcNow);
         }

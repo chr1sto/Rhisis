@@ -75,7 +75,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <returns></returns>
         public IBehavior<T> GetBehavior(int moverId)
         {
-            return this._behaviors.TryGetValue(moverId, out IBehavior<T> behavior) ? behavior : null;
+            return this._behaviors.TryGetValue(moverId, out IBehavior<T> behavior) ? behavior : this.DefaultBehavior;
         }
 
         /// <summary>

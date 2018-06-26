@@ -1,4 +1,8 @@
-﻿using Rhisis.World.Game.Entities;
+﻿using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
+using Rhisis.Core.Structures;
+using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Behaviors
 {
@@ -10,19 +14,18 @@ namespace Rhisis.World.Game.Behaviors
     {
         public virtual void Update(IMonsterEntity entity)
         {
-            // TODO: update IA
+            this.UpdateMoves(entity);
         }
-    }
 
-    /// <summary>
-    /// Behavior for Clockwork. (MI_CLOCKWORK1)
-    /// </summary>
-    [Behavior(BehaviorType.Monster, 164)]
-    public class ClocksworkBehavior : IBehavior<IMonsterEntity>
-    {
-        public void Update(IMonsterEntity entity)
+        private void UpdateMoves(IMonsterEntity entity)
         {
-            // TODO: implement Clockwork's IA
+            if (entity.TimerComponent.LastMoveTimer <= Time.TimeInSeconds())
+            {
+                entity.TimerComponent.LastMoveTimer = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20);
+                entity.MovableComponent.DestinationPosition = entity.Region.GetRandomPosition();
+                entity.Object.Angle = Vector3.AngleBetween(entity.Object.Position, entity.MovableComponent.DestinationPosition);
+                WorldPacketFactory.SendDestinationPosition(entity);
+            }
         }
     }
 }
