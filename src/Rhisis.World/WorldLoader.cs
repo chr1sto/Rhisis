@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using Rhisis.Core.IO;
+using Rhisis.Core.Reflection;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Maps;
@@ -26,6 +28,9 @@ namespace Rhisis.World
         private static readonly IDictionary<string, NpcData> NpcData = new Dictionary<string, NpcData>();
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
         private static readonly IDictionary<string, DialogData> DialogData = new Dictionary<string, DialogData>();
+        
+        public static BehaviorManager<Game.Entities.IMonsterEntity> MonsterBehaviors;
+        public static BehaviorManager<Game.Entities.INpcEntity> NpcBehaviors;
 
         /// <summary>
         /// Gets the Movers data.
@@ -52,6 +57,7 @@ namespace Rhisis.World
 
             this.LoadDefinesAndTexts();
             this.LoadMovers();
+            this.LoadBehaviors();
             this.LoadItems();
             this.LoadNpc();
             this.LoadMaps();
@@ -104,7 +110,7 @@ namespace Rhisis.World
             using (var propMoverFile = new ResourceTable(propMoverPath, 1, Defines, Texts))
             {
                 var movers = propMoverFile.GetRecords<MoverData>();
-
+                
                 foreach (var mover in movers)
                 {
                     if (MoversData.ContainsKey(mover.Id))
@@ -319,11 +325,27 @@ namespace Rhisis.World
             return worldsPaths;
         }
 
+        private void LoadBehaviors()
+        {
+            Logger.Loading("Loading behaviors...\t\t");
+
+            MonsterBehaviors = new BehaviorManager<Game.Entities.IMonsterEntity>(BehaviorType.Monster);
+            MonsterBehaviors.Load();
+
+            NpcBehaviors = new BehaviorManager<Game.Entities.INpcEntity>(BehaviorType.Npc);
+            NpcBehaviors.Load();
+
+            int totalBehaviorsLoaded = MonsterBehaviors.Count + NpcBehaviors.Count;
+
+            Logger.Info("{0} behaviors loaded!\t\t", totalBehaviorsLoaded);
+        }
+
         private void CleanUp()
         {
             Defines.Clear();
             Texts.Clear();
             ShopData.Clear();
+            GC.Collect();
         }
     }
 }

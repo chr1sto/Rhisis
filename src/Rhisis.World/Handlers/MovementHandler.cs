@@ -14,7 +14,7 @@ namespace Rhisis.World.Handlers
             client.Player.MovableComponent.DestinationPosition = new Vector3(setDestPositionPacket.X, setDestPositionPacket.Y, setDestPositionPacket.Z);
             client.Player.Object.Angle = Vector3.AngleBetween(client.Player.Object.Position, client.Player.MovableComponent.DestinationPosition);
 
-            WorldPacketFactory.SendDestinationPosition(client, client.Player);
+            WorldPacketFactory.SendDestinationPosition(client.Player);
         }
     }
 }

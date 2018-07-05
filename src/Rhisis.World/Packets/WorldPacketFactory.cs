@@ -23,7 +23,7 @@ namespace Rhisis.World.Packets
                 visiblePlayer.Connection.Send(packet);
         }
 
-        public static void SendDestinationPosition(NetUser client, IMovableEntity movableEntity)
+        public static void SendDestinationPosition(IMovableEntity movableEntity)
         {
             using (var packet = new FFPacket())
             {
