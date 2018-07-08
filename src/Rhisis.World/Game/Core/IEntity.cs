@@ -2,17 +2,22 @@
 using System;
 using System.Collections.Generic;
 
-namespace Rhisis.World.Game.Core.Interfaces
+namespace Rhisis.World.Game.Core
 {
     /// <summary>
-    /// Defines a basic entity.
+    /// Describes the Entity behavior.
     /// </summary>
     public interface IEntity : IDisposable, IEqualityComparer<IEntity>
     {
         /// <summary>
-        /// Gets the entity unique id.
+        /// Gets the entity id.
         /// </summary>
         int Id { get; }
+
+        /// <summary>
+        /// Gets the entity context.
+        /// </summary>
+        IContext Context { get; }
 
         /// <summary>
         /// Gets the entity type.
@@ -20,12 +25,7 @@ namespace Rhisis.World.Game.Core.Interfaces
         WorldEntityType Type { get; }
 
         /// <summary>
-        /// Gets the entity parent context.
-        /// </summary>
-        IContext Context { get; }
-
-        /// <summary>
-        /// Gets the entity object component.
+        /// Gets the object component of this entity.
         /// </summary>
         ObjectComponent Object { get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures.Game;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -22,6 +24,8 @@ namespace Rhisis.World.Game.Maps
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
         private readonly List<IRegion> _regions;
+        private readonly CancellationToken _cancellationToken;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         private IMapLayer _defaultMapLayer;
 
@@ -104,12 +108,6 @@ namespace Rhisis.World.Game.Maps
         }
 
         /// <inheritdoc />
-        public IMapLayerInstance CreateMapLayerInstance(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
         public IMapLayer GetMapLayer(int id) => this._layers.FirstOrDefault(x => x.Id == id);
 
         /// <inheritdoc />
@@ -125,6 +123,22 @@ namespace Rhisis.World.Game.Maps
 
             layer.Dispose();
             this._layers.Remove(layer);
+        }
+
+
+        public override void Update()
+        {
+            Logger.Debug("Update map {0}", this.Name);
+        }
+
+        public void StartUpdateTask(int delay)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopUpdateTask()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

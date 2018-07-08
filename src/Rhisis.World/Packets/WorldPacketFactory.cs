@@ -1,9 +1,7 @@
-﻿using Ether.Network.Common;
-using Ether.Network.Packets;
+﻿using Ether.Network.Packets;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using System.Collections.Generic;
 using System.Linq;

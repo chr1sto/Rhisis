@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Reflection;
-using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Game.Core;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

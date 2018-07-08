@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Rhisis.World.Game.Core;
+﻿using Rhisis.World.Game.Core;
 
 namespace Rhisis.World.Systems.Statistics
 {

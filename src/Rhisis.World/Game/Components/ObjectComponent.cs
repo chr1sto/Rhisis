@@ -1,6 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Structures;
-using Rhisis.World.Game.Core.Interfaces;
+using Rhisis.World.Game.Core;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Components

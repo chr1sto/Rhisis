@@ -1,4 +1,4 @@
-﻿namespace Rhisis.World.Game.Core.Interfaces
+﻿namespace Rhisis.World.Game.Core
 {
     /// <summary>
     /// Describes the behavior of a basic system.

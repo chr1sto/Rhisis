@@ -1,6 +1,5 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using System;
 using System.Linq.Expressions;
@@ -51,7 +50,7 @@ namespace Rhisis.World.Systems
             }
             else
             {
-                double speed = ((entity.MovableComponent.Speed * 100) * this.Context.Time);
+                double speed = ((entity.MovableComponent.Speed * 100) * this.Context.GameTime);
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
                 float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);

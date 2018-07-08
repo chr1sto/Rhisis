@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Game\Core\Context_old.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ether.Network" Version="3.0.0" />
   </ItemGroup>
 

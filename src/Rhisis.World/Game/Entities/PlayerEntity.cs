@@ -1,7 +1,6 @@
 ﻿using Ether.Network.Common;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 
 namespace Rhisis.World.Game.Entities
 {
