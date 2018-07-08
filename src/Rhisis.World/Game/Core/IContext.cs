@@ -19,6 +19,11 @@ namespace Rhisis.World.Game.Core
         IEnumerable<IEntity> Entities { get; }
 
         /// <summary>
+        /// Gets the list of the systems of the current context.
+        /// </summary>
+        IEnumerable<ISystem> Systems { get; }
+
+        /// <summary>
         /// Creates a new entity in this context.
         /// </summary>
         /// <typeparam name="TEntity">Entity type</typeparam>
@@ -39,7 +44,7 @@ namespace Rhisis.World.Game.Core
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="id">Entity id</param>
         /// <returns></returns>
-        TEntity DeleteEntity<TEntity>(int id) where TEntity : IEntity;
+        bool DeleteEntity<TEntity>(int id) where TEntity : IEntity;
 
         /// <summary>
         /// Deletes the entity from this context.
@@ -47,7 +52,7 @@ namespace Rhisis.World.Game.Core
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="entity">Entity instance</param>
         /// <returns></returns>
-        TEntity DeleteEntity<TEntity>(TEntity entity) where TEntity : IEntity;
+        bool DeleteEntity<TEntity>(TEntity entity) where TEntity : IEntity;
 
         /// <summary>
         /// Update this context.
@@ -61,5 +66,17 @@ namespace Rhisis.World.Game.Core
         /// <param name="entity">Entity instance</param>
         /// <param name="e">Event arguments</param>
         void NotifySystem<TSystem>(IEntity entity, SystemEventArgs e);
+
+        /// <summary>
+        /// Adds a new system to the current context.
+        /// </summary>
+        /// <param name="system">System instance</param>
+        void AddSystem(ISystem system);
+
+        /// <summary>
+        /// Removes an existing system from the current context.
+        /// </summary>
+        /// <param name="system">System instance</param>
+        void RemoveSystem(ISystem system);
     }
 }

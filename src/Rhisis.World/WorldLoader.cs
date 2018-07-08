@@ -299,8 +299,8 @@ namespace Rhisis.World
                 _maps.Add(id, map);
                 map.StartUpdateTask(100);
 
-                //foreach (Type type in systemTypes)
-                //    map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
+                foreach (Type type in systemTypes)
+                    map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
             }
 
             Logger.Info("{0} maps loaded! \t\t", _maps.Count);

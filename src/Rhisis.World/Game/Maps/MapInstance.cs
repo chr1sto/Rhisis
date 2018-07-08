@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -133,13 +134,49 @@ namespace Rhisis.World.Game.Maps
 
         public void StartUpdateTask(int delay)
         {
-            throw new NotImplementedException();
+            double previousTime = 0f;
+
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    if (this._cancellationToken.IsCancellationRequested)
+                        break;
+
+                    double currentTime = Rhisis.Core.IO.Time.TimeInMilliseconds();
+                    double deltaTime = currentTime - previousTime;
+                    previousTime = currentTime;
+
+                    this.GameTime = deltaTime / 1000f;
+
+                    try
+                    {
+                        lock (SyncRoot)
+                        {
+                            foreach (var entity in this.Entities)
+                            {
+                                foreach (var system in this.Systems)
+                                {
+                                    if (!(system is INotifiableSystem) && system.Match(entity))
+                                        system.Execute(entity);
+                                }
+                            }
+
+                            foreach (var mapLayer in this._layers)
+                                mapLayer.Update();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Context error: {0}", e.Message);
+                        Logger.Debug(e.StackTrace);
+                    }
+                    await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
+                }
+            }, this._cancellationToken);
         }
 
-        public void StopUpdateTask()
-        {
-            throw new NotImplementedException();
-        }
+        public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
 
         /// <summary>
         /// Creates a NPC.

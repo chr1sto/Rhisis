@@ -15,7 +15,7 @@ namespace Rhisis.World.Systems
         /// <summary>
         /// Gets the <see cref="VisibilitySystem"/> match filter.
         /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster || x.Type == WorldEntityType.Npc;
+        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
 
         /// <summary>
         /// Creates a new <see cref="VisibilitySystem"/> instance.
