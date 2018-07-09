@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Game.Core
 {
@@ -103,7 +104,12 @@ namespace Rhisis.World.Game.Core
         /// <inheritdoc />
         public void NotifySystem<TSystem>(IEntity entity, SystemEventArgs e)
         {
-            throw new NotImplementedException();
+            var system = this.Systems.FirstOrDefault(x => x.GetType() == typeof(TSystem)) as INotifiableSystem;
+
+            if (system == null)
+                throw new RhisisException($"Cannot find system with type: {typeof(TSystem).FullName} within current context.");
+
+            system.Execute(entity, e);
         }
 
         /// <inheritdoc />

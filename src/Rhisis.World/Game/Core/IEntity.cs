@@ -28,5 +28,12 @@ namespace Rhisis.World.Game.Core
         /// Gets the object component of this entity.
         /// </summary>
         ObjectComponent Object { get; set; }
+
+        /// <summary>
+        /// Notifies and executes a system.
+        /// </summary>
+        /// <typeparam name="TSystem">System type</typeparam>
+        /// <param name="e">System event arguments</param>
+        void NotifySystem<TSystem>(SystemEventArgs e) where TSystem : INotifiableSystem;
     }
 }

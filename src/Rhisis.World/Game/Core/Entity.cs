@@ -36,6 +36,10 @@ namespace Rhisis.World.Game.Core
         }
 
         /// <inheritdoc />
+        public void NotifySystem<TSystem>(SystemEventArgs e) 
+            where TSystem : INotifiableSystem => this.Context.NotifySystem<TSystem>(this, e);
+
+        /// <inheritdoc />
         public bool Equals(IEntity x, IEntity y) => x.Id == y.Id;
 
         /// <inheritdoc />
