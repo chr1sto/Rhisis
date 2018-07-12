@@ -10,7 +10,7 @@ namespace Rhisis.World.Game.Core
     /// </summary>
     public abstract class Entity : IEntity
     {
-        private bool disposedValue = false;
+        private bool _disposedValue;
 
         /// <inheritdoc />
         public int Id { get; }
@@ -65,14 +65,14 @@ namespace Rhisis.World.Game.Core
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!this._disposedValue)
             {
                 if (disposing)
                 {
                     // Dispose resources
                 }
 
-                disposedValue = true;
+                this._disposedValue = true;
             }
         }
     }

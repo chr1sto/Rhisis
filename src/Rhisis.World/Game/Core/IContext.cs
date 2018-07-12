@@ -44,15 +44,14 @@ namespace Rhisis.World.Game.Core
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="id">Entity id</param>
         /// <returns></returns>
-        bool DeleteEntity<TEntity>(int id) where TEntity : IEntity;
+        bool DeleteEntity(int id);
 
         /// <summary>
         /// Deletes the entity from this context.
         /// </summary>
-        /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="entity">Entity instance</param>
         /// <returns></returns>
-        bool DeleteEntity<TEntity>(TEntity entity) where TEntity : IEntity;
+        bool DeleteEntity(IEntity entity);
 
         /// <summary>
         /// Update this context.

@@ -11,7 +11,7 @@ namespace Rhisis.World.Game.Core
 
         private readonly IDictionary<int, IEntity> _entities;
         private readonly IList<ISystem> _systems;
-        private bool disposedValue = false;
+        private bool _disposedValue;
 
         /// <inheritdoc />
         public double GameTime { get; protected set; }
@@ -49,7 +49,7 @@ namespace Rhisis.World.Game.Core
         }
 
         /// <inheritdoc />
-        public bool DeleteEntity<TEntity>(int id) where TEntity : IEntity
+        public bool DeleteEntity(int id)
         {
             bool removed = false;
 
@@ -62,7 +62,7 @@ namespace Rhisis.World.Game.Core
         }
 
         /// <inheritdoc />
-        public bool DeleteEntity<TEntity>(TEntity entity) where TEntity : IEntity => this.DeleteEntity<TEntity>(entity.Id);
+        public bool DeleteEntity(IEntity entity) => this.DeleteEntity(entity.Id);
 
         /// <inheritdoc />
         public TEntity FindEntity<TEntity>(int id) where TEntity : IEntity
@@ -86,7 +86,7 @@ namespace Rhisis.World.Game.Core
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposedValue)
+            if (!this._disposedValue)
             {
                 if (disposing)
                 {
@@ -97,19 +97,22 @@ namespace Rhisis.World.Game.Core
                     this._systems.Clear();
                 }
 
-                this.disposedValue = true;
+                this._disposedValue = true;
             }
         }
 
         /// <inheritdoc />
         public void NotifySystem<TSystem>(IEntity entity, SystemEventArgs e)
         {
-            var system = this.Systems.FirstOrDefault(x => x.GetType() == typeof(TSystem)) as INotifiableSystem;
+            ISystem system = this.Systems.FirstOrDefault(x => x.GetType() == typeof(TSystem));
 
             if (system == null)
                 throw new RhisisException($"Cannot find system with type: {typeof(TSystem).FullName} within current context.");
 
-            system.Execute(entity, e);
+            if (!(system is INotifiableSystem notifiableSystem))
+                throw new RhisisException($"This system {system.GetType().Name} is not a notifiable system.");
+
+            notifiableSystem.Execute(entity, e);
         }
 
         /// <inheritdoc />
