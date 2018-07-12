@@ -15,7 +15,7 @@ namespace Rhisis.World.Handlers
             var moveItemPacket = new MoveItemPacket(packet);
             var inventoryEvent = new InventoryMoveEventArgs(moveItemPacket.SourceSlot, moveItemPacket.DestinationSlot);
 
-            client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEvent);
+            client.Player.NotifySystem<InventorySystem>(inventoryEvent);
         }
 
         [PacketHandler(PacketType.DOEQUIP)]
@@ -24,7 +24,7 @@ namespace Rhisis.World.Handlers
             var equipItemPacket = new EquipItemPacket(packet);
             var inventoryEvent = new InventoryEquipEventArgs(equipItemPacket.UniqueId, equipItemPacket.Part);
 
-            client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEvent);
+            client.Player.NotifySystem<InventorySystem>(inventoryEvent);
         }
     }
 }

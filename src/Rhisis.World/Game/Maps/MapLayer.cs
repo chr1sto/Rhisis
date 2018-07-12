@@ -40,6 +40,15 @@ namespace Rhisis.World.Game.Maps
         public override void Update()
         {
             Logger.Debug("Update MapLayer {0} of map {1}", this.Id, this.Parent.Name);
+
+            foreach (var entity in this.Entities)
+            {
+                foreach (var system in this.Systems)
+                {
+                    if (!(system is INotifiableSystem) && system.Match(entity))
+                        system.Execute(entity);
+                }
+            }
         }
 
         /// <summary>

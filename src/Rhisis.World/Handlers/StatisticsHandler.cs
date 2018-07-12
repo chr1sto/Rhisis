@@ -17,7 +17,7 @@ namespace Rhisis.World.Handlers
                 modifyStatusPacket.Dexterity,
                 modifyStatusPacket.Intelligence);
 
-            client.Player.Context.NotifySystem<StatisticsSystem>(client.Player, statisticsEventArgs);
+            client.Player.NotifySystem<StatisticsSystem>(statisticsEventArgs);
         }
     }
 }

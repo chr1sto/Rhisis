@@ -15,13 +15,13 @@ namespace Rhisis.World.Handlers
             var openShopPacket = new OpenShopWindowPacket(packet);
             var npcEvent = new NpcShopOpenEventArgs(openShopPacket.ObjectId);
 
-            client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, npcEvent);
+            client.Player.NotifySystem<NpcShopSystem>(npcEvent);
         }
 
         [PacketHandler(PacketType.CLOSESHOPWND)]
         public static void OnCloseShopWindow(WorldClient client, INetPacketStream packet)
         {
-            client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, new NpcShopCloseEventArgs());
+            client.Player.NotifySystem<NpcShopSystem>(new NpcShopCloseEventArgs());
         }
 
         [PacketHandler(PacketType.BUYITEM)]
@@ -30,7 +30,7 @@ namespace Rhisis.World.Handlers
             var buyItemPacket = new BuyItemPacket(packet);
             var npcShopEvent = new NpcShopBuyEventArgs(buyItemPacket.ItemId, buyItemPacket.Quantity, buyItemPacket.Tab, buyItemPacket.Slot);
 
-            client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, npcShopEvent);
+            client.Player.NotifySystem<NpcShopSystem>(npcShopEvent);
         }
 
         [PacketHandler(PacketType.SELLITEM)]
@@ -39,7 +39,7 @@ namespace Rhisis.World.Handlers
             var sellItemPacket = new SellItemPacket(packet);
             var npcShopEvent = new NpcShopSellEventArgs(sellItemPacket.ItemUniqueId, sellItemPacket.Quantity);
 
-            client.Player.Context.NotifySystem<NpcShopSystem>(client.Player, npcShopEvent);
+            client.Player.NotifySystem<NpcShopSystem>(npcShopEvent);
         }
     }
 }
