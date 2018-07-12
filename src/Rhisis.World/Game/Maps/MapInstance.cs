@@ -90,7 +90,7 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public IMapLayer CreateMapLayer()
         {
-            int id = this.Layers.Max(x => x.Id);
+            int id = this.Layers.Max(x => x.Id) + 1;
 
             return this.CreateMapLayer(id);
         }
@@ -126,12 +126,13 @@ namespace Rhisis.World.Game.Maps
             this._layers.Remove(layer);
         }
 
-
+        /// <inheritdoc />
         public override void Update()
         {
             Logger.Debug("Update map {0}", this.Name);
         }
 
+        /// <inheritdoc />
         public void StartUpdateTask(int delay)
         {
             double previousTime = 0f;
@@ -176,6 +177,7 @@ namespace Rhisis.World.Game.Maps
             }, this._cancellationToken);
         }
 
+        /// <inheritdoc />
         public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
 
         /// <summary>
