@@ -101,7 +101,7 @@ namespace Rhisis.World.Handlers
 
             // Initialize the inventory
             var inventoryEventArgs = new InventoryInitializeEventArgs(character.Items);
-            client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEventArgs);
+            client.Player.NotifySystem<InventorySystem>(inventoryEventArgs);
             
             // 3rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client.Player);

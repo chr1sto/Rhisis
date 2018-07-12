@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using Rhisis.Core.IO;
-using Rhisis.Core.Reflection;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems.Chat;
 using System;
@@ -292,12 +290,17 @@ namespace Rhisis.World
 
                 IMapInstance map = MapInstance.Create(Path.Combine(DataPath, "maps", mapName), mapName, id);
 
-                map.StartSystemUpdate(100);
+                if (_maps.ContainsKey(id))
+                {
+                    Logger.Error("Cannot create map {0} with id {1} because it already exist.", mapName, id);
+                    continue;
+                }
+
+                _maps.Add(id, map);
+                map.StartUpdateTask(100);
 
                 foreach (Type type in systemTypes)
                     map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
-                
-                _maps.Add(id, map);
             }
 
             Logger.Info("{0} maps loaded! \t\t", _maps.Count);

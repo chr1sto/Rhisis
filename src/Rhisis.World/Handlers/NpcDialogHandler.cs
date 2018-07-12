@@ -14,7 +14,7 @@ namespace Rhisis.World.Handlers
             var dialogPacket = new DialogPacket(packet);
             var dialogEvent = new NpcDialogOpenEventArgs(dialogPacket.ObjectId, dialogPacket.Key);
 
-            client.Player.Context.NotifySystem<NpcDialogSystem>(client.Player, dialogEvent);
+            client.Player.NotifySystem<NpcDialogSystem>(dialogEvent);
         }
     }
 }

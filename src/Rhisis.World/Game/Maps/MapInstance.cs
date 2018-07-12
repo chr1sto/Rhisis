@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures.Game;
@@ -11,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -22,6 +25,8 @@ namespace Rhisis.World.Game.Maps
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
         private readonly List<IRegion> _regions;
+        private readonly CancellationToken _cancellationToken;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         private IMapLayer _defaultMapLayer;
 
@@ -85,7 +90,7 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public IMapLayer CreateMapLayer()
         {
-            int id = this.Layers.Max(x => x.Id);
+            int id = this.Layers.Max(x => x.Id) + 1;
 
             return this.CreateMapLayer(id);
         }
@@ -101,12 +106,6 @@ namespace Rhisis.World.Game.Maps
                 this._defaultMapLayer = mapLayer;
 
             return mapLayer;
-        }
-
-        /// <inheritdoc />
-        public IMapLayerInstance CreateMapLayerInstance(int id)
-        {
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -126,6 +125,60 @@ namespace Rhisis.World.Game.Maps
             layer.Dispose();
             this._layers.Remove(layer);
         }
+
+        /// <inheritdoc />
+        public override void Update()
+        {
+            Logger.Debug("Update map {0}", this.Name);
+        }
+
+        /// <inheritdoc />
+        public void StartUpdateTask(int delay)
+        {
+            double previousTime = 0f;
+
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    if (this._cancellationToken.IsCancellationRequested)
+                        break;
+
+                    double currentTime = Rhisis.Core.IO.Time.TimeInMilliseconds();
+                    double deltaTime = currentTime - previousTime;
+                    previousTime = currentTime;
+
+                    this.GameTime = deltaTime / 1000f;
+
+                    try
+                    {
+                        lock (SyncRoot)
+                        {
+                            foreach (var entity in this.Entities)
+                            {
+                                foreach (var system in this.Systems)
+                                {
+                                    if (!(system is INotifiableSystem) && system.Match(entity))
+                                        system.Execute(entity);
+                                }
+                            }
+
+                            foreach (var mapLayer in this._layers)
+                                mapLayer.Update();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Context error: {0}", e.Message);
+                        Logger.Debug(e.StackTrace);
+                    }
+                    await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
+                }
+            }, this._cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
 
         /// <summary>
         /// Creates a NPC.

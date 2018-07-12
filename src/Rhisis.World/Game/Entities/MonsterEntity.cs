@@ -1,7 +1,6 @@
 ﻿using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Regions;
 
 namespace Rhisis.World.Game.Entities

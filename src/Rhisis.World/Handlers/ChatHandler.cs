@@ -14,7 +14,7 @@ namespace Rhisis.World.Handlers
             var chatPacket = new ChatPacket(packet);
             var chatEvent = new ChatEventArgs(chatPacket.Message);
 
-            client.Player.Context.NotifySystem<ChatSystem>(client.Player, chatEvent);
+            client.Player.NotifySystem<ChatSystem>(chatEvent);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Rhisis.World.Game.Core.Interfaces;
+﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Regions;
 using System.Collections.Generic;
 
@@ -7,7 +7,7 @@ namespace Rhisis.World.Game.Maps
     /// <summary>
     /// Describes the behavior of a Map instance.
     /// </summary>
-    public interface IMapInstance : IContext
+    public interface IMapInstance : IAsyncContext
     {
         /// <summary>
         /// Gets the map id.
@@ -51,13 +51,6 @@ namespace Rhisis.World.Game.Maps
         /// <param name="id">Map layer id</param>
         /// <returns></returns>
         IMapLayer CreateMapLayer(int id);
-
-        /// <summary>
-        /// Creates a new map layer instance with an id.
-        /// </summary>
-        /// <param name="id">Map layer instance id</param>
-        /// <returns></returns>
-        IMapLayerInstance CreateMapLayerInstance(int id);
 
         /// <summary>
         /// Gets a map layer by his id.

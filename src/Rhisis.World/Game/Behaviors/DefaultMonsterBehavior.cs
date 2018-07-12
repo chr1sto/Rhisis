@@ -12,11 +12,16 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Monster, IsDefault: true)]
     public class DefaultMonsterBehavior : IBehavior<IMonsterEntity>
     {
+        /// <inheritdoc />
         public virtual void Update(IMonsterEntity entity)
         {
             this.UpdateMoves(entity);
         }
 
+        /// <summary>
+        /// Update monster moves.
+        /// </summary>
+        /// <param name="entity"></param>
         private void UpdateMoves(IMonsterEntity entity)
         {
             if (entity.TimerComponent.LastMoveTimer <= Time.TimeInSeconds())

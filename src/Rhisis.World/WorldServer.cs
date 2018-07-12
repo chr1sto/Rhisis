@@ -6,7 +6,6 @@ using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
-using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.ISC;
 using System;

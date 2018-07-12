@@ -1,5 +1,4 @@
-﻿using Rhisis.World.Game.Core.Interfaces;
-using System;
+﻿using System;
 using System.Linq.Expressions;
 
 namespace Rhisis.World.Game.Core

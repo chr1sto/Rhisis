@@ -1,72 +1,58 @@
 ﻿using Rhisis.Core.Helpers;
 using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Core
 {
     /// <summary>
-    /// Implementation of the basic entity class.
+    /// Describes the Entity implementation.
     /// </summary>
-    public class Entity : IEntity, IDisposable, IEqualityComparer<IEntity>
+    public abstract class Entity : IEntity
     {
         private bool _disposedValue;
 
-        /// <summary>
-        /// Gets the entity unique id.
-        /// </summary>
+        /// <inheritdoc />
         public int Id { get; }
 
-        /// <summary>
-        /// Gets the entity type.
-        /// </summary>
-        public virtual WorldEntityType Type { get; }
-
-        /// <summary>
-        /// Gets the entity parent context.
-        /// </summary>
+        /// <inheritdoc />
         public IContext Context { get; }
 
-        /// <summary>
-        /// Gets the entity object component.
-        /// </summary>
+        /// <inheritdoc />
+        public abstract WorldEntityType Type { get; }
+
+        /// <inheritdoc />
         public ObjectComponent Object { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="Entity"/> instance.
         /// </summary>
         /// <param name="context"></param>
-        internal Entity(IContext context)
+        protected Entity(IContext context)
         {
             this.Id = RandomHelper.GenerateUniqueId();
             this.Context = context;
             this.Object = new ObjectComponent();
         }
 
-        /// <summary>
-        /// Check if this entity is the same has another.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
+        public void NotifySystem<TSystem>(SystemEventArgs e) 
+            where TSystem : INotifiableSystem => this.Context.NotifySystem<TSystem>(this, e);
+
+        /// <inheritdoc />
         public bool Equals(IEntity x, IEntity y) => x.Id == y.Id;
 
-        /// <summary>
-        /// Gets the hash code of this instance.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public int GetHashCode(IEntity obj)
         {
-            int hashCode = obj.Id ^ (int)obj.Type;
+            var hashCode = 181846194;
 
-            return hashCode.GetHashCode();
+            hashCode *= -1521134295 + EqualityComparer<IEntity>.Default.GetHashCode(this);
+
+            return hashCode;
         }
 
-        /// <summary>
-        /// Dispose the <see cref="Entity"/> resources.
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             this.Dispose(true);
@@ -74,7 +60,7 @@ namespace Rhisis.World.Game.Core
         }
 
         /// <summary>
-        /// Dispose the resources.
+        /// Dispose inner resources.
         /// </summary>
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
@@ -83,7 +69,7 @@ namespace Rhisis.World.Game.Core
             {
                 if (disposing)
                 {
-                    // TODO: delete resources
+                    // Dispose resources
                 }
 
                 this._disposedValue = true;

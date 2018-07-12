@@ -1,5 +1,4 @@
 ﻿using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using System;
 using System.Linq.Expressions;

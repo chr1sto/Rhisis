@@ -1,6 +1,6 @@
-﻿using System;
-using Rhisis.Core.Common;
+﻿using Rhisis.Core.Common;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
@@ -35,7 +35,22 @@ namespace Rhisis.World.Game.Maps
                 }
             }
         }
-        
+
+        /// <inheritdoc />
+        public override void Update()
+        {
+            Logger.Debug("Update MapLayer {0} of map {1}", this.Id, this.Parent.Name);
+
+            foreach (var entity in this.Entities)
+            {
+                foreach (var system in this.Systems)
+                {
+                    if (!(system is INotifiableSystem) && system.Match(entity))
+                        system.Execute(entity);
+                }
+            }
+        }
+
         /// <summary>
         /// Create a new monster.
         /// </summary>

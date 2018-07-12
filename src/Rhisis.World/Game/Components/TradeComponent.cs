@@ -1,6 +1,4 @@
-﻿using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.Trade;
+﻿using Rhisis.World.Systems.Trade;
 
 namespace Rhisis.World.Game.Components
 {
