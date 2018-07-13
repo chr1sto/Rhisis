@@ -200,6 +200,7 @@ namespace Rhisis.World.Game.Maps
                 Spawned = true,
                 Level = 1
             };
+            npc.Behavior = WorldServer.NpcBehaviors.GetBehavior(npc.Object.ModelId);
 
             if (WorldServer.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
