@@ -39,7 +39,7 @@ namespace Rhisis.World.Game.Behaviors
 
                     foreach (IPlayerEntity player in playersArount)
                     {
-                        string text = npc.Data.Dialog.OralText.Replace(DialogData.PlayerNameText, player.Object.Name);
+                        string text = npc.Data.Dialog.OralText.Replace(DialogVariables.PlayerNameText, player.Object.Name);
 
                         WorldPacketFactory.SendChatTo(npc, player, text);
                     }
