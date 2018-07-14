@@ -6,6 +6,8 @@ namespace Rhisis.Core.Structures.Game
     [DataContract]
     public class DialogData
     {
+        public const string PlayerNameText = "%PLAYERNAME%";
+
         /// <summary>
         /// Gets or sets the dialog name.
         /// </summary>

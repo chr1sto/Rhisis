@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
@@ -201,6 +202,7 @@ namespace Rhisis.World.Game.Maps
                 Level = 1
             };
             npc.Behavior = WorldServer.NpcBehaviors.GetBehavior(npc.Object.ModelId);
+            npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
 
             if (WorldServer.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
