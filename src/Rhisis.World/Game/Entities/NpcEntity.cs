@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 
@@ -14,7 +15,13 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public NpcData Data { get; set; }
-        
+
+        /// <inheritdoc />
+        public NpcTimerComponent Timers { get; set; }
+
+        /// <inheritdoc />
+        public IBehavior<INpcEntity> Behavior { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="NpcEntity"/> instance.
         /// </summary>
@@ -22,6 +29,7 @@ namespace Rhisis.World.Game.Entities
         public NpcEntity(IContext context)
             : base(context)
         {
+            this.Timers = new NpcTimerComponent();
         }
     }
 }

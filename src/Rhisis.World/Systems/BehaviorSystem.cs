@@ -29,11 +29,18 @@ namespace Rhisis.World.Systems
             // through the player's list
             foreach (var otherEntity in entity.Object.Entities)
             {
-                if (otherEntity is IMonsterEntity monster)
+                switch (otherEntity)
                 {
-                    monster.Behavior.Update(monster);
+                    case IMonsterEntity monster:
+                        monster.Behavior.Update(monster);
+                        break;
+                    case INpcEntity npc:
+                        npc.Behavior.Update(npc);
+                        break;
                 }
             }
+
+            
         }
     }
 }
