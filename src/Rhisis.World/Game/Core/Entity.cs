@@ -2,6 +2,7 @@
 using Rhisis.World.Game.Components;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Game.Core
 {
@@ -38,6 +39,10 @@ namespace Rhisis.World.Game.Core
         /// <inheritdoc />
         public void NotifySystem<TSystem>(SystemEventArgs e) 
             where TSystem : INotifiableSystem => this.Context.NotifySystem<TSystem>(this, e);
+
+        /// <inheritdoc />
+        public TEntity FindEntity<TEntity>(int id)
+            where TEntity : IEntity => (TEntity)this.Object.Entities.FirstOrDefault(x => x is TEntity && x.Id == id);
 
         /// <inheritdoc />
         public bool Equals(IEntity x, IEntity y) => x.Id == y.Id;

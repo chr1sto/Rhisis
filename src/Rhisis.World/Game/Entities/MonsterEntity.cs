@@ -25,6 +25,9 @@ namespace Rhisis.World.Game.Entities
         /// <inheritdoc />
         public TimerComponent TimerComponent { get; set; }
 
+        /// <inheritdoc />
+        public FollowComponent Follow { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="MonsterEntity"/> instance.
         /// </summary>
@@ -34,6 +37,7 @@ namespace Rhisis.World.Game.Entities
         {
             this.MovableComponent = new MovableComponent();
             this.TimerComponent = new TimerComponent();
+            this.Follow = new FollowComponent();
         }
     }
 }

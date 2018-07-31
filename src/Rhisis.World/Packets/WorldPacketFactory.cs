@@ -35,6 +35,18 @@ namespace Rhisis.World.Packets
             }
         }
 
+        public static void SendFollowTarget(IEntity entity, IEntity targetEntity, float distance)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERSETDESTOBJ);
+                packet.Write(targetEntity.Id);
+                packet.Write(distance);
+
+                SendToVisible(packet, entity);
+            }
+        }
+
         public static void SendDefinedText(IPlayerEntity entity, int textId)
         {
             using (var packet = new FFPacket())

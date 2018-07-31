@@ -37,6 +37,9 @@ namespace Rhisis.World.Systems
                     case INpcEntity npc:
                         npc.Behavior.Update(npc);
                         break;
+                    case IPlayerEntity player:
+
+                        break;
                 }
             }
 
