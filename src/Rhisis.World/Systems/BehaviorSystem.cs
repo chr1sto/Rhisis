@@ -1,7 +1,5 @@
 ﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
-using System;
-using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
@@ -9,7 +7,7 @@ namespace Rhisis.World.Systems
     public sealed class BehaviorSystem : SystemBase
     {
         /// <inheritdoc />
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+        protected override WorldEntityType Type => WorldEntityType.Player;
 
         /// <summary>
         /// Creates a new <see cref="BehaviorSystem"/> instance.

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using Rhisis.Core.IO;
+﻿using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
@@ -11,7 +9,7 @@ namespace Rhisis.World.Systems.Statistics
     public class StatisticsSystem : NotifiableSystemBase
     {
         /// <inheritdoc />
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+        protected override WorldEntityType Type => WorldEntityType.Player;
 
         /// <summary>
         /// Creates a new <see cref="StatisticsSystem"/> instance.

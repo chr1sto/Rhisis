@@ -2,21 +2,25 @@
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using System;
-using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems.Follow
 {
     [System]
     public sealed class FollowSystem : NotifiableSystemBase
     {
-        protected override Expression<Func<IEntity, bool>> Filter => 
-            x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
+        /// <summary>
+        /// Creates a new <see cref="FollowSystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public FollowSystem(IContext context) 
             : base(context)
         {
         }
 
+        /// <inheritdoc />
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IMovableEntity movableEntity) || !e.CheckArguments())

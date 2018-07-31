@@ -2,8 +2,6 @@
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
-using System;
-using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
@@ -12,10 +10,8 @@ namespace Rhisis.World.Systems
     {
         public static readonly float VisibilityRange = 75f;
 
-        /// <summary>
-        /// Gets the <see cref="VisibilitySystem"/> match filter.
-        /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Mover;
 
         /// <summary>
         /// Creates a new <see cref="VisibilitySystem"/> instance.

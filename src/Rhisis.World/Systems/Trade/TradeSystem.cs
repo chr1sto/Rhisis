@@ -20,28 +20,23 @@ namespace Rhisis.World.Systems.Trade
         /// </summary>
         public const int MaxTrade = 25;
 
-        /// <summary>
-        /// Gets the <see cref="TradeSystem"/> match filter.
-        /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Player;
 
+        /// <summary>
+        /// Creates a new <see cref="TradeSystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public TradeSystem(IContext context) :
             base(context)
         {
         }
 
         /// <inheritdoc />
-        /// <summary>
-        /// Executes the <see cref="T:Rhisis.World.Systems.Trade.TradeSystem" /> logic.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="e"></param>
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!e.CheckArguments() || !(entity is IPlayerEntity playerEntity))
-            {
                 return;
-            }
 
             switch (e)
             {

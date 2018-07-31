@@ -7,7 +7,6 @@ using Rhisis.World.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -18,10 +17,8 @@ namespace Rhisis.World.Systems.Chat
     {
         private static readonly IDictionary<string, Action<IPlayerEntity, string[]>> ChatCommands = new Dictionary<string, Action<IPlayerEntity, string[]>>();
 
-        /// <summary>
-        /// Gets the <see cref="ChatSystem"/> match filte.
-        /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Player;
 
         /// <summary>
         /// Creates a new <see cref="ChatSystem"/> instance.
@@ -31,12 +28,8 @@ namespace Rhisis.World.Systems.Chat
             : base(context)
         {
         }
-
-        /// <summary>
-        /// Executes the <see cref="ChatSystem"/> logic.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="e"></param>
+        
+        /// <inheritdoc />
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(e is ChatEventArgs chatEvent) || !(entity is IPlayerEntity player))

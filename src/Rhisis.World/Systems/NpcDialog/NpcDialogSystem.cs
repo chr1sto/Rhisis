@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using Rhisis.Core.IO;
+﻿using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using System.Linq;
 
 namespace Rhisis.World.Systems.NpcDialog
 {
@@ -13,7 +11,7 @@ namespace Rhisis.World.Systems.NpcDialog
     public class NpcDialogSystem : NotifiableSystemBase
     {
         /// <inheritdoc />
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+        protected override WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
         public NpcDialogSystem(IContext context) : base(context)
