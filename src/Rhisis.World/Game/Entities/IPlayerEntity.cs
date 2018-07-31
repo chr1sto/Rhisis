@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Common;
+using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 
@@ -17,5 +18,7 @@ namespace Rhisis.World.Game.Entities
         TradeComponent Trade { get; set; }
         
         NetUser Connection { get; set; }
+
+        IBehavior<IPlayerEntity> Behavior { get; set; }
     }
 }

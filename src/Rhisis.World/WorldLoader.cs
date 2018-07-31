@@ -26,9 +26,10 @@ namespace Rhisis.World
         private static readonly IDictionary<string, NpcData> NpcData = new Dictionary<string, NpcData>();
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
         private static readonly IDictionary<string, DialogData> DialogData = new Dictionary<string, DialogData>();
-        
-        public static BehaviorManager<Game.Entities.IMonsterEntity> MonsterBehaviors;
-        public static BehaviorManager<Game.Entities.INpcEntity> NpcBehaviors;
+
+        public static readonly BehaviorManager<Game.Entities.IMonsterEntity> MonsterBehaviors = new BehaviorManager<Game.Entities.IMonsterEntity>(BehaviorType.Monster);
+        public static readonly BehaviorManager<Game.Entities.INpcEntity> NpcBehaviors = new BehaviorManager<Game.Entities.INpcEntity>(BehaviorType.Npc);
+        public static readonly BehaviorManager<Game.Entities.IPlayerEntity> PlayerBehaviors = new BehaviorManager<Game.Entities.IPlayerEntity>(BehaviorType.Player);
 
         /// <summary>
         /// Gets the Movers data.
@@ -331,14 +332,12 @@ namespace Rhisis.World
         private void LoadBehaviors()
         {
             Logger.Loading("Loading behaviors...\t\t");
-
-            MonsterBehaviors = new BehaviorManager<Game.Entities.IMonsterEntity>(BehaviorType.Monster);
+            
             MonsterBehaviors.Load();
-
-            NpcBehaviors = new BehaviorManager<Game.Entities.INpcEntity>(BehaviorType.Npc);
             NpcBehaviors.Load();
+            PlayerBehaviors.Load();
 
-            int totalBehaviorsLoaded = MonsterBehaviors.Count + NpcBehaviors.Count;
+            int totalBehaviorsLoaded = MonsterBehaviors.Count + NpcBehaviors.Count + PlayerBehaviors.Count;
 
             Logger.Info("{0} behaviors loaded!\t\t", totalBehaviorsLoaded);
         }

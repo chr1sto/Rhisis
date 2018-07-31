@@ -35,5 +35,13 @@ namespace Rhisis.World.Game.Core
         /// <typeparam name="TSystem">System type</typeparam>
         /// <param name="e">System event arguments</param>
         void NotifySystem<TSystem>(SystemEventArgs e) where TSystem : INotifiableSystem;
+
+        /// <summary>
+        /// Finds an entity in the spawn list of the current entity.
+        /// </summary>
+        /// <typeparam name="TEntity">Entity type</typeparam>
+        /// <param name="id">Entity id</param>
+        /// <returns>Entity</returns>
+        TEntity FindEntity<TEntity>(int id) where TEntity : IEntity;
     }
 }
