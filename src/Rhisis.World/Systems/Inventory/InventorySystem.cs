@@ -7,10 +7,9 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Inventory.EventArgs;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using Rhisis.World.Systems.Inventory.EventArgs;
 
 namespace Rhisis.World.Systems.Inventory
 {
@@ -23,10 +22,8 @@ namespace Rhisis.World.Systems.Inventory
         public static readonly int InventorySize = EquipOffset;
         public static readonly int MaxHumanParts = MaxItems - EquipOffset;
 
-        /// <summary>
-        /// Gets the <see cref="InventorySystem"/> match filter.
-        /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Player;
 
         /// <summary>
         /// Creates a new <see cref="InventorySystem"/> instance.
@@ -38,11 +35,6 @@ namespace Rhisis.World.Systems.Inventory
         }
 
         /// <inheritdoc />
-        /// <summary>
-        /// Executes the <see cref="T:Rhisis.World.Systems.Inventory.InventorySystem" /> logic.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="e"></param>
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity playerEntity))

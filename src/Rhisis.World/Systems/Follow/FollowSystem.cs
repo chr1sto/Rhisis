@@ -1,26 +1,30 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.Core.Exceptions;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using System;
-using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems.Follow
 {
     [System]
     public sealed class FollowSystem : NotifiableSystemBase
     {
-        protected override Expression<Func<IEntity, bool>> Filter => 
-            x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
+        /// <summary>
+        /// Creates a new <see cref="FollowSystem"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public FollowSystem(IContext context) 
             : base(context)
         {
         }
 
+        /// <inheritdoc />
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IMovableEntity movableEntity) || !e.CheckArguments())
-                throw new SystemException("FollowSystem: Invalid arguments");
+                throw new RhisisSystemException("FollowSystem: Invalid arguments");
 
             switch (e)
             {
@@ -35,7 +39,7 @@ namespace Rhisis.World.Systems.Follow
             var entityToFollow = entity.FindEntity<IEntity>(e.TargetId);
 
             if (entityToFollow == null)
-                throw new SystemException($"Cannot find entity with object id: {e.TargetId} around {entity.Object.Name}");
+                throw new RhisisSystemException($"Cannot find entity with object id: {e.TargetId} around {entity.Object.Name}");
 
             entity.Follow.Target = entityToFollow;
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);

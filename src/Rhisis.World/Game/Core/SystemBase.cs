@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhisis.World.Systems;
+using System;
 using System.Linq.Expressions;
 
 namespace Rhisis.World.Game.Core
@@ -8,20 +9,15 @@ namespace Rhisis.World.Game.Core
     /// </summary>
     public abstract class SystemBase : ISystem
     {
-        private Func<IEntity, bool> _filter;
-
         /// <summary>
         /// Gets the context of the system.
         /// </summary>
         protected IContext Context { get; }
 
         /// <summary>
-        /// Gets filter of the system.
+        /// Gets the entity types that are allowed to execute the current system.
         /// </summary>
-        /// <remarks>
-        /// This filter is used to check if the entities needs to be updated by this system.
-        /// </remarks>
-        protected virtual Expression<Func<IEntity, bool>> Filter { get; }
+        protected virtual WorldEntityType Type { get; }
 
         /// <summary>
         /// Creates a new <see cref="SystemBase"/> instance.
@@ -38,7 +34,7 @@ namespace Rhisis.World.Game.Core
         /// <param name="entity">Entity</param>
         public virtual void Execute(IEntity entity)
         {
-            throw new NotImplementedException();
+            // Nothing to do.
         }
 
         /// <summary>
@@ -46,11 +42,6 @@ namespace Rhisis.World.Game.Core
         /// </summary>
         /// <param name="entity">Entity</param>
         /// <returns></returns>
-        public bool Match(IEntity entity)
-        {
-            this._filter = this._filter ?? this.Filter.Compile();
-
-            return this._filter != null ? this._filter.Invoke(entity) : false;
-        }
+        public bool Match(IEntity entity) => (entity.Type & this.Type) == entity.Type;
     }
 }

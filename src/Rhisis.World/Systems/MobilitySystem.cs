@@ -2,17 +2,14 @@
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using System;
-using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
     [System]
     public class MobilitySystem : SystemBase
     {
-        /// <summary>
-        /// Gets the <see cref="MobilitySystem"/> match filter.
-        /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
         /// <summary>
         /// Creates a new <see cref="MobilitySystem"/> instance.

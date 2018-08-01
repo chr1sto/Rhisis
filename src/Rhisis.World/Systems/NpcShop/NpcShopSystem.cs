@@ -6,9 +6,8 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
-using System;
-using System.Linq.Expressions;
 using Rhisis.World.Systems.NpcShop.EventArgs;
+using System;
 
 namespace Rhisis.World.Systems.NpcShop
 {
@@ -16,7 +15,7 @@ namespace Rhisis.World.Systems.NpcShop
     public class NpcShopSystem : NotifiableSystemBase
     {
         /// <inheritdoc />
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player;
+        protected override WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
         public NpcShopSystem(IContext context) 

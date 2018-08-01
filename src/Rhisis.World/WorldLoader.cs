@@ -296,12 +296,12 @@ namespace Rhisis.World
                     Logger.Error("Cannot create map {0} with id {1} because it already exist.", mapName, id);
                     continue;
                 }
+                
+                foreach (Type type in systemTypes)
+                    map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
 
                 _maps.Add(id, map);
                 map.StartUpdateTask(100);
-
-                foreach (Type type in systemTypes)
-                    map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
             }
 
             Logger.Info("{0} maps loaded! \t\t", _maps.Count);
