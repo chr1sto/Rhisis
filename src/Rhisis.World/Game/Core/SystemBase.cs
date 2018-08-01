@@ -32,7 +32,10 @@ namespace Rhisis.World.Game.Core
         /// Executes the system logic for the entity passed as parameter.
         /// </summary>
         /// <param name="entity">Entity</param>
-        public virtual void Execute(IEntity entity) => throw new NotImplementedException();
+        public virtual void Execute(IEntity entity)
+        {
+            // Nothing to do.
+        }
 
         /// <summary>
         /// Check if the entity matches the system filter predicate.

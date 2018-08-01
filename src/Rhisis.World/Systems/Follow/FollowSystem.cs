@@ -1,7 +1,7 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.Core.Exceptions;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using System;
 
 namespace Rhisis.World.Systems.Follow
 {
@@ -24,7 +24,7 @@ namespace Rhisis.World.Systems.Follow
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IMovableEntity movableEntity) || !e.CheckArguments())
-                throw new SystemException("FollowSystem: Invalid arguments");
+                throw new RhisisSystemException("FollowSystem: Invalid arguments");
 
             switch (e)
             {
@@ -39,7 +39,7 @@ namespace Rhisis.World.Systems.Follow
             var entityToFollow = entity.FindEntity<IEntity>(e.TargetId);
 
             if (entityToFollow == null)
-                throw new SystemException($"Cannot find entity with object id: {e.TargetId} around {entity.Object.Name}");
+                throw new RhisisSystemException($"Cannot find entity with object id: {e.TargetId} around {entity.Object.Name}");
 
             entity.Follow.Target = entityToFollow;
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);
