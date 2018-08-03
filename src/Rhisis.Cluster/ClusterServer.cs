@@ -1,7 +1,6 @@
 ﻿using Ether.Network.Server;
 using Rhisis.Cluster.ISC;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
@@ -11,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ether.Network.Packets;
+using NLog;
 
 namespace Rhisis.Cluster
 {
@@ -18,6 +18,7 @@ namespace Rhisis.Cluster
     {
         private const string ClusterConfigFile = "config/cluster.json";
         private const string DatabaseConfigFile = "config/database.json";
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private static ISCClient _client;
 
         /// <summary>
@@ -43,7 +44,6 @@ namespace Rhisis.Cluster
         /// </summary>
         public ClusterServer()
         {
-            Logger.Initialize("cluster");
             this.LoadConfiguration();
         }
 
