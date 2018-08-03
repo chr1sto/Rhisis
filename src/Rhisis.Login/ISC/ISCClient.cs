@@ -1,18 +1,20 @@
 ﻿using Ether.Network.Common;
+using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Login.ISC.Packets;
 using System.Collections.Generic;
-using Ether.Network.Packets;
 
 namespace Rhisis.Login.ISC
 {
     public sealed class ISCClient : NetUser
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         private ISCServer _server;
         
         public InterServerType Type { get; internal set; }
@@ -37,7 +39,7 @@ namespace Rhisis.Login.ISC
             }
             catch (KeyNotFoundException)
             {
-                Logger.Warning("Unknown inter-server packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
+                Logger.Warn("Unknown inter-server packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
             }
             catch (RhisisPacketException packetException)
             {
@@ -65,7 +67,7 @@ namespace Rhisis.Login.ISC
 
                 if (clusterInfo == null)
                 {
-                    Logger.Warning("Cannot find parent cluster of world server : {0}", worldInfo.Name);
+                    Logger.Warn("Cannot find parent cluster of world server : {0}", worldInfo.Name);
                     return;
                 }
 

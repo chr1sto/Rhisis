@@ -1,7 +1,7 @@
 ﻿using Ether.Network.Packets;
 using Ether.Network.Server;
+using NLog;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
@@ -17,6 +17,7 @@ namespace Rhisis.Login
     {
         private const string LoginConfigFile = "config/login.json";
         private const string DatabaseConfigFile = "config/database.json";
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private ISCServer _interServer;
         
@@ -39,7 +40,6 @@ namespace Rhisis.Login
         public LoginServer()
         {
             Console.Title = "Rhisis - Login Server";
-            Logger.Initialize("login");
             this.LoadConfiguration();
         }
 

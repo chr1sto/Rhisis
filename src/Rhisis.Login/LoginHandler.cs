@@ -1,5 +1,5 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.IO;
+using NLog;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.Login;
@@ -12,6 +12,8 @@ namespace Rhisis.Login
 {
     public static class LoginHandler
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [PacketHandler(PacketType.PING)]
         public static void OnPing(LoginClient client, INetPacketStream packet)
         {
@@ -28,7 +30,7 @@ namespace Rhisis.Login
 
             if (certify.BuildVersion != client.Configuration.BuildVersion)
             {
-                Logger.Info($"User '{certify.Username}' logged in with bad build version.");
+                Logger.Warn($"User '{certify.Username}' logged in with bad build version.");
                 LoginPacketFactory.SendLoginError(client, ErrorType.CERT_GENERAL);
                 client.Disconnect();
                 return;
@@ -40,7 +42,7 @@ namespace Rhisis.Login
 
                 if (user == null)
                 {
-                    Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad username)");
+                    Logger.Warn($"User '{certify.Username}' logged in with bad credentials. (Bad username)");
                     LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_ACCOUNT);
                     client.Disconnect();
                     return;
@@ -48,7 +50,7 @@ namespace Rhisis.Login
 
                 if (!user.Password.Equals(certify.Password, StringComparison.OrdinalIgnoreCase))
                 {
-                    Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad password)");
+                    Logger.Warn($"User '{certify.Username}' logged in with bad credentials. (Bad password)");
                     LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_PASSWORD);
                     client.Disconnect();
                     return;

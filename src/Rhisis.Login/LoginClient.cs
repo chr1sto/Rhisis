@@ -1,8 +1,8 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
@@ -13,6 +13,8 @@ namespace Rhisis.Login
 {
     public sealed class LoginClient : NetUser
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly uint _sessionId;
         private LoginServer _loginServer;
         
@@ -69,11 +71,7 @@ namespace Rhisis.Login
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-#if DEBUG
-                Logger.Debug("STACK TRACE");
-                Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
+                Logger.Error(packetException);
             }
         }
     }
