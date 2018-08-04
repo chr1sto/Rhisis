@@ -1,5 +1,5 @@
-﻿using Rhisis.Core.Data;
-using Rhisis.Core.IO;
+﻿using NLog;
+using Rhisis.Core.Data;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 
@@ -7,6 +7,8 @@ namespace Rhisis.World.Game.Chat
 {
     public static class GetGoldChatCommand
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [ChatCommand("/getgold")]
         public static void GetGoldCommand(IPlayerEntity player, string[] parameters)
         {

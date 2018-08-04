@@ -1,6 +1,6 @@
 ﻿using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using System;
@@ -9,6 +9,8 @@ namespace Rhisis.World.Handlers
 {
     public static class SnapshotHandler
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [PacketHandler(PacketType.SNAPSHOT)]
         public static void OnSnapshot(WorldClient client, INetPacketStream packet)
         {
@@ -33,7 +35,10 @@ namespace Rhisis.World.Handlers
                 }
                 catch (RhisisPacketException)
                 {
-                    FFPacket.UnknowPacket<SnapshotType>((uint)snapshotHeaderNumber, sizeof(short));
+                    if (Enum.IsDefined(typeof(SnapshotType), snapshotHeaderNumber))
+                        Logger.Warn("Unimplemented World packet {0} (0x{1})", Enum.GetName(typeof(PacketType), snapshotHeaderNumber), snapshotHeaderNumber.ToString("X4"));
+                    else
+                        Logger.Warn("Unknow World packet 0x{0}", snapshotHeaderNumber.ToString("X4"));
                 }
                 catch (Exception)
                 {

@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.IO;
 using System;
 
 namespace Rhisis.Login
@@ -12,6 +13,7 @@ namespace Rhisis.Login
         {
             Console.Title = ProgramTitle;
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            EncodingUtilities.Initialize();
 
             try
             {

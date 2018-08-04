@@ -7,6 +7,7 @@ using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace Rhisis.Login
@@ -67,7 +68,10 @@ namespace Rhisis.Login
             }
             catch (KeyNotFoundException)
             {
-                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                    Logger.Warn("Unimplemented Login packet {0} (0x{1})", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X2"));
+                else
+                    Logger.Warn("Unknow Login packet 0x{0}", packetHeaderNumber.ToString("X2"));
             }
             catch (RhisisPacketException packetException)
             {

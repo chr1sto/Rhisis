@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.IO;
+﻿using NLog;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
@@ -8,6 +8,8 @@ namespace Rhisis.World.Game.Chat
 {
     public static class TeleportationCommand
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [ChatCommand("/tp")]
         [ChatCommand("/teleport")]
         public static void TeleportCommand(IPlayerEntity player, string[] parameters)
@@ -33,6 +35,8 @@ namespace Rhisis.World.Game.Chat
     }
     internal static class TeleportationParameters
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         public static void TeleportCommandTwoParam(IPlayerEntity player, string[] parameters)
         {
             if (!float.TryParse(parameters[0], out float posXValue) || !float.TryParse(parameters[1], out float posZValue))
@@ -53,8 +57,7 @@ namespace Rhisis.World.Game.Chat
 
             if (!WorldServer.Maps.TryGetValue(mapIdValue, out IMapInstance mapIdResult))
             {
-                Logger.Error("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
-                    mapIdValue);
+                Logger.Error($"Cannot find map Id in define files: {mapIdResult}. Please check you defineWorld.h file.");
                 return;
             }
 
@@ -72,8 +75,8 @@ namespace Rhisis.World.Game.Chat
 
             if (!WorldServer.Maps.TryGetValue(mapIdValue, out IMapInstance mapIdResult))
             {
-                Logger.Error("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
-                    mapIdValue);
+                Logger.Error($"Cannot find map Id in define files: {mapIdValue}. Please check you defineWorld.h file.");
+
                 return;
             }
 

@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.IO;
+﻿using NLog;
 using Rhisis.Core.Reflection;
 using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
@@ -15,6 +15,7 @@ namespace Rhisis.World.Systems.Chat
     [System]
     public class ChatSystem : NotifiableSystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private static readonly IDictionary<string, Action<IPlayerEntity, string[]>> ChatCommands = new Dictionary<string, Action<IPlayerEntity, string[]>>();
 
         /// <inheritdoc />
@@ -46,7 +47,7 @@ namespace Rhisis.World.Systems.Chat
                 if (ChatCommands.ContainsKey(commandName))
                     ChatCommands[commandName].Invoke(player, commandParameters);
                 else
-                    Logger.Warning("Unknow chat command '{0}'", commandName);
+                    Logger.Warn("Unknow chat command '{0}'", commandName);
             }
             else
             {

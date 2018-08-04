@@ -1,14 +1,16 @@
-﻿using System.Linq;
-using Rhisis.Core.IO;
+﻿using NLog;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
+using System.Linq;
 
 namespace Rhisis.World.Game.Chat
 {
     public static class CreateItemChatCommand
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [ChatCommand("/createitem")]
         [ChatCommand("/ci")]
         [ChatCommand("/item")]

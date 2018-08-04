@@ -104,8 +104,7 @@ namespace Rhisis.World
         private void LoadMovers()
         {
             string propMoverPath = Path.Combine(ResourcePath, "data", "propMover.txt");
-
-            Logger.Loading("Loading movers...");
+            
             using (var propMoverFile = new ResourceTable(propMoverPath, 1, Defines, Texts))
             {
                 var movers = propMoverFile.GetRecords<MoverData>();
@@ -126,8 +125,6 @@ namespace Rhisis.World
             IEnumerable<string> files = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
                                         where Path.GetFileName(x).StartsWith("character") && x.EndsWith(".inc")
                                         select x;
-
-            Logger.Loading("Loading npcs...");
 
             this.LoadNpcShops();
             this.LoadNpcDialogs();
@@ -178,7 +175,7 @@ namespace Rhisis.World
 
             if (!Directory.Exists(shopsPath))
             {
-                Logger.Warning("Cannot find {0} directory.", shopsPath);
+                Logger.Warn("Cannot find {0} directory.", shopsPath);
                 return;
             }
 
@@ -216,7 +213,7 @@ namespace Rhisis.World
 
             if (!Directory.Exists(dialogsPath))
             {
-                Logger.Warning("Cannot find {0} directory.", dialogsPath);
+                Logger.Warn("Cannot find {0} directory.", dialogsPath);
                 return;
             }
 
@@ -251,8 +248,7 @@ namespace Rhisis.World
         private void LoadItems()
         {
             string propItemPath = Path.Combine(ResourcePath, "dataSub2", "propItem.txt");
-
-            Logger.Loading("Loading items...");
+            
             using (var propItem = new ResourceTable(propItemPath, 1, Defines, Texts))
             {
                 var items = propItem.GetRecords<ItemData>();
@@ -270,7 +266,6 @@ namespace Rhisis.World
 
         private void LoadMaps()
         {
-            Logger.Loading("Loading maps...\t\t");
             IEnumerable<Type> systemTypes = this.LoadSystems();
             IReadOnlyDictionary<string, string> worldsPaths = this.LoadWorldScript();
 
@@ -278,13 +273,13 @@ namespace Rhisis.World
             {
                 if (!worldsPaths.TryGetValue(mapId, out string mapName))
                 {
-                    Logger.Warning("Cannot load map with Id: {0}. Please check your world script file.", mapId);
+                    Logger.Warn("Cannot load map with Id: {0}. Please check your world script file.", mapId);
                     continue;
                 }
 
                 if (!Defines.TryGetValue(mapId, out int id))
                 {
-                    Logger.Warning("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
+                    Logger.Warn("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
                         mapId);
                     continue;
                 }
@@ -331,8 +326,6 @@ namespace Rhisis.World
 
         private void LoadBehaviors()
         {
-            Logger.Loading("Loading behaviors...\t\t");
-            
             MonsterBehaviors.Load();
             NpcBehaviors.Load();
             PlayerBehaviors.Load();

@@ -160,19 +160,5 @@ namespace Rhisis.Core.Network
         /// <param name="moverId"></param>
         /// <param name="command"></param>
         public void StartNewMergedPacket(int moverId, object command) => this.StartNewMergedPacket(moverId, command, 0xFFFFFF00);
-
-        /// <summary>
-        /// Indicates if the packet of type T is unknown or just not implemented.
-        /// </summary>
-        /// <typeparam name="T">enum: Headers type</typeparam>
-        /// <param name="header">Header number</param>
-        /// <param name="digits">Digit numbers to display</param>
-        public static void UnknowPacket<T>(uint header, int digits)
-        {
-            if (Enum.IsDefined(typeof(T), header))
-                Logger.Warning("Unimplemented packet {0} (0x{1})", Enum.GetName(typeof(T), header), header.ToString("X" + digits));
-            else
-                Logger.Warning("Unknow packet 0x{0}", header.ToString("X" + digits));
-        }
     }
 }

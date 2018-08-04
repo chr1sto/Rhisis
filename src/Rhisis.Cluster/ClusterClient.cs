@@ -72,7 +72,10 @@ namespace Rhisis.Cluster
             }
             catch (KeyNotFoundException)
             {
-                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                    Logger.Warn("Unimplemented Cluster packet {0} (0x{1})", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"));
+                else
+                    Logger.Warn("Unknow Cluster packet 0x{0}", packetHeaderNumber.ToString("X4"));
             }
             catch (RhisisPacketException packetException)
             {

@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.IO;
+﻿using NLog;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
@@ -10,6 +10,8 @@ namespace Rhisis.World.Systems.NpcDialog
     [System]
     public class NpcDialogSystem : NotifiableSystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player;
 

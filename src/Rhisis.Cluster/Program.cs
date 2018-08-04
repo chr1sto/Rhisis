@@ -1,5 +1,6 @@
 ﻿using NLog;
 using System;
+using Rhisis.Core.IO;
 
 namespace Rhisis.Cluster
 {
@@ -12,6 +13,7 @@ namespace Rhisis.Cluster
         {
             Console.Title = ProgramTitle;
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            EncodingUtilities.Initialize();
 
             try
             {

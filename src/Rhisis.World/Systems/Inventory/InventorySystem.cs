@@ -1,6 +1,6 @@
-﻿using Rhisis.Core.Data;
+﻿using NLog;
+using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
@@ -16,6 +16,7 @@ namespace Rhisis.World.Systems.Inventory
     [System]
     public class InventorySystem : NotifiableSystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         public static readonly int RightWeaponSlot = 52;
         public static readonly int EquipOffset = 42;
         public static readonly int MaxItems = 73;
@@ -61,8 +62,7 @@ namespace Rhisis.World.Systems.Inventory
                     this.CreateItem(playerEntity, inventoryCreateItemEventArgs);
                     break;
                 default:
-                    Logger.Warning("Unknown inventory action type: {0} for player {1} ",
-                        e.GetType(), entity.Object.Name);
+                    Logger.Warn("Unknown inventory action type: {0} for player {1}", e.GetType(), entity.Object.Name);
                     break;
             }
         }
@@ -74,8 +74,6 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="e"></param>
         private void InitializeInventory(IPlayerEntity player, InventoryInitializeEventArgs e)
         {
-            Logger.Debug("Initialize inventory");
-
             player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
             var inventory = player.Inventory;
 
@@ -97,8 +95,6 @@ namespace Rhisis.World.Systems.Inventory
                 if (inventory.Items[i].Id == -1)
                     inventory.Items[i].UniqueId = -1;
             }
-
-            Logger.Debug("Initialize inventory done");
         }
 
         /// <summary>
