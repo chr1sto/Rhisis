@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Common;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
@@ -18,6 +19,8 @@ namespace Rhisis.World.Handlers
 {
     public static class JoinGameHandler
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [PacketHandler(PacketType.JOIN)]
         public static void OnJoin(WorldClient client, INetPacketStream packet)
         {
@@ -43,7 +46,7 @@ namespace Rhisis.World.Handlers
             
             if (!WorldServer.Maps.TryGetValue(character.MapId, out IMapInstance map))
             {
-                Logger.Warning("Map with id '{0}' doesn't exist.", character.MapId);
+                Logger.Warn("Map with id '{0}' doesn't exist.", character.MapId);
                 // TODO: send error to client or go to default map ?
                 return;
             }

@@ -1,7 +1,7 @@
 ﻿using Ether.Network.Client;
 using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
@@ -13,6 +13,8 @@ namespace Rhisis.Cluster.ISC
 {
     public sealed class ISCClient : NetClient
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Gets the cluster configuration.
         /// </summary>
@@ -47,15 +49,11 @@ namespace Rhisis.Cluster.ISC
             }
             catch (KeyNotFoundException)
             {
-                Logger.Warning("Unknown inter-server packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
+                Logger.Warn("Unknown inter-server packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-#if DEBUG
-                Logger.Debug("STACK TRACE");
-                Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
+                Logger.Error(packetException);
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿using Ether.Network.Server;
-using Rhisis.Core.IO;
+using NLog;
 using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
@@ -12,6 +12,8 @@ namespace Rhisis.Login.ISC
 {
     public sealed class ISCServer : NetServer<ISCClient>
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Gets the list of the connected clusters.
         /// </summary>

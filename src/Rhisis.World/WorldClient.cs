@@ -1,24 +1,26 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.World.Game.Maps;
 
 namespace Rhisis.World
 {
     public sealed class WorldClient : NetUser
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private readonly uint _sessionId;
 
         /// <summary>
@@ -62,19 +64,14 @@ namespace Rhisis.World
             }
             catch (KeyNotFoundException)
             {
-                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                    Logger.Warn("Unimplemented World packet {0} (0x{1})", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X8"));
+                else
+                    Logger.Warn("Unknow World packet 0x{0}", packetHeaderNumber.ToString("X8"));
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-
-                if (packetException.InnerException != null)
-                    Logger.Error("Inner Exception: {0}", packetException.InnerException.Message);
-
-#if DEBUG
-                Logger.Debug("STACK TRACE");
-                Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
+                Logger.Error(packetException);
             }
         }
 

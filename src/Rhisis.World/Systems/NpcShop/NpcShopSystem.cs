@@ -1,5 +1,5 @@
-﻿using Rhisis.Core.Data;
-using Rhisis.Core.IO;
+﻿using NLog;
+using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
@@ -14,6 +14,8 @@ namespace Rhisis.World.Systems.NpcShop
     [System]
     public class NpcShopSystem : NotifiableSystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player;
 
@@ -48,8 +50,7 @@ namespace Rhisis.World.Systems.NpcShop
                     this.SellItem(player, npcShopEventArgs);
                     break;
                 default:
-                    Logger.Warning("Unknown NpcShop action type: {0} for player {1} ",
-                        e.GetType(), entity.Object.Name);
+                    Logger.Warn("Unknown NpcShop action type: {0} for player {1}", e.GetType(), entity.Object.Name);
                     break;
             }
         }

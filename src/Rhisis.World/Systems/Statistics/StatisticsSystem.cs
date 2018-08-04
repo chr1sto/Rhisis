@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.IO;
+﻿using NLog;
+using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
@@ -8,6 +9,8 @@ namespace Rhisis.World.Systems.Statistics
     [System]
     public class StatisticsSystem : NotifiableSystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player;
 
@@ -38,8 +41,7 @@ namespace Rhisis.World.Systems.Statistics
                     this.ModifyStatus(playerEntity, statisticsModifyEvent);
                     break;
                 default:
-                    Logger.Warning("Unknown statistics action type: {0} for player {1} ",
-                        e.GetType(), entity.Object.Name);
+                    Logger.Warn("Unknown statistics action type: {0} for player {1}", e.GetType(), entity.Object.Name);
                     break;
             }
 

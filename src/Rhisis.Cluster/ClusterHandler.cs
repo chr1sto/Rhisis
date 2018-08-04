@@ -1,6 +1,6 @@
 ﻿using Ether.Network.Packets;
+using NLog;
 using Rhisis.Cluster.Packets;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
@@ -14,6 +14,8 @@ namespace Rhisis.Cluster
 {
     public static class ClusterHandler
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [PacketHandler(PacketType.PING)]
         public static void OnPing(ClusterClient client, INetPacketStream packet)
         {
@@ -37,7 +39,7 @@ namespace Rhisis.Cluster
 
                 if (dbUser == null)
                 {
-                    Logger.Warning($"User '{getPlayerListPacket.Username}' logged with invalid credentials.");
+                    Logger.Warn($"User '{getPlayerListPacket.Username}' logged with invalid credentials.");
                     client.Disconnect();
                     return;
                 }
@@ -63,7 +65,7 @@ namespace Rhisis.Cluster
 
                 if (userAccount == null)
                 {
-                    Logger.Warning($"User '{createPlayerPacket.Username}' logged with invalid credentials.");
+                    Logger.Warn($"User '{createPlayerPacket.Username}' logged with invalid credentials.");
                     client.Disconnect();
                     return;
                 }
@@ -73,7 +75,7 @@ namespace Rhisis.Cluster
 
                 if (character != null)
                 {
-                    Logger.Info($"Character name '{createPlayerPacket.Name}' already exists.");
+                    Logger.Warn($"Character name '{createPlayerPacket.Name}' already exists.");
                     ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
                     return;
                 }
@@ -134,14 +136,14 @@ namespace Rhisis.Cluster
 
                 if (userAccount == null)
                 {
-                    Logger.Warning($"User '{deletePlayerPacket.Username}' logged with invalid credentials.");
+                    Logger.Warn($"User '{deletePlayerPacket.Username}' logged with invalid credentials.");
                     client.Disconnect();
                     return;
                 }
 
                 if (!string.Equals(deletePlayerPacket.Password, deletePlayerPacket.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
                 {
-                    Logger.Info($"Invalid password confirmation for user '{userAccount.Username}");
+                    Logger.Warn($"Invalid password confirmation for user '{userAccount.Username}");
                     ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
                     return;
                 }
@@ -150,7 +152,7 @@ namespace Rhisis.Cluster
 
                 if (character == null)
                 {
-                    Logger.Warning($"User '{userAccount.Username}' doesn't have any character with id '{deletePlayerPacket.CharacterId}'");
+                    Logger.Warn($"User '{userAccount.Username}' doesn't have any character with id '{deletePlayerPacket.CharacterId}'");
                     ClusterPacketFactory.SendError(client, ErrorType.INVALID_NAME_CHARACTER);
                     return;
                 }
@@ -183,7 +185,7 @@ namespace Rhisis.Cluster
                     int realBankCode = LoginProtect.GetNumPadToPassword(client.LoginProtectValue, preJoinPacket.BankCode);
                     if (selectedCharacter.BankCode != realBankCode)
                     {
-                        Logger.Error("Character '{0}' tried to connect with incorrect bank password.", selectedCharacter.Name);
+                        Logger.Warn("Character '{0}' tried to connect with incorrect bank password.", selectedCharacter.Name);
                         client.LoginProtectValue = new Random().Next(0, 1000);
                         ClusterPacketFactory.SendLoginProtect(client, client.LoginProtectValue);
                         return;
@@ -193,7 +195,7 @@ namespace Rhisis.Cluster
                 }
             }
             else
-                Logger.Warning("Simple authentication not implemented.");
+                Logger.Warn("Simple authentication not implemented.");
         }
     }
 }

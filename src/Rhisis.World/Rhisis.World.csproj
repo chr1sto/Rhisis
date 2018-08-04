@@ -16,11 +16,18 @@
 
   <ItemGroup>
     <PackageReference Include="Ether.Network" Version="3.0.0" />
+    <PackageReference Include="NLog" Version="4.5.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,22 +1,19 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Ether.Network.Packets;
-using Rhisis.Cluster.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
-using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Ether.Network.Common;
 
 namespace Rhisis.Cluster
 {
     public sealed class ClusterClient : NetUser
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private readonly uint _sessionId;
         private ClusterServer _clusterServer;
 
@@ -75,15 +72,14 @@ namespace Rhisis.Cluster
             }
             catch (KeyNotFoundException)
             {
-                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                    Logger.Warn("Unimplemented Cluster packet {0} (0x{1})", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"));
+                else
+                    Logger.Warn("Unknow Cluster packet 0x{0}", packetHeaderNumber.ToString("X4"));
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-#if DEBUG
-                Logger.Debug("STACK TRACE");
-                Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
+                Logger.Error(packetException);
             }
         }
     }

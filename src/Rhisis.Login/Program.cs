@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NLog;
+using Rhisis.Core.IO;
+using System;
 
 namespace Rhisis.Login
 {
@@ -11,6 +13,7 @@ namespace Rhisis.Login
         {
             Console.Title = ProgramTitle;
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            EncodingUtilities.Initialize();
 
             try
             {
@@ -27,12 +30,14 @@ namespace Rhisis.Login
             finally
             {
                 _server.Dispose();
+                LogManager.Shutdown();
             }
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             _server?.Dispose();
+            LogManager.Shutdown();
         }
     }
 }

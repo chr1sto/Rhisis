@@ -1,5 +1,5 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.IO;
+using NLog;
 using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
@@ -10,6 +10,8 @@ namespace Rhisis.Login.ISC
 {
     public static class ISCAuthenticationHandler
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [PacketHandler(InterPacketType.Authentication)]
         public static void OnAuthenticate(ISCClient client, INetPacketStream packet)
         {
@@ -23,7 +25,7 @@ namespace Rhisis.Login.ISC
             {
                 if (client.IcsServer.HasClusterWithId(id))
                 {
-                    Logger.Warning("Server '{0}' disconnected. Reason: Cluster already exists.", name);
+                    Logger.Warn("Server '{0}' disconnected. Reason: Cluster already exists.", name);
                     PacketFactory.SendAuthenticationResult(client, InterServerError.AUTH_FAILED_CLUSTER_EXISTS);
                     client.IcsServer.DisconnectClient(client.Id);
                 }
@@ -41,7 +43,7 @@ namespace Rhisis.Login.ISC
                 if (!client.IcsServer.HasClusterWithId(clusterId))
                 {
                     // No cluster for this server
-                    Logger.Warning("Cluster Server with id: '{0}' doesn't exists for World Server '{1}'", clusterId, name);
+                    Logger.Warn("Cluster Server with id: '{0}' doesn't exists for World Server '{1}'", clusterId, name);
                     PacketFactory.SendAuthenticationResult(client, InterServerError.AUTH_FAILED_NO_CLUSTER);
                     client.IcsServer.DisconnectClient(client.Id);
                 }
@@ -52,7 +54,7 @@ namespace Rhisis.Login.ISC
                 if (client.IcsServer.HasWorldInCluster(clusterId, id))
                 {
                     // World already exists in cluster
-                    Logger.Warning("World Server '{0}' already exists in Cluster '{1}'", name, clusterInfo.Name);
+                    Logger.Warn("World Server '{0}' already exists in Cluster '{1}'", name, clusterInfo.Name);
                     PacketFactory.SendAuthenticationResult(client, InterServerError.AUTH_FAILED_WORLD_EXISTS);
                     client.IcsServer.DisconnectClient(client.Id);
                 }

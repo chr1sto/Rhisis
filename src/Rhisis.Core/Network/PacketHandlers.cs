@@ -65,7 +65,6 @@ namespace Rhisis.Core.Network
 
             try
             {
-                Logger.Debug("Received packet: {0}", packetHeader);
                 Handlers[packetHeader].Invoke(invoker, packet);
             }
             catch (Exception e)

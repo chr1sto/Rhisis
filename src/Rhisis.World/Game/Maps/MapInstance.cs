@@ -1,6 +1,6 @@
-﻿using Rhisis.Core.Common;
+﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures.Game;
@@ -28,6 +28,7 @@ namespace Rhisis.World.Game.Maps
         private readonly List<IRegion> _regions;
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private IMapLayer _defaultMapLayer;
 
@@ -130,7 +131,7 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public override void Update()
         {
-            Logger.Debug("Update map {0}", this.Name);
+            // TODO
         }
 
         /// <inheritdoc />
@@ -170,8 +171,7 @@ namespace Rhisis.World.Game.Maps
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Context error: {0}", e.Message);
-                        Logger.Debug(e.StackTrace);
+                        Logger.Error(e);
                     }
                     await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
                 }

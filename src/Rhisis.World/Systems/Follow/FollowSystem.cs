@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Exceptions;
+﻿using NLog;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
@@ -8,6 +8,8 @@ namespace Rhisis.World.Systems.Follow
     [System]
     public sealed class FollowSystem : NotifiableSystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
@@ -24,7 +26,10 @@ namespace Rhisis.World.Systems.Follow
         public override void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IMovableEntity movableEntity) || !e.CheckArguments())
-                throw new RhisisSystemException("FollowSystem: Invalid arguments");
+            {
+                Logger.Error("FollowSystem: Invalid arguments");
+                return;
+            }
 
             switch (e)
             {
@@ -39,7 +44,10 @@ namespace Rhisis.World.Systems.Follow
             var entityToFollow = entity.FindEntity<IEntity>(e.TargetId);
 
             if (entityToFollow == null)
-                throw new RhisisSystemException($"Cannot find entity with object id: {e.TargetId} around {entity.Object.Name}");
+            {
+                Logger.Error($"Cannot find entity with object id: {e.TargetId} around {entity.Object.Name}");
+                return;
+            }
 
             entity.Follow.Target = entityToFollow;
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);

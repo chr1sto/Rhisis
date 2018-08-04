@@ -1,18 +1,21 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace Rhisis.Login
 {
     public sealed class LoginClient : NetUser
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly uint _sessionId;
         private LoginServer _loginServer;
         
@@ -65,15 +68,14 @@ namespace Rhisis.Login
             }
             catch (KeyNotFoundException)
             {
-                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                    Logger.Warn("Unimplemented Login packet {0} (0x{1})", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X2"));
+                else
+                    Logger.Warn("Unknow Login packet 0x{0}", packetHeaderNumber.ToString("X2"));
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-#if DEBUG
-                Logger.Debug("STACK TRACE");
-                Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
+                Logger.Error(packetException);
             }
         }
     }

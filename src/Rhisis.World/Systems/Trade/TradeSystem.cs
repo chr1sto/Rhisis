@@ -9,12 +9,15 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Trade.EventArgs;
+using NLog;
 
 namespace Rhisis.World.Systems.Trade
 {
     [System]
     internal sealed class TradeSystem : NotifiableSystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Maximum trading items per player
         /// </summary>
@@ -65,8 +68,7 @@ namespace Rhisis.World.Systems.Trade
                     TradeOk(playerEntity, tradeOkEventArgs);
                     break;
                 default:
-                    Logger.Warning("Unknown trade action type: {0} for player {1} ",
-                        e.GetType(), entity.Object.Name);
+                    Logger.Warn("Unknown trade action type: {0} for player {1}", e.GetType(), entity.Object.Name);
                     break;
             }
         }
@@ -512,7 +514,7 @@ namespace Rhisis.World.Systems.Trade
             if (!FinalizeTradeGold(player, target) ||
                 !FinalizeTradeItems(player, target))
             {
-                Logger.Warning($"Can't finalize trade between {player.Object.Name} and {target.Object.Name}");
+                Logger.Warn($"Can't finalize trade between {player.Object.Name} and {target.Object.Name}");
                 CancelTrade(player, target);
                 return;
             }

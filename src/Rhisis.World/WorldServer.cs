@@ -1,17 +1,17 @@
 ﻿using Ether.Network.Packets;
 using Ether.Network.Server;
+using NLog;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Maps;
 using Rhisis.World.ISC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.World.Game.Maps;
 
 namespace Rhisis.World
 {
@@ -19,6 +19,7 @@ namespace Rhisis.World
     {
         private const string WorldConfigFile = "config/world.json";
         private const string DatabaseConfigFile = "config/database.json";
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly IDictionary<int, IMapInstance> _maps = new Dictionary<int, IMapInstance>();
         private static ISCClient _client;
@@ -46,7 +47,6 @@ namespace Rhisis.World
         /// </summary>
         public WorldServer()
         {
-            Logger.Initialize("world");
             this.LoadConfiguration();
         }
 
