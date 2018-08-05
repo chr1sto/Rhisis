@@ -7,25 +7,12 @@ dotnet: 2.1.105
 # Grant access to scripts
 before_script:
   - chmod +x ./build/build.sh
-  - chmod +x ./build/build-dist.sh
   - chmod +x ./build/test.sh
-  - chmod +x ./build/deploy.sh
 
-# Build the project
-script: 
-  - ./build/build.sh
-  - ./build/test.sh
-
-# Define deployement strategy
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: ./build/deploy.sh
-  on:
-    branch: master
-
-# Additional packages
-addons:
-    apt:
-        packages:
-            - sshpass
+# Define the jobs
+jobs:
+    include:
+        - stage: "Build"
+          script: ./build/build.sh
+        - stage: "Tests"
+          script: ./build/test.sh
