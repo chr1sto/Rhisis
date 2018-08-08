@@ -4,28 +4,25 @@ sudo: required
 mono: none
 dotnet: 2.1.105
 
-# Grant access to scripts
+# Script to execute before each build and test
 before_script:
-  - chmod +x ./build/build.sh
-  - chmod +x ./build/build-dist.sh
-  - chmod +x ./build/test.sh
-  - chmod +x ./build/deploy.sh
+  - dotnet restore
 
-# Build the project
-script: 
-  - ./build/build.sh
-  - ./build/test.sh
+# Define the jobs
+jobs:
+    include:
+      - stage: "Build"
+        script: dotnet build src/Rhisis.Core/ --framework netstandard2.0 --configuration Release
+        name: "Rhisis Core Feature"
+      - script: dotnet build src/Rhisis.Database/ --framework netstandard2.0 --configuration Release
+        name: "Rhisis Database access Layer"
+      - script: dotnet build src/Rhisis.Login/ --framework netcoreapp2.0 --configuration Release
+        name: "Login Server"
+      - script: dotnet build src/Rhisis.Cluster/ --framework netcoreapp2.0 --configuration Release
+        name: "Cluster Server"
+      - script: dotnet build src/Rhisis.World/ --framework netcoreapp2.0 --configuration Release
+        name: "World Server"
 
-# Define deployement strategy
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: ./build/deploy.sh
-  on:
-    branch: master
-
-# Additional packages
-addons:
-    apt:
-        packages:
-            - sshpass
+      - stage: "Tests"
+        script: dotnet test test/Rhisis.Core.Test/
+        name: "Rhisis Core Unit tests"
