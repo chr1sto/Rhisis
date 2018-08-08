@@ -4,9 +4,9 @@ sudo: required
 mono: none
 dotnet: 2.1.105
 
-# Grant access to scripts
+# Script to execute before each build and test
 before_script:
-  - dotnet retore
+  - dotnet restore
 
 # Define the jobs
 jobs:
