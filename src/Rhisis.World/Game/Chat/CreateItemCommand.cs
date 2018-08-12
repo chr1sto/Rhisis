@@ -1,6 +1,7 @@
 ﻿using NLog;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
 using System.Linq;
@@ -26,7 +27,8 @@ namespace Rhisis.World.Game.Chat
 
             if (!player.Inventory.HasAvailableSlots())
             {
-                // TODO: send message to tell there is no available slots
+                // TODO: consider loading text from dynamic language file
+                WorldPacketFactory.SendWorldMsg(player, "Not enough space in your inventory.");
                 return;
             }
 
