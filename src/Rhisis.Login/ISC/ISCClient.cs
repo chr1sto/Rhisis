@@ -39,7 +39,7 @@ namespace Rhisis.Login.ISC
             }
             catch (KeyNotFoundException)
             {
-                Logger.Warn("Unknown inter-server packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
+                Logger.Warn("Unknown ISC packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
             }
             catch (RhisisPacketException packetException)
             {
@@ -53,26 +53,25 @@ namespace Rhisis.Login.ISC
 
         public void Disconnect()
         {
-            if (this.Type == InterServerType.Cluster)
+            switch (this.Type)
             {
-                var clusterInfo = this.ServerInfo as ClusterServerInfo;
+                case InterServerType.Cluster:
+                    (this.ServerInfo as ClusterServerInfo).Worlds.Clear();
+                    break;
+                case InterServerType.World:
+                    var worldInfo = this.GetServerInfo<WorldServerInfo>();
+                    ISCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
+                    var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
 
-                clusterInfo.Worlds.Clear();
-            }
-            else if (this.Type == InterServerType.World)
-            {
-                var worldInfo = this.GetServerInfo<WorldServerInfo>();
-                ISCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
-                var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
+                    if (clusterInfo == null)
+                    {
+                        Logger.Warn("Cannot find parent cluster of world server : {0}", worldInfo.Name);
+                        return;
+                    }
 
-                if (clusterInfo == null)
-                {
-                    Logger.Warn("Cannot find parent cluster of world server : {0}", worldInfo.Name);
-                    return;
-                }
-
-                clusterInfo.Worlds.Remove(worldInfo);
-                PacketFactory.SendUpdateWorldList(cluster, clusterInfo.Worlds);
+                    clusterInfo.Worlds.Remove(worldInfo);
+                    PacketFactory.SendUpdateWorldList(cluster, clusterInfo.Worlds);
+                    break;
             }
         }
 
