@@ -7,37 +7,37 @@ using System.Linq;
 
 namespace Rhisis.Login.ISC.Packets
 {
-    public static class PacketFactory
+    public static class ISCPacketFactory
     {
         public static void SendWelcome(INetUser client)
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)InterPacketType.Welcome);
+                packet.Write((uint)ISCPacketType.WELCOME);
 
                 client.Send(packet);
             }
         }
 
-        public static void SendAuthenticationResult(INetUser client, InterServerCode error)
+        public static void SendAuthenticationResult(INetUser client, ISCPacketCode result)
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)InterPacketType.AuthenticationResult);
-                packet.Write((uint)error);
+                packet.Write((uint)ISCPacketType.AUTHENT_RESULT);
+                packet.Write((uint)result);
 
                 client.Send(packet);
             }
         }
 
-        public static void SendUpdateWorldList(INetUser client, IEnumerable<WorldServerInfo> worlds)
+        public static void SendUpdateWorldList(INetUser client, IEnumerable<WorldServerInfo> worldServers)
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)InterPacketType.UpdateClusterWorldsList);
-                packet.Write(worlds.Count());
+                packet.Write((uint)ISCPacketType.UPDATE_CLUSTER_WORLDS_LIST);
+                packet.Write(worldServers.Count());
 
-                foreach (var world in worlds)
+                foreach (var world in worldServers)
                 {
                     packet.Write(world.Id);
                     packet.Write(world.Host);

@@ -5,10 +5,10 @@ using Rhisis.Core.ISC.Packets;
 
 namespace Rhisis.Cluster.ISC
 {
-    public static class ISCPackets
+    public static class ISCPacketFactory
     {
         /// <summary>
-        /// Send an authentication request to the IPCServer
+        /// Send an authentication request to the ISCServer.
         /// </summary>
         /// <param name="client">client connection</param>
         /// <param name="id">Server Id</param>
@@ -18,11 +18,11 @@ namespace Rhisis.Cluster.ISC
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)InterPacketType.Authentication);
+                packet.Write((uint)ISCPacketType.AUTHENT);
                 packet.Write(id);
                 packet.Write(host);
                 packet.Write(name);
-                packet.Write((byte)InterServerType.Cluster);
+                packet.Write((byte)ISCServerType.Cluster);
 
                 client.Send(packet);
             }

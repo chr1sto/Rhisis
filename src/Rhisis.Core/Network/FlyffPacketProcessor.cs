@@ -9,7 +9,7 @@ namespace Rhisis.Core.Network
         public bool IncludeHeader => false;
         public int GetMessageLength(byte[] buffer)
         {
-            if (buffer[0] == FFPacket.FlyFFPacketHeader)
+            if (buffer[0] == FFPacket.Header)
             {
                 var packetDataLength = new byte[4];
 

@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Core.ISC
 {
-    public enum InterServerType
+    public enum ISCServerType
     {
         Unknown,
         Cluster,

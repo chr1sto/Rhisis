@@ -32,5 +32,10 @@ namespace Rhisis.Database
 
         [IgnoreDataMember]
         public bool IsValid { get; set; }
+
+        public override string ToString()
+        {
+            return $"Host: {Host}, Port: {Port}, Username: {Username}, Password: {Password}, Database: {Database}, Provider: {Provider}";
+        }
     }
 }

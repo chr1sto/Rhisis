@@ -12,7 +12,7 @@ namespace Rhisis.Core.Network
     /// </summary>
     public class FFPacket : NetPacketStream
     {
-        public const byte FlyFFPacketHeader = 0x5E;
+        public const byte Header = 0x5E;
         
         private short _mergedPacketCount;
 
@@ -26,7 +26,7 @@ namespace Rhisis.Core.Network
         /// </summary>
         public FFPacket()
         {
-            base.Write(FlyFFPacketHeader);
+            base.Write(Header);
             base.Write(0);
         }
 

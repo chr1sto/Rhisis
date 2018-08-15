@@ -39,7 +39,7 @@ namespace Rhisis.Login.Packets
                 packet.Write(0);
                 packet.Write<byte>(1);
                 packet.Write(username);
-                packet.Write(clusters.Sum(x => x.Worlds.Count) + clusters.Count());
+                packet.Write(clusters.Sum(x => x.WorldServers.Count) + clusters.Count());
 
                 foreach (ClusterServerInfo cluster in clusters)
                 {
@@ -52,7 +52,7 @@ namespace Rhisis.Login.Packets
                     packet.Write(1);
                     packet.Write(0);
 
-                    foreach (WorldServerInfo world in cluster.Worlds)
+                    foreach (WorldServerInfo world in cluster.WorldServers)
                     {
                         packet.Write(cluster.Id);
                         packet.Write(world.Id);
