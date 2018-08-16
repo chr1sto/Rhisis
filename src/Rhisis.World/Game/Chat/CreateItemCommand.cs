@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
@@ -13,9 +14,9 @@ namespace Rhisis.World.Game.Chat
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        [ChatCommand("/createitem")]
-        [ChatCommand("/ci")]
-        [ChatCommand("/item")]
+        [ChatCommand("/createitem", AuthorityType.Administrator)]
+        [ChatCommand("/ci", AuthorityType.Administrator)]
+        [ChatCommand("/item", AuthorityType.Administrator)]
         public static void CreateItem(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to create an item", player.Object.Name);
