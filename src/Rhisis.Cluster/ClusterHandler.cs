@@ -195,7 +195,25 @@ namespace Rhisis.Cluster
                 }
             }
             else
-                Logger.Warn("Simple authentication not implemented.");
+            {
+                var preJoinPacket = new PreJoinPacket(packet);
+
+                using (var db = DatabaseService.GetContext())
+                {
+                    Character selectedCharacter = db.Characters.Get(preJoinPacket.CharacterId);
+
+                    if (selectedCharacter == null)
+                    {
+                        Logger.Error("Cannot find character '{0}' with id {1} in database.", preJoinPacket.CharacterName, preJoinPacket.CharacterId);
+                        return;
+                    }
+
+                    if (!selectedCharacter.User.Username.Equals(preJoinPacket.Username, StringComparison.OrdinalIgnoreCase))
+                        return;
+                    
+                    ClusterPacketFactory.SendJoinWorld(client);
+                }
+            }
         }
     }
 }
