@@ -19,7 +19,7 @@ namespace Rhisis.World.Game.Chat
 
             if (player.PlayerData.Authority < AuthorityType.GameMaster)
             {
-                Logger.Warn("{0} used CreateItem Command as a non-authorative player.", player.Object.Name);
+                Logger.Warn("{0} used Teleport Command as a non-authorative player.", player.Object.Name);
                 return;
             }
 
