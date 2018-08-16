@@ -15,7 +15,7 @@ namespace Rhisis.Core.Resources
         private static readonly string WordCast = "(WORD)";
         private static readonly string ByteCast = "(BYTE)";
 
-        private readonly TokenScanner _scanner;
+        private readonly FileTokenScanner _scanner;
         private readonly IDictionary<string, object> _defines;
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Rhisis.Core.Resources
         /// <param name="filePath">Define file path</param>
         public DefineFile(string filePath)
         {
-            this._scanner = new TokenScanner(filePath, @"([\t# ])");
+            this._scanner = new FileTokenScanner(filePath, @"([\t# ])");
             this._defines = new Dictionary<string, object>();
 
             this.Read();

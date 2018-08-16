@@ -7,14 +7,14 @@ namespace Rhisis.Core.Resources.Include
 {
     public sealed class IncludeFile : IDisposable
     {
-        private readonly TokenScanner _scanner;
+        private readonly FileTokenScanner _scanner;
         private readonly ICollection<IStatement> _statements;
 
         public IReadOnlyCollection<IStatement> Statements => this._statements as IReadOnlyCollection<IStatement>;
 
         public IncludeFile(string filePath)
         {
-            this._scanner = new TokenScanner(filePath, @"([(){}=,;\n\r\t])");
+            this._scanner = new FileTokenScanner(filePath, @"([(){}=,;\n\r\t])");
             this._statements = new List<IStatement>();
 
             this.Read();

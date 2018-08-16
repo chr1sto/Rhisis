@@ -9,7 +9,7 @@ namespace Rhisis.World.Game.Entities
     {
         VisualAppearenceComponent VisualAppearance { get; set; }
 
-        PlayerComponent PlayerData { get; set; }
+        PlayerDataComponent PlayerData { get; set; }
 
         ItemContainerComponent Inventory { get; set; }
 
