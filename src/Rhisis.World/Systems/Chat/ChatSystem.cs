@@ -16,7 +16,7 @@ namespace Rhisis.World.Systems.Chat
     [System]
     public class ChatSystem : NotifiableSystemBase
     {
-        internal sealed class ChatCommand
+        private sealed class ChatCommandDefinition
         {
             /// <summary>
             /// The method to invoke.
@@ -29,11 +29,11 @@ namespace Rhisis.World.Systems.Chat
             public AuthorityType MinAuthorization { get; }
 
             /// <summary>
-            /// Creates a new <see cref="ChatCommand"/> instance.
+            /// Creates a new <see cref="ChatCommandDefinition"/> instance.
             /// </summary>
             /// <param name="method"></param>
             /// <param name="minAuthorization"></param>
-            public ChatCommand(Action<IPlayerEntity, string[]> method, AuthorityType minAuthorization)
+            public ChatCommandDefinition(Action<IPlayerEntity, string[]> method, AuthorityType minAuthorization)
             {
                 Method = method;
                 MinAuthorization = minAuthorization;
@@ -41,7 +41,7 @@ namespace Rhisis.World.Systems.Chat
         }
 
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly IDictionary<string, ChatCommand> ChatCommands = new Dictionary<string, ChatCommand>();
+        private static readonly IDictionary<string, ChatCommandDefinition> ChatCommands = new Dictionary<string, ChatCommandDefinition>();
 
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player;
@@ -114,7 +114,7 @@ namespace Rhisis.World.Systems.Chat
                 {
                     if (!ChatCommands.ContainsKey(attribute.Command))
                     {
-                        ChatCommands.Add(attribute.Command, new ChatCommand(action, attribute.MinAuthorization));
+                        ChatCommands.Add(attribute.Command, new ChatCommandDefinition(action, attribute.MinAuthorization));
                     }
                 }
             }
