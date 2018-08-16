@@ -4,6 +4,7 @@ using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Login.ISC.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,9 @@ namespace Rhisis.Login.ISC
         /// <summary>
         /// Gets the list of the connected clusters.
         /// </summary>
-        public IEnumerable<ClusterServerInfo> Clusters => from x in this.Clients
-                                                          where x.ServerInfo is ClusterServerInfo
-                                                          select x.ServerInfo as ClusterServerInfo;
+        public IEnumerable<ClusterServerInfo> ClusterServers => from x in this.Clients
+                                                                where x.ServerInfo is ClusterServerInfo
+                                                                select x.ServerInfo as ClusterServerInfo;
 
         /// <summary>
         /// Creates a new <see cref="ISCServer"/> instance.
@@ -33,37 +34,53 @@ namespace Rhisis.Login.ISC
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 1024;
             this.Configuration.Blocking = false;
+
+            Logger.Trace("ISC config -> Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
+                this.Configuration.Host,
+                this.Configuration.Port,
+                this.Configuration.MaximumNumberOfConnections,
+                this.Configuration.Backlog,
+                this.Configuration.BufferSize);
         }
 
         /// <inheritdoc />
         protected override void Initialize()
         {
             PacketHandler<ISCClient>.Initialize();
-            Logger.Info("InterServer is up.");
+            Logger.Info("ISC server is started and listen on {0}:{1}.", this.Configuration.Host, this.Configuration.Port);
         }
 
         /// <inheritdoc />
-        protected override void OnClientConnected(ISCClient connection)
+        protected override void OnClientConnected(ISCClient client)
         {
-            connection.Initialize(this);
+            client.Initialize(this);
+            Logger.Debug("New incoming ISC client connection from {0}.", client.RemoteEndPoint);
+            ISCPacketFactory.SendWelcome(client);
         }
 
         /// <inheritdoc />
-        protected override void OnClientDisconnected(ISCClient connection)
+        protected override void OnClientDisconnected(ISCClient client)
         {
-            if (string.IsNullOrEmpty(connection.ServerInfo?.Name))
-                Logger.Info("Unknown server disconnected from InterServer.");
-            else
+            var worldInfo = client.ServerInfo as WorldServerInfo;
+            var clusterInfo = client.ServerInfo as ClusterServerInfo;
+
+            if (client.ServerInfo == null)
+                Logger.Debug("ISC client disconnected from {0}.", client.RemoteEndPoint);
+            else if (worldInfo != null)
             {
-                Logger.Info("Server '{0}' disconnected from InterServer.", connection.ServerInfo.Name);
-                connection.Disconnect();
+                Logger.Info("World server '{0}' of cluster '{1}' disconnected from ISC server.", worldInfo.Name, 
+                    this.GetCluster(worldInfo.ParentClusterId)?.ServerInfo.Name ?? $"Id: {worldInfo.ParentClusterId.ToString()}");
             }
+            else if (clusterInfo != null)
+                Logger.Info("Cluster server '{0}' disconnected from ISC server.", clusterInfo.Name);              
+
+            client.Disconnect();
         }
 
         /// <inheritdoc />
         protected override void OnError(Exception exception)
         {
-            Logger.Error("ISC error: {0}", exception.Message);
+            Logger.Error("ISC socket error: {0}", exception.Message);
         }
 
         /// <summary>
@@ -104,7 +121,7 @@ namespace Rhisis.Login.ISC
 
             var clusterInfo = cluster.GetServerInfo<ClusterServerInfo>();
 
-            return clusterInfo.Worlds.Any(x => x.Id == worldId);
+            return clusterInfo.WorldServers.Any(x => x.Id == worldId);
         }
 
         /// <summary>
@@ -116,7 +133,7 @@ namespace Rhisis.Login.ISC
         internal ISCClient GetWorld(int parentClusterId, int worldId)
         {
             return (from x in this.Clients
-                    where x.Type == InterServerType.World
+                    where x.Type == ISCServerType.World
                     let worldInfo = x.ServerInfo as WorldServerInfo
                     where worldInfo.ParentClusterId == parentClusterId
                     where worldInfo.Id == worldId

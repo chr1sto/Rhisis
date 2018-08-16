@@ -3,6 +3,7 @@ using Ether.Network.Server;
 using NLog;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Network;
+using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
@@ -19,10 +20,9 @@ namespace Rhisis.World
     {
         private const string WorldConfigFile = "config/world.json";
         private const string DatabaseConfigFile = "config/database.json";
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private static readonly IDictionary<int, IMapInstance> _maps = new Dictionary<int, IMapInstance>();
-        private static ISCClient _client;
 
         /// <summary>
         /// Gets the World server maps.
@@ -30,9 +30,9 @@ namespace Rhisis.World
         public static IReadOnlyDictionary<int, IMapInstance> Maps => _maps as IReadOnlyDictionary<int, IMapInstance>;
 
         /// <summary>
-        /// Gets the Inter client.
+        /// Gets the ISC client.
         /// </summary>
-        public static ISCClient InterClient => _client;
+        public static ISCClient InterClient { get; private set; }
 
         /// <summary>
         /// Gets the world server's configuration.
@@ -50,55 +50,12 @@ namespace Rhisis.World
             this.LoadConfiguration();
         }
 
-        /// <inheritdoc />
-        protected override void Initialize()
-        {
-            PacketHandler<WorldClient>.Initialize();
-            PacketHandler<ISCClient>.Initialize();
-
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
-
-            DatabaseService.Configure(databaseConfiguration);
-
-            using (var context = DatabaseService.GetContext())
-            {
-                if (!context.DatabaseExists())
-                    throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
-            }
-
-            this.LoadResources();
-
-            _client = new ISCClient(this.WorldConfiguration);
-            _client.Connect();
-
-            Logger.Info("Rhisis world server is up");
-        }
-
-        /// <inheritdoc />
-        protected override void OnClientConnected(WorldClient connection)
-        {
-            connection.InitializeClient(this);
-
-            Logger.Info("New client connected: {0}", connection.Id);
-        }
-
-        /// <inheritdoc />
-        protected override void OnClientDisconnected(WorldClient connection)
-        {
-            Logger.Info("Client {0} disconnected.", connection.Id);
-        }
-
-        /// <inheritdoc />
-        protected override void OnError(Exception exception)
-        {
-            Logger.Error("WorldServer Error: {0}", exception.Message);
-        }
-
         /// <summary>
         /// Load the world server's configuration.
         /// </summary>
         private void LoadConfiguration()
         {
+            Logger.Debug("Loading server configuration from '{0}'...", WorldConfigFile);
             this.WorldConfiguration = ConfigurationHelper.Load<WorldConfiguration>(WorldConfigFile, true);
 
             this.Configuration.Host = this.WorldConfiguration.Host;
@@ -106,6 +63,59 @@ namespace Rhisis.World
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+
+            Logger.Trace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
+                this.Configuration.Host,
+                this.Configuration.Port,
+                this.Configuration.MaximumNumberOfConnections,
+                this.Configuration.Backlog,
+                this.Configuration.BufferSize);
+        }
+
+        /// <inheritdoc />
+        protected override void Initialize()
+        {
+            PacketHandler<ISCClient>.Initialize();
+            PacketHandler<WorldClient>.Initialize();
+
+            Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
+
+            DatabaseService.Configure(databaseConfiguration);
+            Logger.Trace($"Database config -> {databaseConfiguration}");
+
+            if (!DatabaseService.GetContext().DatabaseExists())
+                throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists.");
+
+            this.LoadResources();
+
+            Logger.Info("Connection to ISC server on {0}:{1}...", this.WorldConfiguration.ISC.Host, this.WorldConfiguration.ISC.Port);
+            InterClient = new ISCClient(this.WorldConfiguration);
+            InterClient.Connect();
+
+            //TODO: Implement this log inside OnStarted method when will be available.
+            Logger.Info("'{0}' world server is started and listen on {1}:{2}.",
+                InterClient.WorldConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
+        }
+
+        /// <inheritdoc />
+        protected override void OnClientConnected(WorldClient client)
+        {
+            client.InitializeClient(this);
+            Logger.Info("New client connected from {0}.", client.RemoteEndPoint);
+            CommonPacketFactory.SendWelcome(client, client.SessionId);
+        }
+
+        /// <inheritdoc />
+        protected override void OnClientDisconnected(WorldClient client)
+        {
+            Logger.Info("Client disconnected from {0}.", client.RemoteEndPoint);
+        }
+
+        /// <inheritdoc />
+        protected override void OnError(Exception exception)
+        {
+            Logger.Error("WorldServer Error: {0}", exception.Message);
         }
 
         /// <summary>

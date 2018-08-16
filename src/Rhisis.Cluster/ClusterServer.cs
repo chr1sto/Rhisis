@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Ether.Network.Packets;
 using NLog;
+using Rhisis.Core.Network.Packets;
 
 namespace Rhisis.Cluster
 {
@@ -18,18 +19,18 @@ namespace Rhisis.Cluster
     {
         private const string ClusterConfigFile = "config/cluster.json";
         private const string DatabaseConfigFile = "config/database.json";
+
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-        private static ISCClient _client;
 
         /// <summary>
-        /// Gets the InterClient.
+        /// Gets the ISC client.
         /// </summary>
-        public static ISCClient InterClient => _client;
+        public static ISCClient InterClient { get; private set; }
 
         /// <summary>
         /// Gets the list of the connected world servers of this cluster.
         /// </summary>
-        public static IReadOnlyCollection<WorldServerInfo> Worlds => InterClient.Worlds as IReadOnlyCollection<WorldServerInfo>;
+        public static IReadOnlyCollection<WorldServerInfo> WorldServers => InterClient.WorldServers as IReadOnlyCollection<WorldServerInfo>;
 
         /// <summary>
         /// Gets the cluster server's configuration.
@@ -47,48 +48,12 @@ namespace Rhisis.Cluster
             this.LoadConfiguration();
         }
 
-        /// <inheritdoc />
-        protected override void Initialize()
-        {
-            PacketHandler<ClusterClient>.Initialize();
-            PacketHandler<ISCClient>.Initialize();
-
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
-
-            DatabaseService.Configure(databaseConfiguration);
-            if (!DatabaseService.GetContext().DatabaseExists())
-                throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
-
-            _client = new ISCClient(this.ClusterConfiguration);
-            _client.Connect();
-
-            Logger.Info("Rhisis cluster server is up");
-        }
-
-        /// <inheritdoc />
-        protected override void OnClientConnected(ClusterClient connection)
-        {
-            Logger.Info("New client connected: {0}", connection.Id);
-            connection.InitializeClient(this);
-        }
-
-        /// <inheritdoc />
-        protected override void OnClientDisconnected(ClusterClient connection)
-        {
-            Logger.Info("Client {0} disconnected.", connection.Id);
-        }
-
-        /// <inheritdoc />
-        protected override void OnError(Exception exception)
-        {
-            Logger.Error("ClusterServer Error: {0}", exception.Message);
-        }
-
         /// <summary>
         /// Load the cluster server's configuration.
         /// </summary>
         private void LoadConfiguration()
         {
+            Logger.Debug("Loading server configuration from '{0}'...", ClusterConfigFile);
             this.ClusterConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(ClusterConfigFile, true);
 
             this.Configuration.Host = this.ClusterConfiguration.Host;
@@ -96,6 +61,57 @@ namespace Rhisis.Cluster
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+
+            Logger.Trace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
+                this.Configuration.Host,
+                this.Configuration.Port,
+                this.Configuration.MaximumNumberOfConnections,
+                this.Configuration.Backlog,
+                this.Configuration.BufferSize);
+        }
+
+        /// <inheritdoc />
+        protected override void Initialize()
+        {
+            PacketHandler<ISCClient>.Initialize();
+            PacketHandler<ClusterClient>.Initialize();
+
+            Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
+
+            DatabaseService.Configure(databaseConfiguration);
+            Logger.Trace($"Database config -> {databaseConfiguration}");
+
+            if (!DatabaseService.GetContext().DatabaseExists())
+                throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists.");
+
+            Logger.Info("Connection to ISC server on {0}:{1}...", this.ClusterConfiguration.ISC.Host, this.ClusterConfiguration.ISC.Port);
+            InterClient = new ISCClient(this.ClusterConfiguration);
+            InterClient.Connect();
+
+            //TODO: Implement this log inside OnStarted method when will be available.
+            Logger.Info("'{0}' cluster server is started and listen on {1}:{2}.", 
+                InterClient.ClusterConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
+        }
+
+        /// <inheritdoc />
+        protected override void OnClientConnected(ClusterClient client)
+        {
+            client.Initialize(this);
+            Logger.Info("New client connected from {0}.", client.RemoteEndPoint);
+            CommonPacketFactory.SendWelcome(client, client.SessionId);
+        }
+
+        /// <inheritdoc />
+        protected override void OnClientDisconnected(ClusterClient client)
+        {
+            Logger.Info("Client disconnected from {0}.", client.RemoteEndPoint);
+        }
+
+        /// <inheritdoc />
+        protected override void OnError(Exception exception)
+        {
+            Logger.Error($"Socket error: {exception.Message}");
         }
 
         /// <summary>
@@ -103,6 +119,6 @@ namespace Rhisis.Cluster
         /// </summary>
         /// <param name="id">World Server id</param>
         /// <returns></returns>
-        public static WorldServerInfo GetWorldServerById(int id) => Worlds.FirstOrDefault(x => x.Id == id);
+        public static WorldServerInfo GetWorldServerById(int id) => WorldServers.FirstOrDefault(x => x.Id == id);
     }
 }

@@ -7,6 +7,7 @@ using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
 using Rhisis.Login.ISC.Packets;
+using System;
 using System.Collections.Generic;
 
 namespace Rhisis.Login.ISC
@@ -16,38 +17,67 @@ namespace Rhisis.Login.ISC
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private ISCServer _server;
-        
-        public InterServerType Type { get; internal set; }
+
+
+        public ISCServer IcsServer => this._server;
+
+        public ISCServerType Type { get; internal set; }
 
         public BaseServerInfo ServerInfo { get; internal set; }
 
-        public ISCServer IcsServer => this._server;
+        /// <summary>
+        /// Gets the remote end point (IP and port).
+        /// </summary>
+        public string RemoteEndPoint { get; private set; }
 
         public void Initialize(ISCServer server)
         {
             this._server = server;
-            PacketFactory.SendWelcome(this);
+            this.RemoteEndPoint = this.Socket.RemoteEndPoint.ToString();
         }
 
+        /// <inheritdoc />
+        public override void Send(INetPacketStream packet)
+        {
+            if (Logger.IsTraceEnabled) 
+            {
+                Logger.Trace("Send {0} packet to {1}.", 
+                    (ISCPacketType)BitConverter.ToUInt32(packet.Buffer, 4), 
+                    this.RemoteEndPoint);
+            }
+
+            base.Send(packet);
+        }
+
+        /// <inheritdoc />
         public override void HandleMessage(INetPacketStream packet)
         {
-            var packetHeaderNumber = packet.Read<uint>();
+            uint packetHeaderNumber = 0;
+
+            if (Socket == null)
+            {
+                Logger.Trace("Skip to handle packet from {0}. Reason: socket is no more connected.", this.RemoteEndPoint);
+                return;
+            }
 
             try
             {
-                PacketHandler<ISCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
+                packetHeaderNumber = packet.Read<uint>();
+
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace("Received {0} packet from {1}.", (ISCPacketType)packetHeaderNumber, this.RemoteEndPoint);
+
+                PacketHandler<ISCClient>.Invoke(this, packet, (ISCPacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {
-                Logger.Warn("Unknown ISC packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
+                Logger.Warn("[SECURITY] Received an unknown ISC packet header 0x{0} from {1}.", 
+                    packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-#if DEBUG
-                Logger.Debug("STACK TRACE");
+                Logger.Error("ISC packet handle error from {0}. {1}", this.RemoteEndPoint, packetException);
                 Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
             }
         }
 
@@ -55,22 +85,22 @@ namespace Rhisis.Login.ISC
         {
             switch (this.Type)
             {
-                case InterServerType.Cluster:
-                    (this.ServerInfo as ClusterServerInfo).Worlds.Clear();
+                case ISCServerType.Cluster:
+                    (this.ServerInfo as ClusterServerInfo).WorldServers.Clear();
                     break;
-                case InterServerType.World:
+                case ISCServerType.World:
                     var worldInfo = this.GetServerInfo<WorldServerInfo>();
                     ISCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
                     var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
 
                     if (clusterInfo == null)
                     {
-                        Logger.Warn("Cannot find parent cluster of world server : {0}", worldInfo.Name);
+                        Logger.Warn("Parent cluster of World server '{0}' is not found.", worldInfo.Name);
                         return;
                     }
 
-                    clusterInfo.Worlds.Remove(worldInfo);
-                    PacketFactory.SendUpdateWorldList(cluster, clusterInfo.Worlds);
+                    clusterInfo.WorldServers.Remove(worldInfo);
+                    ISCPacketFactory.SendUpdateWorldList(cluster, clusterInfo.WorldServers);
                     break;
             }
         }

@@ -4,6 +4,7 @@ using NLog;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
+using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
@@ -17,10 +18,14 @@ namespace Rhisis.Login
     {
         private const string LoginConfigFile = "config/login.json";
         private const string DatabaseConfigFile = "config/database.json";
+
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        private ISCServer _interServer;
-        
+        /// <summary>
+        /// Gets the ISC server.
+        /// </summary>
+        public static ISCServer InterServer { get; private set; }
+
         /// <summary>
         /// Gets the login sever's configuration.
         /// </summary>
@@ -29,7 +34,7 @@ namespace Rhisis.Login
         /// <summary>
         /// Gets the list of the connected clusters.
         /// </summary>
-        public IEnumerable<ClusterServerInfo> ClustersConnected => this._interServer?.Clusters;
+        public IEnumerable<ClusterServerInfo> ClustersConnected => InterServer?.ClusterServers;
 
         /// <inheritdoc />
         protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
@@ -39,56 +44,7 @@ namespace Rhisis.Login
         /// </summary>
         public LoginServer()
         {
-            Console.Title = "Rhisis - Login Server";
             this.LoadConfiguration();
-        }
-
-        /// <inheritdoc />
-        protected override void Initialize()
-        {
-            PacketHandler<LoginClient>.Initialize();
-
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
-
-            DatabaseService.Configure(databaseConfiguration);
-            if (!DatabaseService.GetContext().DatabaseExists())
-                throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists yet.");
-
-            this._interServer = new ISCServer(this.LoginConfiguration.ISC);
-            this._interServer.Start();
-
-            Logger.Info("Login Server is up.");
-        }
-
-        /// <inheritdoc />
-        protected override void OnClientConnected(LoginClient connection)
-        {
-            Logger.Info("New client connected: {0}", connection.Id);
-            connection.InitializeClient(this);
-        }
-
-        /// <inheritdoc />
-        protected override void OnClientDisconnected(LoginClient connection)
-        {
-            Logger.Info("Client {0} disconnected.", connection.Id);
-        }
-
-        /// <inheritdoc />
-        protected override void OnError(Exception exception)
-        {
-            Logger.Error(exception.Message);
-        }
-        
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (this._interServer != null)
-            {
-                this._interServer.Stop();
-                this._interServer.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
 
         /// <summary>
@@ -96,6 +52,7 @@ namespace Rhisis.Login
         /// </summary>
         private void LoadConfiguration()
         {
+            Logger.Debug("Loading server configuration from '{0}'...", LoginConfigFile);
             this.LoginConfiguration = ConfigurationHelper.Load<LoginConfiguration>(LoginConfigFile, true);
 
             this.Configuration.Host = this.LoginConfiguration.Host;
@@ -103,6 +60,69 @@ namespace Rhisis.Login
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+
+            Logger.Trace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
+                this.Configuration.Host,
+                this.Configuration.Port,
+                this.Configuration.MaximumNumberOfConnections,
+                this.Configuration.Backlog,
+                this.Configuration.BufferSize);
         }
+
+        /// <inheritdoc />
+        protected override void Initialize()
+        {
+            PacketHandler<LoginClient>.Initialize();
+
+            Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
+
+            DatabaseService.Configure(databaseConfiguration);
+            Logger.Trace($"Database config -> {databaseConfiguration}");
+
+            if (!DatabaseService.GetContext().DatabaseExists())
+                throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists.");
+
+            Logger.Info("Starting ISC server...");
+            InterServer = new ISCServer(this.LoginConfiguration.ISC);
+            InterServer.Start();
+
+            //TODO: Implement this log inside OnStarted method when will be available.
+            Logger.Info("Login server is started and listen on {0}:{1}.", this.Configuration.Host, this.Configuration.Port);
+        }
+
+        /// <inheritdoc />
+        protected override void OnClientConnected(LoginClient client)
+        {
+            client.Initialize(this);
+            Logger.Info("New client connected from {0}.", client.RemoteEndPoint);
+            CommonPacketFactory.SendWelcome(client, client.SessionId);
+        }
+
+        /// <inheritdoc />
+        protected override void OnClientDisconnected(LoginClient client)
+        {
+            Logger.Info("Client disconnected from {0}.", client.RemoteEndPoint);
+        }
+
+        /// <inheritdoc />
+        protected override void OnError(Exception exception)
+        {
+            Logger.Error($"Socket error: {exception.Message}");
+        }
+        
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (InterServer != null)
+            {
+                InterServer.Stop();
+                InterServer.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+       
     }
 }
