@@ -11,17 +11,11 @@ namespace Rhisis.World.Game.Chat
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        [ChatCommand("/tp")]
-        [ChatCommand("/teleport")]
+        [ChatCommand("/tp", AuthorityType.GameMaster)]
+        [ChatCommand("/teleport", AuthorityType.GameMaster)]
         public static void TeleportCommand(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to teleport", player.Object.Name);
-
-            if (player.PlayerData.Authority < AuthorityType.GameMaster)
-            {
-                Logger.Warn("{0} used Teleport Command as a non-authorative player.", player.Object.Name);
-                return;
-            }
 
             switch (parameters.Length)
             {

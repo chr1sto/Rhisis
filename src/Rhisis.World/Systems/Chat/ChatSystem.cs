@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.Reflection;
 using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
@@ -16,7 +17,7 @@ namespace Rhisis.World.Systems.Chat
     public class ChatSystem : NotifiableSystemBase
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly IDictionary<string, Action<IPlayerEntity, string[]>> ChatCommands = new Dictionary<string, Action<IPlayerEntity, string[]>>();
+        private static readonly IDictionary<string, Tuple<AuthorityType, Action<IPlayerEntity, string[]>>> ChatCommands = new Dictionary<string, Tuple<AuthorityType, Action<IPlayerEntity, string[]>>>();
 
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player;
@@ -44,8 +45,13 @@ namespace Rhisis.World.Systems.Chat
                 string commandName = chatEvent.Message.Split(' ').FirstOrDefault();
                 string[] commandParameters = GetCommandParameters(chatEvent.Message, commandName);
 
-                if (ChatCommands.ContainsKey(commandName))
-                    ChatCommands[commandName].Invoke(player, commandParameters);
+                if (ChatCommands.TryGetValue(commandName, out var tuple))
+                {
+                    if (player.PlayerData.Authority >= tuple.Item1)
+                        tuple.Item2.Invoke(player, commandParameters);
+                    else
+                        Logger.Warn($"{player.Object.Name} tried to use `{commandName}` command without privileges.");
+                }
                 else
                     Logger.Warn("Unknow chat command '{0}'", commandName);
             }
@@ -84,7 +90,7 @@ namespace Rhisis.World.Systems.Chat
                 {
                     if (!ChatCommands.ContainsKey(attribute.Command))
                     {
-                        ChatCommands.Add(attribute.Command, action);
+                        ChatCommands.Add(attribute.Command, new Tuple<AuthorityType, Action<IPlayerEntity, string[]>>(attribute.MinAuthorization, action));
                     }
                 }
             }

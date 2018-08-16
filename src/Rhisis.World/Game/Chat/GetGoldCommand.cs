@@ -10,16 +10,10 @@ namespace Rhisis.World.Game.Chat
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        [ChatCommand("/getgold")]
+        [ChatCommand("/getgold", AuthorityType.Administrator)]
         public static void GetGoldCommand(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to get penyas", player.Object.Name);
-
-            if (player.PlayerData.Authority != AuthorityType.Administrator)
-            {
-                Logger.Warn("{0} used GetGold Command as a non-authorative player.", player.Object.Name);
-                return;
-            }
 
             if (parameters.Length == 1)
             {

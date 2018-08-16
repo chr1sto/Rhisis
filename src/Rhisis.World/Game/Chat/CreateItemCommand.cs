@@ -14,18 +14,12 @@ namespace Rhisis.World.Game.Chat
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        [ChatCommand("/createitem")]
-        [ChatCommand("/ci")]
-        [ChatCommand("/item")]
+        [ChatCommand("/createitem", AuthorityType.GameMaster)]
+        [ChatCommand("/ci", AuthorityType.GameMaster)]
+        [ChatCommand("/item", AuthorityType.GameMaster)]
         public static void CreateItem(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to create an item", player.Object.Name);
-
-            if (player.PlayerData.Authority != AuthorityType.Administrator)
-            {
-                Logger.Warn("{0} used CreateItem Command as a non-authorative player.", player.Object.Name);
-                return;
-            }
 
             if (parameters.Length <= 0)
             {
