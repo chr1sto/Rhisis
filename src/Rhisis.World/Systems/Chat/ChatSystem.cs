@@ -16,8 +16,32 @@ namespace Rhisis.World.Systems.Chat
     [System]
     public class ChatSystem : NotifiableSystemBase
     {
+        internal sealed class ChatCommand
+        {
+            /// <summary>
+            /// The method to invoke.
+            /// </summary>
+            public Action<IPlayerEntity, string[]> Method { get; }
+
+            /// <summary>
+            /// The Minimum Authorization for this command.
+            /// </summary>
+            public AuthorityType MinAuthorization { get; }
+
+            /// <summary>
+            /// Creates a new <see cref="ChatCommand"/> instance.
+            /// </summary>
+            /// <param name="method"></param>
+            /// <param name="minAuthorization"></param>
+            public ChatCommand(Action<IPlayerEntity, string[]> method, AuthorityType minAuthorization)
+            {
+                Method = method;
+                MinAuthorization = minAuthorization;
+            }
+        }
+
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly IDictionary<string, Tuple<AuthorityType, Action<IPlayerEntity, string[]>>> ChatCommands = new Dictionary<string, Tuple<AuthorityType, Action<IPlayerEntity, string[]>>>();
+        private static readonly IDictionary<string, ChatCommand> ChatCommands = new Dictionary<string, ChatCommand>();
 
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player;
@@ -45,10 +69,10 @@ namespace Rhisis.World.Systems.Chat
                 string commandName = chatEvent.Message.Split(' ').FirstOrDefault();
                 string[] commandParameters = GetCommandParameters(chatEvent.Message, commandName);
 
-                if (ChatCommands.TryGetValue(commandName, out var tuple))
+                if (ChatCommands.TryGetValue(commandName, out var command))
                 {
-                    if (player.PlayerData.Authority >= tuple.Item1)
-                        tuple.Item2.Invoke(player, commandParameters);
+                    if (player.PlayerData.Authority >= command.MinAuthorization)
+                        command.Method.Invoke(player, commandParameters);
                     else
                         Logger.Warn($"{player.Object.Name} tried to use `{commandName}` command without privileges.");
                 }
@@ -90,7 +114,7 @@ namespace Rhisis.World.Systems.Chat
                 {
                     if (!ChatCommands.ContainsKey(attribute.Command))
                     {
-                        ChatCommands.Add(attribute.Command, new Tuple<AuthorityType, Action<IPlayerEntity, string[]>>(attribute.MinAuthorization, action));
+                        ChatCommands.Add(attribute.Command, new ChatCommand(action, attribute.MinAuthorization));
                     }
                 }
             }
