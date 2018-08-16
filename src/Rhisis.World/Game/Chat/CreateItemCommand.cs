@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
@@ -19,6 +20,12 @@ namespace Rhisis.World.Game.Chat
         public static void CreateItem(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to create an item", player.Object.Name);
+
+            if (player.PlayerData.Authority != AuthorityType.Administrator)
+            {
+                Logger.Warn("{0} used CreateItem Command as a non-authorative player.", player.Object.Name);
+                return;
+            }
 
             if (parameters.Length <= 0)
             {

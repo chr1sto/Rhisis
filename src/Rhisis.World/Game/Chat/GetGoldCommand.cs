@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
@@ -13,6 +14,12 @@ namespace Rhisis.World.Game.Chat
         public static void GetGoldCommand(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to get penyas", player.Object.Name);
+
+            if (player.PlayerData.Authority != AuthorityType.Administrator)
+            {
+                Logger.Warn("{0} used GetGold Command as a non-authorative player.", player.Object.Name);
+                return;
+            }
 
             if (parameters.Length == 1)
             {

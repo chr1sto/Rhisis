@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
@@ -15,6 +16,13 @@ namespace Rhisis.World.Game.Chat
         public static void TeleportCommand(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to teleport", player.Object.Name);
+
+            if (player.PlayerData.Authority < AuthorityType.GameMaster)
+            {
+                Logger.Warn("{0} used CreateItem Command as a non-authorative player.", player.Object.Name);
+                return;
+            }
+
             switch (parameters.Length)
             {
                 case 2: // when you write 2 parameters in the command
