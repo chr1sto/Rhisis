@@ -1,6 +1,9 @@
 ﻿using NLog;
+using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
 using System.Linq;
@@ -11,9 +14,9 @@ namespace Rhisis.World.Game.Chat
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        [ChatCommand("/createitem")]
-        [ChatCommand("/ci")]
-        [ChatCommand("/item")]
+        [ChatCommand("/createitem", AuthorityType.Administrator)]
+        [ChatCommand("/ci", AuthorityType.Administrator)]
+        [ChatCommand("/item", AuthorityType.Administrator)]
         public static void CreateItem(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to create an item", player.Object.Name);
@@ -26,7 +29,7 @@ namespace Rhisis.World.Game.Chat
 
             if (!player.Inventory.HasAvailableSlots())
             {
-                // TODO: send message to tell there is no available slots
+                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
 

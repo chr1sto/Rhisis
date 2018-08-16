@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
@@ -10,11 +11,12 @@ namespace Rhisis.World.Game.Chat
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        [ChatCommand("/tp")]
-        [ChatCommand("/teleport")]
+        [ChatCommand("/tp", AuthorityType.GameMaster)]
+        [ChatCommand("/teleport", AuthorityType.GameMaster)]
         public static void TeleportCommand(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to teleport", player.Object.Name);
+
             switch (parameters.Length)
             {
                 case 2: // when you write 2 parameters in the command
