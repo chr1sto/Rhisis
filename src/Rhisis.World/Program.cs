@@ -9,7 +9,7 @@ namespace Rhisis.World
     {
         private const string ProgramTitle = "Rhisis - World Server";
 
-        private static WorldServer _server = null;
+        private static WorldServer _server;
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private static void Main()

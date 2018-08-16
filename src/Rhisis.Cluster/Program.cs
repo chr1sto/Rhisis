@@ -8,7 +8,7 @@ namespace Rhisis.Cluster
     {
         private const string Title = "Rhisis - Cluster Server";
 
-        private static ClusterServer _server = null;
+        private static ClusterServer _server;
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private static void Main()

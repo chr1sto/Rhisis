@@ -8,7 +8,7 @@ namespace Rhisis.Login
     {
         private const string Title = "Rhisis - Login Server";
 
-        private static LoginServer _server = null;
+        private static LoginServer _server;
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private static void Main()
