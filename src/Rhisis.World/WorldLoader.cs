@@ -62,8 +62,7 @@ namespace Rhisis.World
             this.LoadMaps();
             this.CleanUp();
 
-            var time = Profiler.Stop("LoadResources");
-            Logger.Info("Resources loaded in {0}ms", time.ElapsedMilliseconds);
+            Logger.Info("Resources loaded in {0}ms.", Profiler.Stop("LoadResources").ElapsedMilliseconds);
         }
 
         private void LoadDefinesAndTexts()
@@ -88,27 +87,31 @@ namespace Rhisis.World
                 }
             }
 
+            Logger.Info("-> {0} defines loaded.", Defines.Count);
+
             foreach (var textFilePath in textFiles)
             {
                 using (var textFile = new TextFile(textFilePath))
                 {
                     foreach (var text in textFile.Texts)
                     {
-                        if (!Texts.ContainsKey(text.Key) && !string.IsNullOrEmpty(text.Value))
+                        if (!Texts.ContainsKey(text.Key) && text.Value != null)
                             Texts.Add(text);
                     }
                 }
             }
+
+            Logger.Info("-> {0} texts loaded.", Texts.Count);
         }
 
         private void LoadMovers()
         {
-            string propMoverPath = Path.Combine(ResourcePath, "data", "propMover.txt");
-            
-            using (var propMoverFile = new ResourceTable(propMoverPath, 1, Defines, Texts))
+            string propMoverPath = Path.Combine(ResourcePath, "data", "propMover.txt"); //TODO implement file constants.
+
+            using (var propMoverFile = new ResourceTableFile(propMoverPath, 1, Defines, Texts))
             {
                 var movers = propMoverFile.GetRecords<MoverData>();
-                
+
                 foreach (var mover in movers)
                 {
                     if (MoversData.ContainsKey(mover.Id))
@@ -117,14 +120,45 @@ namespace Rhisis.World
                         MoversData.Add(mover.Id, mover);
                 }
             }
-            Logger.Info("{0} movers loaded!\t\t", MoversData.Count);
+
+            Logger.Info("-> {0} movers loaded.", MoversData.Count);
         }
+
+        private void LoadBehaviors()
+        {
+            MonsterBehaviors.Load();
+            NpcBehaviors.Load();
+            PlayerBehaviors.Load();
+
+            Logger.Info("-> {0} behaviors loaded.", 
+                MonsterBehaviors.Count + NpcBehaviors.Count + PlayerBehaviors.Count);
+        }
+
+        private void LoadItems()
+        {
+            string propItemPath = Path.Combine(ResourcePath, "dataSub2", "propItem.txt"); //TODO implement file constants.
+
+            using (var propItem = new ResourceTableFile(propItemPath, 1, Defines, Texts))
+            {
+                var items = propItem.GetRecords<ItemData>();
+
+                foreach (var item in items)
+                {
+                    if (ItemsData.ContainsKey(item.Id))
+                        ItemsData[item.Id] = item;
+                    else
+                        ItemsData.Add(item.Id, item);
+                }
+            }
+
+            Logger.Info("-> {0} items loaded.", ItemsData.Count);
+        }
+
+        
 
         private void LoadNpc()
         {
-            IEnumerable<string> files = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
-                                        where Path.GetFileName(x).StartsWith("character") && x.EndsWith(".inc")
-                                        select x;
+            IEnumerable<string> files = Directory.GetFiles(ResourcePath, "character*.inc", SearchOption.AllDirectories);
 
             this.LoadNpcShops();
             this.LoadNpcDialogs();
@@ -166,7 +200,7 @@ namespace Rhisis.World
                 }
             }
 
-            Logger.Info("{0} npcs loaded!\t\t", NpcData.Count);
+            Logger.Info("-> {0} NPCs loaded.", NpcData.Count);
         }
 
         private void LoadNpcShops()
@@ -245,25 +279,6 @@ namespace Rhisis.World
             }
         }
 
-        private void LoadItems()
-        {
-            string propItemPath = Path.Combine(ResourcePath, "dataSub2", "propItem.txt");
-            
-            using (var propItem = new ResourceTable(propItemPath, 1, Defines, Texts))
-            {
-                var items = propItem.GetRecords<ItemData>();
-
-                foreach (var item in items)
-                {
-                    if (ItemsData.ContainsKey(item.Id))
-                        ItemsData[item.Id] = item;
-                    else
-                        ItemsData.Add(item.Id, item);
-                }
-            }
-            Logger.Info("{0} items loaded!\t\t", ItemsData.Count);
-        }
-
         private void LoadMaps()
         {
             IEnumerable<Type> systemTypes = this.LoadSystems();
@@ -299,7 +314,15 @@ namespace Rhisis.World
                 map.StartUpdateTask(100);
             }
 
-            Logger.Info("{0} maps loaded! \t\t", _maps.Count);
+            Logger.Info("-> {0} maps loaded.", _maps.Count);
+        }
+
+        private void CleanUp()
+        {
+            Defines.Clear();
+            Texts.Clear();
+            ShopData.Clear();
+            GC.Collect();
         }
 
         private IEnumerable<Type> LoadSystems()
@@ -322,25 +345,6 @@ namespace Rhisis.World
             }
 
             return worldsPaths;
-        }
-
-        private void LoadBehaviors()
-        {
-            MonsterBehaviors.Load();
-            NpcBehaviors.Load();
-            PlayerBehaviors.Load();
-
-            int totalBehaviorsLoaded = MonsterBehaviors.Count + NpcBehaviors.Count + PlayerBehaviors.Count;
-
-            Logger.Info("{0} behaviors loaded!\t\t", totalBehaviorsLoaded);
-        }
-
-        private void CleanUp()
-        {
-            Defines.Clear();
-            Texts.Clear();
-            ShopData.Clear();
-            GC.Collect();
         }
     }
 }
