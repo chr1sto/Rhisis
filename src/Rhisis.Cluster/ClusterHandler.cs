@@ -191,10 +191,10 @@ namespace Rhisis.Cluster
         [PacketHandler(PacketType.PRE_JOIN)]
         public static void OnPreJoin(ClusterClient client, INetPacketStream packet)
         {
+            var pak = new PreJoinPacket(packet);
+
             using (var db = DatabaseService.GetContext())
-            if (client.Configuration.EnableLoginProtect)
             {
-                var pak = new PreJoinPacket(packet);
                 Character dbCharacter = db.Characters.Get(pak.CharacterId);
 
                 // Check if character exist.
@@ -216,7 +216,8 @@ namespace Rhisis.Cluster
                 }
 
                 // Check if presented bank code is correct.
-                if (LoginProtect.GetNumPadToPassword(client.LoginProtectValue, pak.BankCode) != dbCharacter.BankCode)
+                if (client.Configuration.EnableLoginProtect &&
+                    LoginProtect.GetNumPadToPassword(client.LoginProtectValue, pak.BankCode) != dbCharacter.BankCode)
                 {
                     Logger.Warn($"Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         "Reason: bad bank code.");
@@ -225,30 +226,11 @@ namespace Rhisis.Cluster
                     return;
                 }
 
+                // Finally, we connect the player.
                 ClusterPacketFactory.SendJoinWorld(client);
                 Logger.Info("Character '{0}' has prejoin successfully the game for user '{1}' from {2}.",
                     dbCharacter.Name, pak.Username, client.RemoteEndPoint);
-            }
-            else
-            {
-                var preJoinPacket = new PreJoinPacket(packet);
-
-                using (var db = DatabaseService.GetContext())
-                {
-                    Character selectedCharacter = db.Characters.Get(preJoinPacket.CharacterId);
-
-                    if (selectedCharacter == null)
-                    {
-                        Logger.Error("Cannot find character '{0}' with id {1} in database.", preJoinPacket.CharacterName, preJoinPacket.CharacterId);
-                        return;
-                    }
-
-                    if (!selectedCharacter.User.Username.Equals(preJoinPacket.Username, StringComparison.OrdinalIgnoreCase))
-                        return;
-                    
-                    ClusterPacketFactory.SendJoinWorld(client);
-                }
-            }
+            }     
         }
     }
 }
