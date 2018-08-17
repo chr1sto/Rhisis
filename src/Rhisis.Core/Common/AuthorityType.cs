@@ -1,10 +1,10 @@
 ﻿namespace Rhisis.Core.Common
 {
-    public enum AuthorityType
+    public enum AuthorityType : byte
     {
         Banned = 0,
-        Player = 70,
-        GameMaster = 80,
-        Administrator = 100
+        Player = (byte)'F',
+        GameMaster = (byte)'L',
+        Administrator = (byte)'P'
     }
 }
