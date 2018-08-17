@@ -13,9 +13,7 @@ namespace Rhisis.World.Game.Behaviors
         private void UpdateFollowState(IPlayerEntity entity)
         {
             if (entity.Follow.IsFollowing)
-            {
                 entity.MovableComponent.DestinationPosition = entity.Follow.Target.Object.Position.Clone();
-            }
         }
     }
 }

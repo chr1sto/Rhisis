@@ -66,7 +66,7 @@ namespace Rhisis.Core.Resources.Include
                         block.AddStatement(this.ParseVariable());
                         break;
                     default:
-                        block.AddUnknowStatement(token);
+                        block.AddUnknownStatement(token);
                         break;
                 }
             }

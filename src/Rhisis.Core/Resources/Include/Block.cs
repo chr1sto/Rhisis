@@ -7,7 +7,7 @@ namespace Rhisis.Core.Resources.Include
     public class Block : IStatement, IDisposable
     {
         private readonly ICollection<IStatement> _statements;
-        private readonly ICollection<string> _unknowStatements;
+        private readonly ICollection<string> _unknownStatements;
 
         public string Name { get; set; }
 
@@ -15,7 +15,7 @@ namespace Rhisis.Core.Resources.Include
 
         public IReadOnlyCollection<IStatement> Statements => this._statements as IReadOnlyCollection<IStatement>;
 
-        public IReadOnlyCollection<string> UnknowStatements => this._unknowStatements as IReadOnlyCollection<string>;
+        public IReadOnlyCollection<string> UnknownStatements => this._unknownStatements as IReadOnlyCollection<string>;
 
         public Block this[string blockName] => this.GetBlockByName(blockName);
 
@@ -28,7 +28,7 @@ namespace Rhisis.Core.Resources.Include
         {
             this.Name = name;
             this._statements = new List<IStatement>();
-            this._unknowStatements = new List<string>();
+            this._unknownStatements = new List<string>();
         }
 
         public Block GetBlockByName(string name) => this.GetStatement(name, StatementType.Block) as Block;
@@ -41,7 +41,7 @@ namespace Rhisis.Core.Resources.Include
 
         internal void AddStatement(IStatement statement) => this._statements.Add(statement);
 
-        internal void AddUnknowStatement(string statement) => this._unknowStatements.Add(statement);
+        internal void AddUnknownStatement(string statement) => this._unknownStatements.Add(statement);
 
         public void Dispose()
         {
