@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.DependencyInjection;
 
 namespace Rhisis.Admin
 {
@@ -27,6 +27,8 @@ namespace Rhisis.Admin
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            DependencyContainer.Instance.Initialize(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

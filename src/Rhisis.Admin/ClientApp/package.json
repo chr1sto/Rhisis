@@ -1,7 +1,7 @@
 {
   "name": "rhisis-admin",
   "version": "1.0.0",
-  "license": "MIT",
+  "license": "GNU",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
