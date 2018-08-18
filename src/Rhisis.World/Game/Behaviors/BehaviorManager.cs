@@ -6,6 +6,11 @@ using System.Reflection;
 
 namespace Rhisis.World.Game.Behaviors
 {
+
+    /// <summary>
+    /// Manage the behavior of an entity.
+    /// </summary>
+    /// <typeparam name="T">Entity type.</typeparam>
     public sealed class BehaviorManager<T> : IDisposable where T : IEntity
     {
         private readonly BehaviorType _behaviorType;
@@ -54,7 +59,7 @@ namespace Rhisis.World.Game.Behaviors
                         {
                             if (this.DefaultBehavior == null)
                                 this.DefaultBehavior = behavior;
-                            else throw new InvalidOperationException($"Default behavior already set for type '{this._behaviorType.ToString()}'");
+                            else throw new InvalidOperationException($"Default behavior is already set for type '{this._behaviorType.ToString()}'.");
                         }
                         else
                         {
@@ -65,7 +70,7 @@ namespace Rhisis.World.Game.Behaviors
             }
 
             if (this.DefaultBehavior == null)
-                throw new InvalidOperationException($"Default behavior not set for type '{this._behaviorType.ToString()}'");
+                throw new InvalidOperationException($"Default behavior is not set for type '{this._behaviorType.ToString()}'.");
         }
 
         /// <summary>

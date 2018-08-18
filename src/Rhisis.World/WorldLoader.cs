@@ -17,8 +17,20 @@ namespace Rhisis.World
 {
     public partial class WorldServer
     {
+        // Paths
         private static readonly string DataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
+        private static readonly string DialogsPath = Path.Combine(DataPath, "dialogs");
         private static readonly string ResourcePath = Path.Combine(DataPath, "res");
+        private static readonly string MapsPath = Path.Combine(DataPath, "maps");
+        private static readonly string ShopsPath = Path.Combine(DataPath, "shops");
+        private static readonly string DataSub0Path = Path.Combine(ResourcePath, "data");
+        private static readonly string DataSub1Path = Path.Combine(ResourcePath, "dataSub1");
+        private static readonly string DataSub2Path = Path.Combine(ResourcePath, "dataSub2");
+        private static readonly string MoversPropPath = Path.Combine(DataSub0Path, "propMover.txt");
+        private static readonly string ItemsPropPath = Path.Combine(DataSub2Path, "propItem.txt");
+        private static readonly string WorldScriptPath = Path.Combine(DataSub0Path, "World.inc");
+
+        // Dictionary
         private static readonly IDictionary<string, int> Defines = new Dictionary<string, int>();
         private static readonly IDictionary<string, string> Texts = new Dictionary<string, string>();
         private static readonly IDictionary<int, MoverData> MoversData = new Dictionary<int, MoverData>();
@@ -27,9 +39,15 @@ namespace Rhisis.World
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
         private static readonly IDictionary<string, DialogData> DialogData = new Dictionary<string, DialogData>();
 
+        // Managers
         public static readonly BehaviorManager<Game.Entities.IMonsterEntity> MonsterBehaviors = new BehaviorManager<Game.Entities.IMonsterEntity>(BehaviorType.Monster);
         public static readonly BehaviorManager<Game.Entities.INpcEntity> NpcBehaviors = new BehaviorManager<Game.Entities.INpcEntity>(BehaviorType.Npc);
         public static readonly BehaviorManager<Game.Entities.IPlayerEntity> PlayerBehaviors = new BehaviorManager<Game.Entities.IPlayerEntity>(BehaviorType.Player);
+
+        // Logs messages
+        private const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
+        private const string ObjectIgnoredMessage = "{0} id '{1}' was ignored. Reason: {2}.";
+        private const string ObjectOverridedMessage = "{0} id '{1}' was overrided. Reason: {2}.";
 
         /// <summary>
         /// Gets the Movers data.
@@ -58,12 +76,13 @@ namespace Rhisis.World
             this.LoadMovers();
             this.LoadBehaviors();
             this.LoadItems();
+            this.LoadShops();
+            this.LoadDialogs();
             this.LoadNpc();
             this.LoadMaps();
             this.CleanUp();
 
-            var time = Profiler.Stop("LoadResources");
-            Logger.Info("Resources loaded in {0}ms", time.ElapsedMilliseconds);
+            Logger.Info("Resources loaded in {0}ms.", Profiler.Stop("LoadResources").ElapsedMilliseconds);
         }
 
         private void LoadDefinesAndTexts()
@@ -82,11 +101,20 @@ namespace Rhisis.World
                 {
                     foreach (var define in defineFile.Defines)
                     {
-                        if (!Defines.ContainsKey(define.Key) && define.Value is int)
-                            Defines.Add(define.Key, int.Parse(define.Value.ToString()));
+                        var isIntValue = int.TryParse(define.Value.ToString(), out int intValue);
+
+                        if (isIntValue && !Defines.ContainsKey(define.Key))
+                            Defines.Add(define.Key, intValue);
+                        else
+                        {
+                            Logger.Warn(ObjectIgnoredMessage, "Define", define.Key,
+                                isIntValue ? "already declared" : $"'{define.Value}' is not a integer value");
+                        }
                     }
                 }
             }
+
+            Logger.Info("-> {0} defines found.", Defines.Count);
 
             foreach (var textFilePath in textFiles)
             {
@@ -94,92 +122,93 @@ namespace Rhisis.World
                 {
                     foreach (var text in textFile.Texts)
                     {
-                        if (!Texts.ContainsKey(text.Key) && !string.IsNullOrEmpty(text.Value))
+                        if (!Texts.ContainsKey(text.Key) && text.Value != null)
                             Texts.Add(text);
+                        else
+                        {
+                            Logger.Warn(ObjectIgnoredMessage, "Text", text.Key,
+                                (text.Value == null) ? "cannot get the value" : "already declared");
+                        }
                     }
                 }
             }
+
+            Logger.Info("-> {0} texts found.", Texts.Count);
         }
 
         private void LoadMovers()
         {
-            string propMoverPath = Path.Combine(ResourcePath, "data", "propMover.txt");
-            
-            using (var propMoverFile = new ResourceTable(propMoverPath, 1, Defines, Texts))
+            if (!File.Exists(MoversPropPath))
             {
-                var movers = propMoverFile.GetRecords<MoverData>();
-                
+                Logger.Warn("Unable to load movers. Reason: cannot find '{0}' file.", MoversPropPath);
+                return;
+            }
+
+            using (var moversPropFile = new ResourceTableFile(MoversPropPath, 1, Defines, Texts))
+            {
+                var movers = moversPropFile.GetRecords<MoverData>();
+
                 foreach (var mover in movers)
                 {
                     if (MoversData.ContainsKey(mover.Id))
+                    {
                         MoversData[mover.Id] = mover;
+                        Logger.Warn(ObjectOverridedMessage, "Mover", mover.Id, "already declared");
+                    }
                     else
                         MoversData.Add(mover.Id, mover);
                 }
             }
-            Logger.Info("{0} movers loaded!\t\t", MoversData.Count);
+
+            Logger.Info("-> {0} movers loaded.", MoversData.Count);
         }
 
-        private void LoadNpc()
+        private void LoadBehaviors()
         {
-            IEnumerable<string> files = from x in Directory.GetFiles(ResourcePath, "*.*", SearchOption.AllDirectories)
-                                        where Path.GetFileName(x).StartsWith("character") && x.EndsWith(".inc")
-                                        select x;
+            MonsterBehaviors.Load();
+            NpcBehaviors.Load();
+            PlayerBehaviors.Load();
 
-            this.LoadNpcShops();
-            this.LoadNpcDialogs();
-
-            foreach (string file in files)
-            {
-                using (var npcFile = new IncludeFile(file))
-                {
-                    foreach (IStatement npcStatement in npcFile.Statements)
-                    {
-                        if (!(npcStatement is Block npcBlock))
-                            continue;
-
-                        string npcId = npcStatement.Name;
-                        string npcName = npcId;
-
-                        foreach (IStatement npcInfoStatement in npcBlock.Statements)
-                        {
-                            if (npcInfoStatement is Instruction instruction && npcInfoStatement.Name == "SetName")
-                            {
-                                if (instruction.Parameters.Count > 0 && 
-                                    Texts.TryGetValue(instruction.Parameters.First().ToString(), out string value))
-                                {
-                                    npcName = value;
-                                }
-                            }
-                        }
-
-                        ShopData.TryGetValue(npcId, out ShopData shop);
-                        DialogData.TryGetValue(npcId, out DialogData dialog);
-
-                        var newNpc = new NpcData(npcId, npcName, shop, dialog);
-
-                        if (!NpcData.ContainsKey(newNpc.Id))
-                            NpcData.Add(newNpc.Id, newNpc);
-                        else
-                            NpcData[newNpc.Id] = newNpc;
-                    }
-                }
-            }
-
-            Logger.Info("{0} npcs loaded!\t\t", NpcData.Count);
+            Logger.Info("-> {0} behaviors loaded.", 
+                MonsterBehaviors.Count + NpcBehaviors.Count + PlayerBehaviors.Count);
         }
 
-        private void LoadNpcShops()
+        private void LoadItems()
         {
-            string shopsPath = Path.Combine(DataPath, "shops");
-
-            if (!Directory.Exists(shopsPath))
+            if (!File.Exists(ItemsPropPath))
             {
-                Logger.Warn("Cannot find {0} directory.", shopsPath);
+                Logger.Warn("Unable to load items. Reason: cannot find '{0}' file.", ItemsPropPath);
                 return;
             }
 
-            string[] shopsFiles = Directory.GetFiles(shopsPath);
+            using (var propItem = new ResourceTableFile(ItemsPropPath, 1, Defines, Texts))
+            {
+                var items = propItem.GetRecords<ItemData>();
+
+                foreach (var item in items)
+                {
+                    if (ItemsData.ContainsKey(item.Id))
+                    {
+                        ItemsData[item.Id] = item;
+                        Logger.Warn(ObjectOverridedMessage, "Item", item.Id, "already declared");
+                    } 
+                    else
+                        ItemsData.Add(item.Id, item);
+                }
+            }
+
+            Logger.Info("-> {0} items loaded.", ItemsData.Count);
+        }
+
+        private void LoadShops()
+        {
+            if (!Directory.Exists(ShopsPath))
+            {
+                Logger.Warn("Unable to load shops. Reason: cannot find '{0}' directory.", ShopsPath);
+                return;
+            }
+
+            string[] shopsFiles = Directory.GetFiles(ShopsPath);
 
             foreach (string shopFile in shopsFiles)
             {
@@ -194,30 +223,39 @@ namespace Rhisis.World
                     var shops = shopsParsed.ToObject<ShopData[]>();
 
                     foreach (ShopData shop in shops)
-                        if (!ShopData.ContainsKey(shop.Name))
+                    {
+                        if (ShopData.ContainsKey(shop.Name))
+                            Logger.Debug(ObjectIgnoredMessage, "Shop", shop.Name, "already declared");
+                        else
                             ShopData.Add(shop.Name, shop);
+                    }
+                        
                 }
                 else
                 {
                     var shop = shopsParsed.ToObject<ShopData>();
 
-                    if (!ShopData.ContainsKey(shop.Name))
+                    if (ShopData.ContainsKey(shop.Name))
+                        Logger.Debug(ObjectIgnoredMessage, "Shop", shop.Name, "already declared");
+                    else
                         ShopData.Add(shop.Name, shop);
                 }
             }
+
+            Logger.Info("-> {0} shops loaded.", ShopData.Count);
         }
 
-        private void LoadNpcDialogs()
+        private void LoadDialogs()
         {
-            string dialogsPath = Path.Combine(DataPath, "dialogs", this.WorldConfiguration.Language);
+            string currentDialogsPath = Path.Combine(DialogsPath, this.WorldConfiguration.Language);
 
-            if (!Directory.Exists(dialogsPath))
+            if (!Directory.Exists(currentDialogsPath))
             {
-                Logger.Warn("Cannot find {0} directory.", dialogsPath);
+                Logger.Warn("Unable to load dialogs. Reason: cannot find '{0}' directory.", currentDialogsPath);
                 return;
             }
 
-            string[] dialogFiles = Directory.GetFiles(dialogsPath);
+            string[] dialogFiles = Directory.GetFiles(currentDialogsPath);
 
             foreach (string dialogFile in dialogFiles)
             {
@@ -232,36 +270,77 @@ namespace Rhisis.World
                     var dialogs = dialogsParsed.ToObject<DialogData[]>();
 
                     foreach (DialogData dialog in dialogs)
-                        if (!DialogData.ContainsKey(dialog.Name))
+                    {
+                        if (DialogData.ContainsKey(dialog.Name))
+                            Logger.Debug(ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
+                        else
                             DialogData.Add(dialog.Name, dialog);
+                    }
                 }
                 else
                 {
                     var dialog = dialogsParsed.ToObject<DialogData>();
 
-                    if (!DialogData.ContainsKey(dialog.Name))
+                    if (DialogData.ContainsKey(dialog.Name))
+                        Logger.Debug(ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
+                    else
                         DialogData.Add(dialog.Name, dialog);
                 }
             }
+
+            Logger.Info("-> {0} dialogs loaded.", DialogData.Count);
         }
 
-        private void LoadItems()
+        private void LoadNpc()
         {
-            string propItemPath = Path.Combine(ResourcePath, "dataSub2", "propItem.txt");
-            
-            using (var propItem = new ResourceTable(propItemPath, 1, Defines, Texts))
-            {
-                var items = propItem.GetRecords<ItemData>();
+            IEnumerable<string> files = Directory.GetFiles(ResourcePath, "character*.inc", SearchOption.AllDirectories);
 
-                foreach (var item in items)
+            foreach (string file in files)
+            {
+                using (var npcFile = new IncludeFile(file))
                 {
-                    if (ItemsData.ContainsKey(item.Id))
-                        ItemsData[item.Id] = item;
-                    else
-                        ItemsData.Add(item.Id, item);
+                    foreach (IStatement npcStatement in npcFile.Statements)
+                    {
+                        if (!(npcStatement is Block npcBlock))
+                            continue;
+
+                        string npcId = npcStatement.Name;
+                        string npcName = npcId;
+
+                        // We gets the npc name.
+                        foreach (IStatement npcInfoStatement in npcBlock.Statements)
+                        {
+                            if (npcInfoStatement is Instruction instruction && npcInfoStatement.Name == "SetName")
+                            {
+                                if (instruction.Parameters.Count > 0 &&
+                                    Texts.TryGetValue(instruction.Parameters.First().ToString(), out string value))
+                                {
+                                    npcName = value;
+                                }
+                            }
+                        }
+
+                        //TODO: implement other npc settings (image, music, actions...)
+                        //      + constants for statement (like SetName)
+
+                        // We gets shop and dialog  of this npc.
+                        ShopData.TryGetValue(npcId, out ShopData npcShop);
+                        DialogData.TryGetValue(npcId, out DialogData npcDialog);
+
+                        var npc = new NpcData(npcId, npcName, npcShop, npcDialog);
+
+                        if (NpcData.ContainsKey(npc.Id))
+                        {
+                            NpcData[npc.Id] = npc;
+                            Logger.Warn(ObjectOverridedMessage, "NPC", npc.Id, "already declared");
+                        }
+                        else
+                            NpcData.Add(npc.Id, npc);
+                    }
                 }
             }
-            Logger.Info("{0} items loaded!\t\t", ItemsData.Count);
+
+            Logger.Info("-> {0} NPCs loaded.", NpcData.Count);
         }
 
         private void LoadMaps()
@@ -269,42 +348,49 @@ namespace Rhisis.World
             IEnumerable<Type> systemTypes = this.LoadSystems();
             IReadOnlyDictionary<string, string> worldsPaths = this.LoadWorldScript();
 
-            foreach (string mapId in this.WorldConfiguration.Maps)
+            foreach (string mapDefineName in this.WorldConfiguration.Maps)
             {
-                if (!worldsPaths.TryGetValue(mapId, out string mapName))
+                if (!worldsPaths.TryGetValue(mapDefineName, out string mapName))
                 {
-                    Logger.Warn("Cannot load map with Id: {0}. Please check your world script file.", mapId);
+                    Logger.Warn(UnableLoadMapMessage, mapDefineName, $"map is not declared inside '{WorldScriptPath}' file");
                     continue;
                 }
 
-                if (!Defines.TryGetValue(mapId, out int id))
+                if (!Defines.TryGetValue(mapDefineName, out int mapId))
                 {
-                    Logger.Warn("Cannot find map Id in define files: {0}. Please check you defineWorld.h file.",
-                        mapId);
+                    Logger.Warn(UnableLoadMapMessage, mapDefineName, $"map has no define id inside '{DataSub0Path}/defineWorld.h' file");
                     continue;
                 }
 
-                IMapInstance map = MapInstance.Create(Path.Combine(DataPath, "maps", mapName), mapName, id);
-
-                if (_maps.ContainsKey(id))
+                if (_maps.ContainsKey(mapId))
                 {
-                    Logger.Error("Cannot create map {0} with id {1} because it already exist.", mapName, id);
+                    Logger.Warn(UnableLoadMapMessage, mapDefineName, $"another map with id '{mapId}' already exist.");
                     continue;
                 }
-                
+
+                IMapInstance map = MapInstance.Create(Path.Combine(MapsPath, mapName), mapName, mapId);
+
                 foreach (Type type in systemTypes)
                     map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
 
-                _maps.Add(id, map);
+                _maps.Add(mapId, map);
                 map.StartUpdateTask(100);
             }
 
-            Logger.Info("{0} maps loaded! \t\t", _maps.Count);
+            Logger.Info("-> {0} maps loaded.", _maps.Count);
+        }
+
+        private void CleanUp()
+        {
+            Defines.Clear();
+            Texts.Clear();
+            ShopData.Clear();
+            GC.Collect();
         }
 
         private IEnumerable<Type> LoadSystems()
         {
-            ChatSystem.InitializeCommands();
+            ChatSystem.Initialize();
 
             return Assembly.GetExecutingAssembly()
                 .GetTypes()
@@ -315,32 +401,13 @@ namespace Rhisis.World
         {
             var worldsPaths = new Dictionary<string, string>();
 
-            using (var textFile = new TextFile(Path.Combine(ResourcePath, "data", "World.inc")))
+            using (var textFile = new TextFile(WorldScriptPath))
             {
                 foreach (var text in textFile.Texts)
                     worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
             }
 
             return worldsPaths;
-        }
-
-        private void LoadBehaviors()
-        {
-            MonsterBehaviors.Load();
-            NpcBehaviors.Load();
-            PlayerBehaviors.Load();
-
-            int totalBehaviorsLoaded = MonsterBehaviors.Count + NpcBehaviors.Count + PlayerBehaviors.Count;
-
-            Logger.Info("{0} behaviors loaded!\t\t", totalBehaviorsLoaded);
-        }
-
-        private void CleanUp()
-        {
-            Defines.Clear();
-            Texts.Clear();
-            ShopData.Clear();
-            GC.Collect();
         }
     }
 }

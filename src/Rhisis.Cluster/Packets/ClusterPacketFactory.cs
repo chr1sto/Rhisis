@@ -72,7 +72,7 @@ namespace Rhisis.Cluster.Packets
                     packet.Write(character.Gender);
                     packet.Write(character.ClassId);
                     packet.Write(character.Level);
-                    packet.Write(0); // Job Level (Maybe master of hero ?)
+                    packet.Write(0); // Job Level (Maybe master or hero ?)
                     packet.Write(character.Strength);
                     packet.Write(character.Stamina);
                     packet.Write(character.Dexterity);

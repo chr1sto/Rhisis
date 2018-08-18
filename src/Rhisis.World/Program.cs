@@ -7,8 +7,10 @@ namespace Rhisis.World
 {
     public static class Program
     {
-        private const string ProgramTitle = "Rhisis - WorldServer";
+        private const string ProgramTitle = "Rhisis - World Server";
+
         private static WorldServer _server;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private static void Main()
         {
@@ -22,20 +24,15 @@ namespace Rhisis.World
 
             try
             {
+                Logger.Info("Starting World server...");
+
                 _server = new WorldServer();
                 _server.Start();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-#if DEBUG
-                Console.WriteLine(e.StackTrace);
-#endif
-            }
-            finally
-            {
-                _server.Dispose();
-                LogManager.Shutdown();
+                Logger.Fatal(e);
+                Console.ReadLine();
             }
         }
 

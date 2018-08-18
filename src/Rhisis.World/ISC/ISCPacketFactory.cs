@@ -6,22 +6,21 @@ using Rhisis.Core.Structures.Configuration;
 
 namespace Rhisis.World.ISC
 {
-    public static class ISCPackets
+    public static class ISCPacketFactory
     {
-        public static void SendAuthentication(INetClient connection, WorldConfiguration worldConfiguration)
+        public static void SendAuthentication(INetClient client, WorldConfiguration worldConfiguration)
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)InterPacketType.Authentication);
+                packet.Write((uint)ISCPacketType.AUTHENT);
                 packet.Write(worldConfiguration.Id);
                 packet.Write(worldConfiguration.Host);
                 packet.Write(worldConfiguration.Name);
-                packet.Write((byte)InterServerType.World);
+                packet.Write((byte)ISCServerType.World);
                 packet.Write(worldConfiguration.ClusterId);
 
-                // TODO: add more information to packet if needed
-
-                connection.Send(packet);
+                // TODO: add more information to packet if needed.
+                client.Send(packet);
             }
         }
     }

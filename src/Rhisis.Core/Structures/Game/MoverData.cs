@@ -3,7 +3,7 @@
 namespace Rhisis.Core.Structures.Game
 {
     /// <summary>
-    /// Represents a Mover data structure from the mover.txt resource file from the data.res.
+    /// Represents a Mover data structure from the propMover.txt resource file from the data.res.
     /// </summary>
     [DataContract]
     public class MoverData

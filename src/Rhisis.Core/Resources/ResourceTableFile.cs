@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhisis.Core.IO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,9 +9,9 @@ using System.Runtime.Serialization;
 namespace Rhisis.Core.Resources
 {
     /// <summary>
-    /// Represents the FlyFF Resource table parser (files such as propItem.txt, propMover.txt, etc...)
+    /// Represents the FlyFF Resource table parser (files such as propItem.txt, propMover.txt, etc...).
     /// </summary>
-    public class ResourceTable : FileStream, IDisposable
+    public class ResourceTableFile : FileStream, IDisposable
     {
         private readonly IDictionary<string, int> _defines;
         private readonly IDictionary<string, string> _texts;
@@ -18,44 +19,44 @@ namespace Rhisis.Core.Resources
         private readonly IList<IEnumerable<string>> _datas;
         private readonly StreamReader _reader;
 
-        private readonly int _headerIndex;
+        private readonly int _headerLineIndex;
 
         /// <summary>
-        /// Gets the amount of valid data within the <see cref="ResourceTable"/>.
+        /// Gets the amount of valid data within the <see cref="ResourceTableFile"/>.
         /// </summary>
         public int Count => this._datas.Count;
 
         /// <summary>
-        /// Creates a new <see cref="ResourceTable"/> instance.
+        /// Creates a new <see cref="ResourceTableFile"/> instance.
         /// </summary>
         /// <param name="path">Resource path</param>
-        public ResourceTable(string path)
+        public ResourceTableFile(string path)
             : this(path, 0, null, null)
         {
         }
 
         /// <summary>
-        /// Creates a new <see cref="ResourceTable"/> instance.
+        /// Creates a new <see cref="ResourceTableFile"/> instance.
         /// </summary>
         /// <param name="path">Resource path</param>
         /// <param name="headerIndex">Header index in file</param>
-        public ResourceTable(string path, int headerIndex)
+        public ResourceTableFile(string path, int headerIndex)
             : this(path, headerIndex, null, null)
         {
         }
 
         /// <summary>
-        /// Creates a new <see cref="ResourceTable"/> instance.
+        /// Creates a new <see cref="ResourceTableFile"/> instance.
         /// </summary>
-        /// <param name="path">Resource path</param>
-        /// <param name="headerIndex">Header index in file</param>
-        /// <param name="defines">Defines used to transform</param>
-        /// <param name="texts">Texts used to transform</param>
-        public ResourceTable(string path, int headerIndex, IDictionary<string, int> defines, IDictionary<string, string> texts)
+        /// <param name="path">Resource file path</param>
+        /// <param name="headerLineIndex">Header index line in file.</param>
+        /// <param name="defines">Defines used to transform.</param>
+        /// <param name="texts">Texts used to transform.</param>
+        public ResourceTableFile(string path, int headerLineIndex, IDictionary<string, int> defines, IDictionary<string, string> texts)
             : base(path, FileMode.Open, FileAccess.Read)
         {
             this._reader = new StreamReader(this);
-            this._headerIndex = headerIndex;
+            this._headerLineIndex = headerLineIndex;
             this._defines = defines;
             this._texts = texts;
             this._headers = this.ReadHeader();
@@ -88,9 +89,7 @@ namespace Rhisis.Core.Resources
                         object value = record.ElementAt(index);
 
                         if (property.PropertyType.BaseType == typeof(Enum))
-                        {
                             value = Enum.ToObject(property.PropertyType, Convert.ToInt32(value));
-                        }
 
                         property.SetValue(obj, Convert.ChangeType(value, property.PropertyType));
                     }
@@ -103,12 +102,12 @@ namespace Rhisis.Core.Resources
         }
 
         /// <summary>
-        /// Reads and returns a list with the <see cref="ResourceTable"/> headers.
+        /// Reads and returns a list with the <see cref="ResourceTableFile"/> headers.
         /// </summary>
         /// <returns></returns>
         private IList<string> ReadHeader()
         {
-            for (int i = 0; i < this._headerIndex; i++)
+            for (int i = 0; i < this._headerLineIndex; i++)
                 this._reader.ReadLine();
 
             return this._reader.ReadLine()
@@ -118,7 +117,7 @@ namespace Rhisis.Core.Resources
         }
 
         /// <summary>
-        /// Reads the content of the <see cref="ResourceTable"/>.
+        /// Reads the content of the <see cref="ResourceTableFile"/>.
         /// </summary>
         private void ReadContent()
         {
@@ -126,10 +125,10 @@ namespace Rhisis.Core.Resources
             {
                 string line = this._reader.ReadLine();
 
-                if (!string.IsNullOrEmpty(line) && !line.StartsWith("//"))
+                if (!string.IsNullOrEmpty(line) && !line.StartsWith(FileTokenScanner.SingleLineComment))
                 {
-                    if (line.Contains("//"))
-                        line = line.Remove(line.IndexOf("//"));
+                    if (line.Contains(FileTokenScanner.SingleLineComment))
+                        line = line.Remove(line.IndexOf(FileTokenScanner.SingleLineComment));
 
                     line = line.Replace(",,", ",=,").Replace(",", "\t");
                     string[] content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -158,7 +157,10 @@ namespace Rhisis.Core.Resources
             else if (this._texts != null && this._texts.ContainsKey(data))
                 return this._texts[data];
 
-            return data.Replace("=", "0").Replace(",", ".").Replace("\"", "");
+            return data
+                .Replace("=", "0")
+                .Replace(",", ".")
+                .Replace("\"", string.Empty);
         }
 
         /// <summary>

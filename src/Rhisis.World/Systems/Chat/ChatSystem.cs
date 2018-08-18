@@ -42,6 +42,7 @@ namespace Rhisis.World.Systems.Chat
 
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private static readonly IDictionary<string, ChatCommandDefinition> ChatCommands = new Dictionary<string, ChatCommandDefinition>();
+        private const string MsgUnableExecuteCmd = "Unable to execute chat command '{0}' for player '{1}'. Reason: {2}.";
 
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player;
@@ -60,7 +61,6 @@ namespace Rhisis.World.Systems.Chat
         {
             if (!(e is ChatEventArgs chatEvent) || !(entity is IPlayerEntity player))
                 return;
-            
             if (!chatEvent.CheckArguments())
                 return;
 
@@ -71,13 +71,16 @@ namespace Rhisis.World.Systems.Chat
 
                 if (ChatCommands.TryGetValue(commandName, out var command))
                 {
-                    if (player.PlayerData.Authority >= command.MinAuthorization)
-                        command.Method.Invoke(player, commandParameters);
+                    if (player.PlayerData.Authority < command.MinAuthorization)
+                        Logger.Warn(MsgUnableExecuteCmd, commandName, player.Object.Name, "player has no privileges");
                     else
-                        Logger.Warn($"{player.Object.Name} tried to use `{commandName}` command without privileges.");
+                    {
+                        command.Method.Invoke(player, commandParameters);
+                        Logger.Info("Command '{0}' executed for player '{1}'.");
+                    }
                 }
                 else
-                    Logger.Warn("Unknow chat command '{0}'", commandName);
+                    Logger.Warn(MsgUnableExecuteCmd, commandName, player.Object.Name, "unknown command");
             }
             else
             {
@@ -99,9 +102,9 @@ namespace Rhisis.World.Systems.Chat
         }
 
         /// <summary>
-        /// Initialize chat commands.
+        /// Initialize the system.
         /// </summary>
-        public static void InitializeCommands()
+        public static void Initialize()
         {
             IEnumerable<MethodInfo> chatCommandsMethods = ReflectionHelper.GetMethodsWithAttributes<ChatCommandAttribute>();
 
@@ -113,9 +116,7 @@ namespace Rhisis.World.Systems.Chat
                 foreach (ChatCommandAttribute attribute in chatComandAttributes)
                 {
                     if (!ChatCommands.ContainsKey(attribute.Command))
-                    {
                         ChatCommands.Add(attribute.Command, new ChatCommandDefinition(action, attribute.MinAuthorization));
-                    }
                 }
             }
         }

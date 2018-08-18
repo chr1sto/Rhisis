@@ -2,7 +2,7 @@
 
 namespace Rhisis.World.Game.Components
 {
-    public class PlayerComponent
+    public class PlayerDataComponent
     {
         public int Id { get; set; }
 

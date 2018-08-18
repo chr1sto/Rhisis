@@ -6,31 +6,28 @@ namespace Rhisis.Login
 {
     public static class Program
     {
-        private const string ProgramTitle = "Rhisis - LoginServer";
+        private const string Title = "Rhisis - Login Server";
+
         private static LoginServer _server;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private static void Main()
         {
-            Console.Title = ProgramTitle;
+            Console.Title = Title;
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
             EncodingUtilities.Initialize();
 
             try
             {
+                Logger.Info("Starting Login server...");
+
                 _server = new LoginServer();
                 _server.Start();
             }
             catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-#if DEBUG
-                Console.WriteLine(e.StackTrace);
-#endif
-            }
-            finally
-            {
-                _server.Dispose();
-                LogManager.Shutdown();
+            { 
+                Logger.Fatal(e);
+                Console.ReadLine();
             }
         }
 

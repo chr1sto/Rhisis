@@ -14,7 +14,7 @@ namespace Rhisis.World.Game.Entities
         public VisualAppearenceComponent VisualAppearance { get; set; }
 
         /// <inheritdoc />
-        public PlayerComponent PlayerData { get; set; }
+        public PlayerDataComponent PlayerData { get; set; }
 
         /// <inheritdoc />
         public MovableComponent MovableComponent { get; set; }

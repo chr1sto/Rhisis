@@ -50,9 +50,9 @@ namespace Rhisis.World.Game.Core
         /// <inheritdoc />
         public int GetHashCode(IEntity obj)
         {
-            var hashCode = 181846194;
+            var hashCode = 181846194; //TODO: implement constant and explain this number.
 
-            hashCode *= -1521134295 + EqualityComparer<IEntity>.Default.GetHashCode(this);
+            hashCode *= -1521134295 + EqualityComparer<IEntity>.Default.GetHashCode(this); //TODO: implement constant and explain this number.
 
             return hashCode;
         }

@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace Rhisis.Core.IO
 {
-    public class TokenScanner : IDisposable
+    public class FileTokenScanner : IDisposable
     {
-        private static readonly string SingleLineComment = "//";
-        private static readonly string MultiLineCommentBegin = "/*";
-        private static readonly string MultiLineCommentEnd = "*/";
+        public static readonly string SingleLineComment = "//";
+        public static readonly string MultiLineCommentBegin = "/*";
+        public static readonly string MultiLineCommentEnd = "*/";
         private static readonly char[] SplitCharacters = { '\n', '\r' };
 
         private readonly string _filePath;
@@ -20,11 +20,11 @@ namespace Rhisis.Core.IO
         private string[] _comments;
 
         /// <summary>
-        /// Creates a new <see cref="TokenScanner"/> instance.
+        /// Creates a new <see cref="FileTokenScanner"/> instance.
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="splitRegex"></param>
-        public TokenScanner(string filePath, string splitRegex)
+        public FileTokenScanner(string filePath, string splitRegex)
         {
             this._currentTokenIndex = 0;
             this._filePath = filePath;
@@ -37,6 +37,7 @@ namespace Rhisis.Core.IO
         public void Read()
         {
             this._currentTokenIndex = 0;
+
             using (var fileStream = new FileStream(this._filePath, FileMode.Open, FileAccess.Read))
             using (var reader = new StreamReader(fileStream))
             {
@@ -81,7 +82,7 @@ namespace Rhisis.Core.IO
                                              where !string.IsNullOrEmpty(x)
                                              select x;
 
-                fileContent = string.Join("", tokens);
+                fileContent = string.Join(string.Empty, tokens);
 
                 string[] parts = Regex.Split(fileContent, this._splitRegex);
 

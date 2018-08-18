@@ -80,7 +80,7 @@ namespace Rhisis.World.Handlers
                 FaceId = character.FaceId,
             };
 
-            client.Player.PlayerData = new PlayerComponent
+            client.Player.PlayerData = new PlayerDataComponent
             {
                 Id = character.Id,
                 Slot = character.Slot,
