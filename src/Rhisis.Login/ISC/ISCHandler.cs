@@ -28,19 +28,20 @@ namespace Rhisis.Login.ISC
                 {
                     Logger.Warn("Cluster Server '{0}' incoming connection from {1} refused. Reason: An other Cluster server with id '{2}' is already connected.", name, client.RemoteEndPoint, id);
                     ISCPacketFactory.SendAuthenticationResult(client, ISCPacketCode.AUTH_FAILED_CLUSTER_EXISTS);
-                    try { client.IcsServer.DisconnectClient(client.Id); } catch (System.Exception) { } //TODO: remove try when internal library issue will be corrected.
+                    client.IcsServer.DisconnectClient(client.Id);
 
                     return;
                 }
 
                 client.ServerInfo = new ClusterServerInfo(id, host, name);
-                
                 ISCPacketFactory.SendAuthenticationResult(client, ISCPacketCode.AUTH_SUCCESS);
                 Logger.Info("Cluster server '{0}' connected to ISC server from {1}.", name, client.RemoteEndPoint);
             }
             else if (client.Type == ISCServerType.World)
             {
                 var clusterId = packet.Read<int>();
+                client.ServerInfo = new WorldServerInfo(id, host, name, clusterId);
+
                 // TODO: read more informations about world server if needed
 
                 if (!client.IcsServer.HasClusterWithId(clusterId))
@@ -48,7 +49,7 @@ namespace Rhisis.Login.ISC
                     // No cluster for this server
                     Logger.Warn("World server '{0}' incoming connection from {1} refused. Reason: Cluster server with id '{2}' is not connected.", name, client.RemoteEndPoint, clusterId);
                     ISCPacketFactory.SendAuthenticationResult(client, ISCPacketCode.AUTH_FAILED_NO_CLUSTER);
-                    try { client.IcsServer.DisconnectClient(client.Id); } catch (System.Exception) { } //TODO: remove try when internal library issue will be corrected.
+                    client.IcsServer.DisconnectClient(client.Id);
                     
                     return;
                 }
@@ -61,12 +62,11 @@ namespace Rhisis.Login.ISC
                     // World already exists in cluster
                     Logger.Warn("World server '{0}' incoming connection from {1} refused. Reason: An other World server with id '{2}' is already connected to Cluster Server '{3}'.", name, client.RemoteEndPoint, id, clusterInfo.Name);
                     ISCPacketFactory.SendAuthenticationResult(client, ISCPacketCode.AUTH_FAILED_WORLD_EXISTS);
-                    try { client.IcsServer.DisconnectClient(client.Id); } catch (System.Exception) { } //TODO: remove try when internal library issue will be corrected.
+                    client.IcsServer.DisconnectClient(client.Id);
 
                     return;
                 }
 
-                client.ServerInfo = new WorldServerInfo(id, host, name, clusterId);
                 clusterInfo.WorldServers.Add(client.ServerInfo as WorldServerInfo);
                 ISCPacketFactory.SendAuthenticationResult(client, ISCPacketCode.AUTH_SUCCESS);
                 ISCPacketFactory.SendUpdateWorldList(parentCluster, clusterInfo.WorldServers);
@@ -77,7 +77,7 @@ namespace Rhisis.Login.ISC
             {
                 Logger.Warn("Incoming ISC connection from {0} refused. Reason: server type is unknown.", client.RemoteEndPoint);
                 ISCPacketFactory.SendAuthenticationResult(client, ISCPacketCode.AUTH_FAILED_UNKNOWN_SERVER);
-                try { client.IcsServer.DisconnectClient(client.Id); } catch (System.Exception) { } //TODO: remove try when internal library issue will be corrected.
+                client.IcsServer.DisconnectClient(client.Id);
             }
         }
     }

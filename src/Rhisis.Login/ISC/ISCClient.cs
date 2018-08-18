@@ -86,7 +86,7 @@ namespace Rhisis.Login.ISC
             switch (this.Type)
             {
                 case ISCServerType.Cluster:
-                    (this.ServerInfo as ClusterServerInfo).WorldServers.Clear();
+                    (this.ServerInfo as ClusterServerInfo)?.WorldServers.Clear();
                     break;
                 case ISCServerType.World:
                     var worldInfo = this.GetServerInfo<WorldServerInfo>();
@@ -94,10 +94,7 @@ namespace Rhisis.Login.ISC
                     var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
 
                     if (clusterInfo == null)
-                    {
-                        Logger.Warn("Parent cluster of World server '{0}' is not found.", worldInfo.Name);
                         return;
-                    }
 
                     clusterInfo.WorldServers.Remove(worldInfo);
                     ISCPacketFactory.SendUpdateWorldList(cluster, clusterInfo.WorldServers);
