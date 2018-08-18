@@ -45,9 +45,9 @@ namespace Rhisis.World
         public static readonly BehaviorManager<Game.Entities.IPlayerEntity> PlayerBehaviors = new BehaviorManager<Game.Entities.IPlayerEntity>(BehaviorType.Player);
 
         // Logs messages
-        private const string MsgUnableLoadMap = "Unable to load map '{0}'. Reason: {1}.";
-        private const string MsgObjectIgnored = "{0} id '{1}' was ignored. Reason: {2}.";
-        private const string MsgObjectOverrided = "{0} id '{1}' was overrided. Reason: {2}.";
+        private const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
+        private const string ObjectIgnoredMessage = "{0} id '{1}' was ignored. Reason: {2}.";
+        private const string ObjectOverridedMessage = "{0} id '{1}' was overrided. Reason: {2}.";
 
         /// <summary>
         /// Gets the Movers data.
@@ -107,7 +107,7 @@ namespace Rhisis.World
                             Defines.Add(define.Key, intValue);
                         else
                         {
-                            Logger.Warn(MsgObjectIgnored, "Define", define.Key,
+                            Logger.Warn(ObjectIgnoredMessage, "Define", define.Key,
                                 isIntValue ? "already declared" : $"'{define.Value}' is not a integer value");
                         }
                     }
@@ -126,7 +126,7 @@ namespace Rhisis.World
                             Texts.Add(text);
                         else
                         {
-                            Logger.Warn(MsgObjectIgnored, "Text", text.Key,
+                            Logger.Warn(ObjectIgnoredMessage, "Text", text.Key,
                                 (text.Value == null) ? "cannot get the value" : "already declared");
                         }
                     }
@@ -153,7 +153,7 @@ namespace Rhisis.World
                     if (MoversData.ContainsKey(mover.Id))
                     {
                         MoversData[mover.Id] = mover;
-                        Logger.Warn(MsgObjectOverrided, "Mover", mover.Id, "already declared");
+                        Logger.Warn(ObjectOverridedMessage, "Mover", mover.Id, "already declared");
                     }
                     else
                         MoversData.Add(mover.Id, mover);
@@ -190,7 +190,7 @@ namespace Rhisis.World
                     if (ItemsData.ContainsKey(item.Id))
                     {
                         ItemsData[item.Id] = item;
-                        Logger.Warn(MsgObjectOverrided, "Item", item.Id, "already declared");
+                        Logger.Warn(ObjectOverridedMessage, "Item", item.Id, "already declared");
                     } 
                     else
                         ItemsData.Add(item.Id, item);
@@ -225,7 +225,7 @@ namespace Rhisis.World
                     foreach (ShopData shop in shops)
                     {
                         if (ShopData.ContainsKey(shop.Name))
-                            Logger.Debug(MsgObjectIgnored, "Shop", shop.Name, "already declared");
+                            Logger.Debug(ObjectIgnoredMessage, "Shop", shop.Name, "already declared");
                         else
                             ShopData.Add(shop.Name, shop);
                     }
@@ -236,7 +236,7 @@ namespace Rhisis.World
                     var shop = shopsParsed.ToObject<ShopData>();
 
                     if (ShopData.ContainsKey(shop.Name))
-                        Logger.Debug(MsgObjectIgnored, "Shop", shop.Name, "already declared");
+                        Logger.Debug(ObjectIgnoredMessage, "Shop", shop.Name, "already declared");
                     else
                         ShopData.Add(shop.Name, shop);
                 }
@@ -272,7 +272,7 @@ namespace Rhisis.World
                     foreach (DialogData dialog in dialogs)
                     {
                         if (DialogData.ContainsKey(dialog.Name))
-                            Logger.Debug(MsgObjectIgnored, "Dialog", dialog.Name, "already declared");
+                            Logger.Debug(ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
                         else
                             DialogData.Add(dialog.Name, dialog);
                     }
@@ -282,7 +282,7 @@ namespace Rhisis.World
                     var dialog = dialogsParsed.ToObject<DialogData>();
 
                     if (DialogData.ContainsKey(dialog.Name))
-                        Logger.Debug(MsgObjectIgnored, "Dialog", dialog.Name, "already declared");
+                        Logger.Debug(ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
                     else
                         DialogData.Add(dialog.Name, dialog);
                 }
@@ -332,7 +332,7 @@ namespace Rhisis.World
                         if (NpcData.ContainsKey(npc.Id))
                         {
                             NpcData[npc.Id] = npc;
-                            Logger.Warn(MsgObjectOverrided, "NPC", npc.Id, "already declared");
+                            Logger.Warn(ObjectOverridedMessage, "NPC", npc.Id, "already declared");
                         }
                         else
                             NpcData.Add(npc.Id, npc);
@@ -352,19 +352,19 @@ namespace Rhisis.World
             {
                 if (!worldsPaths.TryGetValue(mapDefineName, out string mapName))
                 {
-                    Logger.Warn(MsgUnableLoadMap, mapDefineName, $"map is not declared inside '{WorldScriptPath}' file");
+                    Logger.Warn(UnableLoadMapMessage, mapDefineName, $"map is not declared inside '{WorldScriptPath}' file");
                     continue;
                 }
 
                 if (!Defines.TryGetValue(mapDefineName, out int mapId))
                 {
-                    Logger.Warn(MsgUnableLoadMap, mapDefineName, $"map has no define id inside '{DataSub0Path}/defineWorld.h' file");
+                    Logger.Warn(UnableLoadMapMessage, mapDefineName, $"map has no define id inside '{DataSub0Path}/defineWorld.h' file");
                     continue;
                 }
 
                 if (_maps.ContainsKey(mapId))
                 {
-                    Logger.Warn(MsgUnableLoadMap, mapDefineName, $"another map with id '{mapId}' already exist.");
+                    Logger.Warn(UnableLoadMapMessage, mapDefineName, $"another map with id '{mapId}' already exist.");
                     continue;
                 }
 
