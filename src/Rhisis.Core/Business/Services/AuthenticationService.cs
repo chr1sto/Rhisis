@@ -6,7 +6,7 @@ namespace Rhisis.Core.Business.Services
     [Service]
     public class AuthenticationService : IAuthenticationService
     {
-        public readonly IUserService _userService;
+        private readonly IUserService _userService;
 
         public AuthenticationService(IUserService userService)
         {
