@@ -2,7 +2,7 @@
 language: csharp
 sudo: required
 mono: none
-dotnet: 2.1.105
+dotnet: 2.1.400
 
 # Script to execute before each build and test
 before_script:
@@ -12,16 +12,16 @@ before_script:
 jobs:
     include:
       - stage: "Build"
-        script: dotnet build src/Rhisis.Core/ --framework netstandard2.0 --configuration Release
-        name: "Rhisis Core Feature"
-      - script: dotnet build src/Rhisis.Database/ --framework netstandard2.0 --configuration Release
-        name: "Rhisis Database access Layer"
-      - script: dotnet build src/Rhisis.Login/ --framework netcoreapp2.0 --configuration Release
-        name: "Login Server"
-      - script: dotnet build src/Rhisis.Cluster/ --framework netcoreapp2.0 --configuration Release
-        name: "Cluster Server"
-      - script: dotnet build src/Rhisis.World/ --framework netcoreapp2.0 --configuration Release
-        name: "World Server"
+        script: 
+        - dotnet build src/Rhisis.Core/ --framework netstandard2.0 --configuration Release
+        - dotnet build src/Rhisis.Database/ --framework netstandard2.0 --configuration Release
+        - dotnet build src/Rhisis.Login/ --framework netcoreapp2.0 --configuration Release
+        - dotnet build src/Rhisis.Cluster/ --framework netcoreapp2.0 --configuration Release
+        - dotnet build src/Rhisis.World/ --framework netcoreapp2.0 --configuration Release
+        name: "Rhisis Servers"
+      - script:
+        - dotnet build src/Rhisis.Admin/ --framework netcoreapp2.1 --configuration Release
+        name: "Rhisis Administration tool"
 
       - stage: "Tests"
         script: dotnet test test/Rhisis.Core.Test/

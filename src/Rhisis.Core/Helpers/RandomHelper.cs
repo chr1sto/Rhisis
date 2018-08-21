@@ -1,8 +1,11 @@
-﻿using Rhisis.Core.IO;
+﻿using Rhisis.Core.External;
 using System;
 
 namespace Rhisis.Core.Helpers
 {
+    /// <summary>
+    /// Random helper class that uses the MerseenTwister algorithm to generate numbers.
+    /// </summary>
     public static class RandomHelper
     {
         private static int _id;

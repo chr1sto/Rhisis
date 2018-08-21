@@ -14,9 +14,11 @@ namespace Rhisis.Core.Reflection
         /// <returns></returns>
         public static IEnumerable<Type> GetClassesWithCustomAttribute(Type type)
         {
-            return Assembly.GetEntryAssembly()
-                .GetTypes()
-                .Where(x => x.GetTypeInfo().GetCustomAttribute(type) != null);
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            return assemblies
+                .Where(x => x.FullName.StartsWith("Rhisis"))
+                .SelectMany(y => y.GetTypes().Where(w => w.GetTypeInfo().GetCustomAttribute(type) != null));
         }
 
         /// <summary>
