@@ -98,10 +98,6 @@ namespace Rhisis.Core.DependencyInjection
 
             switch (serviceLifetime)
             {
-                case ServiceLifetime.Transient:
-                    addServiceMethod = this._services.AddTransient;
-                    break;
-
                 case ServiceLifetime.Singleton:
                     addServiceMethod = this._services.AddSingleton;
                     break;
@@ -110,6 +106,7 @@ namespace Rhisis.Core.DependencyInjection
                     addServiceMethod = this._services.AddScoped;
                     break;
 
+                case ServiceLifetime.Transient:
                 default:
                     addServiceMethod = this._services.AddTransient;
                     break;
