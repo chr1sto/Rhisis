@@ -25,7 +25,7 @@ namespace Rhisis.World.Handlers
         public static void OnJoin(WorldClient client, INetPacketStream packet)
         {
             var joinPacket = new JoinPacket(packet);
-            Character character = null;
+            DbCharacter character = null;
 
             using (var db = DatabaseService.GetContext())
             {

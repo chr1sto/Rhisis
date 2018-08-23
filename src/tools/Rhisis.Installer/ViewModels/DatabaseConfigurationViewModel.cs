@@ -92,7 +92,7 @@ namespace Rhisis.Installer.ViewModels
 
         protected void OnTest()
         {
-            DatabaseContext context = null;
+            OldDatabaseContext context = null;
 
             try
             {

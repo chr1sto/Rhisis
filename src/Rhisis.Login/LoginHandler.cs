@@ -36,9 +36,9 @@ namespace Rhisis.Login
                 return;
             }
 
-            using (DatabaseContext db = DatabaseService.GetContext())
+            using (OldDatabaseContext db = DatabaseService.GetContext())
             {
-                User dbUser = db.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
+                DbUser dbUser = db.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
 
                 if (dbUser == null)
                 {

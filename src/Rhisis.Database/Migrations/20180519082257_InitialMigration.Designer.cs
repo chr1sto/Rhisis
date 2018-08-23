@@ -10,7 +10,7 @@ using System;
 
 namespace Rhisis.Database.Migrations
 {
-    [DbContext(typeof(DatabaseContext))]
+    [DbContext(typeof(OldDatabaseContext))]
     [Migration("20180519082257_InitialMigration")]
     partial class InitialMigration
     {

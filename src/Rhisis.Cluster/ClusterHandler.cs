@@ -42,7 +42,7 @@ namespace Rhisis.Cluster
 
             using (var db = DatabaseService.GetContext())
             {
-                User dbUser = db.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
+                DbUser dbUser = db.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
 
                 // Check if user exist.
                 if (dbUser == null)
@@ -69,7 +69,7 @@ namespace Rhisis.Cluster
 
             using (var db = DatabaseService.GetContext())
             {
-                User dbUser = db.Users.Get(x => 
+                DbUser dbUser = db.Users.Get(x => 
                     x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) && 
                     x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
 
@@ -82,7 +82,7 @@ namespace Rhisis.Cluster
                     return;
                 }
                 
-                Character dbCharacter = db.Characters.Get(x => x.Name == pak.Name);
+                DbCharacter dbCharacter = db.Characters.Get(x => x.Name == pak.Name);
 
                 // Check if character name is not already used.
                 if (dbCharacter != null)
@@ -96,7 +96,7 @@ namespace Rhisis.Cluster
                 DefaultCharacter defaultCharacter = client.Configuration.DefaultCharacter;
                 DefaultStartItem defaultEquipment = pak.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
 
-                dbCharacter = new Character()
+                dbCharacter = new DbCharacter()
                 {
                     UserId = dbUser.Id,
                     Name = pak.Name,
@@ -127,10 +127,10 @@ namespace Rhisis.Cluster
                 };
 
                 //TODO: create game constants for slot.
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartSuit, 44));
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartHand, 46));
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartShoes, 47));
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartWeapon, 52));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartSuit, 44));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartHand, 46));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartShoes, 47));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartWeapon, 52));
 
                 db.Characters.Create(dbCharacter);
                 Logger.Info("Character '{0}' has been created successfully for user '{1}' from {2}.",
@@ -147,7 +147,7 @@ namespace Rhisis.Cluster
 
             using (var db = DatabaseService.GetContext())
             {
-                User dbUser = db.Users.Get(x =>
+                DbUser dbUser = db.Users.Get(x =>
                     x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
                     x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
 
@@ -169,7 +169,7 @@ namespace Rhisis.Cluster
                     return;
                 }
                 
-                Character dbCharacter = db.Characters.Get(pak.CharacterId);
+                DbCharacter dbCharacter = db.Characters.Get(pak.CharacterId);
 
                 // Check if character exist.
                 if (dbCharacter == null)
@@ -195,7 +195,7 @@ namespace Rhisis.Cluster
 
             using (var db = DatabaseService.GetContext())
             {
-                Character dbCharacter = db.Characters.Get(pak.CharacterId);
+                DbCharacter dbCharacter = db.Characters.Get(pak.CharacterId);
 
                 // Check if character exist.
                 if (dbCharacter == null)

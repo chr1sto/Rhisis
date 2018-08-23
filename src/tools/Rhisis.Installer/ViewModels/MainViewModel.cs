@@ -147,7 +147,7 @@ namespace Rhisis.Installer.ViewModels
             ConfigurationHelper.Save(DatabaseConfigurationPath, this._databaseConfiguration);
             DatabaseService.Configure(this._databaseConfiguration);
 
-            using (DatabaseContext context = DatabaseService.GetContext())
+            using (OldDatabaseContext context = DatabaseService.GetContext())
             {
                 if (!context.DatabaseExists())
                 {
@@ -177,9 +177,9 @@ namespace Rhisis.Installer.ViewModels
             {
                 DatabaseService.Configure(this._databaseConfiguration);
 
-                using (DatabaseContext context = DatabaseService.GetContext())
+                using (OldDatabaseContext context = DatabaseService.GetContext())
                 {
-                    User user = context.Users.Get(x => x.Username == this._accountModel.Username);
+                    DbUser user = context.Users.Get(x => x.Username == this._accountModel.Username);
 
                     if (user != null)
                     {
@@ -189,7 +189,7 @@ namespace Rhisis.Installer.ViewModels
                     }
                     else
                     {
-                        context.Users.Create(new User
+                        context.Users.Create(new DbUser
                         {
                             Authority = (int)this._accountModel.Type,
                             Username = this._accountModel.Username,

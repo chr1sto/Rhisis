@@ -7,7 +7,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// User repository.
     /// </summary>
-    public sealed class UserRepository : RepositoryBase<User>
+    public sealed class UserRepository : RepositoryBase<DbUser>
     {
         /// <summary>
         /// Creates and initialize an <see cref="UserRepository"/>.
@@ -22,7 +22,7 @@ namespace Rhisis.Database.Repositories
         /// Include other objects for each requests.
         /// </summary>
         /// <returns></returns>
-        protected override IQueryable<User> GetQueryable()
+        protected override IQueryable<DbUser> GetQueryable()
         {
             return base.GetQueryable()
                 .Include(x => x.Characters)

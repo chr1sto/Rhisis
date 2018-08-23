@@ -79,7 +79,7 @@ namespace Rhisis.World.Systems.Inventory
 
             if (e.Items != null)
             {
-                foreach (Database.Entities.Item item in e.Items)
+                foreach (Database.Entities.DbItem item in e.Items)
                 {
                     int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
 

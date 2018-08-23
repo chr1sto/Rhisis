@@ -42,7 +42,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendPlayerList(NetUser client, int authenticationKey, IEnumerable<Character> characters)
+        public static void SendPlayerList(NetUser client, int authenticationKey, IEnumerable<DbCharacter> characters)
         {
             using (var packet = new FFPacket())
             {

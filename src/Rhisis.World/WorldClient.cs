@@ -119,9 +119,9 @@ namespace Rhisis.World
 
             this.Player.Object.Spawned = false;
 
-            using (DatabaseContext db = DatabaseService.GetContext())
+            using (OldDatabaseContext db = DatabaseService.GetContext())
             {
-                Character character = db.Characters.Get(this.Player.PlayerData.Id);
+                DbCharacter character = db.Characters.Get(this.Player.PlayerData.Id);
 
                 if (character != null)
                 {
@@ -147,7 +147,7 @@ namespace Rhisis.World
                     character.StatPoints = this.Player.Statistics.StatPoints;
 
                     // Delete items
-                    var itemsToDelete = new List<Item>(character.Items.Count);
+                    var itemsToDelete = new List<DbItem>(character.Items.Count);
                     itemsToDelete.AddRange(from dbItem
                         in character.Items
                         let inventoryItem = this.Player.Inventory.GetItem(x => x.DbId == dbItem.Id) ?? new Game.Structures.Item()
@@ -163,7 +163,7 @@ namespace Rhisis.World
                             continue;
                         }
 
-                        Item dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
+                        DbItem dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
 
                         if (dbItem != null)
                         {
@@ -178,7 +178,7 @@ namespace Rhisis.World
                         }
                         else
                         {
-                            dbItem = new Item
+                            dbItem = new DbItem
                             {
                                 CharacterId = this.Player.PlayerData.Id,
                                 CreatorId = item.CreatorId,

@@ -58,11 +58,11 @@ namespace Rhisis.Database
         /// Gets an access to the database.
         /// </summary>
         /// <returns></returns>
-        public static DatabaseContext GetContext()
+        public static OldDatabaseContext GetContext()
         {
             return Configuration == null
                 ? throw new RhisisDatabaseConfigurationException("Database configuration is not set.")
-                : new DatabaseContext(Configuration);
+                : new OldDatabaseContext(Configuration);
         }
     }
 }

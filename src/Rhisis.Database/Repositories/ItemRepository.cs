@@ -7,7 +7,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// Item repository.
     /// </summary>
-    public sealed class ItemRepository : RepositoryBase<Item>
+    public sealed class ItemRepository : RepositoryBase<DbItem>
     {
         /// <summary>
         /// Creates an initialize an <see cref="ItemRepository"/>.
@@ -22,7 +22,7 @@ namespace Rhisis.Database.Repositories
         /// Include other objects for each requests.
         /// </summary>
         /// <returns></returns>
-        protected override IQueryable<Item> GetQueryable()
+        protected override IQueryable<DbItem> GetQueryable()
         {
             return base.GetQueryable()
                 .Include(x => x.Character);

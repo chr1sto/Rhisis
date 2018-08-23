@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Rhisis.Database.Entities
 {
     [Table("users")]
-    public class User : IDatabaseEntity
+    public class DbUser : IDatabaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,11 +18,11 @@ namespace Rhisis.Database.Entities
 
         public int Authority { get; set; }
 
-        public ICollection<Character> Characters { get; set; }
+        public ICollection<DbCharacter> Characters { get; set; }
 
-        public User()
+        public DbUser()
         {
-            this.Characters = new HashSet<Character>();
+            this.Characters = new HashSet<DbCharacter>();
         }
     }
 }

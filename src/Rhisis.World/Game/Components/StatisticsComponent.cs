@@ -14,7 +14,7 @@ namespace Rhisis.World.Game.Components
 
         public ushort StatPoints { get; set; }
 
-        public StatisticsComponent(Character character)
+        public StatisticsComponent(DbCharacter character)
         {
             this.Strenght = (ushort)character.Strength;
             this.Stamina = (ushort)character.Stamina;
