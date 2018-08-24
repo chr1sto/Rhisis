@@ -255,7 +255,7 @@ namespace Rhisis.Core.Network.Packets
         WAR = 0x00DA,
         REQUEST_GUILDRANK = 0x00000000,
         SEX_CHANGE = 0x00000000,
-        WORLDMSG = 0x00000000,
+        WORLDMSG = 0x00DE,
         CALLTHEROLL = 0x00000000,
         ANGEL = 0x00000000,
         MINIGAME = 0x00E8,

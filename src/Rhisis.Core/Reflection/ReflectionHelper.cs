@@ -14,9 +14,11 @@ namespace Rhisis.Core.Reflection
         /// <returns></returns>
         public static IEnumerable<Type> GetClassesWithCustomAttribute(Type type)
         {
-            return Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(x => x.GetTypeInfo().GetCustomAttribute(type) != null);
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            return assemblies
+                .Where(x => x.FullName.StartsWith("Rhisis"))
+                .SelectMany(y => y.GetTypes().Where(w => w.GetTypeInfo().GetCustomAttribute(type) != null));
         }
 
         /// <summary>
@@ -25,6 +27,18 @@ namespace Rhisis.Core.Reflection
         /// <typeparam name="T">Attribute type</typeparam>
         /// <returns></returns>
         public static IEnumerable<Type> GetClassesWithCustomAttribute<T>() => GetClassesWithCustomAttribute(typeof(T));
+
+        /// <summary>
+        /// Get classes that are assignable from a given type. (inherits from)
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> GetClassesAssignableFrom(Type type)
+        {
+            return from x in Assembly.GetEntryAssembly().GetTypes()
+                   where x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type)
+                   select x;
+        }
 
         /// <summary>
         /// Get methods with custom attributes.

@@ -10,6 +10,8 @@ namespace Rhisis.Core.Structures.Configuration
     [DataContract]
     public class WorldConfiguration : BaseConfiguration
     {
+        public const string DefaultLanguage = "en";
+
         /// <summary>
         /// Gets or sets the world's id.
         /// </summary>
@@ -41,6 +43,12 @@ namespace Rhisis.Core.Structures.Configuration
         public IEnumerable<string> Maps { get; set; }
 
         /// <summary>
+        /// Gets or sets the world server's language.
+        /// </summary>
+        [DataMember(Name = "language")]
+        public string Language { get; set; }
+
+        /// <summary>
         /// Gets or sets the IPC configuration.
         /// </summary>
         [DataMember(Name = "isc")]
@@ -51,6 +59,7 @@ namespace Rhisis.Core.Structures.Configuration
         /// </summary>
         public WorldConfiguration()
         {
+            this.Language = DefaultLanguage;
             this.Systems = new Dictionary<string, bool>();
             this.ISC = new ISCConfiguration();
         }

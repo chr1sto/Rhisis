@@ -1,38 +1,122 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-using Rhisis.CLI.Interfaces;
+﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.Core.Helpers;
+using Rhisis.Database;
+using System;
 
 namespace Rhisis.CLI.Commands
 {
-    internal sealed class DatabaseCommand : ICommand
+    [Command(Name = "database", Description = "Manages the database")]
+    [Subcommand("configure", typeof(DatabaseConfigureCommand))]
+    [Subcommand("update", typeof(DatabaseUpdateCommand))]
+    public class DatabaseCommand
     {
-        private static readonly string CommandName = "database";
-        private static readonly string CommandDescription = "Database management";
-        private readonly ICommand[] _subCommands = new ICommand[]
+        public void OnExecute(CommandLineApplication app, IConsole console)
         {
-            new DatabaseInitializeCommand(),
-            new DatabaseUpdateCommand()
-        };
+            app.ShowHelp();
+        }
+    }
 
-        /// <summary>
-        /// Gets the command name.
-        /// </summary>
-        public string Name => CommandName;
+    [Command(Name = "configure", Description = "Configures the database access")]
+    public class DatabaseConfigureCommand
+    {
+        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
+        public string DatabaseConfigurationFile { get; set; }
 
-        /// <summary>
-        /// Gets the command description.
-        /// </summary>
-        public string Description => CommandDescription;
-
-        /// <summary>
-        /// Executes the command logic.
-        /// </summary>
-        public void Execute(CommandLineApplication command)
+        public void OnExecute(CommandLineApplication app, IConsole console)
         {
-            command.HelpOption("-?|-h|--help");
-            command.Description = this.Description;
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = "config/database.json";
 
-            foreach (ICommand subCommand in this._subCommands)
-                command.Command(subCommand.Name, subCommand.Execute);
+            var dbConfiguration = new DatabaseConfiguration();
+
+            Console.WriteLine("Select one of the available providers:");
+            dbConfiguration.Provider = GetDatabaseProvider();
+
+            Console.Write("Host: ");
+            dbConfiguration.Host = Console.ReadLine();
+
+            Console.Write("Username: ");
+            dbConfiguration.Username = Console.ReadLine();
+
+            Console.Write("Password: ");
+            dbConfiguration.Password = Console.ReadLine();
+
+            Console.Write("Database name: ");
+            dbConfiguration.Database = Console.ReadLine();
+
+            Console.WriteLine("--------------------------------");
+            Console.WriteLine("Configuration:");
+            Console.WriteLine($"Database Provider: {dbConfiguration.Provider.ToString()}");
+            Console.WriteLine($"Host: {dbConfiguration.Host}");
+            Console.WriteLine($"Username: {dbConfiguration.Username}");
+            Console.WriteLine($"Database name: {dbConfiguration.Database}");
+            Console.WriteLine("--------------------------------");
+
+            Console.WriteLine("Save this configuration ? (y/n)");
+            string response = Console.ReadLine();
+
+            if (response.Equals("y", StringComparison.OrdinalIgnoreCase))
+            {
+                ConfigurationHelper.Save(DatabaseConfigurationFile, dbConfiguration);
+                Console.WriteLine($"Database configuration saved in '{DatabaseConfigurationFile}'.");
+            }
+        }
+
+        private DatabaseProvider GetDatabaseProvider()
+        {
+            var databaseProvider = DatabaseProvider.Unknown;
+
+            string[] providerNames = Enum.GetNames(typeof(DatabaseProvider));
+            int[] providerValues = (int[])Enum.GetValues(typeof(DatabaseProvider));
+
+            for (int i = 1; i < providerNames.Length; i++)
+                Console.WriteLine($"{providerValues[i]}. {providerNames[i]}");
+
+            Console.Write("Database provider: ");
+            string selectedProvider = Console.ReadLine();
+
+            if (int.TryParse(selectedProvider, out int selectedProviderValue) && selectedProviderValue > 0 && selectedProviderValue < providerValues.Length)
+                databaseProvider = (DatabaseProvider)selectedProviderValue;
+            else if (Enum.TryParse(selectedProvider, true, out DatabaseProvider provider))
+                databaseProvider = provider;
+
+            if (databaseProvider == DatabaseProvider.Unknown)
+                Console.WriteLine($"Invalid database provider: {selectedProvider}.");
+
+            return databaseProvider;
+        }
+    }
+
+    [Command(Name = "update", Description = "Updates the database structure")]
+    public class DatabaseUpdateCommand
+    {
+        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
+        public string DatabaseConfigurationFile { get; set; }
+
+        public void OnExecute(CommandLineApplication app, IConsole console)
+        {
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = "config/database.json";
+
+            try
+            {
+                Console.WriteLine("Starting database structure update...");
+                var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+
+                DatabaseService.Configure(databaseConfiguration);
+                using (var rhisisDbContext = DatabaseService.GetContext())
+                {
+                    if (rhisisDbContext.DatabaseExists())
+                    {
+                        rhisisDbContext.Migrate();
+                        Console.WriteLine("Database updated.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

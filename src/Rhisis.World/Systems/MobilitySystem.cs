@@ -1,20 +1,14 @@
-﻿using Rhisis.Core.IO;
-using Rhisis.World.Core.Systems;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
+﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using System;
-using System.Linq.Expressions;
 
 namespace Rhisis.World.Systems
 {
     [System]
     public class MobilitySystem : SystemBase
     {
-        /// <summary>
-        /// Gets the <see cref="MobilitySystem"/> match filter.
-        /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
         /// <summary>
         /// Creates a new <see cref="MobilitySystem"/> instance.
@@ -45,16 +39,15 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
-            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.ObjectComponent.Position, 0.1f))
+            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
-                Logger.Debug("{0} arrived to destination", entity.ObjectComponent.Name);
                 entity.MovableComponent.DestinationPosition.Reset();
             }
             else
             {
-                double speed = ((entity.MovableComponent.Speed * 100) * this.Context.Time);
-                float distanceX = entity.MovableComponent.DestinationPosition.X - entity.ObjectComponent.Position.X;
-                float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.ObjectComponent.Position.Z;
+                double speed = ((entity.MovableComponent.Speed * 100) * this.Context.GameTime);
+                float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
+                float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
                 // Normalize
@@ -68,8 +61,8 @@ namespace Rhisis.World.Systems
                 if (Math.Abs(offsetZ) > Math.Abs(distanceZ))
                     offsetZ = distanceZ;
 
-                entity.ObjectComponent.Position.X += (float)offsetX;
-                entity.ObjectComponent.Position.Z += (float)offsetZ;
+                entity.Object.Position.X += (float)offsetX;
+                entity.Object.Position.Z += (float)offsetZ;
             }
         }
     }

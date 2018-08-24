@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Network;
+﻿using Rhisis.Core.Data;
+using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
@@ -51,6 +52,21 @@ namespace Rhisis.World.Packets
                 packet.Write<byte>(1);
                 packet.Write((byte)item.UniqueId);
                 packet.Write((short)item.Quantity);
+
+                entity.Connection.Send(packet);
+            }
+        }
+
+        public static void SendItemUpdate(IPlayerEntity entity, UpdateItemType updateType, int slot, int value)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.UPDATE_ITEM);
+                packet.Write<byte>(0);
+                packet.Write((byte)slot);
+                packet.Write((byte)updateType);
+                packet.Write(value);
+                packet.Write(0); // time
 
                 entity.Connection.Send(packet);
             }

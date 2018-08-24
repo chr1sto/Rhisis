@@ -5,17 +5,17 @@ namespace Rhisis.Core.Network.Packets.Cluster
 {
     public struct GetPlayerListPacket : IEquatable<GetPlayerListPacket>
     {
-        public string BuildVersion { get; private set; }
+        public string BuildVersion { get; }
 
-        public int AuthenticationKey { get; private set; }
+        public int AuthenticationKey { get; }
         
-        public string Username { get; private set; }
+        public string Username { get; }
 
-        public string Password { get; private set; }
+        public string Password { get; }
 
-        public int ServerId { get; private set; }
+        public int ServerId { get; }
 
-        public GetPlayerListPacket(NetPacketBase packet)
+        public GetPlayerListPacket(INetPacketStream packet)
         {
             this.BuildVersion = packet.Read<string>();
             this.AuthenticationKey = packet.Read<int>();

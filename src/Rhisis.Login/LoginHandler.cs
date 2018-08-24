@@ -1,10 +1,10 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.IO;
+using NLog;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.Login;
 using Rhisis.Database;
-using Rhisis.Database.Structures;
+using Rhisis.Database.Entities;
 using Rhisis.Login.Packets;
 using System;
 
@@ -12,48 +12,52 @@ namespace Rhisis.Login
 {
     public static class LoginHandler
     {
-        [PacketHandler(PacketType.PING)]
-        public static void OnPing(LoginClient client, NetPacketBase packet)
-        {
-            var pingPacket = new PingPacket(packet);
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-            CommonPacketFactory.SendPong(client, pingPacket.Time);
+        [PacketHandler(PacketType.PING)]
+        public static void OnPing(LoginClient client, INetPacketStream packet)
+        {
+            var pak = new PingPacket(packet);
+
+            if (!pak.IsTimeOut)
+                CommonPacketFactory.SendPong(client, pak.Time);
         }
 
         [PacketHandler(PacketType.CERTIFY)]
-        public static void OnLogin(LoginClient client, NetPacketBase packet)
+        public static void OnLogin(LoginClient client, INetPacketStream packet)
         {
-            var certify = new CertifyPacket(packet, client.Configuration.PasswordEncryption, client.Configuration.EncryptionKey);
+            var pak = new CertifyPacket(packet, client.Configuration.PasswordEncryption, client.Configuration.EncryptionKey);
 
-            if (certify.BuildVersion != client.Configuration.BuildVersion)
+            if (pak.BuildVersion != client.Configuration.BuildVersion)
             {
-                Logger.Info($"User '{certify.Username}' logged in with bad build version.");
+                Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad client build version.");
                 LoginPacketFactory.SendLoginError(client, ErrorType.CERT_GENERAL);
                 client.Disconnect();
                 return;
             }
 
-            using (var db = DatabaseService.GetContext())
+            using (DatabaseContext db = DatabaseService.GetContext())
             {
-                User user = db.Users.Get(x => x.Username.Equals(certify.Username, StringComparison.OrdinalIgnoreCase));
+                User dbUser = db.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
 
-                if (user == null)
+                if (dbUser == null)
                 {
-                    Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad username)");
+                    Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad username.");
                     LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_ACCOUNT);
                     client.Disconnect();
                     return;
                 }
 
-                if (!user.Password.Equals(certify.Password, StringComparison.OrdinalIgnoreCase))
+                if (!dbUser.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase))
                 {
-                    Logger.Info($"User '{certify.Username}' logged in with bad credentials. (Bad password)");
+                    Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad password.");
                     LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_PASSWORD);
                     client.Disconnect();
                     return;
                 }
-                Logger.Info(certify.Username);
-                LoginPacketFactory.SendServerList(client, certify.Username, client.ClustersConnected);
+                
+                LoginPacketFactory.SendServerList(client, pak.Username, client.ClustersConnected);
+                Logger.Info($"User '{pak.Username}' logged succesfully from {client.RemoteEndPoint}.");
             }
         }
     }

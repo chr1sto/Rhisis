@@ -413,7 +413,7 @@ namespace Rhisis.Core.Network.Packets
         UPDATE_GUILD_RANKING_END = 0xF000B044,
         UPDATE_GUILD_RANKING_DB = 0xF000B04D,
         REQUEST_GUILD_RANKING = 0xF000B04E,
-        WAR_DEAD = 0x00000000,
+        //WAR_DEAD = 0x00000000, // Incorrect value in conflict with WELCOME.
         WAR_END = 0xF000B046,
         SURRENDER = 0xF000B047,
         QUERY_TRUCE = 0xF000B048,

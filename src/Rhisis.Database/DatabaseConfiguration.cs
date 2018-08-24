@@ -27,7 +27,15 @@ namespace Rhisis.Database
         public string Database { get; set; }
 
         [DataMember(Name = "provider")]
-        [DefaultValue(DatabaseProvider.MySQL)]
+        [DefaultValue(DatabaseProvider.MySql)]
         public DatabaseProvider Provider { get; set; }
+
+        [IgnoreDataMember]
+        public bool IsValid { get; set; }
+
+        public override string ToString()
+        {
+            return $"Host: {Host}, Port: {Port}, Username: {Username}, Password: {Password}, Database: {Database}, Provider: {Provider}";
+        }
     }
 }

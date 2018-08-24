@@ -34,21 +34,29 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 [World]
 - Inter-Server authentication (ISC)
+- Entity Component System architecture
 - Connect to the world
 - Load resources
    - Defines & texts
    - Movers
    - Maps
+   - NPC Data/Shops/Dialogs
 - Spawn monsters and NPC
 - Visibility System
 - Mobility System
 - Chat System
 	- Chat commands:
 		- Create item : `/ci` or `/createitem`
+		- Get gold : `/getgold`
+		- Teleport : `/teleport`
 - Inventory System
 	- Move items
 	- Equip/Unequip items
 	- Save inventory
+- Shop System
+	- Buy items
+	- Sell items
+- Trade System
 
 
 ## [Released]

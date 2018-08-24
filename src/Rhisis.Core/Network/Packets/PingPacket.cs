@@ -5,16 +5,24 @@ namespace Rhisis.Core.Network.Packets
 {
     public struct PingPacket : IEquatable<PingPacket>
     {
-        public int Time { get; private set; }
+        public int Time { get; }
 
-        public PingPacket(NetPacketBase packet)
+        public bool IsTimeOut { get; }
+
+        public PingPacket(INetPacketStream packet)
         {
-            this.Time = packet.Read<int>();
+            try
+            {
+                this.Time = packet.Read<int>();
+                this.IsTimeOut = false;
+            }
+            catch (Exception)
+            {
+                this.Time = 0;
+                this.IsTimeOut = true;
+            }
         }
 
-        public bool Equals(PingPacket other)
-        {
-            return this.Time == other.Time;
-        }
+        public bool Equals(PingPacket other) => this.Time == other.Time && this.IsTimeOut == other.IsTimeOut;
     }
 }

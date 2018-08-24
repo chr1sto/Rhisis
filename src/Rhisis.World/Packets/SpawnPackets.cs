@@ -1,12 +1,11 @@
 ﻿using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Packets
 {
@@ -24,23 +23,23 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // Get weather by season
 
                 packet.StartNewMergedPacket(player.Id, SnapshotType.WORLD_READINFO);
-                packet.Write(player.ObjectComponent.MapId);
-                packet.Write(player.ObjectComponent.Position.X);
-                packet.Write(player.ObjectComponent.Position.Y);
-                packet.Write(player.ObjectComponent.Position.Z);
+                packet.Write(player.Object.MapId);
+                packet.Write(player.Object.Position.X);
+                packet.Write(player.Object.Position.Y);
+                packet.Write(player.Object.Position.Z);
 
                 packet.StartNewMergedPacket(player.Id, SnapshotType.ADD_OBJ);
 
                 // Common object properties
-                packet.Write((byte)player.ObjectComponent.Type);
-                packet.Write(player.ObjectComponent.ModelId);
-                packet.Write((byte)player.ObjectComponent.Type);
-                packet.Write(player.ObjectComponent.ModelId);
-                packet.Write(player.ObjectComponent.Size);
-                packet.Write(player.ObjectComponent.Position.X);
-                packet.Write(player.ObjectComponent.Position.Y);
-                packet.Write(player.ObjectComponent.Position.Z);
-                packet.Write((short)(player.ObjectComponent.Angle * 10));
+                packet.Write((byte)player.Object.Type);
+                packet.Write(player.Object.ModelId);
+                packet.Write((byte)player.Object.Type);
+                packet.Write(player.Object.ModelId);
+                packet.Write(player.Object.Size);
+                packet.Write(player.Object.Position.X);
+                packet.Write(player.Object.Position.Y);
+                packet.Write(player.Object.Position.Z);
+                packet.Write((short)(player.Object.Angle * 10));
                 packet.Write(player.Id);
 
                 packet.Write<short>(0); // m_dwMotion
@@ -52,19 +51,19 @@ namespace Rhisis.World.Packets
 
                 packet.Write(-1); // m_dwMoverSfxId
 
-                packet.Write(player.ObjectComponent.Name);
-                packet.Write(player.HumanComponent.Gender);
-                packet.Write((byte)player.HumanComponent.SkinSetId);
-                packet.Write((byte)player.HumanComponent.HairId);
-                packet.Write(player.HumanComponent.HairColor);
-                packet.Write((byte)player.HumanComponent.FaceId);
-                packet.Write(player.PlayerComponent.Id);
+                packet.Write(player.Object.Name);
+                packet.Write(player.VisualAppearance.Gender);
+                packet.Write((byte)player.VisualAppearance.SkinSetId);
+                packet.Write((byte)player.VisualAppearance.HairId);
+                packet.Write(player.VisualAppearance.HairColor);
+                packet.Write((byte)player.VisualAppearance.FaceId);
+                packet.Write(player.PlayerData.Id);
                 packet.Write((byte)1); // Job
 
-                packet.Write((short) player.StatisticsComponent.Strenght);
-                packet.Write((short) player.StatisticsComponent.Stamina);
-                packet.Write((short) player.StatisticsComponent.Dexterity);
-                packet.Write((short) player.StatisticsComponent.Intelligence);
+                packet.Write((short) player.Statistics.Strenght);
+                packet.Write((short) player.Statistics.Stamina);
+                packet.Write((short) player.Statistics.Dexterity);
+                packet.Write((short) player.Statistics.Intelligence);
 
                 packet.Write((short)1); // Levels
                 packet.Write(-1); // Fuel
@@ -79,7 +78,7 @@ namespace Rhisis.World.Packets
 
                 packet.Write<byte>(0); // have party or not
 
-                packet.Write((byte)100); // authority
+                packet.Write((byte)player.PlayerData.Authority); // authority
                 packet.Write(0); // mode
                 packet.Write(0); // state mode
                 packet.Write(0x000001F6); // item used ??
@@ -92,7 +91,7 @@ namespace Rhisis.World.Packets
                 packet.Write(-1); // titles
                 
                 // Serialize visible effects
-                IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                IEnumerable<Item> equipedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
                 foreach (var item in equipedItems)
                     packet.Write(item.Refines);
@@ -106,7 +105,7 @@ namespace Rhisis.World.Packets
                 packet.Write((short)0); // FP
                 packet.Write(0); // tutorial state
                 packet.Write(0); // fly experience
-                packet.Write(0); // Gold
+                packet.Write(player.PlayerData.Gold); // Gold
                 packet.Write((long)0); // exp
                 packet.Write(0); // skill level
                 packet.Write(0); // skill points
@@ -117,9 +116,9 @@ namespace Rhisis.World.Packets
                     packet.Write(0); // job in each level
 
                 packet.Write(0); // marking world id
-                packet.Write(player.ObjectComponent.Position.X);
-                packet.Write(player.ObjectComponent.Position.Y);
-                packet.Write(player.ObjectComponent.Position.Z);
+                packet.Write(player.Object.Position.X);
+                packet.Write(player.Object.Position.Y);
+                packet.Write(player.Object.Position.Z);
 
                 // Quests
                 packet.Write<byte>(0);
@@ -127,7 +126,7 @@ namespace Rhisis.World.Packets
                 packet.Write<byte>(0);
 
                 packet.Write(42); // murderer id
-                packet.Write((short)player.StatisticsComponent.StatPoints); // stat points
+                packet.Write((short)player.Statistics.StatPoints); // stat points
                 packet.Write<short>(0); // always 0
 
                 // item mask
@@ -145,7 +144,7 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // next cheer point ?
 
                 // Bank
-                packet.Write((byte)player.PlayerComponent.Slot);
+                packet.Write((byte)player.PlayerData.Slot);
                 for (int i = 0; i < 3; ++i)
                     packet.Write(0); // gold
                 for (int i = 0; i < 3; ++i)
@@ -159,25 +158,7 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // ar << m_nAngelLevel
 
                 // Serialize Inventory
-                IList<Item> items = player.InventoryComponent.Items;
-
-                for (int i = 0; i < InventorySystem.MaxItems; ++i)
-                    packet.Write(items[i].UniqueId);
-
-                packet.Write((byte)items.Count(x => x.Id != -1));
-
-                for (int i = 0; i < InventorySystem.MaxItems; ++i)
-                {
-                    if (items[i].Id > 0)
-                    {
-                        packet.Write((byte)items[i].UniqueId);
-                        packet.Write(items[i].UniqueId);
-                        items[i].Serialize(packet);
-                    }
-                }
-
-                for (int i = 0; i < InventorySystem.MaxItems; ++i)
-                    packet.Write(items[i].UniqueId);
+                player.Inventory.Serialize(packet);
 
                 // Bank
                 for (int i = 0; i < 3; ++i)
@@ -240,15 +221,15 @@ namespace Rhisis.World.Packets
             {
                 packet.StartNewMergedPacket(entityToSpawn.Id, SnapshotType.ADD_OBJ);
 
-                packet.Write((byte)entityToSpawn.ObjectComponent.Type);
-                packet.Write(entityToSpawn.ObjectComponent.ModelId);
-                packet.Write((byte)entityToSpawn.ObjectComponent.Type);
-                packet.Write(entityToSpawn.ObjectComponent.ModelId);
-                packet.Write(entityToSpawn.ObjectComponent.Size);
-                packet.Write(entityToSpawn.ObjectComponent.Position.X);
-                packet.Write(entityToSpawn.ObjectComponent.Position.Y);
-                packet.Write(entityToSpawn.ObjectComponent.Position.Z);
-                packet.Write((short)(entityToSpawn.ObjectComponent.Angle * 10f));
+                packet.Write((byte)entityToSpawn.Object.Type);
+                packet.Write(entityToSpawn.Object.ModelId);
+                packet.Write((byte)entityToSpawn.Object.Type);
+                packet.Write(entityToSpawn.Object.ModelId);
+                packet.Write(entityToSpawn.Object.Size);
+                packet.Write(entityToSpawn.Object.Position.X);
+                packet.Write(entityToSpawn.Object.Position.Y);
+                packet.Write(entityToSpawn.Object.Position.Z);
+                packet.Write((short)(entityToSpawn.Object.Angle * 10f));
                 packet.Write(entityToSpawn.Id);
 
                 if (entityToSpawn.Type == WorldEntityType.Player)
@@ -263,13 +244,13 @@ namespace Rhisis.World.Packets
                     packet.Write<byte>(0);
                     packet.Write(-1); // baby buffer
 
-                    packet.Write(entityToSpawn.ObjectComponent.Name);
-                    packet.Write(playerEntity.HumanComponent.Gender);
-                    packet.Write((byte)playerEntity.HumanComponent.SkinSetId);
-                    packet.Write((byte)playerEntity.HumanComponent.HairId);
-                    packet.Write(playerEntity.HumanComponent.HairColor);
-                    packet.Write((byte)playerEntity.HumanComponent.FaceId);
-                    packet.Write(playerEntity.PlayerComponent.Id);
+                    packet.Write(entityToSpawn.Object.Name);
+                    packet.Write(playerEntity.VisualAppearance.Gender);
+                    packet.Write((byte)playerEntity.VisualAppearance.SkinSetId);
+                    packet.Write((byte)playerEntity.VisualAppearance.HairId);
+                    packet.Write(playerEntity.VisualAppearance.HairColor);
+                    packet.Write((byte)playerEntity.VisualAppearance.FaceId);
+                    packet.Write(playerEntity.PlayerData.Id);
                     packet.Write((byte)1);
                     packet.Write((short)0); // STR
                     packet.Write((short)0); // STA
@@ -285,7 +266,7 @@ namespace Rhisis.World.Packets
 
                     packet.Write<byte>(0); // has party
 
-                    packet.Write((byte)100); // Authority
+                    packet.Write((byte)playerEntity.PlayerData.Authority); // Authority
                     packet.Write(0); // mode
                     packet.Write(0); // state mode
                     packet.Write(0x000001F6); // item used ??
@@ -298,7 +279,7 @@ namespace Rhisis.World.Packets
                     packet.Write(-1); // titles
                     
                     // Serialize visible effects
-                    IEnumerable<Item> equipedItems = player.InventoryComponent.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                    IEnumerable<Item> equipedItems = playerEntity.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
                     foreach (var item in equipedItems)
                         packet.Write(item.Refines);
@@ -326,10 +307,10 @@ namespace Rhisis.World.Packets
                 {
                     packet.Write<short>(5);
                     packet.Write<byte>(0);
-                    packet.Write(WorldServer.Movers[entityToSpawn.ObjectComponent.ModelId].MaxHP);
+                    packet.Write(WorldServer.Movers[entityToSpawn.Object.ModelId].MaxHP);
                     packet.Write(1);
                     packet.Write(0);
-                    packet.Write((byte)WorldServer.Movers[entityToSpawn.ObjectComponent.ModelId].Belligerence);
+                    packet.Write((byte)WorldServer.Movers[entityToSpawn.Object.ModelId].Belligerence);
                     packet.Write(-1);
 
                     packet.Write((byte)0);
@@ -337,7 +318,7 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)0);
                     packet.Write(0);
                     packet.Write((byte)0);
-                    if (entityToSpawn.ObjectComponent.ModelId == 1021)
+                    if (entityToSpawn.Object.ModelId == 1021)
                     {
                         packet.Write((byte)0);
                     }
@@ -363,7 +344,7 @@ namespace Rhisis.World.Packets
                     packet.Write<byte>(0); // Npc hair id
                     packet.Write(0); // Npc hair color
                     packet.Write<byte>(0); // Npc Face Id
-                    packet.Write(entityToSpawn.ObjectComponent.Name);
+                    packet.Write(entityToSpawn.Object.Name);
                     packet.Write<byte>(0); // item equiped count
                     packet.Write<byte>(0);
                     packet.Write<byte>(0);

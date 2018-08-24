@@ -1,9 +1,6 @@
-﻿using Rhisis.World.Core.Systems;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
+﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
-using System;
-using System.Linq.Expressions;
+using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems
@@ -13,10 +10,8 @@ namespace Rhisis.World.Systems
     {
         public static readonly float VisibilityRange = 75f;
 
-        /// <summary>
-        /// Gets the <see cref="VisibilitySystem"/> match filter.
-        /// </summary>
-        protected override Expression<Func<IEntity, bool>> Filter => x => x.Type == WorldEntityType.Player || x.Type == WorldEntityType.Monster || x.Type == WorldEntityType.Npc;
+        /// <inheritdoc />
+        protected override WorldEntityType Type => WorldEntityType.Mover;
 
         /// <summary>
         /// Creates a new <see cref="VisibilitySystem"/> instance.
@@ -33,20 +28,42 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         public override void Execute(IEntity entity)
         {
-            foreach (var otherEntity in this.Context.Entities)
+            var currentMap = entity.Context as IMapInstance;
+            IMapLayer currentMapLayer = currentMap?.GetMapLayer(entity.Object.LayerId);
+
+            UpdateContextVisibility(entity, currentMapLayer);
+            UpdateContextVisibility(entity, this.Context);
+        }
+
+        /// <summary>
+        /// Update context visibility.
+        /// </summary>
+        /// <param name="entity">Current entity</param>
+        /// <param name="context">Context containing entities</param>
+        private static void UpdateContextVisibility(IEntity entity, IContext context)
+        {
+            if (context == null)
+                return;
+
+            foreach (IEntity otherEntity in context.Entities)
             {
-                if (entity.Id != otherEntity.Id && otherEntity.ObjectComponent.Spawned)
+                if (entity.Id == otherEntity.Id || !otherEntity.Object.Spawned)
+                    continue;
+
+                if (otherEntity.Type == WorldEntityType.Player && entity.Object.LayerId != otherEntity.Object.LayerId)
+                    continue;
+
+                bool canSee = entity.Object.Position.IsInCircle(otherEntity.Object.Position, VisibilityRange) && entity != otherEntity;
+
+                if (canSee)
                 {
-                    if (this.CanSee(entity, otherEntity))
-                    {
-                        if (!entity.ObjectComponent.Entities.Contains(otherEntity))
-                            this.SpawnOtherEntity(entity, otherEntity);
-                    }
-                    else
-                    {
-                        if (entity.ObjectComponent.Entities.Contains(otherEntity))
-                            this.DespawnOtherEntity(entity, otherEntity);
-                    }
+                    if (!entity.Object.Entities.Contains(otherEntity))
+                        SpawnOtherEntity(entity, otherEntity);
+                }
+                else
+                {
+                    if (entity.Object.Entities.Contains(otherEntity))
+                        DespawnOtherEntity(entity, otherEntity);
                 }
             }
         }
@@ -56,19 +73,19 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="otherEntity"></param>
-        private void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private static void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
             var player = entity as IPlayerEntity;
 
-            entity.ObjectComponent.Entities.Add(otherEntity);
+            entity.Object.Entities.Add(otherEntity);
             WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
 
-            if (otherEntity.Type != WorldEntityType.Player && !otherEntity.ObjectComponent.Entities.Contains(entity))
-                otherEntity.ObjectComponent.Entities.Add(entity);
+            if (otherEntity.Type != WorldEntityType.Player && !otherEntity.Object.Entities.Contains(entity))
+                otherEntity.Object.Entities.Add(entity);
 
             if (otherEntity is IMovableEntity movableEntity &&
-                movableEntity.MovableComponent.DestinationPosition != movableEntity.ObjectComponent.Position)
-                WorldPacketFactory.SendDestinationPosition(player.Connection, movableEntity);
+                movableEntity.MovableComponent.DestinationPosition != movableEntity.Object.Position)
+                WorldPacketFactory.SendDestinationPosition(movableEntity);
         }
 
         /// <summary>
@@ -76,27 +93,15 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity">Current entity</param>
         /// <param name="otherEntity">other entity</param>
-        private void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private static void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
             var player = entity as IPlayerEntity;
 
             WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
-            entity.ObjectComponent.Entities.Remove(otherEntity);
+            entity.Object.Entities.Remove(otherEntity);
             
-            if (otherEntity.Type != WorldEntityType.Player && otherEntity.ObjectComponent.Entities.Contains(entity))
-                otherEntity.ObjectComponent.Entities.Remove(entity);
-        }
-
-        /// <summary>
-        /// Check if the entity can see the other entity.
-        /// </summary>
-        /// <param name="entity">Current entity</param>
-        /// <param name="otherEntity">Other entity</param>
-        /// <returns>Can see or not the other entity</returns>
-        private bool CanSee(IEntity entity, IEntity otherEntity)
-        {
-            return entity.ObjectComponent.Position.IsInCircle(otherEntity.ObjectComponent.Position, VisibilityRange) 
-                && entity != otherEntity;
+            if (otherEntity.Type != WorldEntityType.Player && otherEntity.Object.Entities.Contains(entity))
+                otherEntity.Object.Entities.Remove(entity);
         }
     }
 }

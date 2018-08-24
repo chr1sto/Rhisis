@@ -1,20 +1,25 @@
-﻿using System.Linq;
-using Rhisis.Core.IO;
+﻿using NLog;
+using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Systems;
-using Rhisis.World.Systems.Events.Inventory;
+using Rhisis.World.Packets;
+using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Inventory.EventArgs;
+using System.Linq;
 
 namespace Rhisis.World.Game.Chat
 {
     public static class CreateItemChatCommand
     {
-        [ChatCommand("/createitem")]
-        [ChatCommand("/ci")]
-        [ChatCommand("/item")]
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
+        [ChatCommand("/createitem", AuthorityType.Administrator)]
+        [ChatCommand("/ci", AuthorityType.Administrator)]
+        [ChatCommand("/item", AuthorityType.Administrator)]
         public static void CreateItem(IPlayerEntity player, string[] parameters)
         {
-            Logger.Debug("{0} want to create an item", player.ObjectComponent.Name);
+            Logger.Debug("{0} want to create an item", player.Object.Name);
 
             if (parameters.Length <= 0)
             {
@@ -22,9 +27,9 @@ namespace Rhisis.World.Game.Chat
                 return;
             }
 
-            if (!player.InventoryComponent.HasAvailableSlots())
+            if (!player.Inventory.HasAvailableSlots())
             {
-                // TODO: send message to tell there is no available slots
+                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
 
@@ -41,7 +46,7 @@ namespace Rhisis.World.Game.Chat
             if (parameters.Length >= 2)
                 int.TryParse(parameters[1], out quantity);
 
-            var createItemEvent = new InventoryCreateItemEventArgs(itemId, quantity, player.PlayerComponent.Id);
+            var createItemEvent = new InventoryCreateItemEventArgs(itemId, quantity, player.PlayerData.Id);
             player.Context.NotifySystem<InventorySystem>(player, createItemEvent);
         }
     }

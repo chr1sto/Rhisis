@@ -1,5 +1,4 @@
-﻿using Rhisis.World.Game.Core.Interfaces;
-using System;
+﻿using System;
 
 namespace Rhisis.World.Game.Core
 {
@@ -22,7 +21,7 @@ namespace Rhisis.World.Game.Core
         /// </summary>
         /// <param name="entity">Entity</param>
         /// <param name="e">Arguments</param>
-        public virtual void Execute(IEntity entity, EventArgs e)
+        public virtual void Execute(IEntity entity, SystemEventArgs e)
         {
             throw new NotImplementedException();
         }

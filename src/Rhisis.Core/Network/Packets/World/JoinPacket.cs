@@ -80,7 +80,7 @@ namespace Rhisis.Core.Network.Packets.World
         /// Creates a new <see cref="JoinPacket"/> object.
         /// </summary>
         /// <param name="packet">Incoming packet</param>
-        public JoinPacket(NetPacketBase packet)
+        public JoinPacket(INetPacketStream packet)
         {
             this.WorldId = packet.Read<int>();
             this.PlayerId = packet.Read<int>();

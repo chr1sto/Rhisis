@@ -1,17 +1,15 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
-using Rhisis.Database.Structures;
-using System;
+using Rhisis.Database.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Rhisis.Cluster.Packets
 {
     public static class ClusterPacketFactory
     {
-        public static void SendWelcome(NetConnection client, uint sessionId)
+        public static void SendWelcome(NetUser client, uint sessionId)
         {
             using (var packet = new FFPacket())
             {
@@ -22,7 +20,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendPong(NetConnection client, int time)
+        public static void SendPong(NetUser client, int time)
         {
             using (var packet = new FFPacket())
             {
@@ -33,7 +31,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendError(NetConnection client, ErrorType error)
+        public static void SendError(NetUser client, ErrorType error)
         {
             using (var packet = new FFPacket())
             {
@@ -44,7 +42,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendPlayerList(NetConnection client, int authenticationKey, IEnumerable<Character> characters)
+        public static void SendPlayerList(NetUser client, int authenticationKey, IEnumerable<Character> characters)
         {
             using (var packet = new FFPacket())
             {
@@ -74,7 +72,7 @@ namespace Rhisis.Cluster.Packets
                     packet.Write(character.Gender);
                     packet.Write(character.ClassId);
                     packet.Write(character.Level);
-                    packet.Write(0); // Job Level (Maybe master of hero ?)
+                    packet.Write(0); // Job Level (Maybe master or hero ?)
                     packet.Write(character.Strength);
                     packet.Write(character.Stamina);
                     packet.Write(character.Dexterity);
@@ -92,7 +90,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendWorldAddress(NetConnection client, string address)
+        public static void SendWorldAddress(NetUser client, string address)
         {
             using (var packet = new FFPacket())
             {
@@ -103,7 +101,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendLoginNumPad(NetConnection client, int loginProtectValue)
+        public static void SendLoginNumPad(NetUser client, int loginProtectValue)
         {
             using (var packet = new FFPacket())
             {
@@ -114,7 +112,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendLoginProtect(NetConnection client, int loginProtectValue)
+        public static void SendLoginProtect(NetUser client, int loginProtectValue)
         {
             using (var packet = new FFPacket())
             {
@@ -126,7 +124,7 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendJoinWorld(NetConnection client)
+        public static void SendJoinWorld(NetUser client)
         {
             using (var packet = new FFPacket())
             {

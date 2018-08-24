@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhisis.Core.IO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,9 +11,6 @@ namespace Rhisis.Core.Resources
     /// </summary>
     public class TextFile : FileStream, IDisposable
     {
-        private static readonly string SingleLineComment = "//";
-        private static readonly string MultiLineCommentStart = "/*";
-        private static readonly string MultiLineCommentEnd = "*/";
         private static readonly IEnumerable<char> Separators = new[] { ' ', '\t' };
         public static readonly IEnumerable<string> Extensions = new[] { ".txt" };
         
@@ -43,7 +41,6 @@ namespace Rhisis.Core.Resources
             : base(filePath, FileMode.Open, FileAccess.Read)
         {
             this._texts = new Dictionary<string, string>();
-
             this.Read();
         }
 
@@ -66,31 +63,32 @@ namespace Rhisis.Core.Resources
         private void Read()
         {
             var reader = new StreamReader(this);
+            var separators = Separators.ToArray();
 
             while (!reader.EndOfStream)
             {
-                string line = reader.ReadLine().Trim();
+                string line = reader.ReadLine();
+                string lineTrim = line.Trim();
 
-                if (line.StartsWith(SingleLineComment))
+                if (lineTrim.StartsWith(FileTokenScanner.SingleLineComment))
                     continue;
-                if (line.StartsWith(MultiLineCommentStart))
+                if (lineTrim.StartsWith(FileTokenScanner.MultiLineCommentBegin))
                 {
-                    while (!line.Contains(MultiLineCommentEnd))
+                    while (!line.Contains(FileTokenScanner.MultiLineCommentEnd))
                         line = reader.ReadLine();
                     continue;
                 }
-                if (line.Contains(SingleLineComment))
-                    line = line.Remove(line.IndexOf('/'));
+                if (line.Contains(FileTokenScanner.SingleLineComment))
+                    line = line.Remove(line.IndexOf(FileTokenScanner.SingleLineComment));
 
-                string[] texts = line.Split(Separators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                string[] texts = line.Split(separators, StringSplitOptions.None);
 
                 if (texts.Length >= 2)
                 {
-                    string key = texts.First();
-                    string value = line.Replace(key, string.Empty).Trim();
-
-                    if (!this._texts.ContainsKey(key))
-                        this._texts.Add(key, value);
+                    string key = texts.First().Trim();
+                    
+                    if (!string.IsNullOrEmpty(key) && !this._texts.ContainsKey(key))
+                        this._texts.Add(key, line.Replace(key, string.Empty).Trim());
                 }
             }
         }
@@ -102,7 +100,6 @@ namespace Rhisis.Core.Resources
         protected override void Dispose(bool disposing)
         {
             this._texts.Clear();
-
             base.Dispose(disposing);
         }
     }

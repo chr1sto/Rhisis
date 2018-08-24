@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Common;
 using Rhisis.Core.IO;
 using Rhisis.Core.Network;
@@ -6,19 +7,22 @@ using Rhisis.Core.Network.Packets;
 using Rhisis.Core.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
-using Rhisis.Database.Structures;
+using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems;
-using Rhisis.World.Systems.Events.Inventory;
+using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Inventory.EventArgs;
 
 namespace Rhisis.World.Handlers
 {
     public static class JoinGameHandler
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         [PacketHandler(PacketType.JOIN)]
-        public static void OnJoin(WorldClient client, NetPacketBase packet)
+        public static void OnJoin(WorldClient client, INetPacketStream packet)
         {
             var joinPacket = new JoinPacket(packet);
             Character character = null;
@@ -39,18 +43,26 @@ namespace Rhisis.World.Handlers
                 // Account banned so he can't connect to the game.
                 return;
             }
+            
+            if (!WorldServer.Maps.TryGetValue(character.MapId, out IMapInstance map))
+            {
+                Logger.Warn("Map with id '{0}' doesn't exist.", character.MapId);
+                // TODO: send error to client or go to default map ?
+                return;
+            }
 
-            var map = WorldServer.Maps[character.MapId];
+            IMapLayer mapLayer = map.GetMapLayer(character.MapLayerId) ?? map.GetDefaultMapLayer();
 
             // 1st: Create the player entity with the map context
-            client.Player = map.Context.CreateEntity<PlayerEntity>();
+            client.Player = map.CreateEntity<PlayerEntity>();
 
             // 2nd: create and initialize the components
-            client.Player.ObjectComponent = new ObjectComponent
+            client.Player.Object = new ObjectComponent
             {
                 ModelId = character.Gender == 0 ? 11 : 12,
                 Type = WorldObjectType.Mover,
                 MapId = character.MapId,
+                LayerId = mapLayer.Id,
                 Position = new Vector3(character.PosX, character.PosY, character.PosZ),
                 Angle = character.Angle,
                 Size = 100,
@@ -59,7 +71,7 @@ namespace Rhisis.World.Handlers
                 Level = character.Level
             };
 
-            client.Player.HumanComponent = new HumanComponent
+            client.Player.VisualAppearance = new VisualAppearenceComponent
             {
                 Gender = character.Gender,
                 SkinSetId = character.SkinSetId,
@@ -68,33 +80,35 @@ namespace Rhisis.World.Handlers
                 FaceId = character.FaceId,
             };
 
-            client.Player.PlayerComponent = new PlayerComponent
+            client.Player.PlayerData = new PlayerDataComponent
             {
                 Id = character.Id,
-                Slot = character.Slot
+                Slot = character.Slot,
+                Gold = character.Gold,
+                Authority = (AuthorityType)character.User.Authority
             };
 
             client.Player.MovableComponent = new MovableComponent
             {
-                Speed = WorldServer.Movers[client.Player.ObjectComponent.ModelId].Speed,
-                DestinationPosition = client.Player.ObjectComponent.Position.Clone(),
+                Speed = WorldServer.Movers[client.Player.Object.ModelId].Speed,
+                DestinationPosition = client.Player.Object.Position.Clone(),
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
-            client.Player.StatisticsComponent = new StatisticsComponent(character);
-
+            client.Player.Statistics = new StatisticsComponent(character);
+            client.Player.Behavior = WorldServer.PlayerBehaviors.DefaultBehavior;
             client.Player.Connection = client;
 
             // Initialize the inventory
-            var inventoryEventArgs = new InventoryEventArgs(InventoryActionType.Initialize, character.Items);
-            client.Player.Context.NotifySystem<InventorySystem>(client.Player, inventoryEventArgs);
+            var inventoryEventArgs = new InventoryInitializeEventArgs(character.Items);
+            client.Player.NotifySystem<InventorySystem>(inventoryEventArgs);
             
             // 3rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client.Player);
 
             // 4th: player is now spawned
-            client.Player.ObjectComponent.Spawned = true;
+            client.Player.Object.Spawned = true;
         }
     }
 }

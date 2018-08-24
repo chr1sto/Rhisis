@@ -1,29 +1,51 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
+using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Interfaces;
 
 namespace Rhisis.World.Game.Entities
 {
     public class PlayerEntity : Entity, IPlayerEntity
     {
+        /// <inheritdoc />
         public override WorldEntityType Type => WorldEntityType.Player;
-        
-        public HumanComponent HumanComponent { get; set; }
 
-        public PlayerComponent PlayerComponent { get; set; }
+        /// <inheritdoc />
+        public VisualAppearenceComponent VisualAppearance { get; set; }
 
+        /// <inheritdoc />
+        public PlayerDataComponent PlayerData { get; set; }
+
+        /// <inheritdoc />
         public MovableComponent MovableComponent { get; set; }
 
-        public ItemContainerComponent InventoryComponent { get; set; }
+        /// <inheritdoc />
+        public ItemContainerComponent Inventory { get; set; }
 
-        public StatisticsComponent StatisticsComponent { get; set; }
+        /// <inheritdoc />
+        public StatisticsComponent Statistics { get; set; }
 
-        public NetConnection Connection { get; set; }
+        /// <inheritdoc />
+        public TradeComponent Trade { get; set; }
 
+        /// <inheritdoc />
+        public NetUser Connection { get; set; }
+
+        /// <inheritdoc />
+        public FollowComponent Follow { get; set; }
+
+        /// <inheritdoc />
+        public IBehavior<IPlayerEntity> Behavior { get; set; }
+
+        /// <summary>
+        /// Creates a new <see cref="PlayerEntity"/> instance.
+        /// </summary>
+        /// <param name="context"></param>
         public PlayerEntity(IContext context)
             : base(context)
         {
+            this.Trade = new TradeComponent();
+            this.Follow = new FollowComponent();
         }
     }
 }

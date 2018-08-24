@@ -10,12 +10,12 @@ namespace Rhisis.Core.Test.Resources
         private static readonly int ResourceTableHeaderIndex = 2;
 
         /// <summary>
-        /// Open and read a <see cref="ResourceTable"/> file.
+        /// Open and read a <see cref="ResourceTableFile"/> file.
         /// </summary>
         [Fact]
         public void OpenResourceTable()
         {
-            var resourceTable = new ResourceTable(ResourceTablePath, ResourceTableHeaderIndex);
+            var resourceTable = new ResourceTableFile(ResourceTablePath, ResourceTableHeaderIndex);
 
             Assert.NotNull(resourceTable);
             Assert.Equal(ResourceTableCount, resourceTable.Count);

@@ -2,7 +2,7 @@
 {
     public static class LoginProtect
     {
-        private static int[,] numPad = new int[,]
+        private static readonly int[,] NumPad =
         {
             { 1, 9, 2, 6, 0, 5, 7, 4, 8, 3 }, { 6, 1, 2, 9, 4, 0, 7, 3, 5, 8 }, { 3, 8, 0, 4, 9, 6, 7, 1, 2, 5 }, { 4, 3, 2, 6, 8, 1, 7, 9, 5, 0 }, { 2, 3, 8, 6, 0, 9, 5, 7, 1, 4 },
             { 7, 3, 1, 2, 8, 6, 5, 0, 9, 4 }, { 8, 0, 1, 4, 5, 6, 7, 2, 9, 3 }, { 9, 7, 8, 2, 5, 0, 3, 6, 4, 1 }, { 3, 1, 8, 9, 6, 7, 4, 2, 5, 0 }, { 2, 9, 1, 4, 7, 5, 0, 6, 8, 3 },
@@ -223,8 +223,9 @@
                 int num3 = (secretNum % 100) / 10;
                 int num4 = secretNum % 10;
 
-                password = (numPad[idNumPad, num1] * 1000) + (numPad[idNumPad, num2] * 100) + (numPad[idNumPad, num3] * 10) + (numPad[idNumPad, num4]);
+                password = (NumPad[idNumPad, num1] * 1000) + (NumPad[idNumPad, num2] * 100) + (NumPad[idNumPad, num3] * 10) + (NumPad[idNumPad, num4]);
             }
+
             return password;
         }
     }

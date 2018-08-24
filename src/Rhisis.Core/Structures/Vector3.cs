@@ -115,6 +115,20 @@ namespace Rhisis.Core.Structures
         }
 
         /// <summary>
+        /// Check if this <see cref="Vector3"/> instersects a <see cref="Rectangle"/>.
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public bool Intersects(Rectangle rectangle, float radius)
+        {
+            var deltaX = this._x - Math.Max(rectangle.X, Math.Min(this._x, rectangle.X + rectangle.Width));
+            var deltaY = this._z - Math.Max(rectangle.Z, Math.Min(this._z, rectangle.Z + rectangle.Length));
+
+            return (deltaX * deltaX + deltaY * deltaY) < (radius * radius);
+        }
+
+        /// <summary>
         /// Normalize the vector.
         /// </summary>
         /// <returns></returns>

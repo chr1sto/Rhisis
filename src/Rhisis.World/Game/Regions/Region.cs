@@ -8,45 +8,34 @@ namespace Rhisis.World.Game.Regions
     /// </summary>
     public abstract class Region : IRegion
     {
-        /// <summary>
-        /// Gets the top left corner X coordinate of the region.
-        /// </summary>
+        /// <inheritdoc />
         public int X { get; }
 
-        /// <summary>
-        /// Gets the top left corner Z coordinate of the region.
-        /// </summary>
+        /// <inheritdoc />
         public int Z { get; }
 
-        /// <summary>
-        /// Gets the region's width.
-        /// </summary>
+        /// <inheritdoc />
         public int Width { get; }
 
-        /// <summary>
-        /// Gets the region's length.
-        /// </summary>
+        /// <inheritdoc />
         public int Length { get; }
 
         /// <summary>
         /// Creates a new <see cref="Region"/> object.
         /// </summary>
-        /// <param name="left">X coordinate (X Top Left corner)</param>
-        /// <param name="top">Z coordinate (Z top left corner)</param>
-        /// <param name="right">Width of the region</param>
-        /// <param name="bottom">Height of the region</param>
-        protected Region(int left, int top, int right, int bottom)
+        /// <param name="x">X coordinate (X Top Left corner)</param>
+        /// <param name="z">Z coordinate (Z top left corner)</param>
+        /// <param name="width">Width of the region</param>
+        /// <param name="length">Length of the region</param>
+        protected Region(int x, int z, int width, int length)
         {
-            this.X = left;
-            this.Z = top;
-            this.Width = right - left;
-            this.Length = bottom - top;
+            this.X = x;
+            this.Z = z;
+            this.Width = width - x;
+            this.Length = length - z;
         }
 
-        /// <summary>
-        /// Generate a random position within the region.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public Vector3 GetRandomPosition()
         {
             var position = new Vector3()
@@ -59,15 +48,8 @@ namespace Rhisis.World.Game.Regions
             return position;
         }
 
-        /// <summary>
-        /// Check if the position passed as parameter is inside the region.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns>True when the position is inside the region, otherwise false</returns>
-        public bool Contains(Vector3 position)
-        {
-            return position.X >= this.X && position.X <= this.X + this.Width &&
-                position.Z >= this.Z && position.Z <= this.Z + this.Length;
-        }
+        /// <inheritdoc />
+        public bool Contains(Vector3 position) => position.X >= this.X && position.X <= this.X + this.Width &&
+                                                  position.Z >= this.Z && position.Z <= this.Z + this.Length;
     }
 }

@@ -1,7 +1,7 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.IO;
 using Rhisis.Core.ISC;
 using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
@@ -12,66 +12,93 @@ using System.Collections.Generic;
 
 namespace Rhisis.Login.ISC
 {
-    public sealed class ISCClient : NetConnection
+    public sealed class ISCClient : NetUser
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         private ISCServer _server;
-        
-        public InterServerType Type { get; internal set; }
+
+
+        public ISCServer IcsServer => this._server;
+
+        public ISCServerType Type { get; internal set; }
 
         public BaseServerInfo ServerInfo { get; internal set; }
 
-        public ISCServer Server => this._server;
+        /// <summary>
+        /// Gets the remote end point (IP and port).
+        /// </summary>
+        public string RemoteEndPoint { get; private set; }
 
         public void Initialize(ISCServer server)
         {
             this._server = server;
-            PacketFactory.SendWelcome(this);
+            this.RemoteEndPoint = this.Socket.RemoteEndPoint.ToString();
         }
 
-        public override void HandleMessage(NetPacketBase packet)
+        /// <inheritdoc />
+        public override void Send(INetPacketStream packet)
         {
-            var packetHeaderNumber = packet.Read<uint>();
+            if (Logger.IsTraceEnabled) 
+            {
+                Logger.Trace("Send {0} packet to {1}.", 
+                    (ISCPacketType)BitConverter.ToUInt32(packet.Buffer, 4), 
+                    this.RemoteEndPoint);
+            }
+
+            base.Send(packet);
+        }
+
+        /// <inheritdoc />
+        public override void HandleMessage(INetPacketStream packet)
+        {
+            uint packetHeaderNumber = 0;
+
+            if (Socket == null)
+            {
+                Logger.Trace("Skip to handle packet from {0}. Reason: socket is no more connected.", this.RemoteEndPoint);
+                return;
+            }
 
             try
             {
-                PacketHandler<ISCClient>.Invoke(this, packet, (InterPacketType)packetHeaderNumber);
+                packetHeaderNumber = packet.Read<uint>();
+
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace("Received {0} packet from {1}.", (ISCPacketType)packetHeaderNumber, this.RemoteEndPoint);
+
+                PacketHandler<ISCClient>.Invoke(this, packet, (ISCPacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {
-                Logger.Warning("Unknown inter-server packet with header: 0x{0}", packetHeaderNumber.ToString("X2"));
+                Logger.Warn("[SECURITY] Received an unknown ISC packet header 0x{0} from {1}.", 
+                    packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-#if DEBUG
-                Logger.Debug("STACK TRACE");
+                Logger.Error("ISC packet handle error from {0}. {1}", this.RemoteEndPoint, packetException);
                 Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
             }
         }
 
         public void Disconnect()
         {
-            if (this.Type == InterServerType.Cluster)
+            switch (this.Type)
             {
-                var clusterInfo = this.ServerInfo as ClusterServerInfo;
+                case ISCServerType.Cluster:
+                    (this.ServerInfo as ClusterServerInfo)?.WorldServers.Clear();
+                    break;
+                case ISCServerType.World:
+                    var worldInfo = this.GetServerInfo<WorldServerInfo>();
+                    ISCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
+                    var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
 
-                clusterInfo.Worlds.Clear();
-            }
-            else if (this.Type == InterServerType.World)
-            {
-                var worldInfo = this.GetServerInfo<WorldServerInfo>();
-                ISCClient cluster = this._server.GetCluster(worldInfo.ParentClusterId);
-                var clusterInfo = cluster?.GetServerInfo<ClusterServerInfo>();
+                    if (clusterInfo == null)
+                        return;
 
-                if (clusterInfo == null)
-                {
-                    Logger.Warning("Cannot find parent cluster of world server : {0}", worldInfo.Name);
-                    return;
-                }
-
-                clusterInfo.Worlds.Remove(worldInfo);
-                PacketFactory.SendUpdateWorldList(cluster, clusterInfo.Worlds);
+                    clusterInfo.WorldServers.Remove(worldInfo);
+                    ISCPacketFactory.SendUpdateWorldList(cluster, clusterInfo.WorldServers);
+                    break;
             }
         }
 

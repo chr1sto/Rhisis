@@ -1,24 +1,31 @@
-﻿using Ether.Network;
+﻿using Ether.Network.Common;
 using Ether.Network.Packets;
+using NLog;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Database;
-using Rhisis.World.Game;
+using Rhisis.Database.Entities;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Maps;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.World.Packets;
 
 namespace Rhisis.World
 {
-    public sealed class WorldClient : NetConnection
+    public sealed class WorldClient : NetUser
     {
-        private readonly uint _sessionId;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// Gets the ID assigned to this session.
+        /// </summary>
+        public uint SessionId { get; }
 
         /// <summary>
         /// Gets or sets the player entity.
@@ -26,58 +33,79 @@ namespace Rhisis.World
         public IPlayerEntity Player { get; set; }
 
         /// <summary>
+        /// Gets the world server's instance.
+        /// </summary>
+        public IWorldServer WorldServer { get; private set; }
+
+        /// <summary>
+        /// Gets the remote end point (IP and port) for this client.
+        /// </summary>
+        public string RemoteEndPoint { get; private set; }
+
+        /// <summary>
         /// Creates a new <see cref="WorldClient"/> instance.
         /// </summary>
         public WorldClient()
         {
-            this._sessionId = RandomHelper.GenerateSessionKey();
+            this.SessionId = RandomHelper.GenerateSessionKey();
         }
 
         /// <summary>
         /// Initialize the client and send welcome packet.
         /// </summary>
-        public void InitializeClient()
+        public void InitializeClient(IWorldServer server)
         {
-            CommonPacketFactory.SendWelcome(this, this._sessionId);
+            this.WorldServer = server;
+            this.RemoteEndPoint = this.Socket.RemoteEndPoint.ToString();
         }
 
-        /// <summary>
-        /// Handles incoming messages.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public override void HandleMessage(NetPacketBase packet)
+        public override void Send(INetPacketStream packet)
         {
-            var pak = packet as FFPacket;
-            var packetHeader = new PacketHeader(pak);
-
-            if (!FFPacket.VerifyPacketHeader(packetHeader, (int)this._sessionId))
+            if (Logger.IsTraceEnabled)
             {
-                Logger.Warning("Invalid header for packet: {0}", packetHeader.Header);
+                Logger.Trace("Send {0} packet to {1}.",
+                    (PacketType)BitConverter.ToUInt32(packet.Buffer, 5),
+                    this.RemoteEndPoint);
+            }
+
+            base.Send(packet);
+        }
+
+        /// <inheritdoc />
+        public override void HandleMessage(INetPacketStream packet)
+        {
+            FFPacket pak = null;
+            uint packetHeaderNumber = 0;
+
+            if (Socket == null)
+            {
+                Logger.Trace("Skip to handle packet from {0}. Reason: client is no more connected.", this.RemoteEndPoint);
                 return;
             }
 
-            packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
-            var packetHeaderNumber = packet.Read<uint>();
-
             try
             {
+                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
+
+                pak = packet as FFPacket;
+                packetHeaderNumber = packet.Read<uint>();
+
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
+
                 PacketHandler<WorldClient>.Invoke(this, pak, (PacketType)packetHeaderNumber);
             }
             catch (KeyNotFoundException)
             {
-                FFPacket.UnknowPacket<PacketType>(packetHeaderNumber, 2);
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                    Logger.Warn("Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                else
+                    Logger.Warn("[SECURITY] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
             }
             catch (RhisisPacketException packetException)
             {
-                Logger.Error(packetException.Message);
-
-                if (packetException.InnerException != null)
-                    Logger.Error("Inner Exception: {0}", packetException.InnerException.Message);
-
-#if DEBUG
-                Logger.Debug("STACK TRACE");
+                Logger.Error("Packet handle error from {0}. {1}", this.RemoteEndPoint, packetException);
                 Logger.Debug(packetException.InnerException?.StackTrace);
-#endif
             }
         }
 
@@ -89,77 +117,80 @@ namespace Rhisis.World
             if (this.Player == null)
                 return;
 
-            this.Player.ObjectComponent.Spawned = false;
+            this.Player.Object.Spawned = false;
 
-            using (var db = DatabaseService.GetContext())
+            using (DatabaseContext db = DatabaseService.GetContext())
             {
-                var character = db.Characters.Get(this.Player.PlayerComponent.Id);
+                Character character = db.Characters.Get(this.Player.PlayerData.Id);
 
                 if (character != null)
                 {
-                    character.PosX = this.Player.ObjectComponent.Position.X;
-                    character.PosY = this.Player.ObjectComponent.Position.Y;
-                    character.PosZ = this.Player.ObjectComponent.Position.Z;
-                    character.Angle = this.Player.ObjectComponent.Angle;
-                    character.MapId = this.Player.ObjectComponent.MapId;
-                    character.Gender = this.Player.HumanComponent.Gender;
-                    character.HairColor = this.Player.HumanComponent.HairColor;
-                    character.HairId = this.Player.HumanComponent.HairId;
-                    character.FaceId = this.Player.HumanComponent.FaceId;
-                    character.SkinSetId = this.Player.HumanComponent.SkinSetId;
-                    character.Level = this.Player.ObjectComponent.Level;
+                    character.PosX = this.Player.Object.Position.X;
+                    character.PosY = this.Player.Object.Position.Y;
+                    character.PosZ = this.Player.Object.Position.Z;
+                    character.Angle = this.Player.Object.Angle;
+                    character.MapId = this.Player.Object.MapId;
+                    character.MapLayerId = this.Player.Object.LayerId;
+                    character.Gender = this.Player.VisualAppearance.Gender;
+                    character.HairColor = this.Player.VisualAppearance.HairColor;
+                    character.HairId = this.Player.VisualAppearance.HairId;
+                    character.FaceId = this.Player.VisualAppearance.FaceId;
+                    character.SkinSetId = this.Player.VisualAppearance.SkinSetId;
+                    character.Level = this.Player.Object.Level;
 
-                    character.Strength = this.Player.StatisticsComponent.Strenght;
-                    character.Stamina = this.Player.StatisticsComponent.Stamina;
-                    character.Dexterity = this.Player.StatisticsComponent.Dexterity;
-                    character.Intelligence = this.Player.StatisticsComponent.Intelligence;
-                    character.StatPoints = this.Player.StatisticsComponent.StatPoints;
+                    character.Gold = this.Player.PlayerData.Gold;
 
-                    // Save inventory
+                    character.Strength = this.Player.Statistics.Strenght;
+                    character.Stamina = this.Player.Statistics.Stamina;
+                    character.Dexterity = this.Player.Statistics.Dexterity;
+                    character.Intelligence = this.Player.Statistics.Intelligence;
+                    character.StatPoints = this.Player.Statistics.StatPoints;
 
                     // Delete items
-                    for (int i = character.Items.Count - 1; i > 0; i--)
-                    {
-                        var dbItem = character.Items.ElementAt(i);
-                        var inventoryItem = this.Player.InventoryComponent.GetItemBySlot(dbItem.ItemSlot);
-
-                        if (inventoryItem != null && inventoryItem.Id == -1)
-                            character.Items.Remove(dbItem);
-                        
-                    }
+                    var itemsToDelete = new List<Item>(character.Items.Count);
+                    itemsToDelete.AddRange(from dbItem
+                        in character.Items
+                        let inventoryItem = this.Player.Inventory.GetItem(x => x.DbId == dbItem.Id) ?? new Game.Structures.Item()
+                        where inventoryItem.Id == -1
+                        select dbItem);
+                    itemsToDelete.ForEach(x => character.Items.Remove(x));
 
                     // Add or update items
-                    foreach (var item in this.Player.InventoryComponent.Items)
+                    foreach (var item in this.Player.Inventory.Items)
                     {
-                        if (item.Id != -1)
+                        if (item.Id == -1)
                         {
-                            var dbItem = character.Items.FirstOrDefault(x => x.ItemId == item.Id);
+                            continue;
+                        }
 
-                            if (dbItem != null)
-                            {
-                                dbItem.ItemId = item.Id;
-                                dbItem.ItemCount = item.Quantity;
-                                dbItem.ItemSlot = item.Slot;
-                                dbItem.Refine = item.Refine;
-                                dbItem.Element = item.Element;
-                                dbItem.ElementRefine = item.ElementRefine;
-                            }
-                            else
-                            {
-                                dbItem = new Rhisis.Database.Structures.Item()
-                                {
-                                    CharacterId = this.Player.PlayerComponent.Id,
-                                    CreatorId = item.CreatorId,
-                                    ItemId = item.Id,
-                                    ItemCount = item.Quantity,
-                                    ItemSlot = item.Slot,
-                                    Refine = item.Refine,
-                                    Element = item.Element,
-                                    ElementRefine = item.ElementRefine
-                                };
+                        Item dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
 
-                                character.Items.Add(dbItem);
-                            }
+                        if (dbItem != null)
+                        {
+                            dbItem.CharacterId = this.Player.PlayerData.Id;
+                            dbItem.ItemId = item.Id;
+                            dbItem.ItemCount = item.Quantity;
+                            dbItem.ItemSlot = item.Slot;
+                            dbItem.Refine = item.Refine;
+                            dbItem.Element = item.Element;
+                            dbItem.ElementRefine = item.ElementRefine;
+                            db.Items.Update(dbItem);
+                        }
+                        else
+                        {
+                            dbItem = new Item
+                            {
+                                CharacterId = this.Player.PlayerData.Id,
+                                CreatorId = item.CreatorId,
+                                ItemId = item.Id,
+                                ItemCount = item.Quantity,
+                                ItemSlot = item.Slot,
+                                Refine = item.Refine,
+                                Element = item.Element,
+                                ElementRefine = item.ElementRefine
+                            };
+
+                            db.Items.Create(dbItem);
                         }
                     }
                 }
@@ -172,39 +203,35 @@ namespace Rhisis.World
         /// Despawns the current player and notify other players arround.
         /// </summary>
         /// <param name="currentMap"></param>
-        private void DespawnPlayer(Map currentMap)
+        private void DespawnPlayer(IMapInstance currentMap)
         {
-            var entitiesAround = from x in currentMap.Context.Entities
-                                 where this.Player.ObjectComponent.Position.IsInCircle(x.ObjectComponent.Position, VisibilitySystem.VisibilityRange) && x != this.Player
-                                 select x;
+            IEnumerable<IEntity> entitiesAround = from x in currentMap.Entities
+                                                  where this.Player.Object.Position.IsInCircle(x.Object.Position, VisibilitySystem.VisibilityRange) && x != this.Player
+                                                  select x;
 
-            foreach (var entity in entitiesAround)
+            foreach (IEntity entity in entitiesAround)
             {
                 if (entity.Type == WorldEntityType.Player)
-                {
-                    var otherPlayerEntity = entity as IPlayerEntity;
+                    WorldPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, this.Player);
 
-                    WorldPacketFactory.SendDespawnObjectTo(otherPlayerEntity, this.Player);
-                }
-
-                entity.ObjectComponent.Entities.Remove(this.Player);
+                entity.Object.Entities.Remove(this.Player);
             }
 
-            currentMap.Context.DeleteEntity(this.Player);
+            currentMap.DeleteEntity(this.Player);
         }
 
-        /// <summary>
-        /// Disposes the <see cref="WorldClient"/> resources.
-        /// </summary>
-        public override void Dispose()
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            if (this.Player != null && WorldServer.Maps.TryGetValue(this.Player.ObjectComponent.MapId, out Map currentMap))
+            if (disposing)
             {
-                this.DespawnPlayer(currentMap);
+                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.Object.MapId, out IMapInstance currentMap))
+                    this.DespawnPlayer(currentMap);
+
+                this.Save();
             }
 
-            this.Save();
-            base.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

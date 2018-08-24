@@ -1,32 +1,58 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.IO;
+using NLog;
 using Rhisis.Core.ISC.Packets;
 using Rhisis.Core.ISC.Structures;
 using Rhisis.Core.Network;
+using System;
 
 namespace Rhisis.Cluster.ISC
 {
     public static class ISCHandler
     {
-        [PacketHandler(InterPacketType.Welcome)]
-        public static void OnWelcome(ISCClient client, NetPacketBase packet)
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
+        [PacketHandler(ISCPacketType.WELCOME)]
+        public static void OnWelcome(ISCClient client, INetPacketStream packet)
         {
-            ISCPackets.SendAuthentication(client, client.Configuration.Id, client.Configuration.Host, client.Configuration.Name);
+            ISCPacketFactory.SendAuthentication(client, 
+                client.ClusterConfiguration.Id, 
+                client.ClusterConfiguration.Host, 
+                client.ClusterConfiguration.Name);
         }
 
-        [PacketHandler(InterPacketType.AuthenticationResult)]
-        public static void OnAuthenticationResult(ISCClient client, NetPacketBase packet)
+        [PacketHandler(ISCPacketType.AUTHENT_RESULT)]
+        public static void OnAuthenticationResult(ISCClient client, INetPacketStream packet)
         {
-            var authenticationResult = packet.Read<uint>();
+            var authenticationResult = (ISCPacketCode)(packet.Read<uint>());
 
-            Logger.Debug("Authentication result: {0}", (InterServerError)authenticationResult);
+            switch (authenticationResult)
+            {
+                case ISCPacketCode.AUTH_SUCCESS:
+                    Logger.Info("ISC client authenticated succesfully.");
+                    return;
+                case ISCPacketCode.AUTH_FAILED_CLUSTER_EXISTS:
+                    Logger.Fatal("Unable to authenticate ISC client. Reason: an other Cluster server (with the same id) is already connected.");
+                    break;
+                case ISCPacketCode.AUTH_FAILED_UNKNOWN_SERVER:
+                    Logger.Fatal("Unable to authenticate ISC client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
+                    break;
+                default:
+                    Logger.Trace("ISC authentification result: {0}", authenticationResult);
+                    Logger.Fatal("Unable to authenticate ISC client. Reason: Cannot recognize ISC server. You probably have to update all servers.");
+                    break;
+            }
+
+            //TODO: implement a peacefully shutdown.
+            Console.ReadLine();
+            Environment.Exit((int)authenticationResult);
         }
 
-        [PacketHandler(InterPacketType.UpdateClusterWorldsList)]
-        public static void OnUpdateClusterWorldsList(ISCClient client, NetPacketBase packet)
+        [PacketHandler(ISCPacketType.UPDATE_CLUSTER_WORLDS_LIST)]
+        public static void OnUpdateClusterWorldsList(ISCClient client, INetPacketStream packet)
         {
-            client.Worlds.Clear();
             var worldsCount = packet.Read<int>();
+
+            client.WorldServers.Clear();
 
             for (int i = 0; i < worldsCount; i++)
             {
@@ -35,10 +61,10 @@ namespace Rhisis.Cluster.ISC
                 var worldName = packet.Read<string>();
                 var worldParentClusterId = packet.Read<int>();
 
-                if (worldParentClusterId != client.Configuration.Id)
+                if (worldParentClusterId != client.ClusterConfiguration.Id)
                     continue;
 
-                client.Worlds.Add(new WorldServerInfo(worldId, worldHost, worldName, worldParentClusterId));
+                client.WorldServers.Add(new WorldServerInfo(worldId, worldHost, worldName, worldParentClusterId));
             }
         }
     }

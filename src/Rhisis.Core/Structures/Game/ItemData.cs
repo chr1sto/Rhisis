@@ -33,6 +33,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwItemSex")]
         public int ItemSex { get; set; }
 
+        [DataMember(Name = "dwCost")]
+        public int Cost { get; set; }
+
         [DataMember(Name = "dwLimitLevel1")]
         public int LimitLevel { get; set; }
 
