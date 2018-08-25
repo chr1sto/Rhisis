@@ -76,7 +76,7 @@ namespace Rhisis.World.Systems.Chat
                     else
                     {
                         command.Method.Invoke(player, commandParameters);
-                        Logger.Info("Command '{0}' executed for player '{1}'.");
+                        Logger.Info("Command '{0}' executed for player '{1}'.", commandName, player.Object.Name);
                     }
                 }
                 else

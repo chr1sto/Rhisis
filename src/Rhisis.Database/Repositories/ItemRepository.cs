@@ -1,14 +1,24 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Interfaces;
 
 namespace Rhisis.Database.Repositories
 {
     /// <summary>
     /// Item repository.
     /// </summary>
-    public sealed class ItemRepository : RepositoryBase<DbItem>
+    [Repository]
+    public sealed class ItemRepository : RepositoryBase<DbItem>, IItemRepository
     {
+        /// <summary>
+        /// Creates a new <see cref="ItemRepository"/> instance.
+        /// </summary>
+        public ItemRepository()
+        {
+        }
+
         /// <summary>
         /// Creates an initialize an <see cref="ItemRepository"/>.
         /// </summary>
@@ -18,13 +28,10 @@ namespace Rhisis.Database.Repositories
         {
         }
 
-        /// <summary>
-        /// Include other objects for each requests.
-        /// </summary>
-        /// <returns></returns>
-        protected override IQueryable<DbItem> GetQueryable()
+        /// <inheritdoc />
+        protected override IQueryable<DbItem> GetQueryable(DbContext context)
         {
-            return base.GetQueryable()
+            return base.GetQueryable(context)
                 .Include(x => x.Character);
         }
     }

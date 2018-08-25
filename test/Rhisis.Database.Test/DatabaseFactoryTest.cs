@@ -14,12 +14,15 @@ namespace Rhisis.Database.Test
         [Fact(DisplayName = "Create a DbContext from factory")]
         public void CreateDbContextFromFactory()
         {
-            DatabaseContext context = this._dbFactory.CreateDbContext(DatabaseTestConstants.DatabaseOptions);
+            using (DatabaseContext context = this._dbFactory.CreateDbContext(DatabaseTestConstants.GenerateNewDatabaseOptions()))
+            {
+                Assert.NotNull(context);
+                Assert.NotNull(context.Users);
+                Assert.NotNull(context.Characters);
+                Assert.NotNull(context.Items);
 
-            Assert.NotNull(context);
-            Assert.NotNull(context.Users);
-            Assert.NotNull(context.Characters);
-            Assert.NotNull(context.Items);
+                context.Dispose();
+            }
         }
     }
 }

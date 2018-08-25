@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Rhisis.Database.Entities;
 using System;
+using System.Threading.Tasks;
 
 namespace Rhisis.Database
 {
@@ -54,7 +57,7 @@ namespace Rhisis.Database
             {
                 case DatabaseProvider.MySql:
                     optionsBuilder.UseMySql(
-                        string.Format(MsSqlConnectionString,
+                        string.Format(MySqlConnectionString,
                             this._databaseConfiguration.Host,
                             this._databaseConfiguration.Username,
                             this._databaseConfiguration.Password,
@@ -64,7 +67,7 @@ namespace Rhisis.Database
 
                 case DatabaseProvider.MsSql:
                     optionsBuilder.UseSqlServer(
-                        string.Format(MySqlConnectionString,
+                        string.Format(MsSqlConnectionString,
                             this._databaseConfiguration.Host,
                             this._databaseConfiguration.Port,
                             this._databaseConfiguration.Database,
@@ -75,5 +78,31 @@ namespace Rhisis.Database
                 default: throw new NotImplementedException();
             }
         }
+
+        /// <summary>
+        /// Migrates the database schema.
+        /// </summary>
+        public void Migrate() => this.Database.Migrate();
+
+        /// <summary>
+        /// Migrates the database schema asynchronously.
+        /// </summary>
+        public async Task MigrageAsync() => await this.Database.MigrateAsync();
+
+        /// <summary>
+        /// Check if the database exists.
+        /// </summary>
+        /// <returns></returns>
+        public bool DatabaseExists() => (this.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+
+        /// <summary>
+        /// Opens the connection.
+        /// </summary>
+        public void OpenConnection() => this.Database.OpenConnection();
+
+        /// <summary>
+        /// Closes the connection.
+        /// </summary>
+        public void CloseConnection() => this.Database.CloseConnection();
     }
 }

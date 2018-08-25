@@ -7,6 +7,7 @@ using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Repositories;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
@@ -118,10 +119,11 @@ namespace Rhisis.World
                 return;
 
             this.Player.Object.Spawned = false;
+            var characterRepository = new CharacterRepository();
 
-            using (OldDatabaseContext db = DatabaseService.GetContext())
+            using (var db = DatabaseFactory.Instance.CreateDbContext())
             {
-                DbCharacter character = db.Characters.Get(this.Player.PlayerData.Id);
+                DbCharacter character = characterRepository.Get(this.Player.PlayerData.Id);
 
                 if (character != null)
                 {
@@ -190,7 +192,7 @@ namespace Rhisis.World
                                 ElementRefine = item.ElementRefine
                             };
 
-                            db.Items.Create(dbItem);
+                            db.Items.Add(dbItem);
                         }
                     }
                 }

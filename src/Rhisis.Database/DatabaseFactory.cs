@@ -2,12 +2,15 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Rhisis.Core.Common;
 using Rhisis.Core.Helpers;
+using System;
 
 namespace Rhisis.Database
 {
     public sealed class DatabaseFactory : Singleton<DatabaseFactory>, IDesignTimeDbContextFactory<DatabaseContext>
     {
-        private DatabaseConfiguration _databaseConfiguration;
+        private const string MigrationDatabaseConfigurationPath = "DB_CONFIG";
+
+        public DatabaseConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// Initialize the <see cref="DatabaseFactory"/>.
@@ -15,14 +18,14 @@ namespace Rhisis.Database
         /// <param name="databaseConfigurationPath"></param>
         public void Initialize(string databaseConfigurationPath)
         {
-            this._databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationPath);
+            this.Configuration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationPath);
         }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/>.
         /// </summary>
         /// <returns></returns>
-        public DatabaseContext CreateDbContext() => new DatabaseContext(this._databaseConfiguration);
+        public DatabaseContext CreateDbContext() => new DatabaseContext(this.Configuration);
 
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/> by passing context options.
@@ -38,10 +41,28 @@ namespace Rhisis.Database
         /// <returns></returns>
         public DatabaseContext CreateDbContext(string[] args)
         {
-            if (args != null && args.Length > 0)
-                this.Initialize(args[0]);
+            var test = Environment.GetEnvironmentVariable(MigrationDatabaseConfigurationPath);
+
+            if (!string.IsNullOrEmpty(test))
+                this.Initialize(test);
 
             return this.CreateDbContext();
+        }
+
+        /// <summary>
+        /// Check if the database exists.
+        /// </summary>
+        /// <returns></returns>
+        public bool DatabaseExists()
+        {
+            bool result = false;
+
+            using (var dbContext = this.CreateDbContext())
+            {
+                result = dbContext.DatabaseExists();
+            }
+
+            return result;
         }
     }
 }

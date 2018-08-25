@@ -8,6 +8,7 @@ using Rhisis.Core.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Repositories;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
@@ -25,12 +26,8 @@ namespace Rhisis.World.Handlers
         public static void OnJoin(WorldClient client, INetPacketStream packet)
         {
             var joinPacket = new JoinPacket(packet);
-            DbCharacter character = null;
-
-            using (var db = DatabaseService.GetContext())
-            {
-                character = db.Characters.Get(joinPacket.PlayerId);
-            }
+            var characterRepository = new CharacterRepository();
+            DbCharacter character = characterRepository.Get(joinPacket.PlayerId);
 
             if (character == null)
             {

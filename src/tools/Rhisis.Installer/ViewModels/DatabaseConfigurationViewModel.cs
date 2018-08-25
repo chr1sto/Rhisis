@@ -92,26 +92,19 @@ namespace Rhisis.Installer.ViewModels
 
         protected void OnTest()
         {
-            OldDatabaseContext context = null;
-
             try
             {
-                DatabaseService.Configure(this.Configuration);
+                using (var context = new DatabaseContext(this.Configuration))
+                {
+                    context.OpenConnection();
 
-                context = DatabaseService.GetContext();
-                context.OpenConnection();
-
-                this.Configuration.IsValid = true;
-                this.DialogService.ShowInformation("Connection success", "The connection has succeeded.");
+                    this.Configuration.IsValid = true;
+                    this.DialogService.ShowInformation("Connection success", "The connection has succeeded.");
+                }
             }
             catch (DbException e)
             {
-                this.DialogService.ShowError("Connection error", e.Message);
-            }
-            finally
-            {
-                context?.Dispose();
-                DatabaseService.UnloadConfiguration();
+                this.DialogService.ShowInformation("Information", "The connection has succeeded, but Database doesn't exists. Don't worry, this tool is going to create it for you.");
             }
         }
 

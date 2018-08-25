@@ -7,6 +7,7 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Repositories;
 using Rhisis.Installer.Enums;
 using Rhisis.Installer.Models;
 using Rhisis.Tools.Core.MVVM;
@@ -145,9 +146,11 @@ namespace Rhisis.Installer.ViewModels
             this.CurrentStepInfo = App.Instance.GetTranslation("ConfigureDatabase");
 
             ConfigurationHelper.Save(DatabaseConfigurationPath, this._databaseConfiguration);
-            DatabaseService.Configure(this._databaseConfiguration);
 
-            using (OldDatabaseContext context = DatabaseService.GetContext())
+            var dbFactory = new DatabaseFactory();
+            dbFactory.Initialize(DatabaseConfigurationPath);
+
+            using (var context = dbFactory.CreateDbContext())
             {
                 if (!context.DatabaseExists())
                 {
@@ -161,8 +164,7 @@ namespace Rhisis.Installer.ViewModels
                     }
                 }
             }
-
-            DatabaseService.UnloadConfiguration();
+            
             ConfigurationHelper.Save(DatabaseConfigurationPath, this._databaseConfiguration);
             await Task.Delay(500);
             
@@ -175,11 +177,13 @@ namespace Rhisis.Installer.ViewModels
 
             if (this._accountModel.IsValid)
             {
-                DatabaseService.Configure(this._databaseConfiguration);
+                var dbFactory = new DatabaseFactory();
+                dbFactory.Initialize(DatabaseConfigurationPath);
 
-                using (OldDatabaseContext context = DatabaseService.GetContext())
+                using (var context = dbFactory.CreateDbContext())
                 {
-                    DbUser user = context.Users.Get(x => x.Username == this._accountModel.Username);
+                    var userRepository = new UserRepository(context);
+                    DbUser user = userRepository.Get(x => x.Username == this._accountModel.Username);
 
                     if (user != null)
                     {
@@ -189,18 +193,16 @@ namespace Rhisis.Installer.ViewModels
                     }
                     else
                     {
-                        context.Users.Create(new DbUser
+                        await userRepository.CreateAsync(new DbUser
                         {
                             Authority = (int)this._accountModel.Type,
                             Username = this._accountModel.Username,
                             Password = this._accountModel.Password
                         });
 
-                        context.SaveChanges();
+                        await context.SaveChangesAsync();
                     }
                 }
-
-                DatabaseService.UnloadConfiguration();
             }
 
             await Task.Delay(500);

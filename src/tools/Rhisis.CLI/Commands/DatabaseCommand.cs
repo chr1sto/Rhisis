@@ -101,10 +101,9 @@ namespace Rhisis.CLI.Commands
             try
             {
                 Console.WriteLine("Starting database structure update...");
-                var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
-
-                DatabaseService.Configure(databaseConfiguration);
-                using (var rhisisDbContext = DatabaseService.GetContext())
+                DatabaseFactory.Instance.Initialize(DatabaseConfigurationFile);
+                
+                using (var rhisisDbContext = DatabaseFactory.Instance.CreateDbContext())
                 {
                     if (rhisisDbContext.DatabaseExists())
                     {

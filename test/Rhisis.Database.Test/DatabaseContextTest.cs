@@ -9,7 +9,9 @@ namespace Rhisis.Database.Test
         [Fact(DisplayName = "Create InMemory context")]
         public void CreateInMemoryContext()
         {
-            using (var context = new DatabaseContext(DatabaseTestConstants.DatabaseOptions))
+            var databaseOptions = DatabaseTestConstants.GenerateNewDatabaseOptions();
+
+            using (var context = new DatabaseContext(databaseOptions))
             {
                 context.Users.Add(new Entities.DbUser
                 {
@@ -21,7 +23,7 @@ namespace Rhisis.Database.Test
             }
 
             // Use a separate instance of the context to verify correct data was saved to database
-            using (var context = new DatabaseContext(DatabaseTestConstants.DatabaseOptions))
+            using (var context = new DatabaseContext(databaseOptions))
             {
                 Assert.Equal(1, context.Users.Count());
                 Assert.Equal(DatabaseTestConstants.TestUsername, context.Users.Single().Username);
