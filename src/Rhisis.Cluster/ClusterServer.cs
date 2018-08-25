@@ -78,7 +78,6 @@ namespace Rhisis.Cluster
 
             Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
-            //var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
             
             if (!DatabaseFactory.Instance.DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{DatabaseFactory.Instance.Configuration.Database}' doesn't exists.");
