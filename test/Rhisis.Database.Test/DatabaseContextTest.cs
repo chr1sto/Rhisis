@@ -6,7 +6,7 @@ namespace Rhisis.Database.Test
 {
     public class DatabaseContextTest
     {
-        [Fact(DisplayName = "Create InMemory context")]
+        [Fact(DisplayName = "Create In Memory context")]
         public void CreateInMemoryContext()
         {
             var databaseOptions = DatabaseTestConstants.GenerateNewDatabaseOptions();

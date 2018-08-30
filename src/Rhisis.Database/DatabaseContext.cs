@@ -12,7 +12,7 @@ namespace Rhisis.Database
         private const string MySqlConnectionString = "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
         private const string MsSqlConnectionString = "Server={0},{1};Database={2};User Id={3};Password={4};";
 
-        private readonly DatabaseConfiguration _databaseConfiguration;
+        private readonly DatabaseConfiguration _configuration;
 
         /// <summary>
         /// Gets or sets the users.
@@ -41,10 +41,10 @@ namespace Rhisis.Database
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/> instance.
         /// </summary>
-        /// <param name="databaseConfiguration"></param>
-        public DatabaseContext(DatabaseConfiguration databaseConfiguration)
+        /// <param name="configuration"></param>
+        public DatabaseContext(DatabaseConfiguration configuration)
         {
-            this._databaseConfiguration = databaseConfiguration;
+            this._configuration = configuration;
         }
 
         /// <inheritdoc />
@@ -53,29 +53,29 @@ namespace Rhisis.Database
             if (optionsBuilder.IsConfigured)
                 return;
 
-            switch (this._databaseConfiguration.Provider)
+            switch (this._configuration.Provider)
             {
                 case DatabaseProvider.MySql:
                     optionsBuilder.UseMySql(
                         string.Format(MySqlConnectionString,
-                            this._databaseConfiguration.Host,
-                            this._databaseConfiguration.Username,
-                            this._databaseConfiguration.Password,
-                            this._databaseConfiguration.Database,
-                            this._databaseConfiguration.Port));
+                            this._configuration.Host,
+                            this._configuration.Username,
+                            this._configuration.Password,
+                            this._configuration.Database,
+                            this._configuration.Port));
                     break;
 
                 case DatabaseProvider.MsSql:
                     optionsBuilder.UseSqlServer(
                         string.Format(MsSqlConnectionString,
-                            this._databaseConfiguration.Host,
-                            this._databaseConfiguration.Port,
-                            this._databaseConfiguration.Database,
-                            this._databaseConfiguration.Username,
-                            this._databaseConfiguration.Password));
+                            this._configuration.Host,
+                            this._configuration.Port,
+                            this._configuration.Database,
+                            this._configuration.Username,
+                            this._configuration.Password));
                     break;
 
-                default: throw new NotImplementedException();
+                default: throw new NotImplementedException($"Provider {this._configuration.Provider} not implemented yet.");
             }
         }
 

@@ -8,7 +8,7 @@ namespace Rhisis.Database
 {
     public sealed class DatabaseFactory : Singleton<DatabaseFactory>, IDesignTimeDbContextFactory<DatabaseContext>
     {
-        private const string MigrationDatabaseConfigurationPath = "DB_CONFIG";
+        private const string MigrationConfigurationEnv = "DB_CONFIG";
 
         public DatabaseConfiguration Configuration { get; private set; }
 
@@ -41,7 +41,7 @@ namespace Rhisis.Database
         /// <returns></returns>
         public DatabaseContext CreateDbContext(string[] args)
         {
-            var test = Environment.GetEnvironmentVariable(MigrationDatabaseConfigurationPath);
+            var test = Environment.GetEnvironmentVariable(MigrationConfigurationEnv);
 
             if (!string.IsNullOrEmpty(test))
                 this.Initialize(test);
