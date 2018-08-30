@@ -1,6 +1,8 @@
 ﻿using Ether.Network.Packets;
 using Ether.Network.Server;
 using NLog;
+using Rhisis.Business;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Network;
 using Rhisis.Core.Network.Packets;
@@ -86,6 +88,8 @@ namespace Rhisis.World
 
             Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
 
+            BusinessLayer.Initialize();
+            DependencyContainer.Instance.Initialize();
             this.LoadResources();
 
             Logger.Info("Connection to ISC server on {0}:{1}...", this.WorldConfiguration.ISC.Host, this.WorldConfiguration.ISC.Port);

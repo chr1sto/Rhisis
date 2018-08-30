@@ -1,7 +1,7 @@
 ﻿using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
 
-namespace Rhisis.Core.Business.Services
+namespace Rhisis.Business.Services
 {
     [Service]
     public class AuthenticationService : IAuthenticationService
