@@ -26,3 +26,5 @@ jobs:
       - stage: "Tests"
         script: dotnet test test/Rhisis.Core.Test/
         name: "Rhisis Core Unit tests"
+      - script: dotnet test test/Rhisis.Database.Test/
+        name: "Rhisis Database Unit tests"

@@ -9,13 +9,13 @@ namespace Rhisis.World.Systems.Inventory.EventArgs
         /// <summary>
         /// Gets the items.
         /// </summary>
-        public ICollection<Item> Items { get; }
+        public ICollection<DbItem> Items { get; }
 
         /// <summary>
         /// Creates a new <see cref="InventoryInitializeEventArgs"/> instance.
         /// </summary>
         /// <param name="items"></param>
-        public InventoryInitializeEventArgs(ICollection<Item> items)
+        public InventoryInitializeEventArgs(ICollection<DbItem> items)
         {
             Items = items;
         }

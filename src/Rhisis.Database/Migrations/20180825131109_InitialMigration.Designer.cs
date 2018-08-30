@@ -11,7 +11,7 @@ using System;
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20180519082257_InitialMigration")]
+    [Migration("20180825131109_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace Rhisis.Database.Migrations
                 .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
-            modelBuilder.Entity("Rhisis.Database.Entities.Character", b =>
+            modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("characters");
                 });
 
-            modelBuilder.Entity("Rhisis.Database.Entities.Item", b =>
+            modelBuilder.Entity("Rhisis.Database.Entities.DbItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,7 +119,7 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("items");
                 });
 
-            modelBuilder.Entity("Rhisis.Database.Entities.User", b =>
+            modelBuilder.Entity("Rhisis.Database.Entities.DbUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -136,17 +136,17 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("Rhisis.Database.Entities.Character", b =>
+            modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
                 {
-                    b.HasOne("Rhisis.Database.Entities.User", "User")
+                    b.HasOne("Rhisis.Database.Entities.DbUser", "User")
                         .WithMany("Characters")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Rhisis.Database.Entities.Item", b =>
+            modelBuilder.Entity("Rhisis.Database.Entities.DbItem", b =>
                 {
-                    b.HasOne("Rhisis.Database.Entities.Character", "Character")
+                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
                         .WithMany("Items")
                         .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade);

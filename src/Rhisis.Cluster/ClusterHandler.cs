@@ -8,6 +8,7 @@ using Rhisis.Core.Network.Packets.Cluster;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Repositories;
 using System;
 
 namespace Rhisis.Cluster
@@ -40,26 +41,24 @@ namespace Rhisis.Cluster
                 return;
             }
 
-            using (var db = DatabaseService.GetContext())
+            var userRepository = new UserRepository();
+            DbUser dbUser = userRepository.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
+
+            // Check if user exist.
+            if (dbUser == null)
             {
-                User dbUser = db.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
-
-                // Check if user exist.
-                if (dbUser == null)
-                {
-                    Logger.Warn($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: bad presented credentials compared to the database.");
-                    client.Disconnect();
-                    return;
-                }
-
-                Logger.Debug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
-                ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
-                ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
-
-                if (client.Configuration.EnableLoginProtect)
-                    ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
+                Logger.Warn($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: bad presented credentials compared to the database.");
+                client.Disconnect();
+                return;
             }
+
+            Logger.Debug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
+            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+            ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
+
+            if (client.Configuration.EnableLoginProtect)
+                ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
         }
 
         [PacketHandler(PacketType.CREATE_PLAYER)]
@@ -67,10 +66,13 @@ namespace Rhisis.Cluster
         {
             var pak = new CreatePlayerPacket(packet);
 
-            using (var db = DatabaseService.GetContext())
+            using (var db = DatabaseFactory.Instance.CreateDbContext())
             {
-                User dbUser = db.Users.Get(x => 
-                    x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) && 
+                var userRepository = new UserRepository(db);
+                var characterRepository = new CharacterRepository(db);
+
+                DbUser dbUser = userRepository.Get(x =>
+                    x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
                     x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
 
                 // Check if user exist and with good password in database.
@@ -81,8 +83,8 @@ namespace Rhisis.Cluster
                     client.Disconnect();
                     return;
                 }
-                
-                Character dbCharacter = db.Characters.Get(x => x.Name == pak.Name);
+
+                DbCharacter dbCharacter = characterRepository.Get(x => x.Name == pak.Name);
 
                 // Check if character name is not already used.
                 if (dbCharacter != null)
@@ -96,7 +98,7 @@ namespace Rhisis.Cluster
                 DefaultCharacter defaultCharacter = client.Configuration.DefaultCharacter;
                 DefaultStartItem defaultEquipment = pak.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
 
-                dbCharacter = new Character()
+                dbCharacter = new DbCharacter()
                 {
                     UserId = dbUser.Id,
                     Name = pak.Name,
@@ -127,14 +129,14 @@ namespace Rhisis.Cluster
                 };
 
                 //TODO: create game constants for slot.
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartSuit, 44));
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartHand, 46));
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartShoes, 47));
-                dbCharacter.Items.Add(new Item(defaultEquipment.StartWeapon, 52));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartSuit, 44));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartHand, 46));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartShoes, 47));
+                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartWeapon, 52));
 
-                db.Characters.Create(dbCharacter);
+                characterRepository.Create(dbCharacter);
                 Logger.Info("Character '{0}' has been created successfully for user '{1}' from {2}.",
-                    dbCharacter.Name, pak.Username, client.RemoteEndPoint );
+                    dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
                 ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
             }
@@ -145,9 +147,11 @@ namespace Rhisis.Cluster
         {
             var pak = new DeletePlayerPacket(packet);
 
-            using (var db = DatabaseService.GetContext())
+            using (var db = DatabaseFactory.Instance.CreateDbContext())
             {
-                User dbUser = db.Users.Get(x =>
+                var userRepository = new UserRepository(db);
+                var characterRepository = new CharacterRepository(db);
+                DbUser dbUser = userRepository.Get(x =>
                     x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
                     x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
 
@@ -168,8 +172,8 @@ namespace Rhisis.Cluster
                     ClusterPacketFactory.SendError(client, ErrorType.WRONG_PASSWORD);
                     return;
                 }
-                
-                Character dbCharacter = db.Characters.Get(pak.CharacterId);
+
+                DbCharacter dbCharacter = characterRepository.Get(pak.CharacterId);
 
                 // Check if character exist.
                 if (dbCharacter == null)
@@ -180,7 +184,7 @@ namespace Rhisis.Cluster
                     return;
                 }
 
-                db.Characters.Delete(dbCharacter);
+                characterRepository.Delete(dbCharacter);
                 Logger.Info("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
                     dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
@@ -192,45 +196,43 @@ namespace Rhisis.Cluster
         public static void OnPreJoin(ClusterClient client, INetPacketStream packet)
         {
             var pak = new PreJoinPacket(packet);
+            var characterRepository = new CharacterRepository();
 
-            using (var db = DatabaseService.GetContext())
+            DbCharacter dbCharacter = characterRepository.Get(pak.CharacterId);
+
+            // Check if character exist.
+            if (dbCharacter == null)
             {
-                Character dbCharacter = db.Characters.Get(pak.CharacterId);
+                Logger.Warn($"[SECURITY] Unable to prejoin character id '{pak.CharacterName}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    $"Reason: no character with id {pak.CharacterId}.");
+                client.Disconnect();
+                return;
+            }
 
-                // Check if character exist.
-                if (dbCharacter == null)
-                {
-                    Logger.Warn($"[SECURITY] Unable to prejoin character id '{pak.CharacterName}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        $"Reason: no character with id {pak.CharacterId}.");
-                    client.Disconnect();
-                    return;
-                }
+            // Check if given username is the real owner of this character.
+            if (!pak.Username.Equals(dbCharacter.User.Username, StringComparison.OrdinalIgnoreCase))
+            {
+                Logger.Warn($"[SECURITY] Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: character is not owned by this user.");
+                client.Disconnect();
+                return;
+            }
 
-                // Check if given username is the real owner of this character.
-                if (!pak.Username.Equals(dbCharacter.User.Username, StringComparison.OrdinalIgnoreCase))
-                {
-                    Logger.Warn($"[SECURITY] Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: character is not owned by this user.");
-                    client.Disconnect();
-                    return;
-                }
+            // Check if presented bank code is correct.
+            if (client.Configuration.EnableLoginProtect &&
+                LoginProtect.GetNumPadToPassword(client.LoginProtectValue, pak.BankCode) != dbCharacter.BankCode)
+            {
+                Logger.Warn($"Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: bad bank code.");
+                client.LoginProtectValue = new Random().Next(0, 1000);
+                ClusterPacketFactory.SendLoginProtect(client, client.LoginProtectValue);
+                return;
+            }
 
-                // Check if presented bank code is correct.
-                if (client.Configuration.EnableLoginProtect &&
-                    LoginProtect.GetNumPadToPassword(client.LoginProtectValue, pak.BankCode) != dbCharacter.BankCode)
-                {
-                    Logger.Warn($"Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: bad bank code.");
-                    client.LoginProtectValue = new Random().Next(0, 1000);
-                    ClusterPacketFactory.SendLoginProtect(client, client.LoginProtectValue);
-                    return;
-                }
-
-                // Finally, we connect the player.
-                ClusterPacketFactory.SendJoinWorld(client);
-                Logger.Info("Character '{0}' has prejoin successfully the game for user '{1}' from {2}.",
-                    dbCharacter.Name, pak.Username, client.RemoteEndPoint);
-            }     
+            // Finally, we connect the player.
+            ClusterPacketFactory.SendJoinWorld(client);
+            Logger.Info("Character '{0}' has prejoin successfully the game for user '{1}' from {2}.",
+                dbCharacter.Name, pak.Username, client.RemoteEndPoint);
         }
     }
 }

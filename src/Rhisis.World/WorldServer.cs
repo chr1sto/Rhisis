@@ -79,13 +79,12 @@ namespace Rhisis.World
             PacketHandler<WorldClient>.Initialize();
 
             Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile, true);
+            DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
 
-            DatabaseService.Configure(databaseConfiguration);
-            Logger.Trace($"Database config -> {databaseConfiguration}");
+            if (!DatabaseFactory.Instance.DatabaseExists())
+                throw new RhisisDatabaseException($"The database '{DatabaseFactory.Instance.Configuration.Database}' doesn't exists.");
 
-            if (!DatabaseService.GetContext().DatabaseExists())
-                throw new RhisisDatabaseException($"The database '{databaseConfiguration.Database}' doesn't exists.");
+            Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
 
             this.LoadResources();
 

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Rhisis.Database.Entities
 {
     [Table("characters")]
-    public sealed class Character : IDatabaseEntity
+    public sealed class DbCharacter : IDatabaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -68,13 +68,13 @@ namespace Rhisis.Database.Entities
         
         public int SkillPoints { get; set; }
 
-        public User User { get; set; }
+        public DbUser User { get; set; }
 
-        public ICollection<Item> Items { get; set; }
+        public ICollection<DbItem> Items { get; set; }
         
-        public Character()
+        public DbCharacter()
         {
-            this.Items = new HashSet<Item>();
+            this.Items = new HashSet<DbItem>();
         }
     }
 }

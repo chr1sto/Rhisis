@@ -1,14 +1,24 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Interfaces;
 
 namespace Rhisis.Database.Repositories
 {
     /// <summary>
     /// Character repository.
     /// </summary>
-    public sealed class CharacterRepository : RepositoryBase<Character>
+    [Repository]
+    public sealed class CharacterRepository : RepositoryBase<DbCharacter>, ICharacterRepository
     {
+        /// <summary>
+        /// Creates a new <see cref="CharacterRepository"/> instance.
+        /// </summary>
+        public CharacterRepository()
+        {
+        }
+
         /// <summary>
         /// Creates and initialize the <see cref="CharacterRepository"/>.
         /// </summary>
@@ -18,13 +28,10 @@ namespace Rhisis.Database.Repositories
         {
         }
 
-        /// <summary>
-        /// Include other objects for each requests.
-        /// </summary>
-        /// <returns></returns>
-        protected override IQueryable<Character> GetQueryable()
+        /// <inheritdoc />
+        protected override IQueryable<DbCharacter> GetQueryable(DbContext context)
         {
-            return base.GetQueryable()
+            return base.GetQueryable(context)
                 .Include(x => x.User)
                 .Include(x => x.Items);
         }
