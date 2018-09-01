@@ -6,8 +6,8 @@ namespace Rhisis.Core.DependencyInjection
     /// <summary>
     /// Attribute that describes a class has a injectable service.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public sealed class ServiceAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public class ServiceAttribute : Attribute
     {
         /// <summary>
         /// Gets or sets the service life time.

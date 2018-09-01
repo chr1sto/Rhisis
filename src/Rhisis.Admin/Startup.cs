@@ -4,15 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Admin.Configuration;
+using Rhisis.Admin.Extensions;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Database;
 
 namespace Rhisis.Admin
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -27,6 +36,10 @@ namespace Rhisis.Admin
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            // Configure app settings
+            services.ConfigureWritable<GeneralConfiguration>(this.GetSection<GeneralConfiguration>(), Program.CustomConfigurationFile);
+            services.ConfigureWritable<DatabaseConfiguration>(this.GetSection<DatabaseConfiguration>(), Program.CustomConfigurationFile);
 
             DependencyContainer.Instance.Initialize(services);
         }
@@ -66,5 +79,7 @@ namespace Rhisis.Admin
                 }
             });
         }
+
+        private IConfigurationSection GetSection<T>() => this.Configuration.GetSection(nameof(T));
     }
 }
