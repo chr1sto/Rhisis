@@ -1,34 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Rhisis.Admin.Options;
 using Rhisis.Core.Services;
-using Rhisis.Database;
+using System.Threading.Tasks;
 
 namespace Rhisis.Admin.Controllers
 {
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
-        private readonly IAuthenticationService _authenticationService;
-        private readonly IWritableOptions<DatabaseConfiguration> _databaseConfiguration;
+        private readonly IUserService _userService;
 
-        public UserController(
-            ILogger<UserController> logger,
-            IAuthenticationService authenticationService, 
-            IWritableOptions<DatabaseConfiguration> dbOptions)
+        public UserController(IUserService userService)
         {
-            // INFO: automatic dependency injection by ASP.NET Core's container.
-            this._logger = logger;
-            this._authenticationService = authenticationService;
-            this._databaseConfiguration = dbOptions;
+            this._userService = userService;
         }
 
-        [HttpGet]
-        public IActionResult GetUsers()
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login()
         {
-            this._logger.LogDebug("Requesting users");
-            return Ok(new[] { "user1", "user2" });
+            await Task.Delay(10);
+
+            return Ok();
+        }
+
+        [Route("register")]
+        public async Task<IActionResult> Register()
+        {
+            await Task.Delay(10);
+
+            return Ok();
         }
     }
 }
