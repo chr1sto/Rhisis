@@ -2,10 +2,10 @@
 using Ether.Network.Packets;
 using NLog;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.ISC;
-using Rhisis.Core.ISC.Packets;
-using Rhisis.Core.ISC.Structures;
-using Rhisis.Core.Network;
+using Rhisis.Network.ISC;
+using Rhisis.Network.ISC.Packets;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network;
 using Rhisis.Login.ISC.Packets;
 using System;
 using System.Collections.Generic;

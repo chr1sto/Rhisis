@@ -2,9 +2,9 @@
 using Ether.Network.Server;
 using NLog;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.ISC.Structures;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;

@@ -1,8 +1,8 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using System;
 
 namespace Rhisis.World.Handlers

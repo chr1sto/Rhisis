@@ -1,17 +1,17 @@
-﻿using Ether.Network.Server;
+﻿using Ether.Network.Packets;
+using Ether.Network.Server;
+using NLog;
 using Rhisis.Cluster.ISC;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.ISC.Structures;
-using Rhisis.Core.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Exceptions;
+using Rhisis.Network;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ether.Network.Packets;
-using NLog;
-using Rhisis.Core.Network.Packets;
 
 namespace Rhisis.Cluster
 {

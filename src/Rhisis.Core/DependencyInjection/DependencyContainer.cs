@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Common;
-using Rhisis.Core.Reflection;
+using Rhisis.Core.Helpers;
 using System;
 using System.Linq;
 

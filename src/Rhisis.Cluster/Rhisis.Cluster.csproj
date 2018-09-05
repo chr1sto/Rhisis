@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
+    <ProjectReference Include="..\Rhisis.Network\Rhisis.Network.csproj" />
   </ItemGroup>
 
   <ItemGroup>
