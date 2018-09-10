@@ -1,23 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
 using Rhisis.Core.Services;
+using System.Threading.Tasks;
 
 namespace Rhisis.Admin.Controllers
 {
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IUserService _userService;
 
-        public UserController(IAuthenticationService authenticationService)
+        public UserController(IUserService userService)
         {
-            // INFO: automatic dependency injection by ASP.NET Core's container.
-            this._authenticationService = authenticationService;
+            this._userService = userService;
         }
 
-        [HttpGet]
-        public IActionResult GetUsers()
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login()
         {
-            return Ok(new[] { "user1", "user2" });
+            await Task.Delay(10);
+
+            return Ok();
+        }
+
+        [Route("register")]
+        public async Task<IActionResult> Register()
+        {
+            await Task.Delay(10);
+
+            return Ok();
         }
     }
 }

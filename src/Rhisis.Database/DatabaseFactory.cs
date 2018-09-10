@@ -13,13 +13,19 @@ namespace Rhisis.Database
         public DatabaseConfiguration Configuration { get; private set; }
 
         /// <summary>
+        /// Setup the <see cref="DatabaseFactory"/> and Data Access Layer assembly.
+        /// </summary>
+        public void Setup()
+        {
+            // Nothing to do for now. Just forcing the assembly loading.
+        }
+
+        /// <summary>
         /// Initialize the <see cref="DatabaseFactory"/>.
         /// </summary>
         /// <param name="databaseConfigurationPath"></param>
-        public void Initialize(string databaseConfigurationPath)
-        {
+        public void Initialize(string databaseConfigurationPath) => 
             this.Configuration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationPath);
-        }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseContext"/>.
