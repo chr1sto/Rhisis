@@ -1,8 +1,8 @@
 ﻿using Ether.Network.Packets;
 using NLog;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Network.Packets.Login;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
+using Rhisis.Network.Packets.Login;
 using Rhisis.Database.Entities;
 using Rhisis.Database.Repositories;
 using Rhisis.Login.Packets;

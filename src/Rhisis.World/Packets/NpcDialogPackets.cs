@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Rhisis.Core.Data;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 

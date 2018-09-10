@@ -1,6 +1,6 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using Rhisis.World.Systems.Follow;
 
 namespace Rhisis.World.Handlers

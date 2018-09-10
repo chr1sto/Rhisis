@@ -1,7 +1,7 @@
 ﻿using Ether.Network.Common;
-using Rhisis.Core.ISC.Structures;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using System.Collections.Generic;
 using System.Linq;
 

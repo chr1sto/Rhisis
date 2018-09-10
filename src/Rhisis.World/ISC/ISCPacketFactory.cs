@@ -1,7 +1,7 @@
 ﻿using Ether.Network.Client;
 using Ether.Network.Packets;
-using Rhisis.Core.ISC;
-using Rhisis.Core.ISC.Packets;
+using Rhisis.Network.ISC;
+using Rhisis.Network.ISC.Packets;
 using Rhisis.Core.Structures.Configuration;
 
 namespace Rhisis.World.ISC

@@ -1,5 +1,5 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.Network.Packets.World;
+using Rhisis.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.World.Packets;
 

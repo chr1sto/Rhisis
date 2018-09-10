@@ -41,7 +41,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Tools.Core", "src\to
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Admin", "src\Rhisis.Admin\Rhisis.Admin.csproj", "{4C8333DA-2150-4CB0-A6C9-F6F458F80F61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Business", "src\Rhisis.Business\Rhisis.Business.csproj", "{25FE0A89-850A-4486-8E15-620F49A6D936}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Business", "src\Rhisis.Business\Rhisis.Business.csproj", "{25FE0A89-850A-4486-8E15-620F49A6D936}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Network", "src\Rhisis.Network\Rhisis.Network.csproj", "{E86BCFF0-FCCF-441C-B153-B227A086DBC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +99,10 @@ Global
 		{25FE0A89-850A-4486-8E15-620F49A6D936}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25FE0A89-850A-4486-8E15-620F49A6D936}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25FE0A89-850A-4486-8E15-620F49A6D936}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E86BCFF0-FCCF-441C-B153-B227A086DBC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E86BCFF0-FCCF-441C-B153-B227A086DBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E86BCFF0-FCCF-441C-B153-B227A086DBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E86BCFF0-FCCF-441C-B153-B227A086DBC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,6 +121,7 @@ Global
 		{BEC2AFBB-87F5-46C8-A75C-0191614B7707} = {33862335-9BF3-4985-81B2-4136B4CAB46C}
 		{4C8333DA-2150-4CB0-A6C9-F6F458F80F61} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
 		{25FE0A89-850A-4486-8E15-620F49A6D936} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
+		{E86BCFF0-FCCF-441C-B153-B227A086DBC3} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B573C179-78E3-4F7B-8CFB-289754036BBA}

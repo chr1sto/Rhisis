@@ -1,7 +1,7 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Network.Packets.World;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
+using Rhisis.Network.Packets.World;
 using Rhisis.World.Systems.Chat;
 
 namespace Rhisis.World.Handlers

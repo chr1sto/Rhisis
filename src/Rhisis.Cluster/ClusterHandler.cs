@@ -1,10 +1,10 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Cluster.Packets;
-using Rhisis.Core.ISC.Structures;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Network.Packets.Cluster;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
+using Rhisis.Network.Packets.Cluster;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;

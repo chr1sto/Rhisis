@@ -1,6 +1,6 @@
 ﻿using NLog;
 using Rhisis.Core.Common;
-using Rhisis.Core.Reflection;
+using Rhisis.Core.Helpers;
 using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
