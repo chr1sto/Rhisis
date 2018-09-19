@@ -37,11 +37,11 @@ namespace Rhisis.Core.DependencyInjection
             if (this._services == null)
                 throw new InvalidOperationException("Service collection is not initialized.");
             
-            var services = ReflectionHelper.GetClassesWithCustomAttribute<ServiceAttribute>();
+            var services = ReflectionHelper.GetClassesWithCustomAttribute<InjectableAttribute>();
 
             foreach (var serviceType in services)
             {
-                var serviceAttribute = serviceType.GetCustomAttributes(false).FirstOrDefault(x => x.GetType() == typeof(ServiceAttribute)) as ServiceAttribute;
+                var serviceAttribute = serviceType.GetCustomAttributes(false).FirstOrDefault(x => x.GetType() == typeof(InjectableAttribute)) as InjectableAttribute;
                 var serviceInterface = serviceType.GetInterfaces().Last();
                 var serviceLifeTime = serviceAttribute != null ? serviceAttribute.LifeTime : ServiceLifetime.Transient;
 

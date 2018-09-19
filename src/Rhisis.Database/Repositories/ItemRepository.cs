@@ -9,7 +9,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// Item repository.
     /// </summary>
-    [Repository]
+    [Injectable]
     public sealed class ItemRepository : RepositoryBase<DbItem>, IItemRepository
     {
         /// <summary>

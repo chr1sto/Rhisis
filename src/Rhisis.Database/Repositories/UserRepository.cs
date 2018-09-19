@@ -9,7 +9,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// User repository.
     /// </summary>
-    [Repository]
+    [Injectable]
     public sealed class UserRepository : RepositoryBase<DbUser>, IUserRepository
     {
         /// <summary>

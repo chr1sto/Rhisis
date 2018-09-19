@@ -234,6 +234,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Rhisis.Business\Rhisis.Business.csproj">
+      <Project>{25FE0A89-850A-4486-8E15-620F49A6D936}</Project>
+      <Name>Rhisis.Business</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Rhisis.Core\Rhisis.Core.csproj">
       <Project>{8E25C9DB-9DE2-4198-83A0-1F37CAEC14A7}</Project>
       <Name>Rhisis.Core</Name>

@@ -43,7 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Admin", "src\Rhisis.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Business", "src\Rhisis.Business\Rhisis.Business.csproj", "{25FE0A89-850A-4486-8E15-620F49A6D936}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Network", "src\Rhisis.Network\Rhisis.Network.csproj", "{E86BCFF0-FCCF-441C-B153-B227A086DBC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Network", "src\Rhisis.Network\Rhisis.Network.csproj", "{E86BCFF0-FCCF-441C-B153-B227A086DBC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Business.Tests", "test\Rhisis.Business.Tests\Rhisis.Business.Tests.csproj", "{F759B3CD-DCDC-4283-B7EA-0EFA61117D76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +105,10 @@ Global
 		{E86BCFF0-FCCF-441C-B153-B227A086DBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E86BCFF0-FCCF-441C-B153-B227A086DBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E86BCFF0-FCCF-441C-B153-B227A086DBC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F759B3CD-DCDC-4283-B7EA-0EFA61117D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F759B3CD-DCDC-4283-B7EA-0EFA61117D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F759B3CD-DCDC-4283-B7EA-0EFA61117D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F759B3CD-DCDC-4283-B7EA-0EFA61117D76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +128,7 @@ Global
 		{4C8333DA-2150-4CB0-A6C9-F6F458F80F61} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
 		{25FE0A89-850A-4486-8E15-620F49A6D936} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
 		{E86BCFF0-FCCF-441C-B153-B227A086DBC3} = {CC42CC8A-A3BC-4913-90A0-1AF2213A870F}
+		{F759B3CD-DCDC-4283-B7EA-0EFA61117D76} = {696B755D-111E-4A7D-8AB8-AD4CA07E9213}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B573C179-78E3-4F7B-8CFB-289754036BBA}

@@ -7,7 +7,7 @@ namespace Rhisis.Core.DependencyInjection
     /// Attribute that describes a class has a injectable service.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class ServiceAttribute : Attribute
+    public class InjectableAttribute : Attribute
     {
         /// <summary>
         /// Gets or sets the service life time.
@@ -15,10 +15,10 @@ namespace Rhisis.Core.DependencyInjection
         public ServiceLifetime LifeTime { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="ServiceAttribute"/> instance.
+        /// Creates a new <see cref="InjectableAttribute"/> instance.
         /// </summary>
         /// <param name="serviceLifeTime"></param>
-        public ServiceAttribute(ServiceLifetime serviceLifeTime = ServiceLifetime.Transient)
+        public InjectableAttribute(ServiceLifetime serviceLifeTime = ServiceLifetime.Transient)
         {
             this.LifeTime = serviceLifeTime;
         }
