@@ -20,8 +20,6 @@ namespace Rhisis.Core.Cryptography
             {
                 aes.Mode = CipherMode.CBC;
                 aes.Padding = PaddingMode.Zeros;
-                //aes.KeySize = 256;
-                //aes.BlockSize = 128;
                 aes.Key = key;
                 aes.IV = Enumerable.Repeat<byte>(0, 16).ToArray();
 
