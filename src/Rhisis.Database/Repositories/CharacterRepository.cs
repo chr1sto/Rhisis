@@ -9,7 +9,7 @@ namespace Rhisis.Database.Repositories
     /// <summary>
     /// Character repository.
     /// </summary>
-    [Repository]
+    [Injectable]
     public sealed class CharacterRepository : RepositoryBase<DbCharacter>, ICharacterRepository
     {
         /// <summary>

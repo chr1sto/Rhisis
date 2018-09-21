@@ -4,7 +4,7 @@ using Rhisis.Database.Interfaces;
 
 namespace Rhisis.Core.Business.Services
 {
-    [Service]
+    [Injectable]
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;

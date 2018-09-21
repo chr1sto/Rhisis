@@ -1,6 +1,7 @@
 ﻿using Rhisis.Tools.Core.MVVM;
 using System.Windows.Input;
-using Rhisis.Core.Cryptography;
+using Rhisis.Core.Services;
+using Rhisis.Core.Business.Services;
 
 namespace Rhisis.Installer.ViewModels
 {
@@ -9,6 +10,7 @@ namespace Rhisis.Installer.ViewModels
         private string _salt;
         private string _password;
         private string _generatedPassword;
+        private readonly ICryptographyService _cryptographyService;
 
         public string Salt
         {
@@ -39,6 +41,7 @@ namespace Rhisis.Installer.ViewModels
             this.OkCommand = new Command(this.OnOk);
             this.CancelCommand = new Command(this.OnCancel);
             this.GeneratePasswordCommand = new Command(this.OnGeneratePassword);
+            this._cryptographyService = new CryptographyService();
         }
 
         private void OnOk()
@@ -56,7 +59,7 @@ namespace Rhisis.Installer.ViewModels
         {
             string password = string.Concat(this.Salt, this.Password);
 
-            this.GeneratedPassword = Md5.GetMd5Hash(password);
+            this.GeneratedPassword = this._cryptographyService.GetMD5Hash(password);
         }
     }
 }

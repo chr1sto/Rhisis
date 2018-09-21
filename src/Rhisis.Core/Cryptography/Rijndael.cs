@@ -20,13 +20,13 @@ namespace Rhisis.Core.Cryptography
             {
                 aes.Mode = CipherMode.CBC;
                 aes.Padding = PaddingMode.Zeros;
-                aes.KeySize = 256;
-                aes.BlockSize = 128;
                 aes.Key = key;
                 aes.IV = Enumerable.Repeat<byte>(0, 16).ToArray();
 
+                var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
                 using (var memoryStream = new MemoryStream(data))
-                using (var crypto = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+                using (var crypto = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
                 using (StreamReader sr = new StreamReader(crypto))
                     decrypted = sr.ReadToEnd();
             }

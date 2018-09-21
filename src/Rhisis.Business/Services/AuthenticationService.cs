@@ -3,7 +3,7 @@ using Rhisis.Core.Services;
 
 namespace Rhisis.Business.Services
 {
-    [Service]
+    [Injectable]
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IUserService _userService;

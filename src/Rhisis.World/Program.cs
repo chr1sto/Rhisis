@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Globalization;
-using NLog;
-using Rhisis.Core.IO;
+using System.Text;
 
 namespace Rhisis.World
 {
@@ -20,7 +20,7 @@ namespace Rhisis.World
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
             AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
-            EncodingUtilities.Initialize();
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             try
             {

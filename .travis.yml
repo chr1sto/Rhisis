@@ -29,3 +29,5 @@ jobs:
         name: "Rhisis Core Unit tests"
       - script: dotnet test test/Rhisis.Database.Test/
         name: "Rhisis Database Unit tests"
+      - script: dotnet test test/Rhisis.Business.Tests/
+        name: "Rhisis Business Unit tests"
