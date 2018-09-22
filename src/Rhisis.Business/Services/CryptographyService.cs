@@ -68,6 +68,29 @@ namespace Rhisis.Core.Business.Services
         }
 
         /// <inheritdoc />
+        public byte[] AdjustEncryptionKey(byte[] encryptionKey, int keySize)
+        {
+            if (encryptionKey.Length < keySize)
+            {
+                int missingBytes = keySize - encryptionKey.Length;
+
+                return encryptionKey.Concat(Enumerable.Repeat((byte)0, missingBytes)).ToArray();
+            }
+            else
+            {
+                return encryptionKey.Take(keySize).ToArray();
+            }
+        }
+
+        /// <inheritdoc />
+        public byte[] BuildEncryptionKeyFromString(string encryptionKey, int keySize) 
+            => this.BuildEncryptionKeyFromString(encryptionKey, keySize, Encoding.Default);
+
+        /// <inheritdoc />
+        public byte[] BuildEncryptionKeyFromString(string encryptionKey, int keySize, Encoding encoding) 
+            => this.AdjustEncryptionKey(encoding.GetBytes(encryptionKey), keySize);
+
+        /// <inheritdoc />
         public string GetMD5Hash(string input)
         {
             byte[] data = null;

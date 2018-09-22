@@ -10,8 +10,9 @@ namespace Rhisis.Business.Tests
     {
         private const string DecryptedMessage = "Hello world!";
         private const string MD5MessageHash = "86fb269d190d2c85f6e0468ceca42a20";
+        private const string KeyText = "dldhsvmflvm";
         private readonly byte[] EncryptedMessage = new byte[] { 25, 7, 55, 145, 111, 159, 200, 59, 9, 128, 203, 69, 187, 104, 233, 86 };
-        private readonly byte[] Key = Encoding.ASCII.GetBytes("dldhsvmflvm").Concat(Enumerable.Repeat((byte)0, 5).ToArray()).ToArray();
+        private readonly byte[] Key = Encoding.ASCII.GetBytes(KeyText).Concat(Enumerable.Repeat((byte)0, 5).ToArray()).ToArray();
         private readonly ICryptographyService _cryptographyService;
 
         public CryptographyServiceTest()
@@ -61,6 +62,25 @@ namespace Rhisis.Business.Tests
 
             Assert.NotNull(hashed);
             Assert.Equal(MD5MessageHash, hashed);
+        }
+
+        [Fact]
+        public void BuildKeyFromString()
+        {
+            var encryptedKey = this._cryptographyService.BuildEncryptionKeyFromString(KeyText, 16);
+
+            Assert.Equal(Key.Length, encryptedKey.Length);
+            Assert.Equal(Key, encryptedKey);
+        }
+
+        [Fact]
+        public void AdjustEncryptionKey()
+        {
+            var encryptedKey = Encoding.ASCII.GetBytes(KeyText);
+            encryptedKey = this._cryptographyService.AdjustEncryptionKey(encryptedKey, 16);
+
+            Assert.Equal(Key.Length, encryptedKey.Length);
+            Assert.Equal(Key, encryptedKey);
         }
     }
 }

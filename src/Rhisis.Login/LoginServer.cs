@@ -11,6 +11,8 @@ using Rhisis.Database.Exceptions;
 using Rhisis.Login.ISC;
 using System;
 using System.Collections.Generic;
+using Rhisis.Business;
+using Rhisis.Core.DependencyInjection;
 
 namespace Rhisis.Login
 {
@@ -79,6 +81,9 @@ namespace Rhisis.Login
             
             if (!DatabaseFactory.Instance.DatabaseExists())
                 throw new RhisisDatabaseException($"The database '{DatabaseFactory.Instance.Configuration.Database}' doesn't exists.");
+
+            BusinessLayer.Initialize();
+            DependencyContainer.Instance.Initialize().BuildServiceProvider();
 
             Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
             Logger.Info("Starting ISC server...");
