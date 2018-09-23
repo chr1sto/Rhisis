@@ -30,7 +30,7 @@ namespace Rhisis.Login
         /// <summary>
         /// Gets the login server's configuration.
         /// </summary>
-        public LoginConfiguration Configuration => this._loginServer.LoginConfiguration;
+        public LoginConfiguration ServerConfiguration => this._loginServer.LoginConfiguration;
 
         /// <summary>
         /// Gets the remote end point (IP and port) for this client.

@@ -1,11 +1,12 @@
 ﻿using Ether.Network.Packets;
 using NLog;
-using Rhisis.Network;
-using Rhisis.Network.Packets;
-using Rhisis.Network.Packets.Login;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Services;
 using Rhisis.Database.Entities;
 using Rhisis.Database.Repositories;
 using Rhisis.Login.Packets;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using System;
 
 namespace Rhisis.Login
@@ -26,9 +27,24 @@ namespace Rhisis.Login
         [PacketHandler(PacketType.CERTIFY)]
         public static void OnLogin(LoginClient client, INetPacketStream packet)
         {
-            var pak = new CertifyPacket(packet, client.Configuration.PasswordEncryption, client.Configuration.EncryptionKey);
+            var cryptographyService = DependencyContainer.Instance.Resolve<ICryptographyService>();
+            var buildVersion = packet.Read<string>();
+            var username = packet.Read<string>();
+            var password = string.Empty;
 
-            if (pak.BuildVersion != client.Configuration.BuildVersion)
+            if (client.ServerConfiguration.PasswordEncryption)
+            {
+                byte[] passwordData = packet.ReadArray<byte>(16 * 42);
+                byte[] encryptionKey = cryptographyService.BuildEncryptionKeyFromString(client.ServerConfiguration.EncryptionKey, 16);
+
+                password = cryptographyService.Decrypt(passwordData, encryptionKey);
+            }
+            else
+            {
+                password = packet.Read<string>();
+            }
+
+            if (buildVersion != client.ServerConfiguration.BuildVersion)
             {
                 Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad client build version.");
                 LoginPacketFactory.SendLoginError(client, ErrorType.CERT_GENERAL);
@@ -37,7 +53,7 @@ namespace Rhisis.Login
             }
 
             var userRepository = new UserRepository();
-            DbUser dbUser = userRepository.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
+            DbUser dbUser = userRepository.Get(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
 
             if (dbUser == null)
             {
@@ -47,7 +63,7 @@ namespace Rhisis.Login
                 return;
             }
 
-            if (!dbUser.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase))
+            if (!dbUser.Password.Equals(password, StringComparison.OrdinalIgnoreCase))
             {
                 Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad password.");
                 LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_PASSWORD);
@@ -55,8 +71,8 @@ namespace Rhisis.Login
                 return;
             }
 
-            LoginPacketFactory.SendServerList(client, pak.Username, client.ClustersConnected);
-            Logger.Info($"User '{pak.Username}' logged succesfully from {client.RemoteEndPoint}.");
+            LoginPacketFactory.SendServerList(client, username, client.ClustersConnected);
+            Logger.Info($"User '{username}' logged succesfully from {client.RemoteEndPoint}.");
         }
     }
 }

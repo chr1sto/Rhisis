@@ -89,7 +89,7 @@ namespace Rhisis.World
             Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
 
             BusinessLayer.Initialize();
-            DependencyContainer.Instance.Initialize();
+            DependencyContainer.Instance.Initialize().BuildServiceProvider();
             this.LoadResources();
 
             Logger.Info("Connection to ISC server on {0}:{1}...", this.WorldConfiguration.ISC.Host, this.WorldConfiguration.ISC.Port);
