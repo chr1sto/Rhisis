@@ -1,6 +1,8 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Services;
+using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Login.Packets;
 using Rhisis.Network;
@@ -53,7 +55,7 @@ namespace Rhisis.Login
             DbUser dbUser = null;
 
             using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
-                dbUser = database.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
+                dbUser = database.Users.Get(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
 
             if (dbUser == null)
             {
