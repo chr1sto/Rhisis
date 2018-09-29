@@ -1,14 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Rhisis.Core.Helpers;
 using Rhisis.Database.Entities;
 using System;
 using System.Threading.Tasks;
 
-namespace Rhisis.Database
+namespace Rhisis.Database.Context
 {
-    public sealed class DatabaseContext : DbContext
+    public sealed class DatabaseContext : DbContext, IDesignTimeDbContextFactory<DatabaseContext>
     {
+        private const string MigrationConfigurationEnv = "DB_CONFIG";
         private const string MySqlConnectionString = "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
         private const string MsSqlConnectionString = "Server={0},{1};Database={2};User Id={3};Password={4};";
 
@@ -33,7 +36,7 @@ namespace Rhisis.Database
         /// Create a new <see cref="DatabaseContext"/> instance.
         /// </summary>
         /// <param name="options"></param>
-        public DatabaseContext(DbContextOptions<DatabaseContext> options)
+        public DatabaseContext(DbContextOptions options)
             : base(options)
         {
         }
@@ -104,5 +107,18 @@ namespace Rhisis.Database
         /// Closes the connection.
         /// </summary>
         public void CloseConnection() => this.Database.CloseConnection();
+
+        /// <inheritdoc />
+        public DatabaseContext CreateDbContext(string[] args)
+        {
+            var configurationPath = Environment.GetEnvironmentVariable(MigrationConfigurationEnv);
+            var configuration = ConfigurationHelper.Load<DatabaseConfiguration>(configurationPath);
+            var context = new DatabaseContext(configuration);
+
+            if (!string.IsNullOrEmpty(configurationPath) && !context.DatabaseExists())
+                throw new InvalidOperationException($"The database '{configuration.Database}' doesn't exists.");
+
+            return context;
+        }
     }
 }

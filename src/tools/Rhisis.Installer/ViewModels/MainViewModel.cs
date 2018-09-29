@@ -7,7 +7,6 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Repositories;
 using Rhisis.Installer.Enums;
 using Rhisis.Installer.Models;
 using Rhisis.Tools.Core.MVVM;
@@ -177,12 +176,11 @@ namespace Rhisis.Installer.ViewModels
 
             if (this._accountModel.IsValid)
             {
-                var dbFactory = new DatabaseFactory();
-                dbFactory.Initialize(DatabaseConfigurationPath);
+                DatabaseFactory.Instance.Initialize(DatabaseConfigurationPath);
 
-                using (var context = dbFactory.CreateDbContext())
+                using (var database = new Rhisis.Database.Database())
                 {
-                    var userRepository = new UserRepository(context);
+                    var userRepository = database.Users;
                     DbUser user = userRepository.Get(x => x.Username == this._accountModel.Username);
 
                     if (user != null)
@@ -200,7 +198,7 @@ namespace Rhisis.Installer.ViewModels
                             Password = this._accountModel.Password
                         });
 
-                        await context.SaveChangesAsync();
+                        await database.CompleteAsync();
                     }
                 }
             }

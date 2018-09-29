@@ -1,14 +1,14 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
-using Rhisis.Network;
-using Rhisis.Network.Packets;
-using Rhisis.Network.Packets.World;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Repositories;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
+using Rhisis.Network.Packets.World;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
@@ -26,21 +26,24 @@ namespace Rhisis.World.Handlers
         public static void OnJoin(WorldClient client, INetPacketStream packet)
         {
             var joinPacket = new JoinPacket(packet);
-            var characterRepository = new CharacterRepository();
-            DbCharacter character = characterRepository.Get(joinPacket.PlayerId);
+            DbCharacter character = null;
+
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
+                character = database.Characters.Get(joinPacket.PlayerId);
 
             if (character == null)
             {
-                // This is an hack attempt
+                Logger.Error($"Invalid player id received from client; cannot find player with id: {joinPacket.PlayerId}");
                 return;
             }
 
             if (character.User.Authority <= 0)
             {
-                // Account banned so he can't connect to the game.
+                Logger.Info($"User {character.User.Username} is banned.");
+                // TODO: send error to client
                 return;
             }
-            
+
             if (!WorldServer.Maps.TryGetValue(character.MapId, out IMapInstance map))
             {
                 Logger.Warn("Map with id '{0}' doesn't exist.", character.MapId);
@@ -100,7 +103,7 @@ namespace Rhisis.World.Handlers
             // Initialize the inventory
             var inventoryEventArgs = new InventoryInitializeEventArgs(character.Items);
             client.Player.NotifySystem<InventorySystem>(inventoryEventArgs);
-            
+
             // 3rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client.Player);
 

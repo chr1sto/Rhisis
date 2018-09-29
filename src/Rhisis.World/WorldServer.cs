@@ -6,7 +6,6 @@ using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
-using Rhisis.Database.Exceptions;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
@@ -82,10 +81,6 @@ namespace Rhisis.World
 
             Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
-
-            if (!DatabaseFactory.Instance.DatabaseExists())
-                throw new RhisisDatabaseException($"The database '{DatabaseFactory.Instance.Configuration.Database}' doesn't exists.");
-
             Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
 
             BusinessLayer.Initialize();

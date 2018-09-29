@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Rhisis.Database.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Rhisis.Database.Interfaces
+namespace Rhisis.Database.Repositories
 {
     /// <summary>
     /// Describes the repository behavior.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IRepository<T> where T : class, IDatabaseEntity
+    public interface IRepository<T> where T : DbEntity
     {
         /// <summary>
         /// Creates a new entity.
@@ -32,25 +33,11 @@ namespace Rhisis.Database.Interfaces
         T Update(T entity);
 
         /// <summary>
-        /// Updates an existing entity asynchronously.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        Task<T> UpdateAsync(T entity);
-
-        /// <summary>
         /// Delete an existing entity.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
         T Delete(T entity);
-
-        /// <summary>
-        /// Delete an existing entity asynchronously.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        Task<T> DeleteAsync(T entity);
 
         /// <summary>
         /// Gets an entity by his Id.

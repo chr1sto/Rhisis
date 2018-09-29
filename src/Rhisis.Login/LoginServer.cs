@@ -1,14 +1,14 @@
 ﻿using Ether.Network.Packets;
 using Ether.Network.Server;
 using NLog;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
-using Rhisis.Network.ISC.Structures;
-using Rhisis.Network;
-using Rhisis.Network.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
-using Rhisis.Database.Exceptions;
 using Rhisis.Login.ISC;
+using Rhisis.Network;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network.Packets;
 using System;
 using System.Collections.Generic;
 using Rhisis.Business;
@@ -78,14 +78,13 @@ namespace Rhisis.Login
 
             Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
-            
-            if (!DatabaseFactory.Instance.DatabaseExists())
-                throw new RhisisDatabaseException($"The database '{DatabaseFactory.Instance.Configuration.Database}' doesn't exists.");
+            Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
+
+            DependencyContainer.Instance.Initialize().BuildServiceProvider();
 
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Initialize().BuildServiceProvider();
 
-            Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
             Logger.Info("Starting ISC server...");
             InterServer = new ISCServer(this.LoginConfiguration.ISC);
             InterServer.Start();

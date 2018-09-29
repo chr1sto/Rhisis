@@ -94,7 +94,7 @@ namespace Rhisis.Installer.ViewModels
         {
             try
             {
-                using (var context = new DatabaseContext(this.Configuration))
+                using (var context = DatabaseFactory.Instance.CreateDbContext(this.Configuration))
                 {
                     context.OpenConnection();
 

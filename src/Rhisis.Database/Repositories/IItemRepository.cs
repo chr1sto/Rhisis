@@ -1,6 +1,6 @@
 ﻿using Rhisis.Database.Entities;
 
-namespace Rhisis.Database.Interfaces
+namespace Rhisis.Database.Repositories
 {
     public interface IItemRepository : IRepository<DbItem>
     {

@@ -1,9 +1,7 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Services;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Repositories;
 using Rhisis.Login.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
@@ -52,8 +50,10 @@ namespace Rhisis.Login
                 return;
             }
 
-            var userRepository = new UserRepository();
-            DbUser dbUser = userRepository.Get(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            DbUser dbUser = null;
+
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
+                dbUser = database.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
 
             if (dbUser == null)
             {

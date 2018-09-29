@@ -1,6 +1,7 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using NLog;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
@@ -119,11 +120,10 @@ namespace Rhisis.World
                 return;
 
             this.Player.Object.Spawned = false;
-            var characterRepository = new CharacterRepository();
 
-            using (var db = DatabaseFactory.Instance.CreateDbContext())
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {
-                DbCharacter character = characterRepository.Get(this.Player.PlayerData.Id);
+                DbCharacter character = database.Characters.Get(this.Player.PlayerData.Id);
 
                 if (character != null)
                 {
@@ -176,7 +176,7 @@ namespace Rhisis.World
                             dbItem.Refine = item.Refine;
                             dbItem.Element = item.Element;
                             dbItem.ElementRefine = item.ElementRefine;
-                            db.Items.Update(dbItem);
+                            database.Items.Update(dbItem);
                         }
                         else
                         {
@@ -192,12 +192,12 @@ namespace Rhisis.World
                                 ElementRefine = item.ElementRefine
                             };
 
-                            db.Items.Add(dbItem);
+                            database.Items.Create(dbItem);
                         }
                     }
                 }
 
-                db.SaveChanges();
+                database.Complete();
             }
         }
 
