@@ -30,7 +30,7 @@ namespace Rhisis.Core.Test.DependencyInjection
 
             Assert.Equal(2, this._dependencyContainer.Count);
         }
-
+        
         [Fact(DisplayName = "Resolve service with typed registration")]
         public void ResolveServiceWithTypedRegister()
         {

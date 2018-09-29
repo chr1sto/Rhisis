@@ -1,24 +1,14 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Rhisis.Core.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Interfaces;
+using System.Linq;
 
-namespace Rhisis.Database.Repositories
+namespace Rhisis.Database.Repositories.Implementation
 {
     /// <summary>
     /// Item repository.
     /// </summary>
-    [Injectable]
-    public sealed class ItemRepository : RepositoryBase<DbItem>, IItemRepository
+    internal sealed class ItemRepository : RepositoryBase<DbItem>, IItemRepository
     {
-        /// <summary>
-        /// Creates a new <see cref="ItemRepository"/> instance.
-        /// </summary>
-        public ItemRepository()
-        {
-        }
-
         /// <summary>
         /// Creates an initialize an <see cref="ItemRepository"/>.
         /// </summary>

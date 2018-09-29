@@ -1,14 +1,14 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Cluster.Packets;
-using Rhisis.Network.ISC.Structures;
-using Rhisis.Network;
-using Rhisis.Network.Packets;
-using Rhisis.Network.Packets.Cluster;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Repositories;
+using Rhisis.Network;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network.Packets;
+using Rhisis.Network.Packets.Cluster;
 using System;
 
 namespace Rhisis.Cluster
@@ -41,24 +41,26 @@ namespace Rhisis.Cluster
                 return;
             }
 
-            var userRepository = new UserRepository();
-            DbUser dbUser = userRepository.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
-
-            // Check if user exist.
-            if (dbUser == null)
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {
-                Logger.Warn($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                    "Reason: bad presented credentials compared to the database.");
-                client.Disconnect();
-                return;
+                DbUser dbUser = database.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
+
+                // Check if user exist.
+                if (dbUser == null)
+                {
+                    Logger.Warn($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                        "Reason: bad presented credentials compared to the database.");
+                    client.Disconnect();
+                    return;
+                }
+
+                Logger.Debug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
+                ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+                ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
+
+                if (client.Configuration.EnableLoginProtect)
+                    ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
             }
-
-            Logger.Debug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
-            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
-            ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
-
-            if (client.Configuration.EnableLoginProtect)
-                ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
         }
 
         [PacketHandler(PacketType.CREATE_PLAYER)]
@@ -66,12 +68,9 @@ namespace Rhisis.Cluster
         {
             var pak = new CreatePlayerPacket(packet);
 
-            using (var db = DatabaseFactory.Instance.CreateDbContext())
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {
-                var userRepository = new UserRepository(db);
-                var characterRepository = new CharacterRepository(db);
-
-                DbUser dbUser = userRepository.Get(x =>
+                DbUser dbUser = database.Users.Get(x =>
                     x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
                     x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
 
@@ -84,7 +83,7 @@ namespace Rhisis.Cluster
                     return;
                 }
 
-                DbCharacter dbCharacter = characterRepository.Get(x => x.Name == pak.Name);
+                DbCharacter dbCharacter = database.Characters.Get(x => x.Name == pak.Name);
 
                 // Check if character name is not already used.
                 if (dbCharacter != null)
@@ -134,7 +133,8 @@ namespace Rhisis.Cluster
                 dbCharacter.Items.Add(new DbItem(defaultEquipment.StartShoes, 47));
                 dbCharacter.Items.Add(new DbItem(defaultEquipment.StartWeapon, 52));
 
-                characterRepository.Create(dbCharacter);
+                database.Characters.Create(dbCharacter);
+                database.Complete();
                 Logger.Info("Character '{0}' has been created successfully for user '{1}' from {2}.",
                     dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
@@ -147,11 +147,9 @@ namespace Rhisis.Cluster
         {
             var pak = new DeletePlayerPacket(packet);
 
-            using (var db = DatabaseFactory.Instance.CreateDbContext())
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {
-                var userRepository = new UserRepository(db);
-                var characterRepository = new CharacterRepository(db);
-                DbUser dbUser = userRepository.Get(x =>
+                DbUser dbUser = database.Users.Get(x =>
                     x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
                     x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
 
@@ -173,7 +171,7 @@ namespace Rhisis.Cluster
                     return;
                 }
 
-                DbCharacter dbCharacter = characterRepository.Get(pak.CharacterId);
+                DbCharacter dbCharacter = database.Characters.Get(pak.CharacterId);
 
                 // Check if character exist.
                 if (dbCharacter == null)
@@ -184,7 +182,8 @@ namespace Rhisis.Cluster
                     return;
                 }
 
-                characterRepository.Delete(dbCharacter);
+                database.Characters.Delete(dbCharacter);
+                database.Complete();
                 Logger.Info("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
                     dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
@@ -196,9 +195,10 @@ namespace Rhisis.Cluster
         public static void OnPreJoin(ClusterClient client, INetPacketStream packet)
         {
             var pak = new PreJoinPacket(packet);
-            var characterRepository = new CharacterRepository();
+            DbCharacter dbCharacter = null;
 
-            DbCharacter dbCharacter = characterRepository.Get(pak.CharacterId);
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
+                dbCharacter = database.Characters.Get(pak.CharacterId);
 
             // Check if character exist.
             if (dbCharacter == null)

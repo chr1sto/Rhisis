@@ -2,10 +2,10 @@
 using Ether.Network.Server;
 using NLog;
 using Rhisis.Cluster.ISC;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
-using Rhisis.Database.Exceptions;
 using Rhisis.Network;
 using Rhisis.Network.ISC.Structures;
 using Rhisis.Network.Packets;
@@ -78,11 +78,9 @@ namespace Rhisis.Cluster
 
             Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
-            
-            if (!DatabaseFactory.Instance.DatabaseExists())
-                throw new RhisisDatabaseException($"The database '{DatabaseFactory.Instance.Configuration.Database}' doesn't exists.");
-
             Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
+            
+            DependencyContainer.Instance.Initialize().BuildServiceProvider();
 
             Logger.Info("Connection to ISC server on {0}:{1}...", this.ClusterConfiguration.ISC.Host, this.ClusterConfiguration.ISC.Port);
             InterClient = new ISCClient(this.ClusterConfiguration);

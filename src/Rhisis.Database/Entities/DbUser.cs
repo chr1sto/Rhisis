@@ -1,17 +1,11 @@
-﻿using Rhisis.Database.Interfaces;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
 {
     [Table("users")]
-    public class DbUser : IDatabaseEntity
+    public class DbUser : DbEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         public string Username { get; set; }
 
         public string Password { get; set; }

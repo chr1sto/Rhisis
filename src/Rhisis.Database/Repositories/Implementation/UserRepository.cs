@@ -1,24 +1,14 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Rhisis.Core.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Interfaces;
+using System.Linq;
 
-namespace Rhisis.Database.Repositories
+namespace Rhisis.Database.Repositories.Implementation
 {
     /// <summary>
     /// User repository.
     /// </summary>
-    [Injectable]
     public sealed class UserRepository : RepositoryBase<DbUser>, IUserRepository
     {
-        /// <summary>
-        /// Creates a new <see cref="UserRepository"/> instance.
-        /// </summary>
-        public UserRepository()
-        {
-        }
-
         /// <summary>
         /// Creates and initialize an <see cref="UserRepository"/>.
         /// </summary>

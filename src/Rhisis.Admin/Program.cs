@@ -21,7 +21,7 @@ namespace Rhisis.Admin
             try
             {
                 logger.Trace("Starting Rhisis.Admin");
-                DatabaseFactory.Instance.Setup();
+                DatabaseFactory.Instance.Initialize();
                 BusinessLayer.Initialize();
                 CreateWebHostBuilder(args).Build().Run();
             }

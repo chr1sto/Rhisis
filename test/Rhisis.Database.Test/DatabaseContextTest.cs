@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Rhisis.Database.Context;
 using System.Linq;
 using Xunit;
 

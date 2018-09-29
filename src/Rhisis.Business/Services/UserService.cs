@@ -1,17 +1,17 @@
 ﻿using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
-using Rhisis.Database.Interfaces;
+using Rhisis.Database;
 
 namespace Rhisis.Core.Business.Services
 {
     [Injectable]
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IDatabase _database;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IDatabase database)
         {
-            this._userRepository = userRepository;
+            this._database = database;
         }
     }
 }

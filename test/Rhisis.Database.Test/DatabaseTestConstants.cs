@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Core.Common;
+using Rhisis.Database.Context;
 using System;
 
 namespace Rhisis.Database.Test

@@ -1,17 +1,11 @@
-﻿using Rhisis.Database.Interfaces;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
 {
     [Table("characters")]
-    public sealed class DbCharacter : IDatabaseEntity
+    public sealed class DbCharacter : DbEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        
         public int UserId { get; set; }
 
         public string Name { get; set; }
