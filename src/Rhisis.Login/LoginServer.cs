@@ -1,6 +1,7 @@
 ﻿using Ether.Network.Packets;
 using Ether.Network.Server;
 using NLog;
+using Rhisis.Business;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
@@ -11,8 +12,6 @@ using Rhisis.Network.ISC.Structures;
 using Rhisis.Network.Packets;
 using System;
 using System.Collections.Generic;
-using Rhisis.Business;
-using Rhisis.Core.DependencyInjection;
 
 namespace Rhisis.Login
 {
@@ -79,9 +78,7 @@ namespace Rhisis.Login
             Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
             Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
-
-            DependencyContainer.Instance.Initialize().BuildServiceProvider();
-
+            
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Initialize().BuildServiceProvider();
 
@@ -97,14 +94,14 @@ namespace Rhisis.Login
         protected override void OnClientConnected(LoginClient client)
         {
             client.Initialize(this);
-            Logger.Info("New client connected from {0}.", client.RemoteEndPoint);
+            Logger.Info($"New client connected from {client.RemoteEndPoint}.");
             CommonPacketFactory.SendWelcome(client, client.SessionId);
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(LoginClient client)
         {
-            Logger.Info("Client disconnected from {0}.", client.RemoteEndPoint);
+            Logger.Info($"Client '{client.Username}' disconnected from {client.RemoteEndPoint}.");
         }
 
         /// <inheritdoc />
@@ -124,7 +121,5 @@ namespace Rhisis.Login
 
             base.Dispose(disposing);
         }
-
-       
     }
 }
