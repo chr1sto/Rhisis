@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Rhisis.Core.Common;
 
 namespace Rhisis.Core.Services
 {
     public interface IAuthenticationService
     {
-        bool Authenticate(string username, string password);
+        AuthenticationResult Authenticate(string username, string password);
     }
 }

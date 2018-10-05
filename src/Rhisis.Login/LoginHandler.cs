@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
 using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
 using Rhisis.Database;
@@ -32,6 +33,12 @@ namespace Rhisis.Login
             var certifyPacket = new CertifyPacket(packet, client.ServerConfiguration.PasswordEncryption);
             string password = null;
 
+            if (certifyPacket.BuildVersion != client.ServerConfiguration.BuildVersion)
+            {
+                AuthenticationFailed(client, ErrorType.CERT_GENERAL, "bad client build version");
+                return;
+            }
+
             if (client.ServerConfiguration.PasswordEncryption)
             {
                 byte[] encryptionKey = cryptographyService.BuildEncryptionKeyFromString(client.ServerConfiguration.EncryptionKey, 16);
@@ -43,38 +50,38 @@ namespace Rhisis.Login
                 password = packet.Read<string>();
             }
 
-            if (certifyPacket.BuildVersion != client.ServerConfiguration.BuildVersion)
+            var authenticationService = DependencyContainer.Instance.Resolve<IAuthenticationService>();
+            var authenticationResult = authenticationService.Authenticate(certifyPacket.Username, password);
+
+            switch (authenticationResult)
             {
-                Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad client build version.");
-                LoginPacketFactory.SendLoginError(client, ErrorType.CERT_GENERAL);
-                client.Disconnect();
-                return;
+                case AuthenticationResult.BadUsername:
+                    AuthenticationFailed(client, ErrorType.FLYFF_ACCOUNT, "bad username");
+                    break;
+                case AuthenticationResult.BadPassword:
+                    AuthenticationFailed(client, ErrorType.FLYFF_PASSWORD, "bad password");
+                    break;
+                case AuthenticationResult.AccountSuspended:
+                    // TODO
+                    break;
+                case AuthenticationResult.AccountTemporarySuspended:
+                    // TODO
+                    break;
+                case AuthenticationResult.Success:
+                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, client.ClustersConnected);
+                    client.SetClientUsername(certifyPacket.Username);
+                    Logger.Info($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
+                    break;
+                default:
+                    break;
             }
+        }
 
-            DbUser dbUser = null;
-
-            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
-                dbUser = database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
-
-            if (dbUser == null)
-            {
-                Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad username.");
-                LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_ACCOUNT);
-                client.Disconnect();
-                return;
-            }
-
-            if (!dbUser.Password.Equals(password, StringComparison.OrdinalIgnoreCase))
-            {
-                Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: bad password.");
-                LoginPacketFactory.SendLoginError(client, ErrorType.FLYFF_PASSWORD);
-                client.Disconnect();
-                return;
-            }
-            
-            LoginPacketFactory.SendServerList(client, certifyPacket.Username, client.ClustersConnected);
-            client.SetClientUsername(certifyPacket.Username);
-            Logger.Info($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
+        private static void AuthenticationFailed(LoginClient client, ErrorType error, string reason)
+        {
+            Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
+            LoginPacketFactory.SendLoginError(client, error);
+            client.Disconnect();
         }
     }
 }

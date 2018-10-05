@@ -1,21 +1,37 @@
-﻿using Rhisis.Core.DependencyInjection;
+﻿using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
+using Rhisis.Database;
+using Rhisis.Database.Entities;
+using System;
 
 namespace Rhisis.Business.Services
 {
     [Injectable]
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly IUserService _userService;
+        private readonly IDatabase _database;
 
-        public AuthenticationService(IUserService userService)
+        public AuthenticationService(IDatabase database)
         {
-            this._userService = userService;
+            this._database = database;
         }
 
-        public bool Authenticate(string username, string password)
+        public AuthenticationResult Authenticate(string username, string password)
         {
-            throw new System.NotImplementedException();
+            DbUser _dbUser = this._database.Users.Get(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+            if (_dbUser == null)
+            {
+                return AuthenticationResult.BadUsername;
+            }
+
+            if (!_dbUser.Password.Equals(password, StringComparison.OrdinalIgnoreCase))
+            {
+                return AuthenticationResult.BadPassword;
+            }
+
+            return AuthenticationResult.Success;
         }
     }
 }
