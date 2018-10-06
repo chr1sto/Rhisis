@@ -101,7 +101,10 @@ namespace Rhisis.Login
         /// <inheritdoc />
         protected override void OnClientDisconnected(LoginClient client)
         {
-            Logger.Info($"Client '{client.Username}' disconnected from {client.RemoteEndPoint}.");
+            if (string.IsNullOrEmpty(client.Username))
+                Logger.Info($"Unknwon client disconnected from {client.RemoteEndPoint}.");
+            else
+                Logger.Info($"Client '{client.Username}' disconnected from {client.RemoteEndPoint}.");
         }
 
         /// <inheritdoc />
