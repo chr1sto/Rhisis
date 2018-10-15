@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core;
+﻿using NLog;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using System;
 
@@ -7,6 +8,8 @@ namespace Rhisis.World.Systems
     [System]
     public class MobilitySystem : SystemBase
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
@@ -42,10 +45,11 @@ namespace Rhisis.World.Systems
             if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
                 entity.MovableComponent.DestinationPosition.Reset();
+                Logger.Debug($"Player {entity.Object.Name} has arrived.");
             }
             else
             {
-                double speed = ((entity.MovableComponent.Speed * 100) * this.Context.GameTime);
+                double speed = ((entity.MovableComponent.Speed * 100f) * this.Context.GameTime);
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
                 float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);

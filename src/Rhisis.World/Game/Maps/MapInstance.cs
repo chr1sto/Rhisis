@@ -11,6 +11,7 @@ using Rhisis.World.Game.Regions;
 using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -137,20 +138,21 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public void StartUpdateTask(int delay)
         {
-            double previousTime = 0f;
-
             Task.Run(async () =>
             {
+                const double FrameRatePerSeconds = 0.6f;
+                double previousTime = 0;
+                
                 while (true)
                 {
                     if (this._cancellationToken.IsCancellationRequested)
                         break;
 
-                    double currentTime = Rhisis.Core.IO.Time.TimeInMilliseconds();
+                    double currentTime = Rhisis.Core.IO.Time.GetElapsedTime();
                     double deltaTime = currentTime - previousTime;
                     previousTime = currentTime;
 
-                    this.GameTime = deltaTime / 1000f;
+                    this.GameTime = (deltaTime * FrameRatePerSeconds) / 1000f;
 
                     try
                     {
@@ -173,6 +175,7 @@ namespace Rhisis.World.Game.Maps
                     {
                         Logger.Error(e);
                     }
+
                     await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
                 }
             }, this._cancellationToken);

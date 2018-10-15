@@ -2,13 +2,14 @@
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
+using System;
 
 namespace Rhisis.World.Systems
 {
     [System]
     public class VisibilitySystem : SystemBase
     {
-        public static readonly float VisibilityRange = 75f;
+        public static readonly float VisibilityRange = (float)Math.Pow(75f, 2f);
 
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Mover;
