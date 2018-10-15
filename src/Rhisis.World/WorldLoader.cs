@@ -374,7 +374,7 @@ namespace Rhisis.World
                     map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
 
                 _maps.Add(mapId, map);
-                map.StartUpdateTask(100);
+                map.StartUpdateTask(50);
             }
 
             Logger.Info("-> {0} maps loaded.", _maps.Count);

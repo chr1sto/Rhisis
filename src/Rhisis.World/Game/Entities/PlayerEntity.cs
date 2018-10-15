@@ -44,6 +44,8 @@ namespace Rhisis.World.Game.Entities
         public PlayerEntity(IContext context)
             : base(context)
         {
+            this.MovableComponent = new MovableComponent();
+            this.PlayerData = new PlayerDataComponent();
             this.Trade = new TradeComponent();
             this.Follow = new FollowComponent();
         }

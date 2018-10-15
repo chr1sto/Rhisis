@@ -3,6 +3,7 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +15,7 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Npc, IsDefault: true)]
     public class DefaultNpcBehavior : IBehavior<INpcEntity>
     {
-        private const int OralTextRadius = 60;
+        private static readonly float OralTextRadius = (float)Math.Pow(60f, 2f);
 
         /// <inheritdoc />
         public void Update(INpcEntity entity)
