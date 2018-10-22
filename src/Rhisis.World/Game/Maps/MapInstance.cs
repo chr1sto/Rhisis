@@ -132,7 +132,20 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public override void Update()
         {
-            // TODO
+            lock (SyncRoot)
+            {
+                foreach (var entity in this.Entities)
+                {
+                    foreach (var system in this.Systems)
+                    {
+                        if (!(system is INotifiableSystem) && system.Match(entity))
+                            system.Execute(entity);
+                    }
+                }
+
+                foreach (var mapLayer in this._layers)
+                    mapLayer.Update();
+            }
         }
 
         /// <inheritdoc />
@@ -156,20 +169,7 @@ namespace Rhisis.World.Game.Maps
 
                     try
                     {
-                        lock (SyncRoot)
-                        {
-                            foreach (var entity in this.Entities)
-                            {
-                                foreach (var system in this.Systems)
-                                {
-                                    if (!(system is INotifiableSystem) && system.Match(entity))
-                                        system.Execute(entity);
-                                }
-                            }
-
-                            foreach (var mapLayer in this._layers)
-                                mapLayer.Update();
-                        }
+                        this.Update();
                     }
                     catch (Exception e)
                     {

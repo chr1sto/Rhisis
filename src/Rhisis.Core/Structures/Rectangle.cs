@@ -8,27 +8,27 @@ namespace Rhisis.Core.Structures
     /// <remarks>
     /// This Rectangle implementation doesn't have a Y property because in a 3D world, Y coordinate represents the heights.
     /// </remarks>
-    public sealed class Rectangle
+    public class Rectangle
     {
         /// <summary>
         /// Gets the X position of the rectangle.
         /// </summary>
-        public int X { get; }
+        public int X { get; protected set; }
 
         /// <summary>
         /// Gets the Z position of the rectangle.
         /// </summary>
-        public int Z { get; }
+        public int Z { get; protected set; }
 
         /// <summary>
         /// Gets the width of the rectangle.
         /// </summary>
-        public int Width { get; }
+        public int Width { get; protected set; }
 
         /// <summary>
         /// Gets the length of the rectangle.
         /// </summary>
-        public int Length { get; }
+        public int Length { get; protected set; }
 
         /// <summary>
         /// Creates a new <see cref="Rectangle"/>.
@@ -41,8 +41,8 @@ namespace Rhisis.Core.Structures
         {
             this.X = x;
             this.Z = z;
-            this.Width = width - x;
-            this.Length = length - z;
+            this.Width = width;
+            this.Length = length;
         }
 
         /// <summary>
