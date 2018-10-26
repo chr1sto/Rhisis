@@ -15,7 +15,7 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Npc, IsDefault: true)]
     public class DefaultNpcBehavior : IBehavior<INpcEntity>
     {
-        private static readonly float OralTextRadius = (float)Math.Pow(60f, 2f);
+        private static readonly float OralTextRadius = 50f;
 
         /// <inheritdoc />
         public void Update(INpcEntity entity)

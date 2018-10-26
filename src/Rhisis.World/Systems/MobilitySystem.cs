@@ -42,7 +42,7 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
-            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
+            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.5f))
             {
                 entity.MovableComponent.DestinationPosition.Reset();
                 Logger.Debug($"Player {entity.Object.Name} has arrived.");

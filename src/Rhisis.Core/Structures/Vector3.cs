@@ -111,7 +111,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public bool IsInCircle(Vector3 otherPosition, float circleRadius)
         {
-            return Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2) < circleRadius;
+            return Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2) < circleRadius * circleRadius;
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Rhisis.Core.Structures
             var deltaX = this._x - Math.Max(rectangle.X, Math.Min(this._x, rectangle.X + rectangle.Width));
             var deltaY = this._z - Math.Max(rectangle.Z, Math.Min(this._z, rectangle.Z + rectangle.Length));
 
-            return (deltaX * deltaX + deltaY * deltaY) < radius;
+            return (deltaX * deltaX + deltaY * deltaY) < (radius * radius);
         }
 
         /// <summary>

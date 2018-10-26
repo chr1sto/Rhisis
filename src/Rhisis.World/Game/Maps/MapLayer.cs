@@ -43,7 +43,7 @@ namespace Rhisis.World.Game.Maps
                     for (var i = 0; i < respawnerRegion.Count; i++)
                         this.CreateMonster(respawner);
 
-                    this._regions.Add(respawnerRegion);
+                    this._regions.Add(respawner);
                 }
             }
         }
@@ -64,7 +64,6 @@ namespace Rhisis.World.Game.Maps
             {
                 if (region.IsActive && region is IMapRespawnRegion respawnRegion)
                 {
-                    Logger.Debug($"Update {region.ToString()}");
                     foreach (var entity in respawnRegion.Entities)
                     {
                         foreach (var system in this.Systems)

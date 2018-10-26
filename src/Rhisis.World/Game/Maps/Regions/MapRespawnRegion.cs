@@ -33,8 +33,6 @@ namespace Rhisis.World.Game.Maps.Regions
             {
                 IsActive = this.IsActive
             };
-
-            
             
             return region;
         }
@@ -46,7 +44,7 @@ namespace Rhisis.World.Game.Maps.Regions
 
         public static IMapRespawnRegion FromRgnElement(RgnRespawn7 rgnRespawn)
         {
-            return new MapRespawnRegion(rgnRespawn.Top, rgnRespawn.Left, rgnRespawn.Width, rgnRespawn.Length, 
+            return new MapRespawnRegion(rgnRespawn.Left, rgnRespawn.Top, rgnRespawn.Width, rgnRespawn.Length, 
                 rgnRespawn.Time, (WorldObjectType)rgnRespawn.Type, rgnRespawn.Model, rgnRespawn.Count);
         }
     }

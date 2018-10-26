@@ -3,7 +3,6 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Packets;
-using System;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Systems
@@ -11,7 +10,7 @@ namespace Rhisis.World.Systems
     [System]
     public class VisibilitySystem : SystemBase
     {
-        public static readonly float VisibilityRange = (float)Math.Pow(75f, 2f);
+        public static readonly float VisibilityRange = 75f;
 
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Mover;
@@ -52,10 +51,10 @@ namespace Rhisis.World.Systems
         }
 
         /// <summary>
-        /// Update context visibility.
+        /// Update entities visibility.
         /// </summary>
         /// <param name="entity">Current entity</param>
-        /// <param name="context">Context containing entities</param>
+        /// <param name="entities">Entities</param>
         private static void UpdateEntitiesVisibility(IEntity entity, IEnumerable<IEntity> entities)
         {
             foreach (IEntity otherEntity in entities)
