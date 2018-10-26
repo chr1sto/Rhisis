@@ -7,11 +7,10 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Regions;
+using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -26,7 +25,7 @@ namespace Rhisis.World.Game.Maps
 
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
-        private readonly List<IRegion> _regions;
+        private readonly List<IMapRegion> _regions;
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
@@ -43,7 +42,7 @@ namespace Rhisis.World.Game.Maps
         public IReadOnlyList<IMapLayer> Layers => this._layers;
 
         /// <inheritdoc />
-        public IReadOnlyList<IRegion> Regions => this._regions;
+        public IReadOnlyList<IMapRegion> Regions => this._regions;
 
         /// <summary>
         /// Creates a new <see cref="MapInstance"/>.
@@ -57,7 +56,7 @@ namespace Rhisis.World.Game.Maps
             this.Name = name;
             this._mapPath = mapPath;
             this._layers = new List<IMapLayer>();
-            this._regions = new List<IRegion>();
+            this._regions = new List<IMapRegion>();
         }
 
         /// <inheritdoc />
@@ -81,12 +80,13 @@ namespace Rhisis.World.Game.Maps
 
             using (var rgnFile = new RgnFile(rgn))
             {
-                IEnumerable<IRegion> monsterRegions = rgnFile.Elements
-                        .Where(x => x is RgnRespawn7)
-                        .Cast<RgnRespawn7>()
-                        .Select(x => new RespawnerRegion(x.Left, x.Top, x.Right, x.Bottom, x.Time, x.Type, x.Model, x.Count));
+                IEnumerable<IMapRespawnRegion> respawnersRgn = rgnFile.GetElements<RgnRespawn7>()
+                    .Select(x => MapRespawnRegion.FromRgnElement(x));
 
-                this._regions.AddRange(monsterRegions);
+                // TODO: load wrapzones
+                // TODO: load collector regions
+                
+                this._regions.AddRange(respawnersRgn);
             }
         }
 

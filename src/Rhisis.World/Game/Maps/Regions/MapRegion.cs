@@ -18,5 +18,17 @@ namespace Rhisis.World.Game.Maps.Regions
             : base(x, z, width, length)
         {
         }
+
+        /// <inheritdoc />
+        public Rectangle GetRectangle() => this;
+
+        /// <inheritdoc />
+        public virtual object Clone()
+        {
+            return new MapRegion(this.X, this.Z, this.Width, this.Length)
+            {
+                IsActive = this.IsActive
+            };
+        }
     }
 }

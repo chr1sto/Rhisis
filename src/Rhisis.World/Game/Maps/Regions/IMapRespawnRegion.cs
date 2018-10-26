@@ -1,11 +1,10 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Regions;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Maps.Regions
 {
-    public interface IMapRespawnRegion : IRegion
+    public interface IMapRespawnRegion : IMapRegion
     {
         WorldObjectType ObjectType { get; }
 

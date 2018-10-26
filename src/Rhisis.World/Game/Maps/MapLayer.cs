@@ -1,20 +1,27 @@
-﻿using Rhisis.Core.Common;
+﻿using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Regions;
+using Rhisis.World.Game.Maps.Regions;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Maps
 {
     public class MapLayer : Context, IMapLayer
     {
+        private readonly IList<IMapRegion> _regions;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc />
         public int Id { get; }
 
         /// <inheritdoc />
         public IMapInstance Parent { get; }
+
+        /// <inheritdoc />
+        public ICollection<IMapRegion> Regions => this._regions;
 
         /// <summary>
         /// Creates a new <see cref="MapLayer"/> instance.
@@ -25,13 +32,18 @@ namespace Rhisis.World.Game.Maps
         {
             this.Id = id;
             this.Parent = parent;
-            
-            foreach (IRegion region in this.Parent.Regions)
+            this._regions = new List<IMapRegion>();
+
+            foreach (IMapRegion region in this.Parent.Regions)
             {
-                if (region is RespawnerRegion respawner && respawner.ObjectType == (int)WorldObjectType.Mover)
+                if (region is IMapRespawnRegion respawner && respawner.ObjectType == WorldObjectType.Mover)
                 {
-                    for (var i = 0; i < respawner.Count; i++)
+                    var respawnerRegion = respawner.Clone() as IMapRespawnRegion;
+
+                    for (var i = 0; i < respawnerRegion.Count; i++)
                         this.CreateMonster(respawner);
+
+                    this._regions.Add(respawnerRegion);
                 }
             }
         }
@@ -47,28 +59,45 @@ namespace Rhisis.World.Game.Maps
                         system.Execute(entity);
                 }
             }
+            
+            foreach (var region in this._regions)
+            {
+                if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+                {
+                    Logger.Debug($"Update {region.ToString()}");
+                    foreach (var entity in respawnRegion.Entities)
+                    {
+                        foreach (var system in this.Systems)
+                        {
+                            if (!(system is INotifiableSystem) && system.Match(entity))
+                                system.Execute(entity);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Create a new monster.
         /// </summary>
         /// <param name="respawner"></param>
-        private void CreateMonster(RespawnerRegion respawner)
+        private void CreateMonster(IMapRespawnRegion respawner)
         {
-            var monster = this.CreateEntity<MonsterEntity>();
+            var monster = new MonsterEntity(this);
+            var moverData = WorldServer.Movers[respawner.ModelId];
 
             monster.Object = new ObjectComponent
             {
                 MapId = this.Parent.Id,
                 LayerId = this.Id,
-                ModelId = respawner.MoverId,
+                ModelId = moverData.Id,
                 Type = WorldObjectType.Mover,
                 Position = respawner.GetRandomPosition(),
                 Angle = RandomHelper.FloatRandom(0, 360f),
-                Name = WorldServer.Movers[respawner.MoverId].Name,
+                Name = moverData.Name,
                 Size = ObjectComponent.DefaultObjectSize,
                 Spawned = true,
-                Level = WorldServer.Movers[respawner.MoverId].Level
+                Level = moverData.Level
             };
             monster.TimerComponent = new TimerComponent
             {
@@ -76,6 +105,8 @@ namespace Rhisis.World.Game.Maps
             };
             monster.Behavior = WorldServer.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawner;
+
+            respawner.Entities.Add(monster);
         }
     }
 }

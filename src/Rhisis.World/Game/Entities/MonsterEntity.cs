@@ -1,7 +1,7 @@
 ﻿using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Regions;
+using Rhisis.World.Game.Maps.Regions;
 
 namespace Rhisis.World.Game.Entities
 {
@@ -14,7 +14,7 @@ namespace Rhisis.World.Game.Entities
         public override WorldEntityType Type => WorldEntityType.Monster;
 
         /// <inheritdoc />
-        public IRegion Region { get; set; }
+        public IMapRegion Region { get; set; }
 
         /// <inheritdoc />
         public MovableComponent MovableComponent { get; set; }

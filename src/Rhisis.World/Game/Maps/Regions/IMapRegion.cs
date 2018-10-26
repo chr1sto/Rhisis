@@ -41,5 +41,17 @@ namespace Rhisis.World.Game.Maps.Regions
         /// <param name="position"></param>
         /// <returns></returns>
         bool Contains(Vector3 position);
+
+        /// <summary>
+        /// Gets the region rectangle.
+        /// </summary>
+        /// <returns></returns>
+        Rectangle GetRectangle();
+
+        /// <summary>
+        /// Clones the current region.
+        /// </summary>
+        /// <returns></returns>
+        object Clone();
     }
 }

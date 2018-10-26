@@ -125,7 +125,7 @@ namespace Rhisis.Core.Structures
             var deltaX = this._x - Math.Max(rectangle.X, Math.Min(this._x, rectangle.X + rectangle.Width));
             var deltaY = this._z - Math.Max(rectangle.Z, Math.Min(this._z, rectangle.Z + rectangle.Length));
 
-            return (deltaX * deltaX + deltaY * deltaY) < (radius * radius);
+            return (deltaX * deltaX + deltaY * deltaY) < radius;
         }
 
         /// <summary>

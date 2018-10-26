@@ -1,9 +1,7 @@
 ﻿using Rhisis.Core.Structures;
-using Rhisis.World.Game.Regions;
-
 namespace Rhisis.World.Game.Maps.Regions
 {
-    public interface IMapWrapzoneRegion : IRegion
+    public interface IMapWrapzoneRegion : IMapRegion
     {
         int DestMapId { get; }
 

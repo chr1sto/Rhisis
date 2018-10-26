@@ -36,5 +36,7 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwFilghtLevel")]
         public int FlightLevel { get; set; }
+
+        public override string ToString() => this.Name;
     }
 }
