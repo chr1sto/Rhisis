@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Helpers;
 using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Core.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,8 +38,8 @@ namespace Rhisis.World.Game.Core
         }
 
         /// <inheritdoc />
-        public void NotifySystem<TSystem>(SystemEventArgs e) 
-            where TSystem : INotifiableSystem => this.Context.NotifySystem<TSystem>(this, e);
+        public void NotifySystem<TSystem>(SystemEventArgs e)
+            where TSystem : ISystem => SystemManager.Instance.Execute<TSystem>(this, e);
 
         /// <inheritdoc />
         public TEntity FindEntity<TEntity>(int id)

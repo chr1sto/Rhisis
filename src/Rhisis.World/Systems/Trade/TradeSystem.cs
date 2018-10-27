@@ -1,8 +1,6 @@
-﻿using Rhisis.Core.IO;
-using Rhisis.World.Game.Core;
+﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using System;
-using System.Linq.Expressions;
 using Rhisis.Core.Data;
 using Rhisis.Core.Exceptions;
 using Rhisis.World.Game.Components;
@@ -10,11 +8,12 @@ using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Trade.EventArgs;
 using NLog;
+using Rhisis.World.Game.Core.Systems;
 
 namespace Rhisis.World.Systems.Trade
 {
-    [System]
-    internal sealed class TradeSystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    internal sealed class TradeSystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
@@ -24,19 +23,10 @@ namespace Rhisis.World.Systems.Trade
         public const int MaxTrade = 25;
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
-
-        /// <summary>
-        /// Creates a new <see cref="TradeSystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public TradeSystem(IContext context) :
-            base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!e.CheckArguments() || !(entity is IPlayerEntity playerEntity))
                 return;

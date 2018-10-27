@@ -1,4 +1,5 @@
 ﻿using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Core.Systems;
 using System;
 using System.Collections.Generic;
 
@@ -34,7 +35,7 @@ namespace Rhisis.World.Game.Core
         /// </summary>
         /// <typeparam name="TSystem">System type</typeparam>
         /// <param name="e">System event arguments</param>
-        void NotifySystem<TSystem>(SystemEventArgs e) where TSystem : INotifiableSystem;
+        void NotifySystem<TSystem>(SystemEventArgs e) where TSystem : ISystem;
 
         /// <summary>
         /// Finds an entity in the spawn list of the current entity.

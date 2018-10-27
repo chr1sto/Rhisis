@@ -1,8 +1,8 @@
-﻿using NLog;
-using Rhisis.Core.Common;
+﻿using Rhisis.Core.Common;
 using Rhisis.Core.Helpers;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps.Regions;
 using System.Collections.Generic;
@@ -12,7 +12,6 @@ namespace Rhisis.World.Game.Maps
     public class MapLayer : Context, IMapLayer
     {
         private readonly IList<IMapRegion> _regions;
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         /// <inheritdoc />
         public int Id { get; }
@@ -52,13 +51,7 @@ namespace Rhisis.World.Game.Maps
         public override void Update()
         {
             foreach (var entity in this.Entities)
-            {
-                foreach (var system in this.Systems)
-                {
-                    if (!(system is INotifiableSystem) && system.Match(entity))
-                        system.Execute(entity);
-                }
-            }
+                SystemManager.Instance.ExecuteUpdatable(entity);
             
             foreach (var region in this._regions)
             {
@@ -66,11 +59,7 @@ namespace Rhisis.World.Game.Maps
                 {
                     foreach (var entity in respawnRegion.Entities)
                     {
-                        foreach (var system in this.Systems)
-                        {
-                            if (!(system is INotifiableSystem) && system.Match(entity))
-                                system.Execute(entity);
-                        }
+                        SystemManager.Instance.ExecuteUpdatable(entity);
                     }
                 }
             }

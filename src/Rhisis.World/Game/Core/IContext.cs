@@ -19,11 +19,6 @@ namespace Rhisis.World.Game.Core
         IEnumerable<IEntity> Entities { get; }
 
         /// <summary>
-        /// Gets the list of the systems of the current context.
-        /// </summary>
-        IEnumerable<ISystem> Systems { get; }
-
-        /// <summary>
         /// Creates a new entity in this context.
         /// </summary>
         /// <typeparam name="TEntity">Entity type</typeparam>
@@ -57,25 +52,5 @@ namespace Rhisis.World.Game.Core
         /// Update this context.
         /// </summary>
         void Update();
-
-        /// <summary>
-        /// Notifies and executes a systems.
-        /// </summary>
-        /// <typeparam name="TSystem">System type</typeparam>
-        /// <param name="entity">Entity instance</param>
-        /// <param name="e">Event arguments</param>
-        void NotifySystem<TSystem>(IEntity entity, SystemEventArgs e);
-
-        /// <summary>
-        /// Adds a new system to the current context.
-        /// </summary>
-        /// <param name="system">System instance</param>
-        void AddSystem(ISystem system);
-
-        /// <summary>
-        /// Removes an existing system from the current context.
-        /// </summary>
-        /// <param name="system">System instance</param>
-        void RemoveSystem(ISystem system);
     }
 }

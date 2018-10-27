@@ -6,6 +6,7 @@ using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
@@ -135,13 +136,7 @@ namespace Rhisis.World.Game.Maps
             lock (SyncRoot)
             {
                 foreach (var entity in this.Entities)
-                {
-                    foreach (var system in this.Systems)
-                    {
-                        if (!(system is INotifiableSystem) && system.Match(entity))
-                            system.Execute(entity);
-                    }
-                }
+                    SystemManager.Instance.ExecuteUpdatable(entity);
 
                 foreach (var mapLayer in this._layers)
                     mapLayer.Update();

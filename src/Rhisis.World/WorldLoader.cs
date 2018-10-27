@@ -5,6 +5,7 @@ using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems.Chat;
 using System;
@@ -72,6 +73,7 @@ namespace Rhisis.World
             Logger.Info("Loading resources...");
             Profiler.Start("LoadResources");
 
+            this.InitializeSystems();
             this.LoadDefinesAndTexts();
             this.LoadMovers();
             this.LoadBehaviors();
@@ -345,8 +347,12 @@ namespace Rhisis.World
 
         private void LoadMaps()
         {
-            IEnumerable<Type> systemTypes = this.LoadSystems();
-            IReadOnlyDictionary<string, string> worldsPaths = this.LoadWorldScript();
+            var worldsPaths = new Dictionary<string, string>();
+            using (var textFile = new TextFile(WorldScriptPath))
+            {
+                foreach (var text in textFile.Texts)
+                    worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
+            }
 
             foreach (string mapDefineName in this.WorldConfiguration.Maps)
             {
@@ -370,14 +376,17 @@ namespace Rhisis.World
 
                 IMapInstance map = MapInstance.Create(Path.Combine(MapsPath, mapName), mapName, mapId);
 
-                foreach (Type type in systemTypes)
-                    map.AddSystem(Activator.CreateInstance(type, map) as ISystem);
-
                 _maps.Add(mapId, map);
                 map.StartUpdateTask(50);
             }
 
             Logger.Info("-> {0} maps loaded.", _maps.Count);
+        }
+
+        private void InitializeSystems()
+        {
+            ChatSystem.Initialize();
+            SystemManager.Instance.Initialize();
         }
 
         private void CleanUp()
@@ -386,28 +395,6 @@ namespace Rhisis.World
             Texts.Clear();
             ShopData.Clear();
             GC.Collect();
-        }
-
-        private IEnumerable<Type> LoadSystems()
-        {
-            ChatSystem.Initialize();
-
-            return Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(x => x.GetTypeInfo().GetCustomAttribute<SystemAttribute>() != null && typeof(ISystem).IsAssignableFrom(x));
-        }
-
-        private IReadOnlyDictionary<string, string> LoadWorldScript()
-        {
-            var worldsPaths = new Dictionary<string, string>();
-
-            using (var textFile = new TextFile(WorldScriptPath))
-            {
-                foreach (var text in textFile.Texts)
-                    worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
-            }
-
-            return worldsPaths;
         }
     }
 }
