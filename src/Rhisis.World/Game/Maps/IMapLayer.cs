@@ -1,4 +1,6 @@
 ﻿using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Maps.Regions;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -16,5 +18,10 @@ namespace Rhisis.World.Game.Maps
         /// Gets the parent map of the current layer.
         /// </summary>
         IMapInstance Parent { get; }
+
+        /// <summary>
+        /// Gets the regions of the current layer.
+        /// </summary>
+        ICollection<IMapRegion> Regions { get; }
     }
 }

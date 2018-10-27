@@ -1,7 +1,7 @@
 ﻿using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Regions;
+using Rhisis.World.Game.Maps.Regions;
 
 namespace Rhisis.World.Game.Entities
 {
@@ -10,7 +10,7 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets or sets the parent region of the monster.
         /// </summary>
-        IRegion Region { get; set; }
+        IMapRegion Region { get; set; }
 
         /// <summary>
         /// Gets the monster's behavior.

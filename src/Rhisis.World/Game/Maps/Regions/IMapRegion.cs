@@ -1,11 +1,8 @@
 ﻿using Rhisis.Core.Structures;
 
-namespace Rhisis.World.Game.Regions
+namespace Rhisis.World.Game.Maps.Regions
 {
-    /// <summary>
-    /// Defines a Region.
-    /// </summary>
-    public interface IRegion
+    public interface IMapRegion
     {
         /// <summary>
         /// Gets the top left corner X coordinate of the region.
@@ -28,6 +25,11 @@ namespace Rhisis.World.Game.Regions
         int Length { get; }
 
         /// <summary>
+        /// Gets or sets the region's activity state.
+        /// </summary>
+        bool IsActive { get; set; }
+
+        /// <summary>
         /// Generates a random position within the region.
         /// </summary>
         /// <returns></returns>
@@ -39,5 +41,17 @@ namespace Rhisis.World.Game.Regions
         /// <param name="position"></param>
         /// <returns></returns>
         bool Contains(Vector3 position);
+
+        /// <summary>
+        /// Gets the region rectangle.
+        /// </summary>
+        /// <returns></returns>
+        Rectangle GetRectangle();
+
+        /// <summary>
+        /// Clones the current region.
+        /// </summary>
+        /// <returns></returns>
+        object Clone();
     }
 }

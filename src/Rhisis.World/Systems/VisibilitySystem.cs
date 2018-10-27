@@ -1,15 +1,16 @@
 ﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
+using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Packets;
-using System;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Systems
 {
     [System]
     public class VisibilitySystem : SystemBase
     {
-        public static readonly float VisibilityRange = (float)Math.Pow(75f, 2f);
+        public static readonly float VisibilityRange = 75f;
 
         /// <inheritdoc />
         protected override WorldEntityType Type => WorldEntityType.Mover;
@@ -32,21 +33,31 @@ namespace Rhisis.World.Systems
             var currentMap = entity.Context as IMapInstance;
             IMapLayer currentMapLayer = currentMap?.GetMapLayer(entity.Object.LayerId);
 
-            UpdateContextVisibility(entity, currentMapLayer);
-            UpdateContextVisibility(entity, this.Context);
+            UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
+            UpdateEntitiesVisibility(entity, currentMap.Entities);
+
+            foreach (var region in currentMapLayer.Regions)
+            {
+                if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
+                {
+                    region.IsActive = true;
+                }
+
+                if (region.IsActive && region is IMapRespawnRegion respawner)
+                {
+                    UpdateEntitiesVisibility(entity, respawner.Entities);
+                }
+            }
         }
 
         /// <summary>
-        /// Update context visibility.
+        /// Update entities visibility.
         /// </summary>
         /// <param name="entity">Current entity</param>
-        /// <param name="context">Context containing entities</param>
-        private static void UpdateContextVisibility(IEntity entity, IContext context)
+        /// <param name="entities">Entities</param>
+        private static void UpdateEntitiesVisibility(IEntity entity, IEnumerable<IEntity> entities)
         {
-            if (context == null)
-                return;
-
-            foreach (IEntity otherEntity in context.Entities)
+            foreach (IEntity otherEntity in entities)
             {
                 if (entity.Id == otherEntity.Id || !otherEntity.Object.Spawned)
                     continue;
