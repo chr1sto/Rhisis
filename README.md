@@ -94,12 +94,13 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Eastrall
 - Steve-Nzr
 - Freezeraid
+- Skeatwin
+- Yothri
 
 ## Supporters
 
 - Ukiyo
 - Kinami
 - Sauce
-- Yothri
 
 [ethernetwork]: https://github.com/Eastrall/Ether.Network
