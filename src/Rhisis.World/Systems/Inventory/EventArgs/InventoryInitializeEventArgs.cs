@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Rhisis.Database.Entities;
-using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 
 namespace Rhisis.World.Systems.Inventory.EventArgs
 {

@@ -1,25 +1,17 @@
 ﻿using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems
 {
     [System]
-    public sealed class BehaviorSystem : SystemBase
+    public sealed class BehaviorSystem : ISystem
     {
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster | WorldEntityType.Npc;
-
-        /// <summary>
-        /// Creates a new <see cref="BehaviorSystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public BehaviorSystem(IContext context) 
-            : base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster | WorldEntityType.Npc;
 
         /// <inheritdoc />
-        public override void Execute(IEntity entity)
+        public void Execute(IEntity entity, SystemEventArgs args)
         {
             switch (entity)
             {

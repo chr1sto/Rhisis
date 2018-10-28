@@ -1,27 +1,23 @@
 ﻿using NLog;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using System.Linq;
 
 namespace Rhisis.World.Systems.NpcDialog
 {
-    [System]
-    public class NpcDialogSystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    public class NpcDialogSystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
+        public WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
-        public NpcDialogSystem(IContext context) : base(context)
-        {
-        }
-
-        /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity player) || !(e is NpcDialogOpenEventArgs dialogEvent))
             {

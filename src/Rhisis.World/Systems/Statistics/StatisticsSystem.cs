@@ -1,30 +1,22 @@
 ﻿using NLog;
 using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems.Statistics
 {
-    [System]
-    public class StatisticsSystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    public class StatisticsSystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
-
-        /// <summary>
-        /// Creates a new <see cref="StatisticsSystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public StatisticsSystem(IContext context) :
-            base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity playerEntity) ||
                 !e.CheckArguments())

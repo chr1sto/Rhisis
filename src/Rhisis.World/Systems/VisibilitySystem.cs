@@ -1,4 +1,5 @@
 ﻿using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
@@ -8,44 +9,41 @@ using System.Collections.Generic;
 namespace Rhisis.World.Systems
 {
     [System]
-    public class VisibilitySystem : SystemBase
+    public class VisibilitySystem : ISystem
     {
         public static readonly float VisibilityRange = 75f;
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Mover;
-
-        /// <summary>
-        /// Creates a new <see cref="VisibilitySystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public VisibilitySystem(IContext context)
-            : base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Mover;
 
         /// <summary>
         /// Executes the <see cref="VisibilitySystem"/> logic.
         /// </summary>
         /// <param name="entity">Current entity</param>
-        public override void Execute(IEntity entity)
+        public void Execute(IEntity entity, SystemEventArgs args)
         {
             var currentMap = entity.Context as IMapInstance;
             IMapLayer currentMapLayer = currentMap?.GetMapLayer(entity.Object.LayerId);
 
-            UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
-            UpdateEntitiesVisibility(entity, currentMap.Entities);
+            if (currentMapLayer != null)
+                UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
 
-            foreach (var region in currentMapLayer.Regions)
+            if (currentMap != null)
+                UpdateEntitiesVisibility(entity, currentMap?.Entities);
+
+            if (entity.Type == WorldEntityType.Player)
             {
-                if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
+                foreach (var region in currentMapLayer.Regions)
                 {
-                    region.IsActive = true;
-                }
+                    if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
+                    {
+                        region.IsActive = true;
+                    }
 
-                if (region.IsActive && region is IMapRespawnRegion respawner)
-                {
-                    UpdateEntitiesVisibility(entity, respawner.Entities);
+                    if (region.IsActive && region is IMapRespawnRegion respawner)
+                    {
+                        UpdateEntitiesVisibility(entity, respawner.Entities);
+                    }
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using Rhisis.Core.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.World.Game.Core
 {
@@ -10,7 +9,6 @@ namespace Rhisis.World.Game.Core
         protected static readonly object SyncRoot = new object();
 
         private readonly IDictionary<int, IEntity> _entities;
-        private readonly IList<ISystem> _systems;
         private bool _disposedValue;
 
         /// <inheritdoc />
@@ -19,16 +17,12 @@ namespace Rhisis.World.Game.Core
         /// <inheritdoc />
         public IEnumerable<IEntity> Entities => this._entities.Values;
 
-        /// <inheritdoc />
-        public IEnumerable<ISystem> Systems => this._systems;
-
         /// <summary>
         /// Creates a new <see cref="Context"/> instance.
         /// </summary>
         public Context()
         {
             this._entities = new Dictionary<int, IEntity>();
-            this._systems = new List<ISystem>();
         }
 
         /// <inheritdoc />
@@ -65,10 +59,8 @@ namespace Rhisis.World.Game.Core
         public bool DeleteEntity(IEntity entity) => this.DeleteEntity(entity.Id);
 
         /// <inheritdoc />
-        public TEntity FindEntity<TEntity>(int id) where TEntity : IEntity
-        {
-            return this._entities.TryGetValue(id, out IEntity entity) ? (TEntity)entity : default(TEntity);
-        }
+        public TEntity FindEntity<TEntity>(int id) where TEntity : IEntity 
+            => this._entities.TryGetValue(id, out IEntity entity) ? (TEntity)entity : default(TEntity);
 
         /// <inheritdoc />
         public abstract void Update();
@@ -94,31 +86,10 @@ namespace Rhisis.World.Game.Core
                         entity.Value.Dispose();
 
                     this._entities.Clear();
-                    this._systems.Clear();
                 }
 
                 this._disposedValue = true;
             }
         }
-
-        /// <inheritdoc />
-        public void NotifySystem<TSystem>(IEntity entity, SystemEventArgs e)
-        {
-            ISystem system = this.Systems.FirstOrDefault(x => x.GetType() == typeof(TSystem));
-
-            if (system == null)
-                throw new RhisisException($"Cannot find system with type: {typeof(TSystem).FullName} within current context.");
-
-            if (!(system is INotifiableSystem notifiableSystem))
-                throw new RhisisException($"This system {system.GetType().Name} is not a notifiable system.");
-
-            notifiableSystem.Execute(entity, e);
-        }
-
-        /// <inheritdoc />
-        public void AddSystem(ISystem system) => this._systems.Add(system);
-
-        /// <inheritdoc />
-        public void RemoveSystem(ISystem system) => this._systems.Remove(system);
     }
 }

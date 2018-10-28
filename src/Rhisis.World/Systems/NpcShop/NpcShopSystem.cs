@@ -2,6 +2,7 @@
 using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
@@ -11,22 +12,16 @@ using System;
 
 namespace Rhisis.World.Systems.NpcShop
 {
-    [System]
-    public class NpcShopSystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    public class NpcShopSystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
+        public WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
-        public NpcShopSystem(IContext context) 
-            : base(context)
-        {
-        }
-
-        /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity player) ||
                 !e.CheckArguments())

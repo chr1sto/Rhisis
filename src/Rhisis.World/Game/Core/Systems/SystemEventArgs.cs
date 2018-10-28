@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rhisis.World.Game.Core
+namespace Rhisis.World.Game.Core.Systems
 {
     public abstract class SystemEventArgs : EventArgs
     {

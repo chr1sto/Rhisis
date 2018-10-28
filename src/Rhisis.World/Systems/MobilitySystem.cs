@@ -1,32 +1,24 @@
 ﻿using NLog;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using System;
 
 namespace Rhisis.World.Systems
 {
     [System]
-    public class MobilitySystem : SystemBase
+    public class MobilitySystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
-
-        /// <summary>
-        /// Creates a new <see cref="MobilitySystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public MobilitySystem(IContext context)
-            : base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
         /// <summary>
         /// Executes the <see cref="MobilitySystem"/> logic.
         /// </summary>
         /// <param name="entity">Current entity</param>
-        public override void Execute(IEntity entity)
+        public void Execute(IEntity entity, SystemEventArgs args)
         {
             var movableEntity = entity as IMovableEntity;
 
@@ -49,7 +41,7 @@ namespace Rhisis.World.Systems
             }
             else
             {
-                double speed = ((entity.MovableComponent.Speed * 100f) * this.Context.GameTime);
+                double speed = ((entity.MovableComponent.Speed * 100f) * entity.Context.GameTime);
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
                 float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
