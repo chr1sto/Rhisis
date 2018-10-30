@@ -6,6 +6,7 @@ using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps.Regions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -63,6 +64,31 @@ namespace Rhisis.World.Game.Maps
                     }
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public override TEntity FindEntity<TEntity>(int id)
+        {
+            var entity = base.FindEntity<TEntity>(id);
+
+            if (entity == null)
+            {
+                foreach (var region in this._regions)
+                {
+                    if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+                    {
+                        var regionEntity = respawnRegion.Entities.FirstOrDefault(x => x.Id == id);
+
+                        if (regionEntity != null)
+                        {
+                            entity = (TEntity)regionEntity;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return entity;
         }
 
         /// <summary>
