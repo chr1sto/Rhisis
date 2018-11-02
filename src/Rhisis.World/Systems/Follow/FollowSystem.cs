@@ -41,7 +41,9 @@ namespace Rhisis.World.Systems.Follow
                 return;
             }
 
-            entity.Follow.Target = entityToFollow;
+            if (entity.Follow.Target != entityToFollow)
+                entity.Follow.Target = entityToFollow;
+
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);
         }
     }
