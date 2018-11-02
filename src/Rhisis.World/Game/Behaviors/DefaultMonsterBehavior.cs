@@ -13,6 +13,8 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Monster, IsDefault: true)]
     public class DefaultMonsterBehavior : IBehavior<IMonsterEntity>
     {
+        private const float MovingRange = 50f;
+
         /// <inheritdoc />
         public virtual void Update(IMonsterEntity entity)
         {
@@ -62,7 +64,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void Follow(IMonsterEntity monster)
         {
-            if (!monster.Object.Position.IsInCircle(monster.MovableComponent.BeginPosition, 30f))
+            if (!monster.Object.Position.IsInCircle(monster.MovableComponent.BeginPosition, MovingRange))
             {
                 monster.Follow.Target = null;
                 monster.MovableComponent.ReturningToOriginalPosition = true;
