@@ -46,6 +46,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void UpdateArivalState(IMonsterEntity monster)
         {
+            // Monster has arrived to its original position after following a player
             if (monster.MovableComponent.HasArrived && monster.MovableComponent.ReturningToOriginalPosition)
             {
                 if (monster.MovableComponent.SpeedFactor >= 2)
@@ -56,6 +57,12 @@ namespace Rhisis.World.Game.Behaviors
 
                 monster.MovableComponent.ReturningToOriginalPosition = false;
             }
+
+            // Monster has arrived to destination and is not following any player
+            if (monster.MovableComponent.HasArrived && !monster.Follow.IsFollowing)
+            {
+                monster.MovableComponent.BeginPosition = monster.Object.Position.Clone();
+            }
         }
 
         /// <summary>
@@ -64,7 +71,8 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void Follow(IMonsterEntity monster)
         {
-            if (!monster.Object.Position.IsInCircle(monster.MovableComponent.BeginPosition, MovingRange))
+            if (!monster.Object.Position.IsInCircle(monster.MovableComponent.BeginPosition, MovingRange) || 
+                !monster.Follow.Target.Object.Spawned)
             {
                 monster.Follow.Target = null;
                 monster.MovableComponent.ReturningToOriginalPosition = true;

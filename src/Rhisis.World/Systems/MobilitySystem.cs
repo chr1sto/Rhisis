@@ -1,5 +1,4 @@
 ﻿using NLog;
-using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -38,7 +37,6 @@ namespace Rhisis.World.Systems
             if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
                 entity.MovableComponent.DestinationPosition.Reset();
-                entity.MovableComponent.BeginPosition = entity.Object.Position.Clone();
                 Logger.Debug($"{entity.Object.Name} has arrived.");
             }
             else
