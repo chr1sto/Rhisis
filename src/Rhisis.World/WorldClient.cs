@@ -63,12 +63,12 @@ namespace Rhisis.World
 
         public override void Send(INetPacketStream packet)
         {
-            //if (Logger.IsTraceEnabled)
-            //{
-            //    Logger.Trace("Send {0} packet to {1}.",
-            //        (PacketType)BitConverter.ToUInt32(packet.Buffer, 5),
-            //        this.RemoteEndPoint);
-            //}
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace("Send {0} packet to {1}.",
+                    (PacketType)BitConverter.ToUInt32(packet.Buffer, 5),
+                    this.RemoteEndPoint);
+            }
 
             base.Send(packet);
         }

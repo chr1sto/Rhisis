@@ -13,7 +13,7 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Monster, IsDefault: true)]
     public class DefaultMonsterBehavior : IBehavior<IMonsterEntity>
     {
-        private const float MovingRange = 50f;
+        private const float MovingRange = 30f;
 
         /// <inheritdoc />
         public virtual void Update(IMonsterEntity entity)
