@@ -59,7 +59,7 @@ namespace Rhisis.World.Game.Core
         public bool DeleteEntity(IEntity entity) => this.DeleteEntity(entity.Id);
 
         /// <inheritdoc />
-        public TEntity FindEntity<TEntity>(int id) where TEntity : IEntity 
+        public virtual TEntity FindEntity<TEntity>(int id) where TEntity : IEntity 
             => this._entities.TryGetValue(id, out IEntity entity) ? (TEntity)entity : default(TEntity);
 
         /// <inheritdoc />

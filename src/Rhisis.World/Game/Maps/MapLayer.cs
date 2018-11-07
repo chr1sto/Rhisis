@@ -6,6 +6,7 @@ using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps.Regions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -50,6 +51,8 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public override void Update()
         {
+            this.GameTime = this.Parent.GameTime;
+
             foreach (var entity in this.Entities)
                 SystemManager.Instance.ExecuteUpdatable(entity);
             
@@ -63,6 +66,31 @@ namespace Rhisis.World.Game.Maps
                     }
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public override TEntity FindEntity<TEntity>(int id)
+        {
+            var entity = base.FindEntity<TEntity>(id);
+
+            if (entity == null)
+            {
+                foreach (var region in this._regions)
+                {
+                    if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+                    {
+                        var regionEntity = respawnRegion.Entities.FirstOrDefault(x => x.Id == id);
+
+                        if (regionEntity != null)
+                        {
+                            entity = (TEntity)regionEntity;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return entity;
         }
 
         /// <summary>
@@ -90,6 +118,11 @@ namespace Rhisis.World.Game.Maps
             monster.TimerComponent = new TimerComponent
             {
                 LastMoveTimer = RandomHelper.LongRandom(8, 20)
+            };
+            monster.MovableComponent = new MovableComponent
+            {
+                Speed = moverData.Speed,
+                DestinationPosition = monster.Object.Position.Clone()
             };
             monster.Behavior = WorldServer.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawner;

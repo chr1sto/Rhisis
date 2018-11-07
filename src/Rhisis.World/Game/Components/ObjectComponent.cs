@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Maps;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Components
@@ -63,6 +64,16 @@ namespace Rhisis.World.Game.Components
         /// Gets the list of the visible entities around.
         /// </summary>
         public IList<IEntity> Entities { get; }
+
+        /// <summary>
+        /// Gets the current map instance.
+        /// </summary>
+        public IMapInstance CurrentMap => WorldServer.Maps.TryGetValue(this.MapId, out IMapInstance map) ? map : null;
+
+        /// <summary>
+        /// Gets the current map layer.
+        /// </summary>
+        public IMapLayer CurrentLayer => this.CurrentMap?.GetMapLayer(this.LayerId);
 
         /// <summary>
         /// Creates and initializes a new <see cref="ObjectComponent"/>.

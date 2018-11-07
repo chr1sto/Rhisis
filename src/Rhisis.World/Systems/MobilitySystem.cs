@@ -21,7 +21,7 @@ namespace Rhisis.World.Systems
         public void Execute(IEntity entity, SystemEventArgs args)
         {
             var movableEntity = entity as IMovableEntity;
-
+            
             if (movableEntity.MovableComponent.DestinationPosition.IsZero())
                 return;
 
@@ -34,14 +34,15 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
-            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.5f))
+            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
                 entity.MovableComponent.DestinationPosition.Reset();
-                Logger.Debug($"Player {entity.Object.Name} has arrived.");
+                Logger.Debug($"{entity.Object.Name} has arrived.");
             }
             else
             {
-                double speed = ((entity.MovableComponent.Speed * 100f) * entity.Context.GameTime);
+                double entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor;
+                double speed = ((entitySpeed * 100f) * entity.Context.GameTime);
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
                 float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);

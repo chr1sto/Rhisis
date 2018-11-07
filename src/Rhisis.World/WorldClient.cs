@@ -119,8 +119,6 @@ namespace Rhisis.World
             if (this.Player == null)
                 return;
 
-            this.Player.Object.Spawned = false;
-
             using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {
                 DbCharacter character = database.Characters.Get(this.Player.PlayerData.Id);
@@ -210,6 +208,8 @@ namespace Rhisis.World
             IEnumerable<IEntity> entitiesAround = from x in currentMap.Entities
                                                   where this.Player.Object.Position.IsInCircle(x.Object.Position, VisibilitySystem.VisibilityRange) && x != this.Player
                                                   select x;
+
+            this.Player.Object.Spawned = false;
 
             foreach (IEntity entity in entitiesAround)
             {
