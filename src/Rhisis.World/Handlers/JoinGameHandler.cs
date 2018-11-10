@@ -68,7 +68,11 @@ namespace Rhisis.World.Handlers
                 Size = 100,
                 Name = character.Name,
                 Spawned = false,
-                Level = character.Level
+                Level = character.Level,
+                Hp = character.Hp,
+                Mp = character.Mp,
+                Fp = character.Fp,
+                Experience = character.Experience
             };
 
             client.Player.VisualAppearance = new VisualAppearenceComponent

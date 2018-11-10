@@ -32,7 +32,15 @@ namespace Rhisis.World.Systems.Battle
 
         private void ProcessMeleeAttack(IEntity attacker, MeleeAttackEventArgs e)
         {
-            Logger.Debug($"{attacker.Object.Name} is attacking {e.Target.Object.Name}");
+            if (!e.Target.Object.IsDead)
+            {
+                Logger.Error($"{attacker.Object.Name} cannot attack {e.Target.Object.Name} because target is already dead.");
+                return;
+            }
+
+            int attackDamages = BattleHelper.GetMeeleAttackDamages(attacker, e.Target);
+
+            Logger.Debug($"{attacker.Object.Name} inflicted {attackDamages} to {e.Target.Object.Name}");
         }
     }
 }

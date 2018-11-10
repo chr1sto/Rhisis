@@ -44,7 +44,7 @@ namespace Rhisis.World.Packets
 
                 packet.Write<short>(0); // m_dwMotion
                 packet.Write<byte>(1); // m_bPlayer
-                packet.Write(230); // HP
+                packet.Write(player.Object.Hp); // HP
                 packet.Write(0); // moving flags
                 packet.Write(0); // motion flags
                 packet.Write<byte>(1); // m_dwBelligerence
@@ -101,12 +101,12 @@ namespace Rhisis.World.Packets
                 for (int i = 0; i < 26; ++i)
                     packet.Write(0);
 
-                packet.Write((short)0); // MP
-                packet.Write((short)0); // FP
+                packet.Write((short)player.Object.Mp); // MP
+                packet.Write((short)player.Object.Fp); // FP
                 packet.Write(0); // tutorial state
                 packet.Write(0); // fly experience
                 packet.Write(player.PlayerData.Gold); // Gold
-                packet.Write((long)0); // exp
+                packet.Write(player.Object.Experience); // exp
                 packet.Write(0); // skill level
                 packet.Write(0); // skill points
                 packet.Write<long>(0); // death exp
@@ -238,13 +238,13 @@ namespace Rhisis.World.Packets
 
                     packet.Write<short>(0);
                     packet.Write<byte>(1); // is player?
-                    packet.Write(230); // HP
+                    packet.Write(playerEntity.Object.Hp); // HP
                     packet.Write(0); // moving flags
                     packet.Write(0); // motion flags
                     packet.Write<byte>(0);
                     packet.Write(-1); // baby buffer
 
-                    packet.Write(entityToSpawn.Object.Name);
+                    packet.Write(playerEntity.Object.Name);
                     packet.Write(playerEntity.VisualAppearance.Gender);
                     packet.Write((byte)playerEntity.VisualAppearance.SkinSetId);
                     packet.Write((byte)playerEntity.VisualAppearance.HairId);
@@ -252,11 +252,11 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)playerEntity.VisualAppearance.FaceId);
                     packet.Write(playerEntity.PlayerData.Id);
                     packet.Write((byte)1);
-                    packet.Write((short)0); // STR
-                    packet.Write((short)0); // STA
-                    packet.Write((short)0); // DEX
-                    packet.Write((short)0); // INT
-                    packet.Write((short)1); // Level
+                    packet.Write((short)playerEntity.Statistics.Strenght); // STR
+                    packet.Write((short)playerEntity.Statistics.Stamina); // STA
+                    packet.Write((short)playerEntity.Statistics.Dexterity); // DEX
+                    packet.Write((short)playerEntity.Statistics.Intelligence); // INT
+                    packet.Write((short)playerEntity.Object.Level); // Level
 
                     packet.Write(-1);
                     packet.Write(0);

@@ -38,7 +38,7 @@ namespace Rhisis.World.Handlers
                 target.NotifySystem<FollowSystem>(new FollowEventArgs(client.Player.Id, 1f));
             }
 
-            client.Player.NotifySystem<BattleSystem>(new MeleeAttackEventArgs(meleePacket.AttackMessage, target, meleePacket.WeaponAttackSpeed);
+            client.Player.NotifySystem<BattleSystem>(new MeleeAttackEventArgs(meleePacket.AttackMessage, target, meleePacket.WeaponAttackSpeed));
         }
     }
 }
