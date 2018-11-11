@@ -5,7 +5,7 @@ using Rhisis.World.Game.Core;
 
 namespace Rhisis.World.Game.Entities
 {
-    public interface IPlayerEntity : IEntity, IMovableEntity
+    public interface IPlayerEntity : IEntity, IMovableEntity, ILivingEntity
     {
         VisualAppearenceComponent VisualAppearance { get; set; }
 

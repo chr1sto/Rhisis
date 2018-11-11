@@ -28,6 +28,12 @@ namespace Rhisis.World.Game.Entities
         /// <inheritdoc />
         public FollowComponent Follow { get; set; }
 
+        /// <inheritdoc />
+        public BattleComponent Battle { get; set; }
+
+        /// <inheritdoc />
+        public HealthComponent Health { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="MonsterEntity"/> instance.
         /// </summary>
@@ -38,6 +44,8 @@ namespace Rhisis.World.Game.Entities
             this.MovableComponent = new MovableComponent();
             this.TimerComponent = new TimerComponent();
             this.Follow = new FollowComponent();
+            this.Battle = new BattleComponent();
+            this.Health = new HealthComponent();
         }
     }
 }

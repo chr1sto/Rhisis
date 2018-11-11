@@ -1,5 +1,6 @@
 ﻿using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
+using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -7,11 +8,11 @@ namespace Rhisis.World.Systems.Battle
     {
         public int AttackType { get; }
 
-        public IEntity Target { get; }
+        public ILivingEntity Target { get; }
 
         public float AttackSpeed { get; }
 
-        public MeleeAttackEventArgs(int attackType, IEntity target, float attackSpeed)
+        public MeleeAttackEventArgs(int attackType, ILivingEntity target, float attackSpeed)
         {
             this.AttackType = attackType;
             this.Target = target;
