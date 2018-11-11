@@ -4,7 +4,6 @@ using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
-using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems.Chat;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace Rhisis.World
 {
@@ -30,12 +28,14 @@ namespace Rhisis.World
         private static readonly string MoversPropPath = Path.Combine(DataSub0Path, "propMover.txt");
         private static readonly string ItemsPropPath = Path.Combine(DataSub2Path, "propItem.txt");
         private static readonly string WorldScriptPath = Path.Combine(DataSub0Path, "World.inc");
+        private static readonly string JobPropPath = Path.Combine(DataSub1Path, "propJob.inc");
 
         // Dictionary
         private static readonly IDictionary<string, int> Defines = new Dictionary<string, int>();
         private static readonly IDictionary<string, string> Texts = new Dictionary<string, string>();
         private static readonly IDictionary<int, MoverData> MoversData = new Dictionary<int, MoverData>();
         private static readonly IDictionary<int, ItemData> ItemsData = new Dictionary<int, ItemData>();
+        private static readonly IDictionary<int, JobData> JobsData = new Dictionary<int, JobData>();
         private static readonly IDictionary<string, NpcData> NpcData = new Dictionary<string, NpcData>();
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
         private static readonly IDictionary<string, DialogData> DialogData = new Dictionary<string, DialogData>();
@@ -81,6 +81,7 @@ namespace Rhisis.World
             this.LoadShops();
             this.LoadDialogs();
             this.LoadNpc();
+            this.LoadJobs();
             this.LoadMaps();
             this.CleanUp();
 
@@ -200,6 +201,33 @@ namespace Rhisis.World
             }
 
             Logger.Info("-> {0} items loaded.", ItemsData.Count);
+        }
+
+        private void LoadJobs()
+        {
+            if (!File.Exists(JobPropPath))
+            {
+                Logger.Warn($"Unable to load job properties. Reason: cannot find '{JobPropPath}' file.");
+                return;
+            }
+
+            using (var propJob = new ResourceTableFile(JobPropPath, -1, new char[] { '\t', ' ', '\r' }, Defines, null))
+            {
+                var jobs = propJob.GetRecords<JobData>();
+
+                foreach (var job in jobs)
+                {
+                    if (JobsData.ContainsKey(job.Id))
+                    {
+                        JobsData[job.Id] = job;
+                        Logger.Warn(ObjectOverridedMessage, "JobData", job.Id, "already delcared");
+                    }
+                    else
+                        JobsData.Add(job.Id, job);
+                }
+            }
+
+            Logger.Info($"-> {JobsData.Count} jobs data loaded.");
         }
 
         private void LoadShops()
