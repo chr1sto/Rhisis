@@ -68,11 +68,14 @@ namespace Rhisis.World.Handlers
                 Size = 100,
                 Name = character.Name,
                 Spawned = false,
-                Level = character.Level,
+                Level = character.Level
+            };
+
+            client.Player.Health = new HealthComponent
+            {
                 Hp = character.Hp,
                 Mp = character.Mp,
-                Fp = character.Fp,
-                Experience = character.Experience
+                Fp = character.Fp
             };
 
             client.Player.VisualAppearance = new VisualAppearenceComponent
@@ -89,7 +92,8 @@ namespace Rhisis.World.Handlers
                 Id = character.Id,
                 Slot = character.Slot,
                 Gold = character.Gold,
-                Authority = (AuthorityType)character.User.Authority
+                Authority = (AuthorityType)character.User.Authority,
+                Experience = character.Experience
             };
 
             client.Player.MovableComponent = new MovableComponent

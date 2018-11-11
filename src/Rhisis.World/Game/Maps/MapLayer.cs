@@ -124,6 +124,12 @@ namespace Rhisis.World.Game.Maps
                 Speed = moverData.Speed,
                 DestinationPosition = monster.Object.Position.Clone()
             };
+            monster.Health = new HealthComponent
+            {
+                Hp = moverData.MaxHP,
+                Mp = moverData.AddMp,
+                Fp = 0
+            };
             monster.Behavior = WorldServer.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawner;
 
