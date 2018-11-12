@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace Rhisis.Cluster
 {
-    public sealed class ClusterServer : NetServer<ClusterClient>
+    public partial class ClusterServer : NetServer<ClusterClient>
     {
         private const string ClusterConfigFile = "config/cluster.json";
         private const string DatabaseConfigFile = "config/database.json";
@@ -81,6 +81,7 @@ namespace Rhisis.Cluster
             Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
             
             DependencyContainer.Instance.Initialize().BuildServiceProvider();
+            this.LoadResources();
 
             Logger.Info("Connection to ISC server on {0}:{1}...", this.ClusterConfiguration.ISC.Host, this.ClusterConfiguration.ISC.Port);
             InterClient = new ISCClient(this.ClusterConfiguration);
