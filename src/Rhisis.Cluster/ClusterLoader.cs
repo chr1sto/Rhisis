@@ -81,17 +81,17 @@ namespace Rhisis.Cluster
 
                 foreach (var job in jobs)
                 {
-                    if (JobsData.ContainsKey(job.Id))
+                    if (JobData.ContainsKey(job.Id))
                     {
-                        JobsData[job.Id] = job;
+                        JobData[job.Id] = job;
                         Logger.Warn(ObjectOverridedMessage, "JobData", job.Id, "already delcared");
                     }
                     else
-                        JobsData.Add(job.Id, job);
+                        JobData.Add(job.Id, job);
                 }
             }
 
-            Logger.Info($"-> {JobsData.Count} jobs data loaded.");
+            Logger.Info($"-> {JobData.Count} jobs data loaded.");
         }
     }
 }
