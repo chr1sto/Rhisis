@@ -1,8 +1,10 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Cluster.Packets;
+using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Network;
@@ -96,6 +98,7 @@ namespace Rhisis.Cluster
 
                 DefaultCharacter defaultCharacter = client.Configuration.DefaultCharacter;
                 DefaultStartItem defaultEquipment = pak.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
+                JobData jobData = ClusterServer.JobsData[pak.Job];
 
                 dbCharacter = new DbCharacter()
                 {
@@ -109,9 +112,9 @@ namespace Rhisis.Cluster
                     BankCode = pak.BankPassword,
                     Gender = pak.Gender,
                     ClassId = pak.Job,
-                    Hp = 100, //TODO: create game constants.
-                    Mp = 100, //TODO: create game constants.
-                    Fp = 100, //TODO: create game constants.
+                    Hp = HealthFormulas.GetMaxOriginHp(defaultCharacter.Level, defaultCharacter.Stamina, jobData.MaxHpFactor),
+                    Mp = HealthFormulas.GetMaxOriginMp(defaultCharacter.Level, defaultCharacter.Intelligence, jobData.MaxMpFactor, true),
+                    Fp = HealthFormulas.GetMaxOriginFp(defaultCharacter.Level, defaultCharacter.Stamina, defaultCharacter.Dexterity, defaultCharacter.Strength, jobData.MaxFpFactor, true),
                     Strength = defaultCharacter.Strength,
                     Stamina = defaultCharacter.Stamina,
                     Dexterity = defaultCharacter.Dexterity,
@@ -124,7 +127,7 @@ namespace Rhisis.Cluster
                     Gold = defaultCharacter.Gold,
                     StatPoints = 0, //TODO: create game constants.
                     SkillPoints = 0, //TODO: create game constants.
-                    Experience = 0, //TODO: create game constants.
+                    Experience = 0,
                 };
 
                 //TODO: create game constants for slot.

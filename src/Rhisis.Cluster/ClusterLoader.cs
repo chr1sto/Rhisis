@@ -21,12 +21,14 @@ namespace Rhisis.Cluster
         private static readonly string JobPropPath = Path.Combine(DataSub1Path, "propJob.inc");
 
         private static readonly IDictionary<string, int> Defines = new Dictionary<string, int>();
-        private static readonly IDictionary<int, JobData> JobsData = new Dictionary<int, JobData>();
+        private static readonly IDictionary<int, JobData> JobData = new Dictionary<int, JobData>();
 
         // Logs messages
         private const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
         private const string ObjectIgnoredMessage = "{0} id '{1}' was ignored. Reason: {2}.";
         private const string ObjectOverridedMessage = "{0} id '{1}' was overrided. Reason: {2}.";
+
+        public static readonly IReadOnlyDictionary<int, JobData> JobsData = JobData as IReadOnlyDictionary<int, JobData>;
 
         private void LoadResources()
         {
