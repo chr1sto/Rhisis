@@ -126,7 +126,7 @@ namespace Rhisis.World.Game.Maps
             };
             monster.Health = new HealthComponent
             {
-                Hp = moverData.MaxHP,
+                Hp = moverData.AddHp,
                 Mp = moverData.AddMp,
                 Fp = 0
             };

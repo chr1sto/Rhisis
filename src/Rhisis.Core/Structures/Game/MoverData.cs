@@ -29,8 +29,6 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwAddMp")]
         public int AddMp { get; set; }
 
-        public int MaxHP => this.AddHp;
-
         [DataMember(Name = "dwLevel")]
         public int Level { get; set; }
 

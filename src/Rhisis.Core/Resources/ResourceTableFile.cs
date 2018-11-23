@@ -13,6 +13,7 @@ namespace Rhisis.Core.Resources
     /// </summary>
     public class ResourceTableFile : FileStream, IDisposable
     {
+        private static readonly char[] DefaultSeparator = new char[] { '\t' };
         private readonly IDictionary<string, int> _defines;
         private readonly IDictionary<string, string> _texts;
         private readonly IList<string> _headers;
@@ -20,6 +21,8 @@ namespace Rhisis.Core.Resources
         private readonly StreamReader _reader;
 
         private readonly int _headerLineIndex;
+        private readonly bool _ignoreHeader;
+        private readonly char[] _separators;
 
         /// <summary>
         /// Gets the amount of valid data within the <see cref="ResourceTableFile"/>.
@@ -50,17 +53,44 @@ namespace Rhisis.Core.Resources
         /// </summary>
         /// <param name="path">Resource file path</param>
         /// <param name="headerLineIndex">Header index line in file.</param>
+        public ResourceTableFile(string path, int headerLineIndex, char[] separators)
+            : this(path, headerLineIndex, separators, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ResourceTableFile"/> instance.
+        /// </summary>
+        /// <param name="path">Resource file path</param>
+        /// <param name="headerLineIndex">Header index line in file.</param>
         /// <param name="defines">Defines used to transform.</param>
         /// <param name="texts">Texts used to transform.</param>
         public ResourceTableFile(string path, int headerLineIndex, IDictionary<string, int> defines, IDictionary<string, string> texts)
+            : this(path, headerLineIndex, DefaultSeparator, defines, texts)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ResourceTableFile"/> instance.
+        /// </summary>
+        /// <param name="path">Resource file path</param>
+        /// <param name="headerLineIndex">Header index line in file.</param>
+        /// <param name="separators">File separators</param>
+        /// <param name="defines">Defines used to transform.</param>
+        /// <param name="texts">Texts used to transform.</param>
+        public ResourceTableFile(string path, int headerLineIndex, char[] separators, IDictionary<string, int> defines, IDictionary<string, string> texts)
             : base(path, FileMode.Open, FileAccess.Read)
         {
+            this._datas = new List<IEnumerable<string>>();
             this._reader = new StreamReader(this);
             this._headerLineIndex = headerLineIndex;
+            this._separators = separators;
             this._defines = defines;
             this._texts = texts;
-            this._headers = this.ReadHeader();
-            this._datas = new List<IEnumerable<string>>();
+            this._ignoreHeader = this._headerLineIndex < 0;
+
+            if (!this._ignoreHeader)
+                this._headers = this.ReadHeader();
             
             this.ReadContent();
         }
@@ -81,8 +111,16 @@ namespace Rhisis.Core.Resources
 
                 foreach (var property in typeProperties)
                 {
-                    string dataMemberName = this.GetDataMemberName(property);
-                    int index = this._headers.IndexOf(dataMemberName);
+                    DataMemberAttribute attribute = this.GetDataMemberAttribute(property);
+                    int index = -1;
+                    
+                    if (attribute != null)
+                    {
+                        if (!string.IsNullOrEmpty(attribute.Name) && !this._ignoreHeader)
+                            index = this._headers.IndexOf(attribute.Name);
+                        else
+                            index = attribute.Order;
+                    }
 
                     if (index != -1)
                     {
@@ -112,7 +150,7 @@ namespace Rhisis.Core.Resources
 
             return this._reader.ReadLine()
                         .Replace("/", string.Empty)
-                        .Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(this._separators, StringSplitOptions.RemoveEmptyEntries)
                         .ToList();
         }
 
@@ -133,7 +171,17 @@ namespace Rhisis.Core.Resources
                     line = line.Replace(",,", ",=,").Replace(",", "\t");
                     string[] content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (content.Length == this._headers.Count)
+                    if (!this._ignoreHeader)
+                    {
+                        if (content.Length == this._headers.Count)
+                        {
+                            for (int i = 0; i < content.Length; i++)
+                                content[i] = this.Transform(content[i]);
+
+                            this._datas.Add(content);
+                        }
+                    }
+                    else
                     {
                         for (int i = 0; i < content.Length; i++)
                             content[i] = this.Transform(content[i]);
@@ -180,12 +228,8 @@ namespace Rhisis.Core.Resources
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        private string GetDataMemberName(PropertyInfo property)
-        {
-            var dataMemberAttribute = property.GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute;
-
-            return dataMemberAttribute?.Name;
-        }
+        private DataMemberAttribute GetDataMemberAttribute(PropertyInfo property) 
+            => property.GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute;
 
         /// <summary>
         /// Disposes the resources.
@@ -195,8 +239,8 @@ namespace Rhisis.Core.Resources
         {
             if (disposing)
             {
-                this._headers.Clear();
-                this._datas.Clear();
+                this._headers?.Clear();
+                this._datas?.Clear();
             }
 
             base.Dispose(disposing);
