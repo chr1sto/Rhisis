@@ -3,6 +3,7 @@ using NLog;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
@@ -11,6 +12,7 @@ using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
@@ -44,7 +46,9 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            if (!WorldServer.Maps.TryGetValue(character.MapId, out IMapInstance map))
+            IMapInstance map = DependencyContainer.Instance.Resolve<MapLoader>().GetMapById(character.MapId);
+
+            if (map == null)
             {
                 Logger.Warn("Map with id '{0}' doesn't exist.", character.MapId);
                 // TODO: send error to client or go to default map ?
@@ -98,7 +102,7 @@ namespace Rhisis.World.Handlers
 
             client.Player.MovableComponent = new MovableComponent
             {
-                Speed = WorldServer.Movers[client.Player.Object.ModelId].Speed,
+                Speed = GameResources.Instance.Movers[client.Player.Object.ModelId].Speed,
                 DestinationPosition = client.Player.Object.Position.Clone(),
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10

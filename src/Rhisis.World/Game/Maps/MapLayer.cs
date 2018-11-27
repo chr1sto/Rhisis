@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.Resources;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
@@ -100,7 +101,7 @@ namespace Rhisis.World.Game.Maps
         private void CreateMonster(IMapRespawnRegion respawner)
         {
             var monster = new MonsterEntity(this);
-            var moverData = WorldServer.Movers[respawner.ModelId];
+            var moverData = GameResources.Instance.Movers[respawner.ModelId];
 
             monster.Object = new ObjectComponent
             {

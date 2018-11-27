@@ -227,8 +227,8 @@ namespace Rhisis.World
         {
             if (disposing)
             {
-                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.Object.MapId, out IMapInstance currentMap))
-                    this.DespawnPlayer(currentMap);
+                if (this.Player != null)
+                    this.DespawnPlayer(this.Player.Object.CurrentMap);
 
                 this.Save();
             }

@@ -1,4 +1,5 @@
-﻿using Rhisis.Network;
+﻿using Rhisis.Core.Resources;
+using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
@@ -312,7 +313,7 @@ namespace Rhisis.World.Packets
                     packet.Write(monsterEntity.Health.Hp);
                     packet.Write(1);
                     packet.Write(0);
-                    packet.Write((byte)WorldServer.Movers[entityToSpawn.Object.ModelId].Belligerence);
+                    packet.Write((byte)GameResources.Instance.Movers[entityToSpawn.Object.ModelId].Belligerence);
                     packet.Write(-1);
 
                     packet.Write((byte)0);
