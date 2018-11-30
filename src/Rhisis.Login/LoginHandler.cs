@@ -3,13 +3,10 @@ using NLog;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
 using Rhisis.Login.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
-using System;
 
 namespace Rhisis.Login
 {

@@ -1,8 +1,9 @@
-﻿using Rhisis.World.Game.Entities;
+﻿using Ether.Network.Server;
+using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World
 {
-    public interface IWorldServer
+    public interface IWorldServer : INetServer
     {
         IPlayerEntity GetPlayerEntity(int id);
     }

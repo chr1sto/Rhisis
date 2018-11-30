@@ -74,6 +74,6 @@ namespace Rhisis.World.Game.Core.Systems
         /// Executes all updatable systems.
         /// </summary>
         /// <param name="entity"></param>
-        public void ExecuteUpdatable(IEntity entity) => this._updatableActions(entity, null);
+        public void ExecuteUpdatable(IEntity entity) => this._updatableActions?.Invoke(entity, null);
     }
 }

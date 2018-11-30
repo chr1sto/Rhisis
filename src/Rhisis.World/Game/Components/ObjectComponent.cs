@@ -1,6 +1,8 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps;
 using System.Collections.Generic;
 
@@ -68,7 +70,7 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets the current map instance.
         /// </summary>
-        public IMapInstance CurrentMap => WorldServer.Maps.TryGetValue(this.MapId, out IMapInstance map) ? map : null;
+        public IMapInstance CurrentMap => DependencyContainer.Instance.Resolve<MapLoader>().GetMapById(this.MapId); // TODO: find better implementation
 
         /// <summary>
         /// Gets the current map layer.
@@ -88,9 +90,6 @@ namespace Rhisis.World.Game.Components
         /// To String
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return $"Object: {this.Name}";
-        }
+        public override string ToString() => $"Object: {this.Name}";
     }
 }

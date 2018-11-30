@@ -1,6 +1,8 @@
 ﻿using NLog;
 using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using System;
@@ -38,6 +40,7 @@ namespace Rhisis.World.Game.Chat
     internal static class TeleportationParameters
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly MapLoader Maps = DependencyContainer.Instance.Resolve<MapLoader>();
 
         public static void TeleportCommandTwoParam(IPlayerEntity player, string[] parameters)
         {
@@ -57,7 +60,9 @@ namespace Rhisis.World.Game.Chat
                 throw new ArgumentException("You must write numbers for teleport command's parameters");
             }
 
-            if (!WorldServer.Maps.TryGetValue(mapIdValue, out IMapInstance mapIdResult))
+            IMapInstance mapIdResult = Maps[mapIdValue];
+
+            if (mapIdResult == null)
             {
                 Logger.Error($"Cannot find map Id in define files: {mapIdResult}. Please check you defineWorld.h file.");
                 return;
@@ -75,7 +80,9 @@ namespace Rhisis.World.Game.Chat
                 throw new ArgumentException("You must write numbers for teleport command's parameters");
             }
 
-            if (!WorldServer.Maps.TryGetValue(mapIdValue, out IMapInstance mapIdResult))
+            IMapInstance mapIdResult = Maps[mapIdValue];
+
+            if (mapIdResult == null)
             {
                 Logger.Error($"Cannot find map Id in define files: {mapIdValue}. Please check you defineWorld.h file.");
 

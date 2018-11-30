@@ -37,11 +37,6 @@ namespace Rhisis.World.Game.Maps.Regions
             return region;
         }
 
-        public override string ToString()
-        {
-            return $"Respawn region: {WorldServer.Movers[this.ModelId].Name}";
-        }
-
         public static IMapRespawnRegion FromRgnElement(RgnRespawn7 rgnRespawn)
         {
             return new MapRespawnRegion(rgnRespawn.Left, rgnRespawn.Top, rgnRespawn.Width, rgnRespawn.Length, 
