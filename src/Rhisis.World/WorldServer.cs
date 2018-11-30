@@ -14,7 +14,7 @@ namespace Rhisis.World
     public sealed partial class WorldServer : NetServer<WorldClient>, IWorldServer
     {
         private readonly ILogger<WorldServer> _logger;
-        private WorldConfiguration _worldConfiguration;
+        private readonly WorldConfiguration _worldConfiguration;
 
         /// <summary>
         /// Gets the ISC client.

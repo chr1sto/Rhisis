@@ -24,7 +24,7 @@ namespace Rhisis.World
         private const string WorldConfigFile = "config/world.json";
         private const string DatabaseConfigFile = "config/database.json";
 
-        private readonly IEnumerable<Type> _loaders = new Type[]
+        private readonly IEnumerable<Type> _loaders = new []
         {
             typeof(DefineLoader),
             typeof(TextLoader),

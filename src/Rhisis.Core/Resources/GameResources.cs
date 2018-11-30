@@ -40,13 +40,6 @@ namespace Rhisis.Core.Resources
         public MoverLoader Movers => this._movers ?? (this._movers = DependencyContainer.Instance.Resolve<MoverLoader>());
 
         /// <summary>
-        /// Creates a new <see cref="GameResources"/> instance.
-        /// </summary>
-        public GameResources()
-        {
-        }
-
-        /// <summary>
         /// Initialize the <see cref="GameResources"/> with loaders.
         /// </summary>
         /// <param name="loaderTypes"></param>
