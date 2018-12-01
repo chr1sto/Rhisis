@@ -1,4 +1,5 @@
 ﻿using System;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Core.Systems;
 
@@ -43,10 +44,8 @@ namespace Rhisis.World.Systems.NpcShop.EventArgs
         /// <inheritdoc />
         public override bool CheckArguments()
         {
-            if (!WorldServer.Items.TryGetValue(this.ItemId, out ItemData itemData))
+            this.ItemData = GameResources.Instance.Items[this.ItemId] ?? 
                 throw new ArgumentException($"Cannot find item with Id: {this.ItemId}.");
-
-            this.ItemData = itemData;
 
             return this.ItemId > 0
                    && this.Quantity > 0 && this.Quantity <= this.ItemData.PackMax

@@ -34,7 +34,6 @@ namespace Rhisis.World
         // Dictionary
         private static readonly IDictionary<string, int> Defines = new Dictionary<string, int>();
         private static readonly IDictionary<string, string> Texts = new Dictionary<string, string>();
-        private static readonly IDictionary<int, ItemData> ItemsData = new Dictionary<int, ItemData>();
         private static readonly IDictionary<int, JobData> JobsData = new Dictionary<int, JobData>();
         private static readonly IDictionary<string, NpcData> NpcData = new Dictionary<string, NpcData>();
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
@@ -53,11 +52,6 @@ namespace Rhisis.World
         private ILogger Logger;
 
         /// <summary>
-        /// Gets the Items data.
-        /// </summary>
-        public static IReadOnlyDictionary<int, ItemData> Items => ItemsData as IReadOnlyDictionary<int, ItemData>;
-
-        /// <summary>
         /// Gets the Npcs data.
         /// </summary>
         public static IReadOnlyDictionary<string, NpcData> Npcs => NpcData as IReadOnlyDictionary<string, NpcData>;
@@ -71,7 +65,6 @@ namespace Rhisis.World
             Profiler.Start("LoadResources");
             
             this.LoadBehaviors();
-            this.LoadItems();
             this.LoadShops();
             this.LoadDialogs();
             this.LoadNpc();
@@ -89,33 +82,6 @@ namespace Rhisis.World
 
             Logger.Info("-> {0} behaviors loaded.", 
                 MonsterBehaviors.Count + NpcBehaviors.Count + PlayerBehaviors.Count);
-        }
-
-        private void LoadItems()
-        {
-            if (!File.Exists(ItemsPropPath))
-            {
-                Logger.Warn("Unable to load items. Reason: cannot find '{0}' file.", ItemsPropPath);
-                return;
-            }
-
-            using (var propItem = new ResourceTableFile(ItemsPropPath, 1, Defines, Texts))
-            {
-                var items = propItem.GetRecords<ItemData>();
-
-                foreach (var item in items)
-                {
-                    if (ItemsData.ContainsKey(item.Id))
-                    {
-                        ItemsData[item.Id] = item;
-                        Logger.Warn(ObjectOverridedMessage, "Item", item.Id, "already declared");
-                    } 
-                    else
-                        ItemsData.Add(item.Id, item);
-                }
-            }
-
-            Logger.Info("-> {0} items loaded.", ItemsData.Count);
         }
 
         private void LoadJobs()
