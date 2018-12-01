@@ -217,8 +217,9 @@ namespace Rhisis.World.Game.Maps
                         for (var j = 0; j < npcData.Shop.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
                         {
                             ItemBase item = npcData.Shop.Items[i][j];
+                            ItemData itemData = GameResources.Instance.Items[item.Id];
 
-                            npc.Shop[i].Items[j] = new Item(item.Id, WorldServer.Items[item.Id].PackMax, -1, j, j, item.Refine, item.Element, item.ElementRefine);
+                            npc.Shop[i].Items[j] = new Item(item.Id, itemData.PackMax, -1, j, j, item.Refine, item.Element, item.ElementRefine);
                         }
                     }
                 }

@@ -33,11 +33,17 @@ namespace Rhisis.Core.Resources
         private ILogger<GameResources> _logger;
         private IEnumerable<Type> _loaders;
         private MoverLoader _movers;
+        private ItemLoader _items;
 
         /// <summary>
         /// Gets the movers data.
         /// </summary>
         public MoverLoader Movers => this._movers ?? (this._movers = DependencyContainer.Instance.Resolve<MoverLoader>());
+
+        /// <summary>
+        /// Gets the items data.
+        /// </summary>
+        public ItemLoader Items => this._items ?? (this._items = DependencyContainer.Instance.Resolve<ItemLoader>());
 
         /// <summary>
         /// Initialize the <see cref="GameResources"/> with loaders.

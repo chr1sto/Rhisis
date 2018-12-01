@@ -29,6 +29,7 @@ namespace Rhisis.World
             typeof(DefineLoader),
             typeof(TextLoader),
             typeof(MoverLoader),
+            typeof(ItemLoader),
             typeof(MapLoader),
             typeof(SystemLoader)
             // TODO: add more loaders

@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
 using System.Collections.Generic;
 
@@ -173,7 +174,7 @@ namespace Rhisis.World.Game.Structures
             this.Refine = refine;
             this.Element = element;
             this.ElementRefine = elementRefine;
-            this.Data = WorldServer.Items.ContainsKey(this.Id) ? WorldServer.Items[this.Id] : null;
+            this.Data = GameResources.Instance.Items[this.Id];
             this.ExtraUsed = extraUsed;
         }
 
