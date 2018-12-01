@@ -1,10 +1,12 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps.Regions;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,6 +104,7 @@ namespace Rhisis.World.Game.Maps
         {
             var monster = new MonsterEntity(this);
             var moverData = GameResources.Instance.Movers[respawner.ModelId];
+            var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
 
             monster.Object = new ObjectComponent
             {
@@ -131,7 +134,7 @@ namespace Rhisis.World.Game.Maps
                 Mp = moverData.AddMp,
                 Fp = 0
             };
-            monster.Behavior = WorldServer.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
+            monster.Behavior = behaviors.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawner;
 
             respawner.Entities.Add(monster);
