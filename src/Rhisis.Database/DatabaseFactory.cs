@@ -29,13 +29,12 @@ namespace Rhisis.Database
         {
             this.Configuration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationPath);
 
-            bool databaseExists = false;
-
             using (var dbContext = this.CreateDbContext())
-                databaseExists = dbContext.DatabaseExists();
-
-            if (!databaseExists)
-                throw new InvalidOperationException($"The database '{this.Configuration.Database}' doesn't exists.");
+            {
+                dbContext.Migrate();
+                if (!dbContext.DatabaseExists())
+                    throw new InvalidOperationException($"The database '{this.Configuration.Database}' doesn't exists.");
+            }
 
             this.Initialize();
         }

@@ -83,8 +83,10 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 2. Install the .NET Core SDK 2.0 : https://www.microsoft.com/net/download/windows
 3. Install `MsSQL Express` or `MySQL Server`
 4. Edit the files in `bin/config/` (`database.json`, `login.json`, `cluster.json`, `world.json`)
-5. Create an account in your database (tool available soon)
-6. Start the emulator
+5. Compile Rhsis and Rhisis.Tools solutions
+6. Run `bin/rhisis-installer.bat` and configure the database to start the database migration
+7. Create an account in your database (tool available soon)
+8. Start the emulator
 - Start `login.bat`
 - Start `cluster.bat`
 - Start `world.bat`
