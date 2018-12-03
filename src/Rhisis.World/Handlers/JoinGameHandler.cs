@@ -109,7 +109,9 @@ namespace Rhisis.World.Handlers
             };
 
             client.Player.Statistics = new StatisticsComponent(character);
-            client.Player.Behavior = WorldServer.PlayerBehaviors.DefaultBehavior;
+
+            var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
+            client.Player.Behavior = behaviors.PlayerBehaviors.DefaultBehavior;
             client.Player.Connection = client;
 
             // Initialize the inventory

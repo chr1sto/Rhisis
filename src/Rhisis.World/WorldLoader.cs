@@ -39,11 +39,6 @@ namespace Rhisis.World
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
         private static readonly IDictionary<string, DialogData> DialogData = new Dictionary<string, DialogData>();
 
-        // Managers
-        public static readonly BehaviorManager<Game.Entities.IMonsterEntity> MonsterBehaviors = new BehaviorManager<Game.Entities.IMonsterEntity>(BehaviorType.Monster);
-        public static readonly BehaviorManager<Game.Entities.INpcEntity> NpcBehaviors = new BehaviorManager<Game.Entities.INpcEntity>(BehaviorType.Npc);
-        public static readonly BehaviorManager<Game.Entities.IPlayerEntity> PlayerBehaviors = new BehaviorManager<Game.Entities.IPlayerEntity>(BehaviorType.Player);
-
         // Logs messages
         private const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
         private const string ObjectIgnoredMessage = "{0} id '{1}' was ignored. Reason: {2}.";
@@ -64,7 +59,6 @@ namespace Rhisis.World
             Logger.Info("Loading resources...");
             Profiler.Start("LoadResources");
             
-            this.LoadBehaviors();
             this.LoadShops();
             this.LoadDialogs();
             this.LoadNpc();
@@ -72,16 +66,6 @@ namespace Rhisis.World
             this.CleanUp();
 
             Logger.Info("Resources loaded in {0}ms.", Profiler.Stop("LoadResources").ElapsedMilliseconds);
-        }
-
-        private void LoadBehaviors()
-        {
-            MonsterBehaviors.Load();
-            NpcBehaviors.Load();
-            PlayerBehaviors.Load();
-
-            Logger.Info("-> {0} behaviors loaded.", 
-                MonsterBehaviors.Count + NpcBehaviors.Count + PlayerBehaviors.Count);
         }
 
         private void LoadJobs()

@@ -1,5 +1,6 @@
 ﻿using NLog;
 using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
@@ -8,6 +9,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using System;
@@ -185,6 +187,7 @@ namespace Rhisis.World.Game.Maps
         /// <param name="element"></param>
         private void CreateNpc(NpcDyoElement element)
         {
+            var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
             var npc = this.CreateEntity<NpcEntity>();
 
             npc.Object = new ObjectComponent
@@ -199,7 +202,7 @@ namespace Rhisis.World.Game.Maps
                 Spawned = true,
                 Level = 1
             };
-            npc.Behavior = WorldServer.NpcBehaviors.GetBehavior(npc.Object.ModelId);
+            npc.Behavior = behaviors.NpcBehaviors.GetBehavior(npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
 
             if (WorldServer.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
