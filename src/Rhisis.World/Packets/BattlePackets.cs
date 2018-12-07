@@ -7,13 +7,13 @@ namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendAddDamage(IPlayerEntity player, ILivingEntity damageReceiver, ILivingEntity damageSender, AttackFlags atkFlags, uint damage)
+        public static void SendAddDamage(IPlayerEntity player, ILivingEntity damageReceiver, ILivingEntity damageSender, AttackFlags atkFlags, int damage)
         {
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(damageReceiver.Id, SnapshotType.DAMAGE);
                 packet.Write(damageSender.Id);
-                packet.Write(damage);
+                packet.Write((uint)damage);
                 packet.Write((uint)atkFlags);
 
                 if(atkFlags.HasFlag(AttackFlags.AF_FLYING))

@@ -1,7 +1,9 @@
 ﻿using NLog;
+using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 using System;
 
 namespace Rhisis.World.Systems.Battle
@@ -48,6 +50,11 @@ namespace Rhisis.World.Systems.Battle
             int attackDamages = BattleHelper.GetMeeleAttackDamages(attacker, e.Target);
 
             Logger.Debug($"{attacker.Object.Name} inflicted {attackDamages} to {e.Target.Object.Name}");
+
+            if (!(attacker is IPlayerEntity player))
+                return;
+
+            WorldPacketFactory.SendAddDamage(player, e.Target, attacker, AttackFlags.AF_GENERIC, attackDamages);
         }
     }
 }
