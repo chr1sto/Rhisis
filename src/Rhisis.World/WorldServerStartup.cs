@@ -24,7 +24,7 @@ namespace Rhisis.World
         private const string WorldConfigFile = "config/world.json";
         private const string DatabaseConfigFile = "config/database.json";
 
-        private readonly IEnumerable<Type> _loaders = new []
+        private readonly IEnumerable<Type> _loaders = new[]
         {
             // Common loaders
             typeof(DefineLoader),
@@ -32,6 +32,8 @@ namespace Rhisis.World
             typeof(MoverLoader),
             typeof(ItemLoader),
             typeof(DialogLoader),
+            typeof(ShopLoader),
+            typeof(JobLoader),
 
             // World server specific loaders
             typeof(NpcLoader),

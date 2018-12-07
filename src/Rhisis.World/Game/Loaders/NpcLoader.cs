@@ -19,6 +19,7 @@ namespace Rhisis.World.Game.Loaders
         private readonly DefineLoader _defines;
         private readonly TextLoader _texts;
         private readonly DialogLoader _dialogs;
+        private readonly ShopLoader _shops;
 
         /// <summary>
         /// Gets the <see cref="NpcData"/> associated to the npc id.
@@ -35,7 +36,8 @@ namespace Rhisis.World.Game.Loaders
         /// <param name="defines">Define loader</param>
         /// <param name="texts">Text loader</param>
         /// <param name="dialogs">Dialogs loader</param>
-        public NpcLoader(ILogger<NpcLoader> logger, WorldConfiguration configuration, DefineLoader defines, TextLoader texts, DialogLoader dialogs)
+        /// <param name="shops">Shops loader</param>
+        public NpcLoader(ILogger<NpcLoader> logger, WorldConfiguration configuration, DefineLoader defines, TextLoader texts, DialogLoader dialogs, ShopLoader shops)
         {
             this._logger = logger;
             this._npcData = new Dictionary<string, NpcData>();
@@ -43,6 +45,7 @@ namespace Rhisis.World.Game.Loaders
             this._defines = defines;
             this._texts = texts;
             this._dialogs = dialogs;
+            this._shops = shops;
         }
         
         /// <inheritdoc />
@@ -78,10 +81,10 @@ namespace Rhisis.World.Game.Loaders
                         //      + constants for statement (like SetName)
 
                         // We gets shop and dialog of this npc.
-                        //ShopData.TryGetValue(npcId, out ShopData npcShop);
+                        ShopData shop = this._shops.GetShopData(npcId);
                         DialogData dialog = this._dialogs.GetDialogData(npcId, this._configuration.Language);
 
-                        var npc = new NpcData(npcId, npcName, null, dialog);
+                        var npc = new NpcData(npcId, npcName, shop, dialog);
 
                         if (this._npcData.ContainsKey(npc.Id))
                         {

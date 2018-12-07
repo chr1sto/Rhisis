@@ -18,7 +18,7 @@ namespace Rhisis.Core.Resources.Loaders
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ItemData this[int id] => this._itemsData.TryGetValue(id, out ItemData value) ? value : null;
+        public ItemData this[int id] => this.GetItem(id);
 
         /// <summary>
         /// Gets an <see cref="ItemData"/> by his name.
@@ -68,6 +68,13 @@ namespace Rhisis.Core.Resources.Loaders
 
             this._logger.LogInformation("-> {0} items loaded.", this._itemsData.Count);
         }
+
+        /// <summary>
+        /// Gets an <see cref="ItemData"/> by his id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ItemData GetItem(int id) => this._itemsData.TryGetValue(id, out ItemData value) ? value : null;
 
         /// <inheritdoc />
         public void Dispose()

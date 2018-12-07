@@ -13,6 +13,14 @@ namespace Rhisis.Core.Resources.Loaders
         private readonly JsonLoadSettings _jsonSettings = new JsonLoadSettings { CommentHandling = CommentHandling.Ignore };
 
         /// <summary>
+        /// Gets a dialog data.
+        /// </summary>
+        /// <param name="dialog">Dialog to retrieve</param>
+        /// <param name="lang">Language</param>
+        /// <returns></returns>
+        public DialogData this[string dialog, string lang] => this.GetDialogData(dialog, lang);
+
+        /// <summary>
         /// Creates a new <see cref="DialogLoader"/> instance.
         /// </summary>
         /// <param name="logger">Logger</param>

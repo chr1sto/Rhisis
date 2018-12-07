@@ -17,7 +17,7 @@ namespace Rhisis.Core.Resources.Loaders
         /// </summary>
         /// <param name="moverId"></param>
         /// <returns></returns>
-        public MoverData this[int moverId] => this._moversData.TryGetValue(moverId, out MoverData value) ? value : null;
+        public MoverData this[int moverId] => this.GetMover(moverId);
 
         /// <summary>
         /// Creates a new <see cref="MoverLoader"/> instance.
@@ -60,6 +60,13 @@ namespace Rhisis.Core.Resources.Loaders
 
             this._logger.LogInformation("-> {0} movers loaded.", this._moversData.Count);
         }
+
+        /// <summary>
+        /// Gets a <see cref="MoverData"/> by his mover id.
+        /// </summary>
+        /// <param name="moverId"></param>
+        /// <returns></returns>
+        public MoverData GetMover(int moverId) => this._moversData.TryGetValue(moverId, out MoverData value) ? value : null;
 
         /// <inheritdoc />
         public void Dispose()
