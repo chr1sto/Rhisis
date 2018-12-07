@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -52,7 +53,7 @@ namespace Rhisis.World.Systems.Interaction
             if (targetEntity == null)
                 return;
 
-            if (e.Clear == 2)
+            if (e.TargetingMode == TargetingMode.Select)
             {
                 player.Interaction.TargetEntity = targetEntity;
                 Logger.LogDebug("Player {0} selected {1} as target.", player.Object.Name, targetEntity.Object.Name);

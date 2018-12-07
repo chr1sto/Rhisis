@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core.Systems;
+﻿using Rhisis.World.Game.Common;
+using Rhisis.World.Game.Core.Systems;
 
 namespace Rhisis.World.Systems.Interaction.EventArgs
 {
@@ -12,17 +13,17 @@ namespace Rhisis.World.Systems.Interaction.EventArgs
         /// <summary>
         /// Gets a value indicating whether target should be cleared or not.
         /// </summary>
-        public byte Clear { get; }
+        public TargetingMode TargetingMode { get; }
 
         /// <summary>
         /// Creates a new <see cref="SetTargetEventArgs" /> instance.
         /// </summary>
         /// <param name="targetId">Target Id</param>
-        /// <param name="bClear">Clear</param>
-        public SetTargetEventArgs(int targetId, byte bClear)
+        /// <param name="bTargetingMode">Targeting Mode</param>
+        public SetTargetEventArgs(int targetId, byte bTargetingMode)
         {
             this.TargetId = targetId;
-            this.Clear = bClear;
+            this.TargetingMode = (TargetingMode)bTargetingMode;
         }
 
         /// <inheritdoc />
