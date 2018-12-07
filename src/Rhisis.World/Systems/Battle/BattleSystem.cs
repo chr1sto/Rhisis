@@ -39,7 +39,7 @@ namespace Rhisis.World.Systems.Battle
 
         private void ProcessMeleeAttack(ILivingEntity attacker, MeleeAttackEventArgs e)
         {
-            if (!e.Target.Health.IsDead)
+            if (e.Target.Health.IsDead)
             {
                 Logger.Error($"{attacker.Object.Name} cannot attack {e.Target.Object.Name} because target is already dead.");
                 return;
