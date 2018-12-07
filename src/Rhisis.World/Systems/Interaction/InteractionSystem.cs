@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -12,6 +11,16 @@ namespace Rhisis.World.Systems.Interaction
     public class InteractionSystem : ISystem
     {
         private static readonly ILogger Logger = DependencyContainer.Instance.Resolve<ILogger<InteractionSystem>>();
+
+        /// <summary>
+        /// Defines a const used to select a target.
+        /// </summary>
+        private const byte SELECT_TARGET = 2;
+
+        /// <summary>
+        /// Defines a const used to unselect a target.
+        /// </summary>
+        private const byte UNSELECT_TARGET = 1;
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;
@@ -53,15 +62,19 @@ namespace Rhisis.World.Systems.Interaction
             if (targetEntity == null)
                 return;
 
-            if (e.TargetingMode == TargetingMode.Select)
+            if (e.TargetingMode == SELECT_TARGET)
             {
                 player.Interaction.TargetEntity = targetEntity;
                 Logger.LogDebug("Player {0} selected {1} as target.", player.Object.Name, targetEntity.Object.Name);
             }
-            else
+            else if(e.TargetingMode == UNSELECT_TARGET)
             {
                 player.Interaction.TargetEntity = null;
                 Logger.LogDebug("Player {0} cleared selection on {1}.", player.Object.Name, targetEntity.Object.Name);
+            }
+            else
+            {
+                Logger.LogWarning("Player {0} raised an invalid or unknown target mode on {1}.", player.Object.Name, targetEntity.Object.Name);
             }
         }
     }
