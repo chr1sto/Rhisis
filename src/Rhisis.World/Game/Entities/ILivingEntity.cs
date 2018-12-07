@@ -6,6 +6,11 @@ namespace Rhisis.World.Game.Entities
     public interface ILivingEntity : IEntity, IMovableEntity
     {
         /// <summary>
+        /// Gets or sets the interaction component.
+        /// </summary>
+        InteractionComponent Interaction { get; set; }
+
+        /// <summary>
         /// Gets or sets the battle component.
         /// </summary>
         BattleComponent Battle { get; set; }

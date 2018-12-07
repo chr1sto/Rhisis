@@ -35,6 +35,9 @@ namespace Rhisis.World.Game.Entities
         public FollowComponent Follow { get; set; }
 
         /// <inheritdoc />
+        public InteractionComponent Interaction { get; set; }
+
+        /// <inheritdoc />
         public BattleComponent Battle { get; set; }
 
         /// <inheritdoc />
@@ -54,6 +57,7 @@ namespace Rhisis.World.Game.Entities
             this.PlayerData = new PlayerDataComponent();
             this.Trade = new TradeComponent();
             this.Follow = new FollowComponent();
+            this.Interaction = new InteractionComponent();
             this.Battle = new BattleComponent();
             this.Health = new HealthComponent();
         }
