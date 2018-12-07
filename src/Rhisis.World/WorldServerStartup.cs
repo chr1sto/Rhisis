@@ -26,13 +26,19 @@ namespace Rhisis.World
 
         private readonly IEnumerable<Type> _loaders = new []
         {
+            // Common loaders
             typeof(DefineLoader),
             typeof(TextLoader),
             typeof(MoverLoader),
             typeof(ItemLoader),
+            typeof(DialogLoader),
+
+            // World server specific loaders
+            typeof(NpcLoader),
             typeof(BehaviorLoader),
             typeof(MapLoader),
             typeof(SystemLoader)
+
             // TODO: add more loaders
         };
 

@@ -2,16 +2,10 @@
 using NLog;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
-using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
-using Rhisis.World.Game.Behaviors;
-using Rhisis.World.Game.Core.Systems;
-using Rhisis.World.Game.Maps;
-using Rhisis.World.Systems.Chat;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Rhisis.World
 {
@@ -35,9 +29,7 @@ namespace Rhisis.World
         private static readonly IDictionary<string, int> Defines = new Dictionary<string, int>();
         private static readonly IDictionary<string, string> Texts = new Dictionary<string, string>();
         private static readonly IDictionary<int, JobData> JobsData = new Dictionary<int, JobData>();
-        private static readonly IDictionary<string, NpcData> NpcData = new Dictionary<string, NpcData>();
         private static readonly IDictionary<string, ShopData> ShopData = new Dictionary<string, ShopData>();
-        private static readonly IDictionary<string, DialogData> DialogData = new Dictionary<string, DialogData>();
 
         // Logs messages
         private const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
@@ -45,12 +37,7 @@ namespace Rhisis.World
         private const string ObjectOverridedMessage = "{0} id '{1}' was overrided. Reason: {2}.";
 
         private ILogger Logger;
-
-        /// <summary>
-        /// Gets the Npcs data.
-        /// </summary>
-        public static IReadOnlyDictionary<string, NpcData> Npcs => NpcData as IReadOnlyDictionary<string, NpcData>;
-
+        
         /// <summary>
         /// Loads the server's resources.
         /// </summary>
@@ -60,8 +47,6 @@ namespace Rhisis.World
             Profiler.Start("LoadResources");
             
             this.LoadShops();
-            this.LoadDialogs();
-            this.LoadNpc();
             this.LoadJobs();
             this.CleanUp();
 
@@ -138,104 +123,6 @@ namespace Rhisis.World
             }
 
             Logger.Info("-> {0} shops loaded.", ShopData.Count);
-        }
-
-        private void LoadDialogs()
-        {
-            string currentDialogsPath = Path.Combine(DialogsPath, /*this.WorldConfiguration.Language*/ "");
-
-            if (!Directory.Exists(currentDialogsPath))
-            {
-                Logger.Warn("Unable to load dialogs. Reason: cannot find '{0}' directory.", currentDialogsPath);
-                return;
-            }
-
-            string[] dialogFiles = Directory.GetFiles(currentDialogsPath);
-
-            foreach (string dialogFile in dialogFiles)
-            {
-                string dialogFileContent = File.ReadAllText(dialogFile);
-                JToken dialogsParsed = JToken.Parse(dialogFileContent, new JsonLoadSettings
-                {
-                    CommentHandling = CommentHandling.Ignore
-                });
-
-                if (dialogsParsed.Type == JTokenType.Array)
-                {
-                    var dialogs = dialogsParsed.ToObject<DialogData[]>();
-
-                    foreach (DialogData dialog in dialogs)
-                    {
-                        if (DialogData.ContainsKey(dialog.Name))
-                            Logger.Debug(ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
-                        else
-                            DialogData.Add(dialog.Name, dialog);
-                    }
-                }
-                else
-                {
-                    var dialog = dialogsParsed.ToObject<DialogData>();
-
-                    if (DialogData.ContainsKey(dialog.Name))
-                        Logger.Debug(ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
-                    else
-                        DialogData.Add(dialog.Name, dialog);
-                }
-            }
-
-            Logger.Info("-> {0} dialogs loaded.", DialogData.Count);
-        }
-
-        private void LoadNpc()
-        {
-            IEnumerable<string> files = Directory.GetFiles(ResourcePath, "character*.inc", SearchOption.AllDirectories);
-
-            foreach (string file in files)
-            {
-                using (var npcFile = new IncludeFile(file))
-                {
-                    foreach (IStatement npcStatement in npcFile.Statements)
-                    {
-                        if (!(npcStatement is Block npcBlock))
-                            continue;
-
-                        string npcId = npcStatement.Name;
-                        string npcName = npcId;
-
-                        // We gets the npc name.
-                        foreach (IStatement npcInfoStatement in npcBlock.Statements)
-                        {
-                            if (npcInfoStatement is Instruction instruction && npcInfoStatement.Name == "SetName")
-                            {
-                                if (instruction.Parameters.Count > 0 &&
-                                    Texts.TryGetValue(instruction.Parameters.First().ToString(), out string value))
-                                {
-                                    npcName = value;
-                                }
-                            }
-                        }
-
-                        //TODO: implement other npc settings (image, music, actions...)
-                        //      + constants for statement (like SetName)
-
-                        // We gets shop and dialog  of this npc.
-                        ShopData.TryGetValue(npcId, out ShopData npcShop);
-                        DialogData.TryGetValue(npcId, out DialogData npcDialog);
-
-                        var npc = new NpcData(npcId, npcName, npcShop, npcDialog);
-
-                        if (NpcData.ContainsKey(npc.Id))
-                        {
-                            NpcData[npc.Id] = npc;
-                            Logger.Warn(ObjectOverridedMessage, "NPC", npc.Id, "already declared");
-                        }
-                        else
-                            NpcData.Add(npc.Id, npc);
-                    }
-                }
-            }
-
-            Logger.Info("-> {0} NPCs loaded.", NpcData.Count);
         }
 
         private void CleanUp()
