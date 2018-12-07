@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -9,7 +10,7 @@ namespace Rhisis.World.Systems.Interaction
     [System(SystemType.Notifiable)]
     public class InteractionSystem : ISystem
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = DependencyContainer.Instance.Resolve<ILogger<InteractionSystem>>();
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;
@@ -25,7 +26,7 @@ namespace Rhisis.World.Systems.Interaction
 
             if (!e.CheckArguments())
             {
-                Logger.Error("Cannot execute interaction action: {0} due to invalid arguments.", e.GetType());
+                Logger.LogError("Cannot execute interaction action: {0} due to invalid arguments.", e.GetType());
                 return;
             }
 
@@ -35,7 +36,7 @@ namespace Rhisis.World.Systems.Interaction
                     this.SetTarget(playerEntity, setTargetEventArgs);
                     break;
                 default:
-                    Logger.Warn("Unknown interaction action type: {0} for player {1}", e.GetType(), entity.Object.Name);
+                    Logger.LogWarning("Unknown interaction action type: {0} for player {1}", e.GetType(), entity.Object.Name);
                     break;
             }
         }
@@ -54,12 +55,12 @@ namespace Rhisis.World.Systems.Interaction
             if (e.Clear == 2)
             {
                 player.Interaction.TargetEntity = targetEntity;
-                Logger.Debug("Player {0} selected {1} as target.", player.Object.Name, targetEntity.Object.Name);
+                Logger.LogDebug("Player {0} selected {1} as target.", player.Object.Name, targetEntity.Object.Name);
             }
             else
             {
                 player.Interaction.TargetEntity = null;
-                Logger.Debug("Player {0} cleared selection on {1}.", player.Object.Name, targetEntity.Object.Name);
+                Logger.LogDebug("Player {0} cleared selection on {1}.", player.Object.Name, targetEntity.Object.Name);
             }
         }
     }
