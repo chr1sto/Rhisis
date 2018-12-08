@@ -21,11 +21,6 @@ namespace Rhisis.World
         /// </summary>
         public static ISCClient InterClient { get; private set; }
 
-        /// <summary>
-        /// Gets the world server's configuration.
-        /// </summary>
-        public WorldConfiguration WorldConfiguration { get; private set; }
-
         /// <inheritdoc />
         protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
 

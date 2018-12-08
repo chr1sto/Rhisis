@@ -1,8 +1,9 @@
 ﻿using Ether.Network.Packets;
-using NLog;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
+using Rhisis.Core.Structures.Configuration;
 using Rhisis.Login.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
@@ -10,9 +11,9 @@ using Rhisis.Network.Packets.Login;
 
 namespace Rhisis.Login
 {
-    public static class LoginHandler
+    public class LoginHandler
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger<LoginHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<LoginHandler>>();
 
         [PacketHandler(PacketType.PING)]
         public static void OnPing(LoginClient client, INetPacketStream packet)
@@ -26,19 +27,21 @@ namespace Rhisis.Login
         [PacketHandler(PacketType.CERTIFY)]
         public static void OnLogin(LoginClient client, INetPacketStream packet)
         {
+            var loginServer = DependencyContainer.Instance.Resolve<ILoginServer>();
+            var configuration = DependencyContainer.Instance.Resolve<LoginConfiguration>();
             var cryptographyService = DependencyContainer.Instance.Resolve<ICryptographyService>();
-            var certifyPacket = new CertifyPacket(packet, client.ServerConfiguration.PasswordEncryption);
+            var certifyPacket = new CertifyPacket(packet, configuration.PasswordEncryption);
             string password = null;
 
-            if (certifyPacket.BuildVersion != client.ServerConfiguration.BuildVersion)
+            if (certifyPacket.BuildVersion != configuration.BuildVersion)
             {
                 AuthenticationFailed(client, ErrorType.CERT_GENERAL, "bad client build version");
                 return;
             }
 
-            if (client.ServerConfiguration.PasswordEncryption)
+            if (configuration.PasswordEncryption)
             {
-                byte[] encryptionKey = cryptographyService.BuildEncryptionKeyFromString(client.ServerConfiguration.EncryptionKey, 16);
+                byte[] encryptionKey = cryptographyService.BuildEncryptionKeyFromString(configuration.EncryptionKey, 16);
 
                 password = cryptographyService.Decrypt(certifyPacket.EncryptedPassword, encryptionKey);
             }
@@ -65,9 +68,9 @@ namespace Rhisis.Login
                     // TODO
                     break;
                 case AuthenticationResult.Success:
-                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, client.ClustersConnected);
+                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, loginServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);
-                    Logger.Info($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
+                    Logger.LogInformation($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
                     break;
                 default:
                     break;
@@ -76,7 +79,7 @@ namespace Rhisis.Login
 
         private static void AuthenticationFailed(LoginClient client, ErrorType error, string reason)
         {
-            Logger.Warn($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
+            Logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
             LoginPacketFactory.SendLoginError(client, error);
             client.Disconnect();
         }
