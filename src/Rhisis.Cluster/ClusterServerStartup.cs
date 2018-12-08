@@ -64,14 +64,14 @@ namespace Rhisis.Cluster
 
             try
             {
-                logger.LogInformation("Starting WorldServer...");
+                logger.LogInformation("Starting ClusterServer...");
 
                 GameResources.Instance.Load();
                 this._server.Start();
             }
             catch (Exception e)
             {
-                logger.LogCritical(e, $"An unexpected error occured in WorldServer.");
+                logger.LogCritical(e, $"An unexpected error occured in ClusterServer.");
 #if DEBUG
                 Console.ReadLine();
 #endif
