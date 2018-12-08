@@ -2,8 +2,8 @@
 using Rhisis.Core.Data;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
-using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
+using Rhisis.Core.Structures.Game.Dialogs;
 
 namespace Rhisis.World.Packets
 {

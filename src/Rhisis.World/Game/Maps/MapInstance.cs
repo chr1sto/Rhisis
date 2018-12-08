@@ -188,6 +188,7 @@ namespace Rhisis.World.Game.Maps
         private void CreateNpc(NpcDyoElement element)
         {
             var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
+            var npcs = DependencyContainer.Instance.Resolve<NpcLoader>();
             var npc = this.CreateEntity<NpcEntity>();
 
             npc.Object = new ObjectComponent
@@ -205,25 +206,24 @@ namespace Rhisis.World.Game.Maps
             npc.Behavior = behaviors.NpcBehaviors.GetBehavior(npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
 
-            if (WorldServer.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
+            npc.Data = npcs.GetNpcData(npc.Object.Name);
+
+
+            if (npc.Data != null && npc.Data.HasShop)
             {
-                npc.Data = npcData;
+                ShopData npcShopData = npc.Data.Shop;
+                npc.Shop = new ItemContainerComponent[npcShopData.Items.Length];
 
-                if (npcData.HasShop)
+                for (var i = 0; i < npcShopData.Items.Length; i++)
                 {
-                    npc.Shop = new ItemContainerComponent[npcData.Shop.Items.Length];
+                    npc.Shop[i] = new ItemContainerComponent(100);
 
-                    for (var i = 0; i < npcData.Shop.Items.Length; i++)
+                    for (var j = 0; j < npcShopData.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
                     {
-                        npc.Shop[i] = new ItemContainerComponent(100);
+                        ItemBase item = npcShopData.Items[i][j];
+                        ItemData itemData = GameResources.Instance.Items[item.Id];
 
-                        for (var j = 0; j < npcData.Shop.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
-                        {
-                            ItemBase item = npcData.Shop.Items[i][j];
-                            ItemData itemData = GameResources.Instance.Items[item.Id];
-
-                            npc.Shop[i].Items[j] = new Item(item.Id, itemData.PackMax, -1, j, j, item.Refine, item.Element, item.ElementRefine);
-                        }
+                        npc.Shop[i].Items[j] = new Item(item.Id, itemData.PackMax, -1, j, j, item.Refine, item.Element, item.ElementRefine);
                     }
                 }
             }

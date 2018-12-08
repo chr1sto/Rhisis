@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Rhisis.Core.Structures.Game.Dialogs;
+using System.Collections.Generic;
 
 namespace Rhisis.Core.Structures.Game
 {

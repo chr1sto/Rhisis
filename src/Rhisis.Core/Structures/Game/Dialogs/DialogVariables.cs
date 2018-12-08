@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Core.Structures.Game
+﻿namespace Rhisis.Core.Structures.Game.Dialogs
 {
     public class DialogVariables
     {

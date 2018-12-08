@@ -1,5 +1,6 @@
 ﻿using NLog;
 using Rhisis.Core.Structures.Game;
+using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;

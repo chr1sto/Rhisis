@@ -15,6 +15,13 @@ namespace Rhisis.Core.Resources.Loaders
         public IDictionary<string, string> Texts { get; }
 
         /// <summary>
+        /// Gets the text value by key.
+        /// </summary>
+        /// <param name="key">Text key</param>
+        /// <returns>Value if key is found; "[undefined]" otherwise.</returns>
+        public string this[string key] => this.Texts.TryGetValue(key, out string value) ? value : "[undefined]";
+
+        /// <summary>
         /// Creates a new <see cref="TextLoader"/> instance.
         /// </summary>
         /// <param name="logger">Logger</param>

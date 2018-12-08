@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Rhisis.Core.Structures.Game
+namespace Rhisis.Core.Structures.Game.Dialogs
 {
     [DataContract]
     public class DialogData
