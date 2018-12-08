@@ -1,9 +1,11 @@
 ﻿using Ether.Network.Packets;
-using NLog;
+using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
@@ -15,9 +17,9 @@ using System;
 
 namespace Rhisis.Cluster
 {
-    public static class ClusterHandler
+    public class ClusterHandler
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger<ClusterHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<ClusterHandler>>();
 
         [PacketHandler(PacketType.PING)]
         public static void OnPing(ClusterClient client, INetPacketStream packet)
@@ -32,12 +34,14 @@ namespace Rhisis.Cluster
         public static void OnGetPlayerList(ClusterClient client, INetPacketStream packet)
         {
             var pak = new GetPlayerListPacket(packet);
-            WorldServerInfo selectedWorldServer = ClusterServer.GetWorldServerById(pak.ServerId);
+            var clusterServer = DependencyContainer.Instance.Resolve<IClusterServer>();
+            var clusterConfiguration = DependencyContainer.Instance.Resolve<ClusterConfiguration>();
+            WorldServerInfo selectedWorldServer = clusterServer.GetWorldServerById(pak.ServerId);
 
             // Check if asked World server is still connected.
             if (selectedWorldServer == null)
             {
-                Logger.Warn($"Unable to get characters list for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                Logger.LogWarning($"Unable to get characters list for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                     "Reason: client requested the list on a not connected World server.");
                 client.Disconnect();
                 return;
@@ -50,17 +54,17 @@ namespace Rhisis.Cluster
                 // Check if user exist.
                 if (dbUser == null)
                 {
-                    Logger.Warn($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    Logger.LogWarning($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         "Reason: bad presented credentials compared to the database.");
                     client.Disconnect();
                     return;
                 }
 
-                Logger.Debug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
+                Logger.LogDebug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
                 ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
                 ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
 
-                if (client.Configuration.EnableLoginProtect)
+                if (clusterConfiguration.EnableLoginProtect)
                     ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
             }
         }
@@ -69,6 +73,8 @@ namespace Rhisis.Cluster
         public static void OnCreatePlayer(ClusterClient client, INetPacketStream packet)
         {
             var pak = new CreatePlayerPacket(packet);
+            var clusterConfiguration = DependencyContainer.Instance.Resolve<ClusterConfiguration>();
+            var jobs = DependencyContainer.Instance.Resolve<JobLoader>();
 
             using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {
@@ -79,7 +85,7 @@ namespace Rhisis.Cluster
                 // Check if user exist and with good password in database.
                 if (dbUser == null)
                 {
-                    Logger.Warn($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    Logger.LogWarning($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         "Reason: bad presented credentials compared to the database.");
                     client.Disconnect();
                     return;
@@ -90,15 +96,15 @@ namespace Rhisis.Cluster
                 // Check if character name is not already used.
                 if (dbCharacter != null)
                 {
-                    Logger.Warn($"Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    Logger.LogWarning($"Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         $"Reason: character name '{pak.Name}' already exists.");
                     ClusterPacketFactory.SendError(client, ErrorType.USER_EXISTS);
                     return;
                 }
 
-                DefaultCharacter defaultCharacter = client.Configuration.DefaultCharacter;
+                DefaultCharacter defaultCharacter = clusterConfiguration.DefaultCharacter;
                 DefaultStartItem defaultEquipment = pak.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
-                JobData jobData = ClusterServer.JobsData[pak.Job];
+                JobData jobData = jobs[pak.Job];
 
                 dbCharacter = new DbCharacter()
                 {
@@ -138,7 +144,7 @@ namespace Rhisis.Cluster
 
                 database.Characters.Create(dbCharacter);
                 database.Complete();
-                Logger.Info("Character '{0}' has been created successfully for user '{1}' from {2}.",
+                Logger.LogInformation("Character '{0}' has been created successfully for user '{1}' from {2}.",
                     dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
                 ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
@@ -159,7 +165,7 @@ namespace Rhisis.Cluster
                 // Check if user exist and with good password in database.
                 if (dbUser == null)
                 {
-                    Logger.Warn($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         "Reason: bad presented credentials compared to the database.");
                     client.Disconnect();
                     return;
@@ -168,7 +174,7 @@ namespace Rhisis.Cluster
                 // Check if given password match confirmation password.
                 if (!string.Equals(pak.Password, pak.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
                 {
-                    Logger.Warn($"Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    Logger.LogWarning($"Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         "Reason: passwords entered do not match.");
                     ClusterPacketFactory.SendError(client, ErrorType.WRONG_PASSWORD);
                     return;
@@ -179,7 +185,7 @@ namespace Rhisis.Cluster
                 // Check if character exist.
                 if (dbCharacter == null)
                 {
-                    Logger.Warn($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         "Reason: user doesn't have any character with this id.");
                     client.Disconnect();
                     return;
@@ -187,7 +193,7 @@ namespace Rhisis.Cluster
 
                 database.Characters.Delete(dbCharacter);
                 database.Complete();
-                Logger.Info("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
+                Logger.LogInformation("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
                     dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
                 ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
@@ -198,6 +204,7 @@ namespace Rhisis.Cluster
         public static void OnPreJoin(ClusterClient client, INetPacketStream packet)
         {
             var pak = new PreJoinPacket(packet);
+            var clusterConfiguration = DependencyContainer.Instance.Resolve<ClusterConfiguration>();
             DbCharacter dbCharacter = null;
 
             using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
@@ -206,7 +213,7 @@ namespace Rhisis.Cluster
             // Check if character exist.
             if (dbCharacter == null)
             {
-                Logger.Warn($"[SECURITY] Unable to prejoin character id '{pak.CharacterName}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                Logger.LogWarning($"[SECURITY] Unable to prejoin character id '{pak.CharacterName}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                     $"Reason: no character with id {pak.CharacterId}.");
                 client.Disconnect();
                 return;
@@ -215,17 +222,17 @@ namespace Rhisis.Cluster
             // Check if given username is the real owner of this character.
             if (!pak.Username.Equals(dbCharacter.User.Username, StringComparison.OrdinalIgnoreCase))
             {
-                Logger.Warn($"[SECURITY] Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                Logger.LogWarning($"[SECURITY] Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                     "Reason: character is not owned by this user.");
                 client.Disconnect();
                 return;
             }
 
             // Check if presented bank code is correct.
-            if (client.Configuration.EnableLoginProtect &&
+            if (clusterConfiguration.EnableLoginProtect &&
                 LoginProtect.GetNumPadToPassword(client.LoginProtectValue, pak.BankCode) != dbCharacter.BankCode)
             {
-                Logger.Warn($"Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                Logger.LogWarning($"Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                     "Reason: bad bank code.");
                 client.LoginProtectValue = new Random().Next(0, 1000);
                 ClusterPacketFactory.SendLoginProtect(client, client.LoginProtectValue);
@@ -234,7 +241,7 @@ namespace Rhisis.Cluster
 
             // Finally, we connect the player.
             ClusterPacketFactory.SendJoinWorld(client);
-            Logger.Info("Character '{0}' has prejoin successfully the game for user '{1}' from {2}.",
+            Logger.LogInformation("Character '{0}' has prejoin successfully the game for user '{1}' from {2}.",
                 dbCharacter.Name, pak.Username, client.RemoteEndPoint);
         }
     }

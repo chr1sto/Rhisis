@@ -1,11 +1,8 @@
 ﻿using Ether.Network.Packets;
 using Ether.Network.Server;
-using NLog;
+using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.ISC;
-using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
 using Rhisis.Network;
 using Rhisis.Network.ISC.Structures;
 using Rhisis.Network.Packets;
@@ -15,12 +12,13 @@ using System.Linq;
 
 namespace Rhisis.Cluster
 {
-    public partial class ClusterServer : NetServer<ClusterClient>
+    public class ClusterServer : NetServer<ClusterClient>, IClusterServer
     {
         private const string ClusterConfigFile = "config/cluster.json";
         private const string DatabaseConfigFile = "config/database.json";
 
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<ClusterServer> _logger;
+        private readonly ClusterConfiguration _clusterConfiguration;
 
         /// <summary>
         /// Gets the ISC client.
@@ -43,26 +41,17 @@ namespace Rhisis.Cluster
         /// <summary>
         /// Creates a new <see cref="ClusterServer"/> instance.
         /// </summary>
-        public ClusterServer()
+        public ClusterServer(ILogger<ClusterServer> logger, ClusterConfiguration clusterConfiguration)
         {
-            this.LoadConfiguration();
-        }
-
-        /// <summary>
-        /// Load the cluster server's configuration.
-        /// </summary>
-        private void LoadConfiguration()
-        {
-            Logger.Debug("Loading server configuration from '{0}'...", ClusterConfigFile);
-            this.ClusterConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(ClusterConfigFile, true);
-
-            this.Configuration.Host = this.ClusterConfiguration.Host;
-            this.Configuration.Port = this.ClusterConfiguration.Port;
+            this._logger = logger;
+            this._clusterConfiguration = clusterConfiguration;
+            this.Configuration.Host = this._clusterConfiguration.Host;
+            this.Configuration.Port = this._clusterConfiguration.Port;
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
 
-            Logger.Trace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
+            this._logger.LogTrace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
                 this.Configuration.Host,
                 this.Configuration.Port,
                 this.Configuration.MaximumNumberOfConnections,
@@ -73,50 +62,36 @@ namespace Rhisis.Cluster
         /// <inheritdoc />
         protected override void Initialize()
         {
-            PacketHandler<ISCClient>.Initialize();
-            PacketHandler<ClusterClient>.Initialize();
-
-            Logger.Debug("Loading database configuration from '{0}'...", DatabaseConfigFile);
-            DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
-            Logger.Trace($"Database config -> {DatabaseFactory.Instance.Configuration}");
-            
-            DependencyContainer.Instance.Initialize().BuildServiceProvider();
-            this.LoadResources();
-
-            Logger.Info("Connection to ISC server on {0}:{1}...", this.ClusterConfiguration.ISC.Host, this.ClusterConfiguration.ISC.Port);
-            InterClient = new ISCClient(this.ClusterConfiguration);
+            this._logger.LogInformation("Connection to ISC server on {0}:{1}...", this._clusterConfiguration.ISC.Host, this._clusterConfiguration.ISC.Port);
+            InterClient = new ISCClient(this._clusterConfiguration);
             InterClient.Connect();
 
             //TODO: Implement this log inside OnStarted method when will be available.
-            Logger.Info("'{0}' cluster server is started and listen on {1}:{2}.", 
+            this._logger.LogInformation("'{0}' cluster server is started and listen on {1}:{2}.", 
                 InterClient.ClusterConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(ClusterClient client)
         {
-            client.Initialize(this);
-            Logger.Info("New client connected from {0}.", client.RemoteEndPoint);
+            this._logger.LogInformation("New client connected from {0}.", client.RemoteEndPoint);
+
             CommonPacketFactory.SendWelcome(client, client.SessionId);
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(ClusterClient client)
         {
-            Logger.Info("Client disconnected from {0}.", client.RemoteEndPoint);
+            this._logger.LogInformation("Client disconnected from {0}.", client.RemoteEndPoint);
         }
 
         /// <inheritdoc />
         protected override void OnError(Exception exception)
         {
-            Logger.Error($"Socket error: {exception.Message}");
+            this._logger.LogInformation($"Socket error: {exception.Message}");
         }
 
-        /// <summary>
-        /// Gets world server by his id.
-        /// </summary>
-        /// <param name="id">World Server id</param>
-        /// <returns></returns>
-        public static WorldServerInfo GetWorldServerById(int id) => WorldServers.FirstOrDefault(x => x.Id == id);
+        /// <inheritdoc />
+        public WorldServerInfo GetWorldServerById(int id) => WorldServers.FirstOrDefault(x => x.Id == id);
     }
 }
