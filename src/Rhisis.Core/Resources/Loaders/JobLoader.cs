@@ -39,7 +39,7 @@ namespace Rhisis.Core.Resources.Loaders
                 return;
             }
 
-            using (var propJob = new ResourceTableFile(GameResources.JobPropPath, -1, new char[] { '\t', ' ', '\r' }, this._defines.Defines, null))
+            using (var propJob = new ResourceTableFile(GameResources.JobPropPath, -1, new [] { '\t', ' ', '\r' }, this._defines.Defines, null))
             {
                 var jobs = propJob.GetRecords<JobData>();
 
