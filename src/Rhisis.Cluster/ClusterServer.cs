@@ -14,9 +14,6 @@ namespace Rhisis.Cluster
 {
     public class ClusterServer : NetServer<ClusterClient>, IClusterServer
     {
-        private const string ClusterConfigFile = "config/cluster.json";
-        private const string DatabaseConfigFile = "config/database.json";
-
         private readonly ILogger<ClusterServer> _logger;
         private readonly ClusterConfiguration _clusterConfiguration;
 
