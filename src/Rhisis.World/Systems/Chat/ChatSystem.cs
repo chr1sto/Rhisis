@@ -56,7 +56,7 @@ namespace Rhisis.World.Systems.Chat
             if (!chatEvent.CheckArguments())
                 return;
 
-            if (chatEvent.Message.StartsWith("/"))
+            if (chatEvent.Message.StartsWith("/") || chatEvent.Message.StartsWith("."))
             {
                 string commandName = chatEvent.Message.Split(' ').FirstOrDefault();
                 string[] commandParameters = GetCommandParameters(chatEvent.Message, commandName);
