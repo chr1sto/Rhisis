@@ -11,6 +11,7 @@ namespace Rhisis.World.Game.Chat
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         [ChatCommand("/getgold", AuthorityType.Administrator)]
+        [ChatCommand("/gg", AuthorityType.Administrator)]
         public static void GetGoldCommand(IPlayerEntity player, string[] parameters)
         {
             Logger.Debug("{0} want to get penyas", player.Object.Name);
