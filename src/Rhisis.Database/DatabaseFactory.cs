@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
@@ -7,7 +8,7 @@ using System;
 
 namespace Rhisis.Database
 {
-    public sealed class DatabaseFactory : Singleton<DatabaseFactory>
+    public sealed class DatabaseFactory : Singleton<DatabaseFactory>, IDesignTimeDbContextFactory<DatabaseContext>
     {
         private const string MigrationConfigurationEnv = "DB_CONFIG";
 
@@ -58,5 +59,18 @@ namespace Rhisis.Database
         /// <param name="options"></param>
         /// <returns></returns>
         public DatabaseContext CreateDbContext(DbContextOptions options) => new DatabaseContext(options);
+
+        /// <inheritdoc />
+        public DatabaseContext CreateDbContext(string[] args)
+        {
+            var configurationPath = Environment.GetEnvironmentVariable(MigrationConfigurationEnv);
+            var configuration = ConfigurationHelper.Load<DatabaseConfiguration>(configurationPath);
+            var context = new DatabaseContext(configuration);
+
+            if (!string.IsNullOrEmpty(configurationPath) && !context.DatabaseExists())
+                throw new InvalidOperationException($"The database '{configuration.Database}' doesn't exists.");
+
+            return context;
+        }
     }
 }
