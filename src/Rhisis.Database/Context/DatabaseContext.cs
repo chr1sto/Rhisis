@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Rhisis.Database.Context
 {
-    public sealed class DatabaseContext : DbContext, IDesignTimeDbContextFactory<DatabaseContext>
+    public sealed class DatabaseContext : DbContext
     {
         private const string MigrationConfigurationEnv = "DB_CONFIG";
         private const string MySqlConnectionString = "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
@@ -107,18 +107,5 @@ namespace Rhisis.Database.Context
         /// Closes the connection.
         /// </summary>
         public void CloseConnection() => this.Database.CloseConnection();
-
-        /// <inheritdoc />
-        public DatabaseContext CreateDbContext(string[] args)
-        {
-            var configurationPath = Environment.GetEnvironmentVariable(MigrationConfigurationEnv);
-            var configuration = ConfigurationHelper.Load<DatabaseConfiguration>(configurationPath);
-            var context = new DatabaseContext(configuration);
-
-            if (!string.IsNullOrEmpty(configurationPath) && !context.DatabaseExists())
-                throw new InvalidOperationException($"The database '{configuration.Database}' doesn't exists.");
-
-            return context;
-        }
     }
 }

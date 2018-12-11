@@ -11,4 +11,11 @@ $db_config_file = Read-Host 'Database configuration file path?'
 
 $env:DB_CONFIG = $db_config_file
 dotnet ef migrations add $migration_name -p "Rhisis.Database.csproj" -s "../Rhisis.World/Rhisis.World.csproj"
+
+$confirmation = Read-Host "Apply current migration? (y/n)"
+
+if ($confirmation -eq 'y') {
+  dotnet ef database update -p "Rhisis.Database.csproj" -s "../Rhisis.World/Rhisis.World.csproj"
+}
+
 $env:DB_CONFIG = ""
