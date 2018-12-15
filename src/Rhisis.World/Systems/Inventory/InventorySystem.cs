@@ -23,6 +23,7 @@ namespace Rhisis.World.Systems.Inventory
         public static readonly int MaxItems = 73;
         public static readonly int InventorySize = EquipOffset;
         public static readonly int MaxHumanParts = MaxItems - EquipOffset;
+        public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;

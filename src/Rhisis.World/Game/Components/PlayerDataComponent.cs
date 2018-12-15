@@ -1,4 +1,7 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Resources.Loaders;
+using Rhisis.Core.Structures.Game;
 
 namespace Rhisis.World.Game.Components
 {
@@ -33,5 +36,24 @@ namespace Rhisis.World.Game.Components
         /// Gets or sets the player's experience.
         /// </summary>
         public long Experience { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Job Id.
+        /// </summary>
+        public int JobId
+        {
+            get => this._jobId;
+            set
+            {
+                this._jobId = value;
+                this.JobData = DependencyContainer.Instance.Resolve<JobLoader>().GetJob(this._jobId);
+            }
+        }
+        private int _jobId;
+
+        /// <summary>
+        /// Gets the job's data.
+        /// </summary>
+        public JobData JobData { get; private set; }
     }
 }

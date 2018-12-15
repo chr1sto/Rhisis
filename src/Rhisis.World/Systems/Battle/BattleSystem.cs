@@ -1,10 +1,10 @@
 ﻿using NLog;
+using Rhisis.Core.IO;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using System;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -39,22 +39,53 @@ namespace Rhisis.World.Systems.Battle
             }
         }
 
+        /// <summary>
+        /// Process the melee attack algorithm.
+        /// </summary>
+        /// <param name="attacker">Attacker</param>
+        /// <param name="e">Melee attack event arguments</param>
         private void ProcessMeleeAttack(ILivingEntity attacker, MeleeAttackEventArgs e)
         {
-            if (e.Target.Health.IsDead)
+            ILivingEntity defender = e.Target;
+
+            if (defender.Health.IsDead)
             {
-                Logger.Error($"{attacker.Object.Name} cannot attack {e.Target.Object.Name} because target is already dead.");
+                Logger.Error($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
                 return;
             }
 
-            int attackDamages = BattleHelper.GetMeeleAttackDamages(attacker, e.Target);
+            AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).OnDamage();
 
-            Logger.Debug($"{attacker.Object.Name} inflicted {attackDamages} to {e.Target.Object.Name}");
+            Logger.Debug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
 
             if (!(attacker is IPlayerEntity player))
                 return;
 
-            WorldPacketFactory.SendAddDamage(player, e.Target, attacker, AttackFlags.AF_GENERIC, attackDamages);
+            if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
+                BattleHelper.KnockbackEntity(defender);
+
+            WorldPacketFactory.SendAddDamage(player, defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
+
+            defender.Health.Hp -= meleeAttackResult.Damages;
+
+            if (defender.Health.IsDead)
+            {
+                Logger.Debug($"{attacker.Object.Name} killed {defender.Object.Name}.");
+                defender.Health.Hp = 0;
+                defender.Follow.Target = null;
+                defender.Battle.Target = null;
+                defender.Battle.Targets.Clear();
+                attacker.Follow.Target = null;
+                attacker.Battle.Target = null;
+                attacker.Battle.Targets.Clear();
+                WorldPacketFactory.SendDie(player, defender, attacker, e.AttackType);
+
+                if (defender is IMonsterEntity deadMonster)
+                {
+                    deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5;
+                    // TODO: give exp and drop items.
+                }
+            }
         }
     }
 }

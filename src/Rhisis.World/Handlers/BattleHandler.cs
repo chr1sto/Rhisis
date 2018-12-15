@@ -39,6 +39,7 @@ namespace Rhisis.World.Handlers
             }
 
             client.Player.NotifySystem<BattleSystem>(new MeleeAttackEventArgs(meleePacket.AttackMessage, target, meleePacket.WeaponAttackSpeed));
+            WorldPacketFactory.SendMeleeAttack(client.Player, meleePacket.AttackMessage, target.Id, meleePacket.UnknownParameter, meleePacket.AttackFlags);
         }
     }
 }

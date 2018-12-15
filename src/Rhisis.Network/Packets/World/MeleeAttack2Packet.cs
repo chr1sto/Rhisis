@@ -1,5 +1,6 @@
 ﻿using System;
 using Ether.Network.Packets;
+using Rhisis.Core.Data;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -14,7 +15,7 @@ namespace Rhisis.Network.Packets.World
         public ObjectMessageType AttackMessage { get; set; }
 
         /// <summary>
-        /// Gets the object id.
+        /// Gets the target object id.
         /// </summary>
         public uint ObjectId { get; set; }
 
@@ -46,7 +47,10 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="MeleeAttack2Packet"/></param>
         public bool Equals(MeleeAttack2Packet other)
         {
-            return this.AttackMessage == other.AttackMessage && this.ObjectId == other.ObjectId && this.Parameter2 == other.Parameter2 && this.Parameter3 == other.Parameter3;
+            return this.AttackMessage == other.AttackMessage 
+                && this.ObjectId == other.ObjectId 
+                && this.Parameter2 == other.Parameter2 
+                && this.Parameter3 == other.Parameter3;
         }
     }
 }

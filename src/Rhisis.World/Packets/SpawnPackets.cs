@@ -46,8 +46,8 @@ namespace Rhisis.World.Packets
                 packet.Write<short>(0); // m_dwMotion
                 packet.Write<byte>(1); // m_bPlayer
                 packet.Write(player.Health.Hp); // HP
-                packet.Write(0); // moving flags
-                packet.Write(0); // motion flags
+                packet.Write((int)player.Object.MovingFlags); // moving flags
+                packet.Write((int)player.Object.MotionFlags); // motion flags
                 packet.Write<byte>(1); // m_dwBelligerence
 
                 packet.Write(-1); // m_dwMoverSfxId
@@ -61,7 +61,7 @@ namespace Rhisis.World.Packets
                 packet.Write(player.PlayerData.Id);
                 packet.Write((byte)1); // Job
 
-                packet.Write((short) player.Statistics.Strenght);
+                packet.Write((short) player.Statistics.Strength);
                 packet.Write((short) player.Statistics.Stamina);
                 packet.Write((short) player.Statistics.Dexterity);
                 packet.Write((short) player.Statistics.Intelligence);
@@ -253,7 +253,7 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)playerEntity.VisualAppearance.FaceId);
                     packet.Write(playerEntity.PlayerData.Id);
                     packet.Write((byte)1);
-                    packet.Write((short)playerEntity.Statistics.Strenght); // STR
+                    packet.Write((short)playerEntity.Statistics.Strength); // STR
                     packet.Write((short)playerEntity.Statistics.Stamina); // STA
                     packet.Write((short)playerEntity.Statistics.Dexterity); // DEX
                     packet.Write((short)playerEntity.Statistics.Intelligence); // INT

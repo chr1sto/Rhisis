@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Data;
 using System;
 
 namespace Rhisis.Network.Packets.World
@@ -14,7 +15,7 @@ namespace Rhisis.Network.Packets.World
         public ObjectMessageType AttackMessage { get; }
 
         /// <summary>
-        /// Gets the object id.
+        /// Gets the target object id.
         /// </summary>
         public uint ObjectId { get; }
 
@@ -38,6 +39,10 @@ namespace Rhisis.Network.Packets.World
         /// </summary>
         public int IdSfxHit { get; set; }
 
+        /// <summary>
+        /// Creates a new <see cref="MagicAttackPacket"/> instance.
+        /// </summary>
+        /// <param name="packet">Incoming packet</param>
         public MagicAttackPacket(INetPacketStream packet)
         {
             this.AttackMessage = (ObjectMessageType)packet.Read<uint>();
@@ -48,6 +53,11 @@ namespace Rhisis.Network.Packets.World
             this.IdSfxHit = packet.Read<int>();
         }
 
+        /// <summary>
+        /// Compares two <see cref="MagicAttackPacket"/> instances.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(MagicAttackPacket other)
         {
             return this.AttackMessage == other.AttackMessage &&

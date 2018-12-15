@@ -42,6 +42,16 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwParts")]
         public int Parts { get; set; }
 
+        [DataMember(Name = "dwWeaponType")]
+        public WeaponType WeaponType { get; set; }
+
+        [DataMember(Name = "dwAbilityMin")]
+        public int AbilityMin { get; set; }
+
+        [DataMember(Name = "dwAbilityMax")]
+        public int AbilityMax { get; set; }
+
+        [IgnoreDataMember]
         public bool IsStackable => this.PackMax > 1;
     }
 }

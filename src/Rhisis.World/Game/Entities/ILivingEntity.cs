@@ -19,5 +19,10 @@ namespace Rhisis.World.Game.Entities
         /// Gets or sets the Health component.
         /// </summary>
         HealthComponent Health { get; set; }
+
+        /// <summary>
+        /// Gets or sets the statistics component.
+        /// </summary>
+        StatisticsComponent Statistics { get; set; }
     }
 }

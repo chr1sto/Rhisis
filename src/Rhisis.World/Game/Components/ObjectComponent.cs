@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Core;
@@ -78,12 +79,23 @@ namespace Rhisis.World.Game.Components
         public IMapLayer CurrentLayer => this.CurrentMap?.GetMapLayer(this.LayerId);
 
         /// <summary>
+        /// Gets or sets the moving flags.
+        /// </summary>
+        public ObjectState MovingFlags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the motion flags.
+        /// </summary>
+        public StateFlags MotionFlags { get; set; }
+
+        /// <summary>
         /// Creates and initializes a new <see cref="ObjectComponent"/>.
         /// </summary>
         public ObjectComponent()
         {
             this.Position = new Vector3();
             this.Entities = new List<IEntity>();
+            this.MovingFlags = ObjectState.OBJSTA_STAND;
         }
 
         /// <summary>

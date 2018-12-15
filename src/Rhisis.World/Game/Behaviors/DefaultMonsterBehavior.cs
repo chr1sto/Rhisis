@@ -34,7 +34,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void UpdateMoves(IMonsterEntity monster)
         {
-            if (monster.TimerComponent.LastMoveTimer <= Time.TimeInSeconds() && monster.MovableComponent.HasArrived)
+            if (monster.Timers.LastMoveTimer <= Time.TimeInSeconds() && monster.MovableComponent.HasArrived && !monster.Follow.IsFollowing)
             {
                 this.MoveToPosition(monster, monster.Region.GetRandomPosition());
             }
@@ -94,7 +94,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="destPosition"></param>
         private void MoveToPosition(IMonsterEntity monster, Vector3 destPosition)
         {
-            monster.TimerComponent.LastMoveTimer = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20);
+            monster.Timers.LastMoveTimer = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20);
             monster.MovableComponent.DestinationPosition = destPosition.Clone();
             monster.Object.Angle = Vector3.AngleBetween(monster.Object.Position, destPosition);
 

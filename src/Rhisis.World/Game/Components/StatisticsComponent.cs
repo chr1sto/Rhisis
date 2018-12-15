@@ -4,7 +4,7 @@ namespace Rhisis.World.Game.Components
 {
     public class StatisticsComponent
     {
-        public ushort Strenght { get; set; }
+        public ushort Strength { get; set; }
 
         public ushort Stamina { get; set; }
 
@@ -16,7 +16,7 @@ namespace Rhisis.World.Game.Components
 
         public StatisticsComponent(DbCharacter character)
         {
-            this.Strenght = (ushort)character.Strength;
+            this.Strength = (ushort)character.Strength;
             this.Stamina = (ushort)character.Stamina;
             this.Dexterity = (ushort)character.Dexterity;
             this.Intelligence = (ushort)character.Intelligence;

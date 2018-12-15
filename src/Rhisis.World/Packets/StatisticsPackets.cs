@@ -12,7 +12,7 @@ namespace Rhisis.World.Packets
             {
                 packet.StartNewMergedPacket(player.Id, SnapshotType.SETSTATE);
 
-                packet.Write<uint>(player.Statistics.Strenght);
+                packet.Write<uint>(player.Statistics.Strength);
                 packet.Write<uint>(player.Statistics.Stamina);
                 packet.Write<uint>(player.Statistics.Dexterity);
                 packet.Write<uint>(player.Statistics.Intelligence);

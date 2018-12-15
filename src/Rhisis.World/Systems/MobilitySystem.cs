@@ -37,7 +37,6 @@ namespace Rhisis.World.Systems
             if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
                 entity.MovableComponent.DestinationPosition.Reset();
-                Logger.Debug($"{entity.Object.Name} has arrived.");
             }
             else
             {

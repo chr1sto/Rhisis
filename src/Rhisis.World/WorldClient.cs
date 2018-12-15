@@ -140,7 +140,7 @@ namespace Rhisis.World
 
                     character.Gold = this.Player.PlayerData.Gold;
 
-                    character.Strength = this.Player.Statistics.Strenght;
+                    character.Strength = this.Player.Statistics.Strength;
                     character.Stamina = this.Player.Statistics.Stamina;
                     character.Dexterity = this.Player.Statistics.Dexterity;
                     character.Intelligence = this.Player.Statistics.Intelligence;

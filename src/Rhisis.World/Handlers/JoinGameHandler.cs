@@ -97,7 +97,8 @@ namespace Rhisis.World.Handlers
                 Slot = character.Slot,
                 Gold = character.Gold,
                 Authority = (AuthorityType)character.User.Authority,
-                Experience = character.Experience
+                Experience = character.Experience,
+                JobId = character.ClassId
             };
 
             client.Player.MovableComponent = new MovableComponent

@@ -57,7 +57,7 @@ namespace Rhisis.World.Systems
         {
             foreach (IEntity otherEntity in entities)
             {
-                if (entity.Id == otherEntity.Id || !otherEntity.Object.Spawned)
+                if (entity.Id == otherEntity.Id)
                     continue;
 
                 if (otherEntity.Type == WorldEntityType.Player && entity.Object.LayerId != otherEntity.Object.LayerId)
@@ -65,7 +65,7 @@ namespace Rhisis.World.Systems
 
                 bool canSee = entity.Object.Position.IsInCircle(otherEntity.Object.Position, VisibilityRange) && entity != otherEntity;
 
-                if (canSee)
+                if (canSee && otherEntity.Object.Spawned)
                 {
                     if (!entity.Object.Entities.Contains(otherEntity))
                         SpawnOtherEntity(entity, otherEntity);

@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Network.Packets
+﻿namespace Rhisis.Core.Data
 {
     public enum GuildCombatType
     {

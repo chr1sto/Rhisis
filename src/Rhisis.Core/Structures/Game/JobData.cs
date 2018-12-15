@@ -45,7 +45,7 @@ namespace Rhisis.Core.Structures.Game
         public float MeleeStick { get; set; }
 
         [DataMember(Order = 13)]
-        public float MeleeKnucle { get; set; }
+        public float MeleeKnuckle { get; set; }
 
         [DataMember(Order = 14)]
         public float MagicWand { get; set; }
