@@ -4,9 +4,9 @@ using System;
 namespace Rhisis.Network.Packets.World
 {
     /// <summary>
-    /// Defines the <see cref="MeleeAttackPacket"/> structure.
+    /// Defines the <see cref="MagicAttackPacket"/> structure.
     /// </summary>
-    public struct MeleeAttackPacket : IEquatable<MeleeAttackPacket>
+    public struct MagicAttackPacket : IEquatable<MagicAttackPacket>
     {
         /// <summary>
         /// Gets the attack message.
@@ -29,26 +29,33 @@ namespace Rhisis.Network.Packets.World
         public int Parameter3 { get; set; }
 
         /// <summary>
-        /// Gets the attack speed.
+        /// Gets the magic power.
         /// </summary>
-        public float WeaponAttackSpeed { get; }
+        public int MagicPower { get; }
 
-        public MeleeAttackPacket(INetPacketStream packet)
+        /// <summary>
+        /// Gets the id of the hit SFX.
+        /// </summary>
+        public int IdSfxHit { get; set; }
+
+        public MagicAttackPacket(INetPacketStream packet)
         {
             this.AttackMessage = (ObjectMessageType)packet.Read<uint>();
             this.ObjectId = packet.Read<uint>();
-            this.Parameter2 = packet.Read<int>(); // Always 0
-            this.Parameter3 = packet.Read<int>(); // Possibly error number returned from client
-            this.WeaponAttackSpeed = packet.Read<float>();
+            this.Parameter2 = packet.Read<int>();
+            this.Parameter3 = packet.Read<int>();
+            this.MagicPower = packet.Read<int>();
+            this.IdSfxHit = packet.Read<int>();
         }
 
-        public bool Equals(MeleeAttackPacket other)
+        public bool Equals(MagicAttackPacket other)
         {
             return this.AttackMessage == other.AttackMessage &&
                    this.ObjectId == other.ObjectId &&
                    this.Parameter2 == other.Parameter2 &&
                    this.Parameter3 == other.Parameter3 &&
-                   this.WeaponAttackSpeed == other.WeaponAttackSpeed;
+                   this.MagicPower == other.MagicPower &&
+                   this.IdSfxHit == other.IdSfxHit;
         }
     }
 }

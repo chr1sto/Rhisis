@@ -1,4 +1,4 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 
@@ -6,13 +6,13 @@ namespace Rhisis.World.Systems.Battle
 {
     public class MeleeAttackEventArgs : SystemEventArgs
     {
-        public int AttackType { get; }
+        public ObjectMessageType AttackType { get; }
 
         public ILivingEntity Target { get; }
 
         public float AttackSpeed { get; }
 
-        public MeleeAttackEventArgs(int attackType, ILivingEntity target, float attackSpeed)
+        public MeleeAttackEventArgs(ObjectMessageType attackType, ILivingEntity target, float attackSpeed)
         {
             this.AttackType = attackType;
             this.Target = target;
