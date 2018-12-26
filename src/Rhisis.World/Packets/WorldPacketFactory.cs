@@ -11,7 +11,7 @@ namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendToVisible(INetPacketStream packet, IEntity player)
+        public static void SendToVisible(INetPacketStream packet, IEntity player, bool sendToPlyer = false)
         {
             IEnumerable<IPlayerEntity> visiblePlayers = from x in player.Object.Entities
                                                         where x.Type == WorldEntityType.Player
@@ -19,6 +19,9 @@ namespace Rhisis.World.Packets
 
             foreach (IPlayerEntity visiblePlayer in visiblePlayers)
                 visiblePlayer.Connection.Send(packet);
+
+            if (sendToPlyer && player is IPlayerEntity playerEntity)
+                playerEntity.Connection.Send(packet);
         }
 
         public static void SendDestinationPosition(IMovableEntity movableEntity)

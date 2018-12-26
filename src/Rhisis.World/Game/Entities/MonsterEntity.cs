@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Behaviors;
+﻿using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Maps.Regions;
@@ -14,7 +15,7 @@ namespace Rhisis.World.Game.Entities
         public override WorldEntityType Type => WorldEntityType.Monster;
 
         /// <inheritdoc />
-        public IMapRegion Region { get; set; }
+        public IMapRespawnRegion Region { get; set; }
 
         /// <inheritdoc />
         public MovableComponent MovableComponent { get; set; }
@@ -23,7 +24,7 @@ namespace Rhisis.World.Game.Entities
         public IBehavior<IMonsterEntity> Behavior { get; set; }
 
         /// <inheritdoc />
-        public TimerComponent TimerComponent { get; set; }
+        public TimerComponent Timers { get; set; }
 
         /// <inheritdoc />
         public FollowComponent Follow { get; set; }
@@ -37,6 +38,12 @@ namespace Rhisis.World.Game.Entities
         /// <inheritdoc />
         public HealthComponent Health { get; set; }
 
+        /// <inheritdoc />
+        public StatisticsComponent Statistics { get; set; }
+
+        /// <inheritdoc />
+        public MoverData Data { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="MonsterEntity"/> instance.
         /// </summary>
@@ -45,7 +52,7 @@ namespace Rhisis.World.Game.Entities
             : base(context)
         {
             this.MovableComponent = new MovableComponent();
-            this.TimerComponent = new TimerComponent();
+            this.Timers = new TimerComponent();
             this.Follow = new FollowComponent();
             this.Interaction = new InteractionComponent();
             this.Battle = new BattleComponent();

@@ -1,5 +1,6 @@
 ﻿using System;
 using Ether.Network.Packets;
+using Rhisis.Core.Data;
 
 namespace Rhisis.Network.Packets.World.GuildCombat
 {
@@ -8,8 +9,15 @@ namespace Rhisis.Network.Packets.World.GuildCombat
     /// </summary>
     public struct InGuildCombatPacket : IEquatable<InGuildCombatPacket>
     {
-        public GuildCombatType GuildCombatType { get; set; }
-        public uint? Penya { get; set; }
+        /// <summary>
+        /// Gets the guild combat type.
+        /// </summary>
+        public GuildCombatType GuildCombatType { get; }
+
+        /// <summary>
+        /// Gets the guild combat gold amount.
+        /// </summary>
+        public uint? Penya { get; }
 
         /// <summary>
         /// Creates a new <see cref="InGuildCombatPacket"/> object.

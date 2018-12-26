@@ -1,4 +1,5 @@
-﻿using Rhisis.Network.Packets;
+﻿using Rhisis.Core.Data;
+using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 

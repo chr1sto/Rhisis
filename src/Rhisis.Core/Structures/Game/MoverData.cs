@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using Rhisis.Core.Data;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
 {
@@ -34,6 +35,42 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwFilghtLevel")]
         public int FlightLevel { get; set; }
+
+        [DataMember(Name = "dwAtkMin")]
+        public int AttackMin { get; set; }
+
+        [DataMember(Name = "dwAtkMax")]
+        public int AttackMax { get; set; }
+
+        [DataMember(Name = "dwStr")]
+        public int Strength { get; set; }
+
+        [DataMember(Name = "dwSta")]
+        public int Stamina { get; set; }
+
+        [DataMember(Name = "dwDex")]
+        public int Dexterity { get; set; }
+
+        [DataMember(Name = "dwInt")]
+        public int Intelligence { get; set; }
+
+        [DataMember(Name = "dwHR")]
+        public int HitRating { get; set; }
+
+        [DataMember(Name = "dwER")]
+        public int EscapeRating { get; set; }
+
+        [DataMember(Name = "dwClass")]
+        public MoverClassType Class { get; set; }
+
+        [DataMember(Name = "dwNaturealArmor")]
+        public int NaturalArmor { get; set; }
+
+        [DataMember(Name = "dwResisMagic")]
+        public int MagicResitance { get; set; }
+
+        [DataMember(Name = "dwReAttackDelay")]
+        public int ReAttackDelay { get; set; }
 
         public override string ToString() => this.Name;
     }

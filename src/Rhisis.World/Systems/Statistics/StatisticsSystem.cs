@@ -62,7 +62,7 @@ namespace Rhisis.World.Systems.Statistics
                 return;
             }
 
-            player.Statistics.Strenght += e.Strenght;
+            player.Statistics.Strength += e.Strenght;
             player.Statistics.Stamina += e.Stamina;
             player.Statistics.Dexterity += e.Dexterity;
             player.Statistics.Intelligence += e.Intelligence;

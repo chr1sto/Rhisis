@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -42,7 +43,15 @@ namespace Rhisis.World.Systems.Follow
             }
 
             if (entity.Follow.Target != entityToFollow)
+            {
                 entity.Follow.Target = entityToFollow;
+                entity.MovableComponent.DestinationPosition = entityToFollow.Object.Position.Clone();
+            }
+
+            if (entity is IMonsterEntity monster)
+            {
+                monster.Timers.LastMoveTimer = Time.TimeInSeconds() + 5;
+            }
 
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);
         }
