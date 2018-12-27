@@ -76,7 +76,6 @@ namespace Rhisis.World
         /// <inheritdoc />
         public override void HandleMessage(INetPacketStream packet)
         {
-            FFPacket pak = null;
             uint packetHeaderNumber = 0;
 
             if (Socket == null)
@@ -87,22 +86,21 @@ namespace Rhisis.World
 
             try
             {
-                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
-
-                pak = packet as FFPacket;
+                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
                 packetHeaderNumber = packet.Read<uint>();
 
                 if (Logger.IsTraceEnabled)
                     Logger.Trace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
 
-                PacketHandler<WorldClient>.Invoke(this, pak, (PacketType)packetHeaderNumber);
-            }
-            catch (KeyNotFoundException)
-            {
-                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                    Logger.Warn("Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
-                else
-                    Logger.Warn("[SECURITY] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                bool packetInvokSuccess = PacketHandler<WorldClient>.Invoke(this, packet as FFPacket, (PacketType)packetHeaderNumber);
+
+                if (!packetInvokSuccess)
+                {
+                    if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                        Logger.Warn("Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                    else
+                        Logger.Warn("[SECURITY] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                }
             }
             catch (RhisisPacketException packetException)
             {

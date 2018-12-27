@@ -58,19 +58,21 @@ namespace Rhisis.Network
             }
         }
 
-        public static void Invoke(T invoker, INetPacketStream packet, object packetHeader)
+        public static bool Invoke(T invoker, INetPacketStream packet, object packetHeader)
         {
-            if (!Handlers.ContainsKey(packetHeader))
-                throw new KeyNotFoundException();
+            if (!Handlers.TryGetValue(packetHeader, out Action<T, INetPacketStream> packetHandler))
+                return false;
 
             try
             {
-                Handlers[packetHeader].Invoke(invoker, packet);
+                packetHandler.Invoke(invoker, packet);
             }
             catch (Exception e)
             {
                 throw new RhisisPacketException($"An error occured during the execution of packet handler: {packetHeader}", e);
             }
+
+            return true;
         }
     }
 }

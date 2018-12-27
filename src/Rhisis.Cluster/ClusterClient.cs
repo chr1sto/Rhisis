@@ -71,9 +71,6 @@ namespace Rhisis.Cluster
         /// <param name="packet">Incoming packet</param>
         public override void HandleMessage(INetPacketStream packet)
         {
-            FFPacket pak = null;
-            uint packetHeaderNumber = 0;
-
             if (Socket == null)
             {
                 this._logger.LogTrace("Skip to handle packet from {0}. Reason: client is no more connected.", this.RemoteEndPoint);
@@ -82,21 +79,20 @@ namespace Rhisis.Cluster
 
             try
             {
-                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
-
-                pak = packet as FFPacket;
-                packetHeaderNumber = packet.Read<uint>();
+                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
+                var packetHeaderNumber = packet.Read<uint>();
 
                 this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
 
-                PacketHandler<ClusterClient>.Invoke(this, pak, (PacketType)packetHeaderNumber);
-            }
-            catch (KeyNotFoundException)
-            {
-                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                    this._logger.LogWarning("Received an unimplemented Cluster packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
-                else
-                    this._logger.LogWarning("[SECURITY] Received an unknown Cluster packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                bool packetInvokSuccess = PacketHandler<ClusterClient>.Invoke(this, packet as FFPacket, (PacketType)packetHeaderNumber);
+
+                if (!packetInvokSuccess)
+                {
+                    if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                        this._logger.LogWarning("Received an unimplemented Cluster packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                    else
+                        this._logger.LogWarning("[SECURITY] Received an unknown Cluster packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                }
             }
             catch (RhisisPacketException packetException)
             {
