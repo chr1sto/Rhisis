@@ -13,14 +13,14 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Monster, IsDefault: true)]
     public class DefaultMonsterBehavior : IBehavior<IMonsterEntity>
     {
-        private const float MovingRange = 30f;
+        private const float MovingRange = 40f;
 
         /// <inheritdoc />
         public virtual void Update(IMonsterEntity entity)
         {
             this.UpdateArivalState(entity);
 
-            if (!entity.Follow.IsFollowing)
+            if (!entity.Follow.IsFollowing && !entity.Battle.IsFighting)
                 this.UpdateMoves(entity);
             else
                 this.Follow(entity);
@@ -34,7 +34,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void UpdateMoves(IMonsterEntity monster)
         {
-            if (monster.Timers.LastMoveTimer <= Time.TimeInSeconds() && monster.MovableComponent.HasArrived && !monster.Follow.IsFollowing)
+            if (monster.Timers.NextMoveTime <= Time.TimeInSeconds() && monster.MovableComponent.HasArrived)
             {
                 this.MoveToPosition(monster, monster.Region.GetRandomPosition());
             }
@@ -94,7 +94,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="destPosition"></param>
         private void MoveToPosition(IMonsterEntity monster, Vector3 destPosition)
         {
-            monster.Timers.LastMoveTimer = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20);
+            monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20);
             monster.MovableComponent.DestinationPosition = destPosition.Clone();
             monster.Object.Angle = Vector3.AngleBetween(monster.Object.Position, destPosition);
 
@@ -103,7 +103,10 @@ namespace Rhisis.World.Game.Behaviors
 
         private void Fight(IMonsterEntity monster)
         {
-            // TODO
+            if (!monster.Battle.IsFighting)
+                return;
+
+
         }
     }
 }

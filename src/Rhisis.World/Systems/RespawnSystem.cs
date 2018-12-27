@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
@@ -28,17 +29,19 @@ namespace Rhisis.World.Systems
                 {
                     Logger.LogDebug($"Respawning {monster.Object.Name}...");
                     this.ResetMonster(monster);
-                    monster.Object.Spawned = true;
                 }
             }
         }
 
         private void ResetMonster(IMonsterEntity monster)
         {
-            monster.Health.Hp = monster.Data.AddHp;
-            monster.Health.Mp = monster.Data.AddMp;
+            monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 15);
+            monster.Object.Spawned = true;
             monster.Object.Position = monster.Region.GetRandomPosition();
             monster.MovableComponent.DestinationPosition = monster.Object.Position.Clone();
+            monster.MovableComponent.SpeedFactor = 1;
+            monster.Health.Hp = monster.Data.AddHp;
+            monster.Health.Mp = monster.Data.AddMp;
         }
     }
 }

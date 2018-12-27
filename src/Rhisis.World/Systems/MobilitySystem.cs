@@ -36,10 +36,12 @@ namespace Rhisis.World.Systems
         {
             if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
-                entity.MovableComponent.DestinationPosition.Reset();
+                entity.MovableComponent.HasArrived = true;
+                entity.MovableComponent.DestinationPosition = entity.Object.Position.Clone();
             }
             else
             {
+                entity.MovableComponent.HasArrived = false;
                 double entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor;
                 double speed = ((entitySpeed * 100f) * entity.Context.GameTime);
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;

@@ -2,7 +2,7 @@
 {
     public class TimerComponent
     {
-        public long LastMoveTimer { get; set; }
+        public long NextMoveTime { get; set; }
 
         public long DespawnTime { get; set; }
 

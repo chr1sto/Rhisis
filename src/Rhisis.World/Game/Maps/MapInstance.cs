@@ -150,7 +150,7 @@ namespace Rhisis.World.Game.Maps
         {
             Task.Run(async () =>
             {
-                const double FrameRatePerSeconds = 0.6f;
+                const double FrameRatePerSeconds = 0.66666f;
                 double previousTime = 0;
                 
                 while (true)
