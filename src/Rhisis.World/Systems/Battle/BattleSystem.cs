@@ -64,13 +64,11 @@ namespace Rhisis.World.Systems.Battle
 
             Logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
 
-            if (!(attacker is IPlayerEntity player))
-                return;
-
             if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
                 BattleHelper.KnockbackEntity(defender);
 
-            WorldPacketFactory.SendAddDamage(player, defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
+            WorldPacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
+            WorldPacketFactory.SendMeleeAttack(attacker, e.AttackType, defender.Id, e.UnknownParameter, meleeAttackResult.Flags);
 
             defender.Health.Hp -= meleeAttackResult.Damages;
 
@@ -80,7 +78,7 @@ namespace Rhisis.World.Systems.Battle
                 defender.Health.Hp = 0;
                 this.ClearBattleTargets(defender);
                 this.ClearBattleTargets(attacker);
-                WorldPacketFactory.SendDie(player, defender, attacker, e.AttackType);
+                WorldPacketFactory.SendDie(attacker as IPlayerEntity, defender, attacker, e.AttackType);
 
                 if (defender is IMonsterEntity deadMonster)
                 {

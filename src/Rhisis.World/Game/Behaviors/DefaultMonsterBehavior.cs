@@ -1,8 +1,10 @@
-﻿using Rhisis.Core.Helpers;
+﻿using Rhisis.Core.Data;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Follow;
 
 namespace Rhisis.World.Game.Behaviors
@@ -72,7 +74,7 @@ namespace Rhisis.World.Game.Behaviors
         private void Follow(IMonsterEntity monster)
         {
             if (!monster.Object.Position.IsInCircle(monster.MovableComponent.BeginPosition, MovingRange) || 
-                !monster.Follow.Target.Object.Spawned)
+                (monster.Follow.Target != null && !monster.Follow.Target.Object.Spawned))
             {
                 monster.Follow.Target = null;
                 monster.MovableComponent.ReturningToOriginalPosition = true;
@@ -83,8 +85,11 @@ namespace Rhisis.World.Game.Behaviors
                 return;
             }
 
-            monster.MovableComponent.DestinationPosition = monster.Follow.Target.Object.Position.Clone();
-            monster.NotifySystem<FollowSystem>(new FollowEventArgs(monster.Follow.Target.Id, 1f));
+            if (monster.Follow.IsFollowing)
+            {
+                monster.MovableComponent.DestinationPosition = monster.Follow.Target.Object.Position.Clone();
+                monster.NotifySystem<FollowSystem>(new FollowEventArgs(monster.Follow.Target.Id, 1f));
+            }
         }
 
         /// <summary>
@@ -101,12 +106,22 @@ namespace Rhisis.World.Game.Behaviors
             WorldPacketFactory.SendDestinationPosition(monster);
         }
 
+        /// <summary>
+        /// Process the monster's fight.
+        /// </summary>
+        /// <param name="monster"></param>
         private void Fight(IMonsterEntity monster)
         {
-            if (!monster.Battle.IsFighting)
+            if (!monster.Battle.IsFighting || !monster.Battle.Target.Object.Spawned)
                 return;
 
+            if (monster.Timers.NextAttackTime <= Time.TimeInMilliseconds())
+            {
+                monster.Timers.NextAttackTime = (long)(Time.TimeInMilliseconds() + monster.Data.ReAttackDelay);
 
+                var meleeAttack = new MeleeAttackEventArgs(ObjectMessageType.OBJMSG_ATK1, monster.Battle.Target, monster.Data.AttackSpeed);
+                monster.NotifySystem<BattleSystem>(meleeAttack);
+            }
         }
     }
 }

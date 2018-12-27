@@ -11,17 +11,17 @@ namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendToVisible(INetPacketStream packet, IEntity player, bool sendToPlyer = false)
+        public static void SendToVisible(INetPacketStream packet, IEntity entity, bool sendToPlayer = false)
         {
-            IEnumerable<IPlayerEntity> visiblePlayers = from x in player.Object.Entities
+            IEnumerable<IPlayerEntity> visiblePlayers = from x in entity.Object.Entities
                                                         where x.Type == WorldEntityType.Player
                                                         select x as IPlayerEntity;
 
             foreach (IPlayerEntity visiblePlayer in visiblePlayers)
                 visiblePlayer.Connection.Send(packet);
 
-            if (sendToPlyer && player is IPlayerEntity playerEntity)
-                playerEntity.Connection.Send(packet);
+            if (sendToPlayer && entity is IPlayerEntity player)
+                player.Connection.Send(packet);
         }
 
         public static void SendDestinationPosition(IMovableEntity movableEntity)

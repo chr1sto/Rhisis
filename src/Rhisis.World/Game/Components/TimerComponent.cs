@@ -7,5 +7,7 @@
         public long DespawnTime { get; set; }
 
         public long RespawnTime { get; set; }
+
+        public long NextAttackTime { get; set; }
     }
 }

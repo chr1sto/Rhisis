@@ -56,7 +56,7 @@ namespace Rhisis.World.Game.Chat
                 }
             }
 
-            WorldPacketFactory.SendAddDamage(player, livingEntity, player, atkFlag, damage);
+            WorldPacketFactory.SendAddDamage(livingEntity, player, atkFlag, damage);
         }
     }
 }

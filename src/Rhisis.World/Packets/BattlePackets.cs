@@ -8,7 +8,7 @@ namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendAddDamage(IPlayerEntity player, ILivingEntity defender, ILivingEntity attacker, AttackFlags attackFlags, int damage)
+        public static void SendAddDamage(ILivingEntity defender, ILivingEntity attacker, AttackFlags attackFlags, int damage)
         {
             using (var packet = new FFPacket())
             {
@@ -17,7 +17,7 @@ namespace Rhisis.World.Packets
                 packet.Write(damage);
                 packet.Write((int)attackFlags);
 
-                if(attackFlags.HasFlag(AttackFlags.AF_FLYING))
+                if (attackFlags.HasFlag(AttackFlags.AF_FLYING))
                 {
                     packet.Write(defender.MovableComponent.DestinationPosition.X);
                     packet.Write(defender.MovableComponent.DestinationPosition.Y);
@@ -25,22 +25,21 @@ namespace Rhisis.World.Packets
                     packet.Write(defender.Object.Angle);
                 }
 
-                player.Connection.Send(packet);
-                SendToVisible(packet, player);
+                SendToVisible(packet, defender, sendToPlayer: true);
             }
         }
 
-        public static void SendMeleeAttack(IPlayerEntity player, ObjectMessageType motion, int targetId, int unknwonParam, int attackFlags)
+        public static void SendMeleeAttack(ILivingEntity attacker, ObjectMessageType motion, int targetId, int unknwonParam, AttackFlags attackFlags)
         {
             using (var packet = new FFPacket())
             {
-                packet.StartNewMergedPacket(player.Id, SnapshotType.MELEE_ATTACK);
+                packet.StartNewMergedPacket(attacker.Id, SnapshotType.MELEE_ATTACK);
                 packet.Write((int)motion);
                 packet.Write(targetId);
                 packet.Write(unknwonParam);
-                packet.Write(attackFlags);
+                packet.Write((int)attackFlags);
 
-                SendToVisible(packet, player);
+                SendToVisible(packet, attacker);
             }
         }
 
@@ -52,7 +51,7 @@ namespace Rhisis.World.Packets
                 packet.Write((int)motion);
                 packet.Write(killerEntity.Id);
 
-                SendToVisible(packet, player, sendToPlyer: true);
+                SendToVisible(packet, player, sendToPlayer: true);
             }
         }
     }
