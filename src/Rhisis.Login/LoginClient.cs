@@ -86,14 +86,15 @@ namespace Rhisis.Login
 
                 this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
 
-                PacketHandler<LoginClient>.Invoke(this, packet, (PacketType)packetHeaderNumber);
-            }
-            catch (KeyNotFoundException)
-            {
-                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                    this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
-                else
-                    this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
+                bool packetInvokSuccess = PacketHandler<LoginClient>.Invoke(this, packet, (PacketType)packetHeaderNumber);
+
+                if (!packetInvokSuccess)
+                {
+                    if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                        this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
+                    else
+                        this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
+                }
             }
             catch (RhisisPacketException packetException)
             {
