@@ -2,10 +2,12 @@
 {
     public class TimerComponent
     {
-        public long LastMoveTimer { get; set; }
+        public long NextMoveTime { get; set; }
 
         public long DespawnTime { get; set; }
 
         public long RespawnTime { get; set; }
+
+        public long NextAttackTime { get; set; }
     }
 }

@@ -50,7 +50,7 @@ namespace Rhisis.World.Systems.Follow
 
             if (entity is IMonsterEntity monster)
             {
-                monster.Timers.LastMoveTimer = Time.TimeInSeconds() + 5;
+                monster.Timers.NextMoveTime = Time.TimeInSeconds() + 5;
             }
 
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);

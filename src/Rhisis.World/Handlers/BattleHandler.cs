@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
-using NLog;
+using Microsoft.Extensions.Logging;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
@@ -11,9 +12,9 @@ using Rhisis.World.Systems.Follow;
 
 namespace Rhisis.World.Handlers
 {
-    public static class BattleHandler
+    public class BattleHandler
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger<BattleHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<BattleHandler>>();
 
         [PacketHandler(PacketType.MELEE_ATTACK)]
         public static void OnMeleeAttack(WorldClient client, INetPacketStream packet)
@@ -23,7 +24,7 @@ namespace Rhisis.World.Handlers
 
             if (target == null)
             {
-                Logger.Error($"Cannot find target with object id {meleePacket.ObjectId}");
+                Logger.LogError($"Cannot find target with object id {meleePacket.ObjectId}");
                 return;
             }
 
@@ -39,7 +40,6 @@ namespace Rhisis.World.Handlers
             }
 
             client.Player.NotifySystem<BattleSystem>(new MeleeAttackEventArgs(meleePacket.AttackMessage, target, meleePacket.WeaponAttackSpeed));
-            WorldPacketFactory.SendMeleeAttack(client.Player, meleePacket.AttackMessage, target.Id, meleePacket.UnknownParameter, meleePacket.AttackFlags);
         }
     }
 }

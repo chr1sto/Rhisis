@@ -121,7 +121,7 @@ namespace Rhisis.World.Game.Maps
             };
             monster.Timers = new TimerComponent
             {
-                LastMoveTimer = RandomHelper.LongRandom(8, 20)
+                NextMoveTime = RandomHelper.LongRandom(8, 20)
             };
             monster.MovableComponent = new MovableComponent
             {

@@ -13,7 +13,7 @@ namespace Rhisis.World.Game.Components
 
         public Vector3 DestinationPosition { get; set; }
 
-        public bool HasArrived => this.DestinationPosition.IsZero();
+        public bool HasArrived { get; set; }
 
         public float Speed { get; set; }
 

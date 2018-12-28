@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Core;
@@ -11,7 +12,7 @@ namespace Rhisis.World.Systems.Battle
     [System(SystemType.Notifiable)]
     public class BattleSystem : ISystem
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger<BattleSystem> Logger = DependencyContainer.Instance.Resolve<ILogger<BattleSystem>>();
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
@@ -21,13 +22,13 @@ namespace Rhisis.World.Systems.Battle
         {
             if (!args.CheckArguments())
             {
-                Logger.Error("Cannot execute battle action: {0} due to invalid arguments.", args.GetType());
+                Logger.LogError("Cannot execute battle action: {0} due to invalid arguments.", args.GetType());
                 return;
             }
 
             if (!(entity is ILivingEntity livingEntity))
             {
-                Logger.Error($"The non living entity {entity.Object.Name} tried to execute a battle action.");
+                Logger.LogError($"The non living entity {entity.Object.Name} tried to execute a battle action.");
                 return;
             }
 
@@ -50,35 +51,34 @@ namespace Rhisis.World.Systems.Battle
 
             if (defender.Health.IsDead)
             {
-                Logger.Error($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
+                Logger.LogError($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
+                this.ClearBattleTargets(defender);
+                this.ClearBattleTargets(attacker);
                 return;
             }
 
+            attacker.Battle.Target = defender;
+            defender.Battle.Target = attacker;
+
             AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).OnDamage();
 
-            Logger.Debug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
-
-            if (!(attacker is IPlayerEntity player))
-                return;
+            Logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
 
             if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
                 BattleHelper.KnockbackEntity(defender);
 
-            WorldPacketFactory.SendAddDamage(player, defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
+            WorldPacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
+            WorldPacketFactory.SendMeleeAttack(attacker, e.AttackType, defender.Id, e.UnknownParameter, meleeAttackResult.Flags);
 
             defender.Health.Hp -= meleeAttackResult.Damages;
 
             if (defender.Health.IsDead)
             {
-                Logger.Debug($"{attacker.Object.Name} killed {defender.Object.Name}.");
+                Logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
                 defender.Health.Hp = 0;
-                defender.Follow.Target = null;
-                defender.Battle.Target = null;
-                defender.Battle.Targets.Clear();
-                attacker.Follow.Target = null;
-                attacker.Battle.Target = null;
-                attacker.Battle.Targets.Clear();
-                WorldPacketFactory.SendDie(player, defender, attacker, e.AttackType);
+                this.ClearBattleTargets(defender);
+                this.ClearBattleTargets(attacker);
+                WorldPacketFactory.SendDie(attacker as IPlayerEntity, defender, attacker, e.AttackType);
 
                 if (defender is IMonsterEntity deadMonster)
                 {
@@ -86,6 +86,13 @@ namespace Rhisis.World.Systems.Battle
                     // TODO: give exp and drop items.
                 }
             }
+        }
+
+        private void ClearBattleTargets(ILivingEntity entity)
+        {
+            entity.Follow.Target = null;
+            entity.Battle.Target = null;
+            entity.Battle.Targets.Clear();
         }
     }
 }

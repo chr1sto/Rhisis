@@ -13,11 +13,19 @@ namespace Rhisis.World.Systems.Battle
 
         public float AttackSpeed { get; }
 
+        public int UnknownParameter { get; }
+
         public MeleeAttackEventArgs(ObjectMessageType attackType, ILivingEntity target, float attackSpeed)
+            : this(attackType, target, attackSpeed, 0)
+        {
+        }
+
+        public MeleeAttackEventArgs(ObjectMessageType attackType, ILivingEntity target, float attackSpeed, int unknownParameter)
         {
             this.AttackType = attackType;
             this.Target = target;
             this.AttackSpeed = attackSpeed;
+            this.UnknownParameter = unknownParameter;
         }
 
         public override bool CheckArguments()

@@ -72,6 +72,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwReAttackDelay")]
         public int ReAttackDelay { get; set; }
 
+        [DataMember(Name = "dwAttackSpeed")]
+        public int AttackSpeed { get; set; }
+
         public override string ToString() => this.Name;
     }
 }
