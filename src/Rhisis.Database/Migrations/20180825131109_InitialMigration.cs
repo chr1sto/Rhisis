@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
-using System.Collections.Generic;
 
 namespace Rhisis.Database.Migrations
 {
@@ -96,6 +95,48 @@ namespace Rhisis.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "mails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SenderId = table.Column<int>(nullable: false),
+                    ReceiverId = table.Column<int>(nullable: false),
+                    Gold = table.Column<uint>(nullable: false),
+                    ItemId = table.Column<int?>(nullable: true),
+                    ItemQuantity = table.Column<short>(nullable: false),
+                    Title = table.Column<string>(nullable: false),
+                    Text = table.Column<string>(nullable: false),
+                    HasBeenRead = table.Column<bool>(nullable: false),
+                    HasReceivedItem = table.Column<bool>(nullable: false),
+                    HasReceivedGold = table.Column<bool>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    CreateTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_mails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_mails_characters_Sender",
+                        column: x => x.SenderId,
+                        principalTable: "characters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_mails_characters_Receiver",
+                        column: x => x.ReceiverId,
+                        principalTable: "characters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_mails_items_Item",
+                        column: x => x.ItemId,
+                        principalTable: "items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_characters_UserId",
                 table: "characters",
@@ -105,6 +146,11 @@ namespace Rhisis.Database.Migrations
                 name: "IX_items_CharacterId",
                 table: "items",
                 column: "CharacterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_mails_ReceiverId",
+                table: "mails",
+                column: "ReceiverId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -117,6 +163,9 @@ namespace Rhisis.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "users");
+
+            migrationBuilder.DropTable(
+                name: "mails");
         }
     }
 }

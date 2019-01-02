@@ -82,10 +82,26 @@ namespace Rhisis.World
         /// </summary>
         /// <param name="id">Player id</param>
         /// <returns></returns>
-        public IPlayerEntity GetPlayerEntity(int id)
+        public IPlayerEntity GetPlayerEntity(uint id)
         {
             WorldClient client =  this.Clients.FirstOrDefault(x => x.Player.Id == id);
+            return client?.Player;
+        }
 
+        /// <summary>
+        /// Gets a player entity by his name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public IPlayerEntity GetPlayerEntity(string name)
+        {
+            WorldClient client = this.Clients.FirstOrDefault(x => x.Player.Object.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return client?.Player;
+        }
+
+        public IPlayerEntity GetPlayerEntityByCharacterId(uint id)
+        {
+            WorldClient client = this.Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id);
             return client?.Player;
         }
     }

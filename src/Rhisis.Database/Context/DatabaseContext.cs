@@ -33,6 +33,11 @@ namespace Rhisis.Database.Context
         public DbSet<DbItem> Items { get; set; }
 
         /// <summary>
+        /// Gets or sets the mails.
+        /// </summary>
+        public DbSet<DbMail> Mails { get; set; }
+
+        /// <summary>
         /// Create a new <see cref="DatabaseContext"/> instance.
         /// </summary>
         /// <param name="options"></param>
@@ -82,6 +87,14 @@ namespace Rhisis.Database.Context
             }
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DbCharacter>()
+                .HasMany(x => x.ReceivedMails).WithOne(x => x.Receiver);
+            modelBuilder.Entity<DbCharacter>()
+                .HasMany(x => x.SentMails).WithOne(x => x.Sender);
+        }
+
         /// <summary>
         /// Migrates the database schema.
         /// </summary>
@@ -90,7 +103,7 @@ namespace Rhisis.Database.Context
         /// <summary>
         /// Migrates the database schema asynchronously.
         /// </summary>
-        public async Task MigrageAsync() => await this.Database.MigrateAsync();
+        public async Task MigrateAsync() => await this.Database.MigrateAsync();
 
         /// <summary>
         /// Check if the database exists.

@@ -135,6 +135,41 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("users");
                 });
 
+            modelBuilder.Entity("Rhisis.Database.Entities.DbMail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("SenderId");
+
+                    b.Property<int>("ReceiverId");
+
+                    b.Property<uint>("Gold");
+
+                    b.Property<int?>("ItemId");
+
+                    b.Property<short>("ItemQuantity");
+
+                    b.Property<string>("Title");
+
+                    b.Property<string>("Text");
+
+                    b.Property<bool>("HasBeenRead");
+
+                    b.Property<bool>("HasReceivedItem");
+
+                    b.Property<bool>("HasReceivedGold");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<DateTime>("CreateTime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("mails");
+                });
+
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
                 {
                     b.HasOne("Rhisis.Database.Entities.DbUser", "User")
@@ -150,6 +185,14 @@ namespace Rhisis.Database.Migrations
                         .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbMail", b =>
+            {
+                b.HasOne("Rhisis.Database.Entities.DbCharacter", "Receiver")
+                    .WithMany("Mails")
+                    .HasForeignKey("ReceiverId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 #pragma warning restore 612, 618
         }
     }
