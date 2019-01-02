@@ -4,6 +4,7 @@ using Rhisis.Network.Packets;
 using Rhisis.Database.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Core.IO;
 
 namespace Rhisis.Cluster.Packets
 {
@@ -169,6 +170,19 @@ namespace Rhisis.Cluster.Packets
             using (var packet = new FFPacket())
             {
                 packet.WriteHeader(PacketType.PRE_JOIN);
+
+                client.Send(packet);
+            }
+        }
+
+        public static void SendQueryTickCount(NetUser client, uint time)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.QUERYTICKCOUNT);
+
+                packet.Write(time);
+                packet.Write(Time.GetElapsedTime());
 
                 client.Send(packet);
             }

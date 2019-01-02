@@ -244,5 +244,12 @@ namespace Rhisis.Cluster
             Logger.LogInformation("Character '{0}' has prejoin successfully the game for user '{1}' from {2}.",
                 dbCharacter.Name, pak.Username, client.RemoteEndPoint);
         }
+
+        [PacketHandler(PacketType.QUERYTICKCOUNT)]
+        public static void OnQueryTickCount(ClusterClient client, INetPacketStream packet)
+        {
+            var pak = new QueryTickCountPacket(packet);
+            ClusterPacketFactory.SendQueryTickCount(client, pak.Time);
+        }
     }
 }
