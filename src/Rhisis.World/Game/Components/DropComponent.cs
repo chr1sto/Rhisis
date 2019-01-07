@@ -13,6 +13,10 @@ namespace Rhisis.World.Game.Components
 
         public long DespawnTime { get; set; }
 
+        public long RespawnTime { get; set; }
+
         public bool HasOwner => this.Owner != null && this.OwnershipTime > 0;
+
+        public bool IsTemporary => this.DespawnTime > 0;
     }
 }

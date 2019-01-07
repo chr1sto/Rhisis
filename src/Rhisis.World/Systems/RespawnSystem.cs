@@ -39,7 +39,7 @@ namespace Rhisis.World.Systems
                     this.ResetDropOwnership(dropItem);
                 }
 
-                if (dropItem.Drop.DespawnTime <= Time.TimeInSeconds())
+                if (dropItem.Drop.IsTemporary && dropItem.Drop.DespawnTime <= Time.TimeInSeconds())
                 {
                     this.ResetDropOwnership(dropItem);
                     dropItem.Object.Spawned = false;
