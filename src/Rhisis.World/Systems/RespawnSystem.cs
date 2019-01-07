@@ -32,7 +32,7 @@ namespace Rhisis.World.Systems
                 }
             }
 
-            if (entity is IItemEntity dropItem && dropItem.Drop.OwnershipTime <= Time.TimeInSeconds())
+            if (entity is IItemEntity dropItem)
             {
                 if (dropItem.Drop.HasOwner && dropItem.Drop.OwnershipTime <= Time.TimeInSeconds())
                 {
@@ -44,6 +44,12 @@ namespace Rhisis.World.Systems
                     this.ResetDropOwnership(dropItem);
                     dropItem.Object.Spawned = false;
                     // TODO: Add a flag to delete this entity before next update
+                }
+
+                if (!dropItem.Drop.IsTemporary && !dropItem.Object.Spawned && dropItem.Drop.RespawnTime <= Time.TimeInSeconds())
+                {
+                    dropItem.Object.Position = dropItem.Region.GetRandomPosition();
+                    dropItem.Object.Spawned = true;
                 }
             }
         }
