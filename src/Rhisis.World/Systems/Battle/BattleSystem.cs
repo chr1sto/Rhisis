@@ -1,11 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
+using Rhisis.Core.Resources.Loaders;
+using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Drop;
+using Rhisis.World.Systems.Drop.EventArgs;
+using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -82,8 +90,62 @@ namespace Rhisis.World.Systems.Battle
 
                 if (defender is IMonsterEntity deadMonster)
                 {
+                    var worldServerConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
+                    var itemsData = DependencyContainer.Instance.Resolve<ItemLoader>();
+                    var expTable = DependencyContainer.Instance.Resolve<ExpTableLoader>();
+
                     deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5;
-                    // TODO: give exp and drop items.
+
+                    // Drop items
+                    int itemCount = 0;
+                    foreach (DropItemData dropItem in deadMonster.Data.DropItems)
+                    {
+                        if (itemCount >= deadMonster.Data.MaxDropItem)
+                            break;
+
+                        long dropChance = RandomHelper.LongRandom(0, DropSystem.MaxDropChance);
+
+                        if (dropItem.Probability * worldServerConfiguration.Rates.Drop >= dropChance)
+                        {
+                            var item = new Item(dropItem.ItemId, 1, -1, -1, -1, (byte)RandomHelper.Random(0, dropItem.ItemMaxRefine));
+
+                            deadMonster.NotifySystem<DropSystem>(new DropItemEventArgs(item, attacker));
+                            itemCount++;
+                        }
+                    }
+
+                    // Drop item kinds
+                    foreach (DropItemKindData dropItemKind in deadMonster.Data.DropItemsKind)
+                    {
+                        var itemsDataByItemKind = itemsData.GetItems(x => x.ItemKind3 == dropItemKind.ItemKind && x.Rare >= dropItemKind.UniqueMin && x.Rare <= dropItemKind.UniqueMax);
+
+                        if (!itemsDataByItemKind.Any())
+                            continue;
+
+                        var itemData = itemsDataByItemKind.ElementAt(RandomHelper.Random(0, itemsDataByItemKind.Count() - 1));
+
+                        int itemRefine = RandomHelper.Random(0, 10);
+
+                        for (int i = itemRefine; i >= 0; i--)
+                        {
+                            long itemDropProbability = (long)(expTable.GetDropLuck(itemData.Level > 120 ? 119 : itemData.Level, itemRefine) * (deadMonster.Data.CorrectionValue / 100f));
+                            long dropChance = RandomHelper.LongRandom(0, DropSystem.MaxDropChance);
+
+                            if (dropChance < itemDropProbability * worldServerConfiguration.Rates.Drop)
+                            {
+                                var item = new Item(itemData.Id, 1, -1, -1, -1, (byte)itemRefine);
+
+                                deadMonster.NotifySystem<DropSystem>(new DropItemEventArgs(item, attacker));
+                                break;
+                            }
+                        }
+                    }
+
+                    // Drop gold
+                    int goldDropped = RandomHelper.Random(deadMonster.Data.DropGoldMin, deadMonster.Data.DropGoldMax);
+                    deadMonster.NotifySystem<DropSystem>(new DropGoldEventArgs(goldDropped, attacker));
+
+                    // TODO: give exp
                 }
             }
         }

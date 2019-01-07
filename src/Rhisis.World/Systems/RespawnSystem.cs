@@ -31,6 +31,21 @@ namespace Rhisis.World.Systems
                     this.ResetMonster(monster);
                 }
             }
+
+            if (entity is IItemEntity dropItem && dropItem.Drop.OwnershipTime <= Time.TimeInSeconds())
+            {
+                if (dropItem.Drop.HasOwner && dropItem.Drop.OwnershipTime <= Time.TimeInSeconds())
+                {
+                    this.ResetDropOwnership(dropItem);
+                }
+
+                if (dropItem.Drop.DespawnTime <= Time.TimeInSeconds())
+                {
+                    this.ResetDropOwnership(dropItem);
+                    dropItem.Object.Spawned = false;
+                    // TODO: Add a flag to delete this entity before next update
+                }
+            }
         }
 
         private void ResetMonster(IMonsterEntity monster)
@@ -42,6 +57,12 @@ namespace Rhisis.World.Systems
             monster.MovableComponent.SpeedFactor = 1;
             monster.Health.Hp = monster.Data.AddHp;
             monster.Health.Mp = monster.Data.AddMp;
+        }
+
+        private void ResetDropOwnership(IItemEntity dropItem)
+        {
+            dropItem.Drop.Owner = null;
+            dropItem.Drop.OwnershipTime = 0;
         }
     }
 }

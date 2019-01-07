@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Configuration
@@ -50,6 +49,18 @@ namespace Rhisis.Core.Structures.Configuration
         public string Language { get; set; }
 
         /// <summary>
+        /// Gets or sets the world server's rates.
+        /// </summary>
+        [DataMember(Name = "rates")]
+        public WorldRates Rates { get; set; } = new WorldRates();
+
+        /// <summary>
+        /// Gets or sets the world drops configuration.
+        /// </summary>
+        [DataMember(Name = "drops")]
+        public WorldDrops Drops { get; set; } = new WorldDrops();
+
+        /// <summary>
         /// Gets or sets the IPC configuration.
         /// </summary>
         [DataMember(Name = "isc")]
@@ -66,6 +77,7 @@ namespace Rhisis.Core.Structures.Configuration
             this.Language = DefaultLanguage;
             this.Systems = new Dictionary<string, bool>();
             this.ISC = new ISCConfiguration();
+            this.Rates = new WorldRates();
             this.MailShippingCost = DefaultMailShippingCost;
         }
     }

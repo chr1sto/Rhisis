@@ -21,10 +21,12 @@ namespace Rhisis.Core.Resources
         public static readonly string DataSub1Path = Path.Combine(ResourcePath, "dataSub1");
         public static readonly string DataSub2Path = Path.Combine(ResourcePath, "dataSub2");
         public static readonly string MoversPropPath = Path.Combine(DataSub0Path, "propMover.txt");
+        public static readonly string MoversPropExPath = Path.Combine(DataSub0Path, "propMoverEx.inc");
         public static readonly string ItemsPropPath = Path.Combine(DataSub2Path, "propItem.txt");
         public static readonly string WorldScriptPath = Path.Combine(DataSub0Path, "World.inc");
         public static readonly string JobPropPath = Path.Combine(DataSub1Path, "propJob.inc");
         public static readonly string TextClientPath = Path.Combine(DataSub1Path, "textClient.inc");
+        public static readonly string ExpTablePath = Path.Combine(DataSub0Path, "expTable.inc");
 
         // Logs messages
         public const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";

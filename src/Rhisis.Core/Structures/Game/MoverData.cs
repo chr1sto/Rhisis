@@ -1,4 +1,6 @@
 ﻿using Rhisis.Core.Data;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
@@ -74,6 +76,30 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwAttackSpeed")]
         public int AttackSpeed { get; set; }
+
+        [DataMember(Name = "dwCorrectionValue")]
+        public int CorrectionValue { get; set; }
+
+        [IgnoreDataMember]
+        public int DropGoldMin { get; set; }
+
+        [IgnoreDataMember]
+        public int DropGoldMax { get; set; }
+
+        [IgnoreDataMember]
+        public int MaxDropItem { get; set; }
+
+        [IgnoreDataMember]
+        public ICollection<DropItemData> DropItems { get; }
+
+        [IgnoreDataMember]
+        public ICollection<DropItemKindData> DropItemsKind { get; }
+
+        public MoverData()
+        {
+            this.DropItems = new List<DropItemData>();
+            this.DropItemsKind = new List<DropItemKindData>();
+        }
 
         public override string ToString() => this.Name;
     }
