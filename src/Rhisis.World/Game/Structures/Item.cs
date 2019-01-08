@@ -258,7 +258,7 @@ namespace Rhisis.World.Game.Structures
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Item: Id{this.Id} Slot:{this.Slot} UniqueId:{this.UniqueId}";
+            return $"{this.Data?.Name}";
         }
     }
 }

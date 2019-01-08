@@ -2,12 +2,14 @@
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps.Regions;
+using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,14 +41,24 @@ namespace Rhisis.World.Game.Maps
 
             foreach (IMapRegion region in this.Parent.Regions)
             {
-                if (region is IMapRespawnRegion respawner && respawner.ObjectType == WorldObjectType.Mover)
+                if (region is IMapRespawnRegion respawner)
                 {
                     var respawnerRegion = respawner.Clone() as IMapRespawnRegion;
 
-                    for (var i = 0; i < respawnerRegion.Count; i++)
-                        this.CreateMonster(respawner);
+                    if (respawnerRegion.ObjectType == WorldObjectType.Mover)
+                    {
+                        var moverData = GameResources.Instance.Movers[respawnerRegion.ModelId];
+                        for (var i = 0; i < respawnerRegion.Count; i++)
+                            respawnerRegion.Entities.Add(this.CreateMonster(moverData, respawnerRegion));
+                    }
+                    else if (respawnerRegion.ObjectType == WorldObjectType.Item)
+                    {
+                        var itemData = GameResources.Instance.Items.GetItem(respawnerRegion.ModelId);
+                        for (var i = 0; i < respawnerRegion.Count; i++)
+                            respawnerRegion.Entities.Add(this.CreateWorldItem(itemData, respawnerRegion));
+                    }
 
-                    this._regions.Add(respawner);
+                    this._regions.Add(respawnerRegion);
                 }
             }
         }
@@ -99,11 +111,12 @@ namespace Rhisis.World.Game.Maps
         /// <summary>
         /// Create a new monster.
         /// </summary>
-        /// <param name="respawner"></param>
-        private void CreateMonster(IMapRespawnRegion respawner)
+        /// <param name="moverData">Monster's data</param>
+        /// <param name="respawnRegion">Respawn region</param>
+        /// <returns></returns>
+        private MonsterEntity CreateMonster(MoverData moverData, IMapRespawnRegion respawnRegion)
         {
             var monster = new MonsterEntity(this);
-            var moverData = GameResources.Instance.Movers[respawner.ModelId];
             var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
 
             monster.Object = new ObjectComponent
@@ -112,7 +125,7 @@ namespace Rhisis.World.Game.Maps
                 LayerId = this.Id,
                 ModelId = moverData.Id,
                 Type = WorldObjectType.Mover,
-                Position = respawner.GetRandomPosition(),
+                Position = respawnRegion.GetRandomPosition(),
                 Angle = RandomHelper.FloatRandom(0, 360f),
                 Name = moverData.Name,
                 Size = ObjectComponent.DefaultObjectSize,
@@ -142,10 +155,42 @@ namespace Rhisis.World.Game.Maps
                 Intelligence = (ushort)moverData.Intelligence
             };
             monster.Behavior = behaviors.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
-            monster.Region = respawner;
+            monster.Region = respawnRegion;
             monster.Data = moverData;
 
-            respawner.Entities.Add(monster);
+            return monster;
+        }
+
+        /// <summary>
+        /// Creates a permanant drop item.
+        /// </summary>
+        /// <remarks>
+        /// Mainly used for quest items.
+        /// </remarks>
+        /// <param name="itemData">Item data</param>
+        /// <param name="respawnRegion">Respawn region</param>
+        /// <returns>A new ItemEntity</returns>
+        private ItemEntity CreateWorldItem(ItemData itemData, IMapRespawnRegion respawnRegion)
+        {
+            var item = new ItemEntity(this);
+
+            item.Drop.Item = new Item(itemData.Id, 1);
+            item.Drop.RespawnTime = respawnRegion.Time;
+            item.Region = respawnRegion;
+            item.Object = new ObjectComponent
+            {
+                MapId = this.Parent.Id,
+                LayerId = this.Id,
+                ModelId = respawnRegion.ModelId,
+                Type = WorldObjectType.Item,
+                Position = respawnRegion.GetRandomPosition(),
+                Angle = RandomHelper.FloatRandom(0, 360f),
+                Name = itemData.Name,
+                Size = ObjectComponent.DefaultObjectSize,
+                Spawned = true,
+            };
+
+            return item;
         }
     }
 }

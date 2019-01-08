@@ -64,9 +64,14 @@ namespace Rhisis.World.Systems.Drop
             var drop = entity.Object.CurrentLayer.CreateEntity<ItemEntity>();
 
             drop.Drop.Item = new Item(e.Item.Id, 1, -1, -1, -1, e.Item.Refine);
-            drop.Drop.Owner = e.Owner;
-            drop.Drop.OwnershipTime = Time.TimeInSeconds() + worldServerConfiguration.Drops.OwnershipTime;
-            drop.Drop.DespawnTime = Time.TimeInSeconds() + worldServerConfiguration.Drops.DespawnTime;
+
+            if (e.Owner != null)
+            {
+                drop.Drop.Owner = e.Owner;
+                drop.Drop.OwnershipTime = Time.TimeInSeconds() + worldServerConfiguration.Drops.OwnershipTime;
+                drop.Drop.DespawnTime = Time.TimeInSeconds() + worldServerConfiguration.Drops.DespawnTime;
+            }
+
             drop.Object = new ObjectComponent
             {
                 MapId = entity.Object.MapId,
