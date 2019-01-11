@@ -12,6 +12,7 @@ using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Core.Data;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -157,6 +158,8 @@ namespace Rhisis.World.Game.Maps
             monster.Behavior = behaviors.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawnRegion;
             monster.Data = moverData;
+            if (moverData.Class == MoverClassType.RANK_BOSS)
+                monster.Object.Size *= 2;
 
             return monster;
         }
