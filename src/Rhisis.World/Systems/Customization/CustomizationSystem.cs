@@ -50,9 +50,9 @@ namespace Rhisis.World.Systems.Customization
                 var color = Color.FromArgb(e.R, e.G, e.B).ToArgb();
 
                 if (player.VisualAppearance.HairId != e.HairId)
-                    costs += (int)worldConfiguration.ChangeHairCost;
+                    costs += (int)worldConfiguration.Customization.ChangeHairCost;
                 if (player.VisualAppearance.HairColor != color)
-                    costs += (int)worldConfiguration.ChangeHairColorCost;
+                    costs += (int)worldConfiguration.Customization.ChangeHairColorCost;
 
                 if (player.PlayerData.Gold < costs)
                 {
@@ -86,13 +86,13 @@ namespace Rhisis.World.Systems.Customization
 
             if(!e.UseCoupon)
             {
-                if (player.PlayerData.Gold < worldConfiguration.ChangeFaceCost)
+                if (player.PlayerData.Gold < worldConfiguration.Customization.ChangeFaceCost)
                 {
                     WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
                 }
                 else
                 {
-                    player.PlayerData.Gold -= (int)worldConfiguration.ChangeFaceCost;
+                    player.PlayerData.Gold -= (int)worldConfiguration.Customization.ChangeFaceCost;
                     player.VisualAppearance.FaceId = (int)e.FaceId;
 
                     WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);

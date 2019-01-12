@@ -11,9 +11,7 @@ namespace Rhisis.Core.Structures.Configuration
     {
         public const string DefaultLanguage = "en";
         public const int DefaultMailShippingCost = 500;
-        public const int DefaultChangeFaceCost = 1000000;
-        public const int DefaultChangeHairColorCost = 4000000;
-        public const int DefaultChangeHairCost = 2000000;
+        
 
         /// <summary>
         /// Gets or sets the world's id.
@@ -75,23 +73,8 @@ namespace Rhisis.Core.Structures.Configuration
         [DataMember(Name = "mailShippingCost")]
         public uint MailShippingCost { get; set; }
 
-        /// <summary>
-        /// Gets or sets the costs for changing characters face.
-        /// </summary>
-        [DataMember(Name = "changeFaceCost")]
-        public uint ChangeFaceCost { get; set; }
-
-        /// <summary>
-        /// Gets or sets the costs for changing characters hair.
-        /// </summary>
-        [DataMember(Name = "changeHairCost")]
-        public uint ChangeHairCost { get; set; }
-
-        /// <summary>
-        /// Gets or sets the costs for changing characters hair color.
-        /// </summary>
-        [DataMember(Name = "changeHairColorCost")]
-        public uint ChangeHairColorCost { get; set; }
+        [DataMember(Name = "customization")]
+        public Customization Customization { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
@@ -103,9 +86,7 @@ namespace Rhisis.Core.Structures.Configuration
             this.ISC = new ISCConfiguration();
             this.Rates = new WorldRates();
             this.MailShippingCost = DefaultMailShippingCost;
-            this.ChangeFaceCost = DefaultChangeFaceCost;
-            this.ChangeHairCost = DefaultChangeHairCost;
-            this.ChangeHairColorCost = DefaultChangeHairColorCost;
+            this.Customization = new Customization();
         }
     }
 }
