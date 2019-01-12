@@ -6,7 +6,7 @@ namespace Rhisis.Core.Structures.Configuration
     /// Reprensents the Customization structure.
     /// </summary>
     [DataContract]
-    public class Customization
+    public class StyleCustomization
     {
         public const int DefaultChangeFaceCost = 1000000;
         public const int DefaultChangeHairColorCost = 4000000;
@@ -31,9 +31,9 @@ namespace Rhisis.Core.Structures.Configuration
         public uint ChangeHairColorCost { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="Customization"/> instance.
+        /// Creates a new <see cref="StyleCustomization"/> instance.
         /// </summary>
-        public Customization()
+        public StyleCustomization()
         {
             this.ChangeFaceCost = DefaultChangeFaceCost;
             this.ChangeHairCost = DefaultChangeHairCost;

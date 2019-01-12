@@ -74,7 +74,7 @@ namespace Rhisis.Core.Structures.Configuration
         public uint MailShippingCost { get; set; }
 
         [DataMember(Name = "customization")]
-        public Customization Customization { get; set; }
+        public StyleCustomization Customization { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
@@ -86,7 +86,7 @@ namespace Rhisis.Core.Structures.Configuration
             this.ISC = new ISCConfiguration();
             this.Rates = new WorldRates();
             this.MailShippingCost = DefaultMailShippingCost;
-            this.Customization = new Customization();
+            this.Customization = new StyleCustomization();
         }
     }
 }
