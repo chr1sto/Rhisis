@@ -26,7 +26,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets if a coupon will be used.
         /// </summary>
-        public int UseCoupon { get; set; }
+        public bool UseCoupon { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="ChangeFacePacket"/> object.
@@ -37,7 +37,7 @@ namespace Rhisis.Network.Packets.World
             this.ObjectId = packet.Read<uint>();
             this.FaceNumber = packet.Read<uint>();
             this.Cost = packet.Read<int>();
-            this.UseCoupon = packet.Read<int>();
+            this.UseCoupon = Convert.ToBoolean(packet.Read<int>());
         }
 
         /// <summary>

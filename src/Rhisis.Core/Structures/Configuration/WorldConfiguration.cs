@@ -11,6 +11,7 @@ namespace Rhisis.Core.Structures.Configuration
     {
         public const string DefaultLanguage = "en";
         public const int DefaultMailShippingCost = 500;
+        
 
         /// <summary>
         /// Gets or sets the world's id.
@@ -66,8 +67,14 @@ namespace Rhisis.Core.Structures.Configuration
         [DataMember(Name = "isc")]
         public ISCConfiguration ISC { get; set; }
 
+        /// <summary>
+        /// Gets or sets mail shipping costs.
+        /// </summary>
         [DataMember(Name = "mailShippingCost")]
         public uint MailShippingCost { get; set; }
+
+        [DataMember(Name = "customization")]
+        public StyleCustomization Customization { get; set; } = new StyleCustomization();
 
         /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
