@@ -56,13 +56,13 @@ namespace Rhisis.World.Packets
             }
         }
 
-        public static void SendItemUpdate(IPlayerEntity entity, UpdateItemType updateType, int slot, int value)
+        public static void SendItemUpdate(IPlayerEntity entity, UpdateItemType updateType, int uniqueId, int value)
         {
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.UPDATE_ITEM);
                 packet.Write<byte>(0);
-                packet.Write((byte)slot);
+                packet.Write((byte)uniqueId);
                 packet.Write((byte)updateType);
                 packet.Write(value);
                 packet.Write(0); // time

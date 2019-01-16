@@ -70,13 +70,16 @@ namespace Rhisis.World.Systems.Customization
             }
             else
             {
-                // TODO Coupon Use
-                // 1. Check has player II_SYS_SYS_SCR_HAIRCHANGE inside his inventory.
-                // 2. Remove single unit from this item.
-                // 3. WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, couponItem.Slot, couponItem.Quantity);
-                // 4. WorldPacketFactory.SendChangeFace(player, e.FaceId);
-                // 5. If no coupon send: WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
-                WorldPacketFactory.SendWorldMsg(player, "Coupons are not yet supported due to error-prone item container component!");
+                var couponItem = player.Inventory.GetItemById(DefineItem.II_SYS_SYS_SCR_HAIRCHANGE);
+                if (couponItem == null)
+                {
+                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
+                    return;
+                }
+
+                player.Inventory.RemoveItems(couponItem.Data.Id);
+                WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, couponItem.UniqueId, couponItem.Quantity);
+                WorldPacketFactory.SendSetHair(player, e.HairId, e.R, e.G, e.B);
             }
         }
 
@@ -101,13 +104,16 @@ namespace Rhisis.World.Systems.Customization
             }
             else
             {
-                // TODO Coupon Use
-                // 1. Check has player II_SYS_SYS_SCR_FACEOFFFREE inside his inventory.
-                // 2. Remove single unit from this item.
-                // 3. WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, couponItem.Slot, couponItem.Quantity);
-                // 4. WorldPacketFactory.SendChangeFace(player, e.FaceId);
-                // 5. If no coupon send: WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
-                WorldPacketFactory.SendWorldMsg(player, "Coupons are not yet supported due to error-prone item container component!");
+                var couponItem = player.Inventory.GetItemById(DefineItem.II_SYS_SYS_SCR_FACEOFFFREE);
+                if (couponItem == null)
+                {
+                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
+                    return;
+                }
+
+                player.Inventory.RemoveItems(couponItem.Data.Id);
+                WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, couponItem.UniqueId, couponItem.Quantity);
+                WorldPacketFactory.SendChangeFace(player, e.FaceId);
             }
         }
     }
