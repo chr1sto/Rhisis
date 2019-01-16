@@ -93,7 +93,7 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public bool HasItem(int itemId)
         {
-            var item = GetItem(x => x.Data != null && x.Data.Id == itemId);
+            var item = GetItemById(itemId);
             if (item == null)
                 return false;
 
@@ -107,7 +107,7 @@ namespace Rhisis.World.Game.Components
         /// <param name="amount"></param>
         public void RemoveItems(int itemId, int amount = 1)
         {
-            var item = GetItem(x => x.Data != null && x.Data.Id == itemId);
+            var item = GetItemById(itemId);
             if (item == null)
                 return;
 
