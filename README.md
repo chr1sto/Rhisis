@@ -88,6 +88,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 		- Player VS Monster
 	- Monster death
 	- Monster item/gold drop
+- Character customization system
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
