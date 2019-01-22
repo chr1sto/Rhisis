@@ -114,6 +114,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - [johmarjac](https://github.com/johmarjac)
 - [Kaev](https://github.com/Kaev)
 - [YarinNet](https://github.com/YarinNet)
+- [Almewty](https://github.com/Almewty)
 
 ## Supporters
 
