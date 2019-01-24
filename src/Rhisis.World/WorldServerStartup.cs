@@ -13,6 +13,7 @@ using Rhisis.Database;
 using Rhisis.Network;
 using Rhisis.World.Game.Loaders;
 using Rhisis.World.ISC;
+using Rhisis.World.Systems.Party;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,6 +59,7 @@ namespace Rhisis.World
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Initialize();
             DependencyContainer.Instance.Register<IWorldServer, WorldServer>(ServiceLifetime.Singleton);
+            DependencyContainer.Instance.Register(typeof(PartyManager), ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
             {
                 builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);

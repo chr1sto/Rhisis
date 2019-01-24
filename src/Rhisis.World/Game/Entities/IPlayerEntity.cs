@@ -14,6 +14,8 @@ namespace Rhisis.World.Game.Entities
         ItemContainerComponent Inventory { get; set; }
 
         TradeComponent Trade { get; set; }
+
+        PartyComponent Party { get; set; }
         
         NetUser Connection { get; set; }
 

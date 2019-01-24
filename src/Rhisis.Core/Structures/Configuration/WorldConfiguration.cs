@@ -73,8 +73,17 @@ namespace Rhisis.Core.Structures.Configuration
         [DataMember(Name = "mailShippingCost")]
         public uint MailShippingCost { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Style Customization settings.
+        /// </summary>
         [DataMember(Name = "customization")]
         public StyleCustomization Customization { get; set; } = new StyleCustomization();
+
+        /// <summary>
+        /// Gets or sets the Party Configuration settings.
+        /// </summary>
+        [DataMember(Name = "party")]
+        public PartyConfiguration PartyConfiguration { get; set; } = new PartyConfiguration();
 
         /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
