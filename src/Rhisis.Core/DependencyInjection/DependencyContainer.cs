@@ -42,10 +42,13 @@ namespace Rhisis.Core.DependencyInjection
             foreach (var serviceType in services)
             {
                 var serviceAttribute = serviceType.GetCustomAttributes(false).FirstOrDefault(x => x.GetType() == typeof(InjectableAttribute)) as InjectableAttribute;
-                var serviceInterface = serviceType.GetInterfaces().Last();
+                var serviceInterface = serviceType.GetInterfaces().LastOrDefault();
                 var serviceLifeTime = serviceAttribute != null ? serviceAttribute.LifeTime : ServiceLifetime.Transient;
 
-                this.Register(serviceInterface, serviceType, serviceLifeTime);
+                if (serviceInterface != null)
+                    this.Register(serviceInterface, serviceType, serviceLifeTime);
+                else
+                    this.Register(serviceType, serviceLifeTime);
             }
 
             this._isInitialized = true;
@@ -154,6 +157,14 @@ namespace Rhisis.Core.DependencyInjection
 
             addServiceMethod(serviceType);
         }
+
+        /// <summary>
+        /// Registers a service.
+        /// </summary>
+        /// <typeparam name="TService">Service type</typeparam>
+        /// <param name="serviceLifetime">Service life time</param>
+        public void Register<TService>(ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+            => this.Register(typeof(TService), serviceLifetime);
         
         /// <summary>
         /// Resolve a dependency.

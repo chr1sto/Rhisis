@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rhisis.Business.Models;
+using Rhisis.Core.Services;
 
 namespace Rhisis.API.Controllers
 {
@@ -12,14 +13,16 @@ namespace Rhisis.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Creates a new <see cref="UserController"/> instance.
         /// </summary>
         /// <param name="logger">Logger</param>
-        public UserController(ILogger<UserController> logger)
+        public UserController(ILogger<UserController> logger, IUserService userService)
         {
             this._logger = logger;
+            this._userService = userService;
         }
         
         /// <summary>
@@ -27,7 +30,7 @@ namespace Rhisis.API.Controllers
         /// </summary>
         /// <param name="registerModel"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("register")]
         [AllowAnonymous]
         public IActionResult RegisterUser([FromBody] UserRegisterModel registerModel)
         {
