@@ -1,20 +1,17 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Rhisis.Business.Models
+namespace Rhisis.Core.Models
 {
     [DataContract]
     public class UserRegisterModel
     {
-        [DataMember(Name = "username")]
+        [DataMember]
         public string Username { get; set; }
 
-        [DataMember(Name = "password")]
+        [DataMember]
         public string Password { get; set; }
 
-        [DataMember(Name = "passwordConfirmation")]
+        [DataMember]
         public string PasswordConfirmation { get; set; }
-
-        [DataMember(Name = "email")]
-        public string Email { get; set; }
     }
 }

@@ -1,3 +1,15 @@
+// Generated with https://www.json-generator.com/
+// =====================
+//[
+//  "{{repeat(10)}}",
+//  {
+//    "id": "{{index()}}",
+//    "username": "{{ firstName(random('male', 'female')) }}",
+//    "password": "{{ guid() }}"
+//  }
+//]
+// =====================
+
 [
   {
     "id": 0,

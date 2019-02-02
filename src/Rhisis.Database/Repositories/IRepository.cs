@@ -78,5 +78,12 @@ namespace Rhisis.Database.Repositories
         /// <param name="func"></param>
         /// <returns></returns>
         int Count(Func<T, bool> func);
+
+        /// <summary>
+        /// Check if there is entities that matches the predicate.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        bool HasAny(Func<T, bool> predicate);
     }
 }

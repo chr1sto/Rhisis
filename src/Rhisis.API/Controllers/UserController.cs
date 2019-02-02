@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Rhisis.Business.Models;
+using Rhisis.Core.Models;
 using Rhisis.Core.Services;
 
 namespace Rhisis.API.Controllers
@@ -35,8 +35,8 @@ namespace Rhisis.API.Controllers
         public IActionResult RegisterUser([FromBody] UserRegisterModel registerModel)
         {
             this._logger.LogInformation("An unknown user want to register a new account.");
-
-
+            this._userService.CreateUser(registerModel);
+            this._logger.LogInformation($"User {registerModel.Username} has been created.");
 
             return Ok();
         }
