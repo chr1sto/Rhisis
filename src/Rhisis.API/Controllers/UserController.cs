@@ -34,6 +34,10 @@ namespace Rhisis.API.Controllers
         [AllowAnonymous]
         public IActionResult RegisterUser([FromBody] UserRegisterModel registerModel)
         {
+            this._logger.LogInformation("An unknown user want to register a new account.");
+
+
+
             return Ok();
         }
     }

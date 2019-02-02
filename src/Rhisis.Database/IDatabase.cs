@@ -9,22 +9,22 @@ namespace Rhisis.Database
         /// <summary>
         /// Gets the users.
         /// </summary>
-        IUserRepository Users { get; }
+        IUserRepository Users { get; set; }
 
         /// <summary>
         /// Gets the characters.
         /// </summary>
-        ICharacterRepository Characters { get; }
+        ICharacterRepository Characters { get; set; }
 
         /// <summary>
         /// Gets the items.
         /// </summary>
-        IItemRepository Items { get; }
+        IItemRepository Items { get; set; }
 
         /// <summary>
         /// Gets the mails.
         /// </summary>
-        IMailRepository Mails { get; }
+        IMailRepository Mails { get; set; }
 
         /// <summary>
         /// Complete the pending database operations.

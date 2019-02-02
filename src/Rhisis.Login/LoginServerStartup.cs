@@ -27,7 +27,6 @@ namespace Rhisis.Login
             PacketHandler<LoginClient>.Initialize();
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
             BusinessLayer.Initialize();
-            DependencyContainer.Instance.Initialize();
             DependencyContainer.Instance.Register<ILoginServer, LoginServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
             {

@@ -57,7 +57,6 @@ namespace Rhisis.World
             PacketHandler<WorldClient>.Initialize();
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
             BusinessLayer.Initialize();
-            DependencyContainer.Instance.Initialize();
             DependencyContainer.Instance.Register<IWorldServer, WorldServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Register(typeof(PartyManager), ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
