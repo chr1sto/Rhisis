@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Business;
 using Rhisis.Cluster.ISC;
 using Rhisis.Core;
 using Rhisis.Core.DependencyInjection;
@@ -36,7 +37,7 @@ namespace Rhisis.Cluster
             PacketHandler<ISCClient>.Initialize();
             PacketHandler<ClusterClient>.Initialize();
             DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
-            DependencyContainer.Instance.Initialize();
+            BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<IClusterServer, ClusterServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
             {

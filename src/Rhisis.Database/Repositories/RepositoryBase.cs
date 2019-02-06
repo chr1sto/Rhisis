@@ -61,34 +61,22 @@ namespace Rhisis.Database.Repositories
         public T Get(int id) => this.Get(x => x.Id == id);
 
         /// <inheritdoc />
-        public T Get(Func<T, bool> func)
-        {
-            return this.GetQueryable(this._context).FirstOrDefault(func);
-        }
+        public T Get(Func<T, bool> func) => this.GetQueryable(this._context).FirstOrDefault(func);
 
         /// <inheritdoc />
-        public IEnumerable<T> GetAll()
-        {
-            return this.GetQueryable(this._context).AsEnumerable();
-        }
+        public IEnumerable<T> GetAll() => this.GetQueryable(this._context).AsEnumerable();
 
         /// <inheritdoc />
-        public IEnumerable<T> GetAll(Func<T, bool> func)
-        {
-            return this.GetQueryable(this._context).Where(func).AsEnumerable();
-        }
+        public IEnumerable<T> GetAll(Func<T, bool> func) => this.GetQueryable(this._context).Where(func).AsEnumerable();
 
         /// <inheritdoc />
-        public int Count()
-        {
-            return this.GetQueryable(this._context).Count();
-        }
+        public int Count() => this.GetQueryable(this._context).Count();
 
         /// <inheritdoc />
-        public int Count(Func<T, bool> func)
-        {
-            return this.GetQueryable(this._context).Count(func);
-        }
+        public int Count(Func<T, bool> func) => this.GetQueryable(this._context).Count(func);
+
+        /// <inheritdoc />
+        public bool HasAny(Func<T, bool> predicate) => this._context.Set<T>().AsNoTracking().Any(predicate);
 
         /// <inheritdoc />
         protected virtual IQueryable<T> GetQueryable(DbContext context) => context.Set<T>().AsQueryable();

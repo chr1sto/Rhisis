@@ -26,9 +26,16 @@ namespace Rhisis.Database
         /// Initialize the <see cref="DatabaseFactory"/>.
         /// </summary>
         /// <param name="databaseConfigurationPath"></param>
-        public void Initialize(string databaseConfigurationPath)
+        public void Initialize(string databaseConfigurationPath) 
+            => this.Initialize(ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationPath));
+
+        /// <summary>
+        /// Initialize the <see cref="DatabaseFactory"/>.
+        /// </summary>
+        /// <param name="configuration">Database configuration object</param>
+        public void Initialize(DatabaseConfiguration configuration)
         {
-            this.Configuration = ConfigurationHelper.Load<DatabaseConfiguration>(databaseConfigurationPath);
+            this.Configuration = configuration;
 
             using (var dbContext = this.CreateDbContext())
             {

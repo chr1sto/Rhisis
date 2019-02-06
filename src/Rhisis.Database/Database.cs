@@ -11,15 +11,15 @@ namespace Rhisis.Database
         private readonly DatabaseContext _databaseContext;
 
         /// <inheritdoc />
-        public IUserRepository Users { get; private set; }
+        public IUserRepository Users { get; set; }
 
         /// <inheritdoc />
-        public ICharacterRepository Characters { get; private set; }
+        public ICharacterRepository Characters { get; set; }
 
         /// <inheritdoc />
-        public IItemRepository Items { get; private set; }
+        public IItemRepository Items { get; set; }
 
-        public IMailRepository Mails { get; private set; }
+        public IMailRepository Mails { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="Database"/> object instance.

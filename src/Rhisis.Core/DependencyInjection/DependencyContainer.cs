@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Common;
-using Rhisis.Core.Helpers;
 using System;
-using System.Linq;
 
 namespace Rhisis.Core.DependencyInjection
 {
@@ -10,7 +8,6 @@ namespace Rhisis.Core.DependencyInjection
     {
         private IServiceCollection _services;
         private ServiceProvider _serviceProvider;
-        private bool _isInitialized;
 
         /// <summary>
         /// Gets the number of registered services.
@@ -26,43 +23,14 @@ namespace Rhisis.Core.DependencyInjection
         }
 
         /// <summary>
-        /// Initialize the dependency container.
-        /// </summary>
-        /// <returns>Returns the current instance</returns>
-        public DependencyContainer Initialize()
-        {
-            if (this._isInitialized)
-                throw new InvalidOperationException("Dependency container is already initialized.");
-
-            if (this._services == null)
-                throw new InvalidOperationException("Service collection is not initialized.");
-            
-            var services = ReflectionHelper.GetClassesWithCustomAttribute<InjectableAttribute>();
-
-            foreach (var serviceType in services)
-            {
-                var serviceAttribute = serviceType.GetCustomAttributes(false).FirstOrDefault(x => x.GetType() == typeof(InjectableAttribute)) as InjectableAttribute;
-                var serviceInterface = serviceType.GetInterfaces().Last();
-                var serviceLifeTime = serviceAttribute != null ? serviceAttribute.LifeTime : ServiceLifetime.Transient;
-
-                this.Register(serviceInterface, serviceType, serviceLifeTime);
-            }
-
-            this._isInitialized = true;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Initialize the <see cref="IServiceCollection"/> passed as parameter.
+        /// Sets the dependency container's service collection.
         /// </summary>
         /// <param name="serviceCollection">Existing service collection</param>
         /// <returns></returns>
-        public DependencyContainer Initialize(IServiceCollection serviceCollection)
+        public DependencyContainer SetServiceCollection(IServiceCollection serviceCollection)
         {
             this._services = serviceCollection;
-
-            return this.Initialize();
+            return this;
         }
 
         /// <summary>
@@ -154,6 +122,14 @@ namespace Rhisis.Core.DependencyInjection
 
             addServiceMethod(serviceType);
         }
+
+        /// <summary>
+        /// Registers a service.
+        /// </summary>
+        /// <typeparam name="TService">Service type</typeparam>
+        /// <param name="serviceLifetime">Service life time</param>
+        public void Register<TService>(ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+            => this.Register(typeof(TService), serviceLifetime);
         
         /// <summary>
         /// Resolve a dependency.
@@ -179,10 +155,7 @@ namespace Rhisis.Core.DependencyInjection
         /// Configure the <see cref="DependencyContainer"/>.
         /// </summary>
         /// <param name="serviceBuilder"></param>
-        public void Configure(Action<IServiceCollection> serviceBuilder)
-        {
-            serviceBuilder(this._services);
-        }
+        public void Configure(Action<IServiceCollection> serviceBuilder) => serviceBuilder(this._services);
 
         /// <summary>
         /// Dispose the dependency container's resources.
