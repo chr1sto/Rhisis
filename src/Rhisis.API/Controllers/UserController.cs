@@ -24,19 +24,38 @@ namespace Rhisis.API.Controllers
             this._logger = logger;
             this._userService = userService;
         }
-        
+
         /// <summary>
         /// Registers an user.
         /// </summary>
         /// <param name="registerModel"></param>
         /// <returns></returns>
-        [HttpPost("register")]
         [AllowAnonymous]
+        [HttpPost("register")]
         public IActionResult RegisterUser([FromBody] UserRegisterModel registerModel)
         {
             this._logger.LogInformation("An unknown user want to register a new account.");
             this._userService.CreateUser(registerModel);
             this._logger.LogInformation($"User {registerModel.Username} has been created.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Check if a user is already using the given username.
+        /// </summary>
+        /// <param name="username">Username to check</param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("exists/{username}")]
+        public IActionResult UserExists(string username)
+        {
+            this._logger.LogInformation($"An unknown user want to check if user '{username}' exists.");
+
+            bool exists = this._userService.HasUser(username);
+
+            if (!exists)
+                return NotFound();
 
             return Ok();
         }
