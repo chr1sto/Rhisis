@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Rhisis.Core.Common;
 using Rhisis.Database.Context;
 using System;
@@ -61,7 +60,10 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<int>("Mp");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(42)")
+                        .HasMaxLength(42);
 
                     b.Property<float>("PosX");
 
@@ -127,7 +129,8 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<DateTime>("CreateTime");
 
-                    b.Property<uint>("Gold");
+                    b.Property<uint>("Gold")
+                        .HasColumnType("BIGINT");
 
                     b.Property<bool>("HasBeenRead");
 
@@ -145,9 +148,14 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<int>("SenderId");
 
-                    b.Property<string>("Text");
+                    b.Property<string>("Text")
+                        .HasColumnType("VARCHAR(256)")
+                        .HasMaxLength(256);
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(32)")
+                        .HasMaxLength(32);
 
                     b.HasKey("Id");
 
@@ -182,7 +190,9 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<int>("TargetTaskbar");
 
-                    b.Property<string>("Text");
+                    b.Property<string>("Text")
+                        .HasColumnType("VARCHAR(128)")
+                        .HasMaxLength(128);
 
                     b.Property<uint>("Type");
 
@@ -203,9 +213,15 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<int>("Authority");
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(42)")
+                        .HasMaxLength(42);
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(42)")
+                        .HasMaxLength(42);
 
                     b.HasKey("Id");
 

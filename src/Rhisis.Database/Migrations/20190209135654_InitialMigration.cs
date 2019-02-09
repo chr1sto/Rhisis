@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
+using System.Collections.Generic;
 
 namespace Rhisis.Database.Migrations
 {
@@ -15,8 +16,8 @@ namespace Rhisis.Database.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Authority = table.Column<int>(nullable: false),
-                    Password = table.Column<string>(nullable: true),
-                    Username = table.Column<string>(nullable: true)
+                    Password = table.Column<string>(type: "VARCHAR(42)", maxLength: 42, nullable: false),
+                    Username = table.Column<string>(type: "VARCHAR(42)", maxLength: 42, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,7 +47,7 @@ namespace Rhisis.Database.Migrations
                     MapId = table.Column<int>(nullable: false),
                     MapLayerId = table.Column<int>(nullable: false),
                     Mp = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(type: "VARCHAR(42)", maxLength: 42, nullable: false),
                     PosX = table.Column<float>(nullable: false),
                     PosY = table.Column<float>(nullable: false),
                     PosZ = table.Column<float>(nullable: false),
@@ -96,43 +97,72 @@ namespace Rhisis.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "shortcuts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CharacterId = table.Column<int>(nullable: false),
+                    ObjectData = table.Column<uint>(nullable: false),
+                    ObjectId = table.Column<uint>(nullable: false),
+                    ObjectIndex = table.Column<uint>(nullable: false),
+                    ObjectType = table.Column<uint>(nullable: false),
+                    SlotIndex = table.Column<int>(nullable: false),
+                    SlotLevelIndex = table.Column<int>(nullable: true),
+                    TargetTaskbar = table.Column<int>(nullable: false),
+                    Text = table.Column<string>(type: "VARCHAR(128)", maxLength: 128, nullable: true),
+                    Type = table.Column<uint>(nullable: false),
+                    UserId = table.Column<uint>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_shortcuts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_shortcuts_characters_CharacterId",
+                        column: x => x.CharacterId,
+                        principalTable: "characters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "mails",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    SenderId = table.Column<int>(nullable: false),
-                    ReceiverId = table.Column<int>(nullable: false),
-                    Gold = table.Column<uint>(nullable: false),
-                    ItemId = table.Column<int?>(nullable: true),
-                    ItemQuantity = table.Column<short>(nullable: false),
-                    Title = table.Column<string>(nullable: false),
-                    Text = table.Column<string>(nullable: false),
+                    CreateTime = table.Column<DateTime>(nullable: false),
+                    Gold = table.Column<uint>(type: "BIGINT", nullable: false),
                     HasBeenRead = table.Column<bool>(nullable: false),
-                    HasReceivedItem = table.Column<bool>(nullable: false),
                     HasReceivedGold = table.Column<bool>(nullable: false),
+                    HasReceivedItem = table.Column<bool>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    CreateTime = table.Column<DateTime>(nullable: false)
+                    ItemId = table.Column<int>(nullable: true),
+                    ItemQuantity = table.Column<short>(nullable: false),
+                    ReceiverId = table.Column<int>(nullable: false),
+                    SenderId = table.Column<int>(nullable: false),
+                    Text = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: true),
+                    Title = table.Column<string>(type: "VARCHAR(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_mails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_mails_characters_Sender",
-                        column: x => x.SenderId,
-                        principalTable: "characters",
+                        name: "FK_mails_items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "items",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_mails_characters_Receiver",
+                        name: "FK_mails_characters_ReceiverId",
                         column: x => x.ReceiverId,
                         principalTable: "characters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_mails_items_Item",
-                        column: x => x.ItemId,
-                        principalTable: "items",
+                        name: "FK_mails_characters_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "characters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -148,13 +178,34 @@ namespace Rhisis.Database.Migrations
                 column: "CharacterId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_mails_ItemId",
+                table: "mails",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_mails_ReceiverId",
                 table: "mails",
                 column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_mails_SenderId",
+                table: "mails",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_shortcuts_CharacterId",
+                table: "shortcuts",
+                column: "CharacterId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "mails");
+
+            migrationBuilder.DropTable(
+                name: "shortcuts");
+
             migrationBuilder.DropTable(
                 name: "items");
 
@@ -163,9 +214,6 @@ namespace Rhisis.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "users");
-
-            migrationBuilder.DropTable(
-                name: "mails");
         }
     }
 }

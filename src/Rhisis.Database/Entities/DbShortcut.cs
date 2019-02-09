@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
@@ -15,7 +16,7 @@ namespace Rhisis.Database.Entities
         public int SlotIndex { get; set; }
 
         public ShortcutType Type { get; set; }
-
+        
         public uint ObjectId { get; set; }
 
         public ShortcutObjectType ObjectType { get; set; }
@@ -25,7 +26,9 @@ namespace Rhisis.Database.Entities
         public uint UserId { get; set; }
 
         public uint ObjectData { get; set; }
-
+        
+        [MaxLength(128)]
+        [Column(TypeName = "VARCHAR(128)")]
         public string Text { get; set; }
 
         public DbCharacter Character { get; set; }
