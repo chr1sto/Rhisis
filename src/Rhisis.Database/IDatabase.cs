@@ -27,6 +27,11 @@ namespace Rhisis.Database
         IMailRepository Mails { get; set; }
 
         /// <summary>
+        /// Gets the taskbar shortcuts.
+        /// </summary>
+        IShortcutRepository TaskbarShortcuts { get; }
+
+        /// <summary>
         /// Complete the pending database operations.
         /// </summary>
         void Complete();

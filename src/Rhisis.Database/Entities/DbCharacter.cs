@@ -70,11 +70,14 @@ namespace Rhisis.Database.Entities
 
         public ICollection<DbMail> SentMails { get; set; }
 
+        public ICollection<DbShortcut> TaskbarShortcuts { get; set; }
+
         public DbCharacter()
         {
             this.Items = new HashSet<DbItem>();
             this.ReceivedMails = new HashSet<DbMail>();
             this.SentMails = new HashSet<DbMail>();
+            this.TaskbarShortcuts = new HashSet<DbShortcut>();
         }
     }
 }

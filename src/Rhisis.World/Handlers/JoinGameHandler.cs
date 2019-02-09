@@ -1,6 +1,7 @@
 ﻿using Ether.Network.Packets;
 using NLog;
 using Rhisis.Core.Common;
+using Rhisis.Core.Common.Game.Structures;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
@@ -10,6 +11,7 @@ using Rhisis.Database.Entities;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
+using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Loaders;
@@ -17,6 +19,8 @@ using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Handlers
 {
@@ -118,6 +122,41 @@ namespace Rhisis.World.Handlers
             // Initialize the inventory
             var inventoryEventArgs = new InventoryInitializeEventArgs(character.Items);
             client.Player.NotifySystem<InventorySystem>(inventoryEventArgs);
+            
+            // Taskbar
+            foreach (var applet in character.TaskbarShortcuts.Where(x => x.TargetTaskbar == ShortcutTaskbarTarget.Applet))
+            {
+                if (applet.Type == ShortcutType.Item)
+                {
+                    var item = client.Player.Inventory.GetItem(x => x.Slot == applet.ObjectId);
+                    client.Player.Taskbar.Applets.CreateShortcut(new Shortcut(applet.SlotIndex, applet.Type, (uint)item.UniqueId, applet.ObjectType, applet.ObjectIndex, applet.UserId, applet.ObjectData, applet.Text));
+            
+    }
+                else
+                {
+                    client.Player.Taskbar.Applets.CreateShortcut(new Shortcut(applet.SlotIndex, applet.Type, applet.ObjectId, applet.ObjectType, applet.ObjectIndex, applet.UserId, applet.ObjectData, applet.Text));
+                }
+            }
+
+            foreach (var item in character.TaskbarShortcuts.Where(x => x.TargetTaskbar == ShortcutTaskbarTarget.Item))
+            {
+                if(item.Type == ShortcutType.Item)
+                {
+                    var inventoryItem = client.Player.Inventory.GetItem(x => x.Slot == item.ObjectId);
+                    client.Player.Taskbar.Items.CreateShortcut(new Shortcut(item.SlotIndex, item.Type, (uint)inventoryItem.UniqueId, item.ObjectType, item.ObjectIndex, item.UserId, item.ObjectData, item.Text), item.SlotLevelIndex.HasValue ? item.SlotLevelIndex.Value : -1);
+                }
+                else
+                    client.Player.Taskbar.Items.CreateShortcut(new Shortcut(item.SlotIndex, item.Type, item.ObjectId, item.ObjectType, item.ObjectIndex, item.UserId, item.ObjectData, item.Text), item.SlotLevelIndex.HasValue ? item.SlotLevelIndex.Value : -1);
+            }
+
+            TestCommand.OnTest(client.Player, new string[] { });
+
+            var list = new List<Shortcut>();
+            foreach (var skill in character.TaskbarShortcuts.Where(x => x.TargetTaskbar == ShortcutTaskbarTarget.Queue))
+            {
+                list.Add(new Shortcut(skill.SlotIndex, skill.Type, skill.ObjectId, skill.ObjectType, skill.ObjectIndex, skill.UserId, skill.ObjectData, skill.Text));
+            }
+            client.Player.Taskbar.Queue.CreateShortcuts(list);
 
             // 3rd: spawn the player
             WorldPacketFactory.SendPlayerSpawn(client.Player);

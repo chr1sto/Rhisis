@@ -35,7 +35,8 @@ namespace Rhisis.Database.Repositories.Implementation
                 .Include(x => x.SentMails)
                     .ThenInclude(x => x.Sender)
                 .Include(x => x.SentMails)
-                    .ThenInclude(x => x.Item);
+                    .ThenInclude(x => x.Item)
+                .Include(x => x.TaskbarShortcuts);
         }
     }
 }

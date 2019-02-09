@@ -10,7 +10,11 @@
   "rates": {
     "gold": 1,
     "experience": 1,
-	"drop": 1
+    "drop": 1
+  },
+  "drops": {
+    "ownershipTime": 7,
+    "despawnTime": 120
   },
   "isc": {
     "password": "4fded1464736e77865df232cbcb4cd19",

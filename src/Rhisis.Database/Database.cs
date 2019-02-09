@@ -21,6 +21,9 @@ namespace Rhisis.Database
 
         public IMailRepository Mails { get; set; }
 
+        /// <inheritdoc />
+        public IShortcutRepository TaskbarShortcuts { get; private set; }
+
         /// <summary>
         /// Creates a new <see cref="Database"/> object instance.
         /// </summary>

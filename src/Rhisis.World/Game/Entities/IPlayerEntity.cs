@@ -16,7 +16,9 @@ namespace Rhisis.World.Game.Entities
         TradeComponent Trade { get; set; }
 
         PartyComponent Party { get; set; }
-        
+
+        TaskbarComponent Taskbar { get; set; }
+
         NetUser Connection { get; set; }
 
         IBehavior<IPlayerEntity> Behavior { get; set; }

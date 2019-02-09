@@ -38,6 +38,11 @@ namespace Rhisis.Database.Context
         public DbSet<DbMail> Mails { get; set; }
 
         /// <summary>
+        /// Gets or sets the taskbar shortcuts.
+        /// </summary>
+        public DbSet<DbShortcut> TaskbarShortcuts { get; set; }
+
+        /// <summary>
         /// Create a new <see cref="DatabaseContext"/> instance.
         /// </summary>
         /// <param name="options"></param>

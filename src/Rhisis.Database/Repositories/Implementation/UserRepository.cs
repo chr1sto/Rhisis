@@ -23,11 +23,13 @@ namespace Rhisis.Database.Repositories.Implementation
         {
             return base.GetQueryable(context)
                 .Include(x => x.Characters)
-                .ThenInclude(x => x.Items)
+                    .ThenInclude(x => x.Items)
                 .Include(x => x.Characters)
-                .ThenInclude(x => x.ReceivedMails)
+                    .ThenInclude(x => x.ReceivedMails)
                 .Include(x => x.Characters)
-                .ThenInclude(x => x.SentMails);
+                    .ThenInclude(x => x.SentMails)
+                .Include(x => x.Characters)
+                    .ThenInclude(x => x.TaskbarShortcuts);
         }
     }
 }

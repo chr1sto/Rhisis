@@ -32,6 +32,9 @@ namespace Rhisis.World.Game.Entities
         public PartyComponent Party { get; set; }
 
         /// <inheritdoc />
+        public TaskbarComponent Taskbar { get; set; }
+
+        /// <inheritdoc />
         public NetUser Connection { get; set; }
 
         /// <inheritdoc />
@@ -60,6 +63,7 @@ namespace Rhisis.World.Game.Entities
             this.PlayerData = new PlayerDataComponent();
             this.Trade = new TradeComponent();
             this.Party = new PartyComponent();
+            this.Taskbar = new TaskbarComponent();
             this.Follow = new FollowComponent();
             this.Interaction = new InteractionComponent();
             this.Battle = new BattleComponent();

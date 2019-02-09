@@ -1,6 +1,7 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using NLog;
+using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
@@ -190,6 +191,54 @@ namespace Rhisis.World
 
                             database.Items.Create(dbItem);
                         }
+                    }
+
+                    // Taskbar
+                    character.TaskbarShortcuts.Clear();
+                    
+                    foreach (var applet in Player.Taskbar.Applets.Shortcuts)
+                    {
+                        if (applet == null)
+                            continue;
+
+                        var dbApplet = new DbShortcut(ShortcutTaskbarTarget.Applet, applet.SlotIndex, applet.Type, applet.ObjId, applet.ObjectType, applet.ObjIndex, applet.UserId, applet.ObjData, applet.Text);
+
+                        if (applet.Type == ShortcutType.Item)
+                        {
+                            var item = this.Player.Inventory.GetItem((int)applet.ObjId);
+                            dbApplet.ObjectId = (uint)item.Slot;
+                        }
+
+                        character.TaskbarShortcuts.Add(dbApplet);
+                    }
+
+
+                    for (int slotLevel = 0; slotLevel < Player.Taskbar.Items.Shortcuts.Count; slotLevel++)
+                    {
+                        for (int slot = 0; slot < Player.Taskbar.Items.Shortcuts[slotLevel].Count; slot++)
+                        {
+                            var itemShortcut = Player.Taskbar.Items.Shortcuts[slotLevel][slot];
+                            if (itemShortcut == null)
+                                continue;
+
+                            var dbItem = new DbShortcut(ShortcutTaskbarTarget.Item, slotLevel, itemShortcut.SlotIndex, itemShortcut.Type, itemShortcut.ObjId, itemShortcut.ObjectType, itemShortcut.ObjIndex, itemShortcut.UserId, itemShortcut.ObjData, itemShortcut.Text);
+
+                            if (itemShortcut.Type == ShortcutType.Item)
+                            {
+                                var item = this.Player.Inventory.GetItem((int)itemShortcut.ObjId);
+                                dbItem.ObjectId = (uint)item.Slot;
+                            }
+
+                            character.TaskbarShortcuts.Add(dbItem);
+                        }
+                    }
+
+                    foreach (var queueItem in Player.Taskbar.Queue.Shortcuts)
+                    {
+                        if (queueItem == null)
+                            continue;
+
+                        character.TaskbarShortcuts.Add(new DbShortcut(ShortcutTaskbarTarget.Queue, queueItem.SlotIndex, queueItem.Type, queueItem.ObjId, queueItem.ObjectType, queueItem.ObjIndex, queueItem.UserId, queueItem.ObjData, queueItem.Text));
                     }
                 }
 
