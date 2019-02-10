@@ -96,10 +96,11 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 1. Download or Clone the `develop` branch
 2. Install the .NET Core SDK 2.0 : https://www.microsoft.com/net/download/windows
 3. Install `MsSQL Express` or `MySQL Server`
-4. Edit the files in `bin/config/` (`database.json`, `login.json`, `cluster.json`, `world.json`)
-5. Compile Rhisis and Rhisis.Tools solutions
-6. Run `bin/rhisis-installer.bat` and configure the database to start the database migration
-7. Create an account in your database via the Rhisis.Installer tool
+4. Edit the files in `bin/config/` (`login.json`, `cluster.json`, `world.json`)
+5. Compile Rhisis solution using the `scripts/compile_solution.bat`
+6. Open a command prompt in folder `bin/`
+7. Type the following command: `./rhisis-cli.bat database initialize` and follow the instructions
+7. Create an account in table `users` of your database 
 8. Start the emulator
 - Start `1.login.bat`
 - Start `2.cluster.bat`
