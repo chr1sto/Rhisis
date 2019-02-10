@@ -1,27 +1,45 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
 namespace Rhisis.Database.Entities
 {
     [Table("mails")]
     public sealed class DbMail : DbEntity
     {
+        [Column(TypeName = "BIGINT")]
+        public uint Gold { get; set; }
+
+        public int? ItemId { get; set; }
+
+        public DbItem Item { get; set; }
+
+        public short ItemQuantity { get; set; }
+
+        [Required]
+        [MaxLength(32)]
+        [Column(TypeName = "VARCHAR(32)")]
+        public string Title { get; set; }
+
+        [MaxLength(256)]
+        [Column(TypeName = "VARCHAR(256)")]
+        public string Text { get; set; }
+
+        public bool HasBeenRead { get; set; }
+
+        public bool HasReceivedItem { get; set; }
+
+        public bool HasReceivedGold { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public DateTime CreateTime { get; set; }
+        
         public int SenderId { get; set; }
-        public DbCharacter Sender { get; set; } 
+        public DbCharacter Sender { get; set; }
+
         public int ReceiverId { get; set; }
         public DbCharacter Receiver { get; set; }
-        public uint Gold { get; set; }
-        public int? ItemId { get; set; }
-        public DbItem Item { get; set; }
-        public short ItemQuantity { get; set; }
-        public string Title { get; set; }
-        public string Text { get; set; }
-        public bool HasBeenRead { get; set; }
-        public bool HasReceivedItem { get; set; }
-        public bool HasReceivedGold { get; set; }
-        public bool IsDeleted { get; set; }
-        public DateTime CreateTime { get; set; }
 
         public DbMail()
         {

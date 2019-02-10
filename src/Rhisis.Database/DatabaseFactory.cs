@@ -72,12 +72,11 @@ namespace Rhisis.Database
         {
             var configurationPath = Environment.GetEnvironmentVariable(MigrationConfigurationEnv);
             var configuration = ConfigurationHelper.Load<DatabaseConfiguration>(configurationPath);
-            var context = new DatabaseContext(configuration);
 
-            if (!string.IsNullOrEmpty(configurationPath) && !context.DatabaseExists())
-                throw new InvalidOperationException($"The database '{configuration.Database}' doesn't exists.");
+            if (configuration == null)
+                throw new InvalidOperationException($"Cannot find database configuration path: '{configurationPath}'.");
 
-            return context;
+            return new DatabaseContext(configuration);
         }
     }
 }

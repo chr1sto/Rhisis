@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
@@ -8,6 +9,9 @@ namespace Rhisis.Database.Entities
     {
         public int UserId { get; set; }
 
+        [Required]
+        [MaxLength(42)]
+        [Column(TypeName = "VARCHAR(42)")]
         public string Name { get; set; }
         
         public byte Gender { get; set; }
