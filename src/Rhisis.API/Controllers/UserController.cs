@@ -53,11 +53,8 @@ namespace Rhisis.API.Controllers
             this._logger.LogInformation($"An unknown user want to check if user '{username}' exists.");
 
             bool exists = this._userService.HasUser(username);
-
-            if (!exists)
-                return NotFound();
-
-            return Ok();
+            
+            return Ok(exists);
         }
     }
 }
