@@ -27,6 +27,13 @@ namespace Rhisis.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("DevAllowAllOrigins", policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+                });
+            });
             services.AddMvc();
 
             var databaseConfiguration = this.Configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>();
@@ -34,6 +41,7 @@ namespace Rhisis.API
             DependencyContainer.Instance.SetServiceCollection(services);
             DatabaseFactory.Instance.Initialize(databaseConfiguration);
             BusinessLayer.Initialize();
+            services.AddSingleton(this.Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +50,7 @@ namespace Rhisis.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("DevAllowAllOrigins");
             }
 
             app.UseMvc();
