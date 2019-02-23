@@ -1,6 +1,7 @@
 ﻿using Ether.Network.Packets;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
@@ -29,7 +30,6 @@ namespace Rhisis.Login
         {
             var loginServer = DependencyContainer.Instance.Resolve<ILoginServer>();
             var configuration = DependencyContainer.Instance.Resolve<LoginConfiguration>();
-            var cryptographyService = DependencyContainer.Instance.Resolve<ICryptographyService>();
             var certifyPacket = new CertifyPacket(packet, configuration.PasswordEncryption);
             string password = null;
 
@@ -41,9 +41,9 @@ namespace Rhisis.Login
 
             if (configuration.PasswordEncryption)
             {
-                byte[] encryptionKey = cryptographyService.BuildEncryptionKeyFromString(configuration.EncryptionKey, 16);
+                byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(configuration.EncryptionKey, 16);
 
-                password = cryptographyService.Decrypt(certifyPacket.EncryptedPassword, encryptionKey);
+                password = Aes.DecryptByteArray(certifyPacket.EncryptedPassword, encryptionKey);
             }
             else
             {

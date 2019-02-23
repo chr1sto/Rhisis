@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Models;
 using Rhisis.Core.Services;
@@ -16,7 +17,6 @@ namespace Rhisis.Core.Business.Services
         private readonly ILogger<UserService> _logger;
         private readonly IDatabase _database;
         private readonly IConfiguration _configuration;
-        private readonly ICryptographyService _cryptographyService;
 
         /// <summary>
         /// Creates a new <see cref="UserService"/> instance.
@@ -24,13 +24,11 @@ namespace Rhisis.Core.Business.Services
         /// <param name="logger"
         /// <param name="database"></param>
         /// <param name="configuration"></param>
-        /// <param name="cryptographyService"></param>
-        public UserService(ILogger<UserService> logger, IDatabase database, IConfiguration configuration, ICryptographyService cryptographyService)
+        public UserService(ILogger<UserService> logger, IDatabase database, IConfiguration configuration)
         {
             this._logger = logger;
             this._database = database;
             this._configuration = configuration;
-            this._cryptographyService = cryptographyService;
         }
 
         /// <inheritdoc />
@@ -40,6 +38,10 @@ namespace Rhisis.Core.Business.Services
         /// <inheritdoc />
         public bool HasUser(string username) 
             => this._database.Users.HasAny(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+        /// <inheritdoc />
+        public bool HasUserWithEmail(string email)
+            => this._database.Users.HasAny(x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
 
         /// <inheritdoc />
         public void CreateUser(UserRegisterModel registerModel)
@@ -68,7 +70,8 @@ namespace Rhisis.Core.Business.Services
             var user = new DbUser
             {
                 Username = registerModel.Username,
-                Password = this._cryptographyService.GetMD5Hash(passwordSalt + registerModel.Password),
+                Password = MD5.GetMD5Hash(passwordSalt, registerModel.Password),
+                Email = registerModel.Email,
                 Authority = (int)AuthorityType.Player
             };
 

@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace Rhisis.Database.Migrations
 {
@@ -15,9 +14,11 @@ namespace Rhisis.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Authority = table.Column<int>(nullable: false),
-                    Password = table.Column<string>(type: "VARCHAR(42)", maxLength: 42, nullable: false),
-                    Username = table.Column<string>(type: "VARCHAR(42)", maxLength: 42, nullable: false)
+                    Username = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    LastConnectionTime = table.Column<DateTime>(type: "DATETIME", nullable: false),
+                    Authority = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,34 +31,34 @@ namespace Rhisis.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Angle = table.Column<float>(nullable: false),
-                    BankCode = table.Column<int>(nullable: false),
-                    ClassId = table.Column<int>(nullable: false),
-                    Dexterity = table.Column<int>(nullable: false),
-                    Experience = table.Column<long>(nullable: false),
-                    FaceId = table.Column<int>(nullable: false),
-                    Fp = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Gender = table.Column<byte>(nullable: false),
-                    Gold = table.Column<int>(nullable: false),
-                    HairColor = table.Column<int>(nullable: false),
-                    HairId = table.Column<int>(nullable: false),
-                    Hp = table.Column<int>(nullable: false),
-                    Intelligence = table.Column<int>(nullable: false),
                     Level = table.Column<int>(nullable: false),
+                    Experience = table.Column<long>(nullable: false),
+                    ClassId = table.Column<int>(nullable: false),
+                    Gold = table.Column<int>(nullable: false),
+                    Slot = table.Column<int>(nullable: false),
+                    Strength = table.Column<int>(nullable: false),
+                    Stamina = table.Column<int>(nullable: false),
+                    Dexterity = table.Column<int>(nullable: false),
+                    Intelligence = table.Column<int>(nullable: false),
+                    Hp = table.Column<int>(nullable: false),
+                    Mp = table.Column<int>(nullable: false),
+                    Fp = table.Column<int>(nullable: false),
+                    SkinSetId = table.Column<int>(nullable: false),
+                    HairId = table.Column<int>(nullable: false),
+                    HairColor = table.Column<int>(nullable: false),
+                    FaceId = table.Column<int>(nullable: false),
                     MapId = table.Column<int>(nullable: false),
                     MapLayerId = table.Column<int>(nullable: false),
-                    Mp = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(42)", maxLength: 42, nullable: false),
                     PosX = table.Column<float>(nullable: false),
                     PosY = table.Column<float>(nullable: false),
                     PosZ = table.Column<float>(nullable: false),
-                    SkillPoints = table.Column<int>(nullable: false),
-                    SkinSetId = table.Column<int>(nullable: false),
-                    Slot = table.Column<int>(nullable: false),
-                    Stamina = table.Column<int>(nullable: false),
+                    Angle = table.Column<float>(nullable: false),
+                    BankCode = table.Column<int>(nullable: false),
                     StatPoints = table.Column<int>(nullable: false),
-                    Strength = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    SkillPoints = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,14 +77,14 @@ namespace Rhisis.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CharacterId = table.Column<int>(nullable: false),
-                    CreatorId = table.Column<int>(nullable: false),
-                    Element = table.Column<byte>(nullable: false),
-                    ElementRefine = table.Column<byte>(nullable: false),
-                    ItemCount = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
+                    CharacterId = table.Column<int>(nullable: false),
+                    ItemCount = table.Column<int>(nullable: false),
                     ItemSlot = table.Column<int>(nullable: false),
-                    Refine = table.Column<byte>(nullable: false)
+                    CreatorId = table.Column<int>(nullable: false),
+                    Refine = table.Column<byte>(nullable: false),
+                    Element = table.Column<byte>(nullable: false),
+                    ElementRefine = table.Column<byte>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,16 +104,16 @@ namespace Rhisis.Database.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CharacterId = table.Column<int>(nullable: false),
-                    ObjectData = table.Column<uint>(nullable: false),
-                    ObjectId = table.Column<uint>(nullable: false),
-                    ObjectIndex = table.Column<uint>(nullable: false),
-                    ObjectType = table.Column<uint>(nullable: false),
-                    SlotIndex = table.Column<int>(nullable: false),
-                    SlotLevelIndex = table.Column<int>(nullable: true),
                     TargetTaskbar = table.Column<int>(nullable: false),
-                    Text = table.Column<string>(type: "VARCHAR(128)", maxLength: 128, nullable: true),
+                    SlotLevelIndex = table.Column<int>(nullable: true),
+                    SlotIndex = table.Column<int>(nullable: false),
                     Type = table.Column<uint>(nullable: false),
-                    UserId = table.Column<uint>(nullable: false)
+                    ObjectId = table.Column<uint>(nullable: false),
+                    ObjectType = table.Column<uint>(nullable: false),
+                    ObjectIndex = table.Column<uint>(nullable: false),
+                    UserId = table.Column<uint>(nullable: false),
+                    ObjectData = table.Column<uint>(nullable: false),
+                    Text = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -131,18 +132,18 @@ namespace Rhisis.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CreateTime = table.Column<DateTime>(nullable: false),
-                    Gold = table.Column<uint>(type: "BIGINT", nullable: false),
-                    HasBeenRead = table.Column<bool>(nullable: false),
-                    HasReceivedGold = table.Column<bool>(nullable: false),
-                    HasReceivedItem = table.Column<bool>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
+                    Gold = table.Column<long>(type: "BIGINT", nullable: false),
                     ItemId = table.Column<int>(nullable: true),
                     ItemQuantity = table.Column<short>(nullable: false),
-                    ReceiverId = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: false),
+                    Text = table.Column<string>(nullable: true),
+                    HasBeenRead = table.Column<bool>(nullable: false),
+                    HasReceivedItem = table.Column<bool>(nullable: false),
+                    HasReceivedGold = table.Column<bool>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    CreateTime = table.Column<DateTime>(nullable: false),
                     SenderId = table.Column<int>(nullable: false),
-                    Text = table.Column<string>(type: "VARCHAR(256)", maxLength: 256, nullable: true),
-                    Title = table.Column<string>(type: "VARCHAR(32)", maxLength: 32, nullable: false)
+                    ReceiverId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

@@ -51,7 +51,7 @@ namespace Rhisis.Business.Tests
             this.DatabaseMock.SetupProperty(x => x.Users, this._userRepositoryMock.Object);
             
             this._service = new UserService(this.Logger.Object, this.DatabaseMock.Object, 
-                this._configurationMock.Object, new CryptographyService());
+                this._configurationMock.Object);
         }
 
         [Theory]

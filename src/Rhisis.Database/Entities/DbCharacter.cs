@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -10,12 +11,13 @@ namespace Rhisis.Database.Entities
         public int UserId { get; set; }
 
         [Required]
-        [MaxLength(42)]
-        [Column(TypeName = "VARCHAR(42)")]
         public string Name { get; set; }
         
+        [Required]
         public byte Gender { get; set; }
         
+        [Required]
+        [DefaultValue(1)]
         public int Level { get; set; }
         
         public long Experience { get; set; }
@@ -24,6 +26,7 @@ namespace Rhisis.Database.Entities
         
         public int Gold { get; set; }
         
+        [Required]
         public int Slot { get; set; }
         
         public int Strength { get; set; }
@@ -39,13 +42,17 @@ namespace Rhisis.Database.Entities
         public int Mp { get; set; }
         
         public int Fp { get; set; }
-        
+
+        [Required]
         public int SkinSetId { get; set; }
-        
+
+        [Required]
         public int HairId { get; set; }
 
+        [Required]
         public int HairColor { get; set; }
-        
+
+        [Required]
         public int FaceId { get; set; }
         
         public int MapId { get; set; }

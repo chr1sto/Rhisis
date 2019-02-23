@@ -1,29 +1,21 @@
-﻿using Rhisis.Core.Business.Services;
-using Rhisis.Core.Services;
+﻿using Rhisis.Core.Cryptography;
 using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace Rhisis.Business.Tests
+namespace Rhisis.Core.Test.Cryptography
 {
-    public class CryptographyServiceTest
+    public class AesTest
     {
         private const string DecryptedMessage = "Hello world!";
-        private const string MD5MessageHash = "86fb269d190d2c85f6e0468ceca42a20";
         private const string KeyText = "dldhsvmflvm";
         private readonly byte[] EncryptedMessage = new byte[] { 25, 7, 55, 145, 111, 159, 200, 59, 9, 128, 203, 69, 187, 104, 233, 86 };
         private readonly byte[] Key = Encoding.ASCII.GetBytes(KeyText).Concat(Enumerable.Repeat((byte)0, 5).ToArray()).ToArray();
-        private readonly ICryptographyService _cryptographyService;
-
-        public CryptographyServiceTest()
-        {
-            this._cryptographyService = new CryptographyService();
-        }
 
         [Fact]
         public void EncryptData()
         {
-            var encrypted = this._cryptographyService.Encrypt(Encoding.Default.GetBytes(DecryptedMessage), Key);
+            var encrypted = Aes.EncryptByteArray(Encoding.Default.GetBytes(DecryptedMessage), Key);
 
             Assert.NotNull(encrypted);
             Assert.Equal(EncryptedMessage.Length, encrypted.Length);
@@ -33,11 +25,11 @@ namespace Rhisis.Business.Tests
                 Assert.Equal(EncryptedMessage[i], encrypted[i]);
             }
         }
-        
+
         [Fact]
         public void DecryptData()
         {
-            var decrypted = this._cryptographyService.Decrypt(EncryptedMessage, Key);
+            var decrypted = Aes.DecryptByteArray(EncryptedMessage, Key);
 
             Assert.NotNull(decrypted);
             Assert.Equal(DecryptedMessage.Length, decrypted.Length);
@@ -47,8 +39,8 @@ namespace Rhisis.Business.Tests
         [Fact]
         public void EncryptDecryptData()
         {
-            var encrypted = this._cryptographyService.Encrypt(Encoding.Default.GetBytes(DecryptedMessage), Key);
-            var decrypted = this._cryptographyService.Decrypt(encrypted, Key);
+            var encrypted = Aes.EncryptByteArray(Encoding.Default.GetBytes(DecryptedMessage), Key);
+            var decrypted = Aes.DecryptByteArray(encrypted, Key);
 
             Assert.NotNull(encrypted);
             Assert.NotNull(decrypted);
@@ -56,18 +48,9 @@ namespace Rhisis.Business.Tests
         }
 
         [Fact]
-        public void HashMD5()
-        {
-            var hashed = this._cryptographyService.GetMD5Hash(DecryptedMessage);
-
-            Assert.NotNull(hashed);
-            Assert.Equal(MD5MessageHash, hashed);
-        }
-
-        [Fact]
         public void BuildKeyFromString()
         {
-            var encryptedKey = this._cryptographyService.BuildEncryptionKeyFromString(KeyText, 16);
+            var encryptedKey = Aes.BuildEncryptionKeyFromString(KeyText, 16);
 
             Assert.Equal(Key.Length, encryptedKey.Length);
             Assert.Equal(Key, encryptedKey);
@@ -77,10 +60,18 @@ namespace Rhisis.Business.Tests
         public void AdjustEncryptionKey()
         {
             var encryptedKey = Encoding.ASCII.GetBytes(KeyText);
-            encryptedKey = this._cryptographyService.AdjustEncryptionKey(encryptedKey, 16);
+            encryptedKey = Aes.AdjustEncryptionKey(encryptedKey, 16);
 
             Assert.Equal(Key.Length, encryptedKey.Length);
             Assert.Equal(Key, encryptedKey);
+        }
+
+        [Fact]
+        public void GenerateEncryptionKey()
+        {
+            var generatedKey = Aes.GenerateKey();
+
+            Assert.NotNull(generatedKey);
         }
     }
 }
