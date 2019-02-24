@@ -32,6 +32,11 @@ namespace Rhisis.Login
         public string RemoteEndPoint => this.Socket.RemoteEndPoint.ToString();
 
         /// <summary>
+        /// Check if the client is connected.
+        /// </summary>
+        public bool IsConnected => !string.IsNullOrEmpty(this.Username);
+
+        /// <summary>
         /// Creates a new <see cref="LoginClient"/> instance.
         /// </summary>
         public LoginClient()

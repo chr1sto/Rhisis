@@ -8,6 +8,7 @@ using Rhisis.Network.ISC.Structures;
 using Rhisis.Network.Packets;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Login
 {
@@ -100,5 +101,14 @@ namespace Rhisis.Login
 
         /// <inheritdoc />
         public IEnumerable<ClusterServerInfo> GetConnectedClusters() => InterServer?.ClusterServers;
+
+        /// <inheritdoc />
+        public LoginClient GetClientByUsername(string username)
+            => this.Clients.FirstOrDefault(x =>
+                x.IsConnected &&
+                x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+
+        /// <inheritdoc />
+        public bool IsClientConnected(string username) => this.GetClientByUsername(username) != null;
     }
 }
