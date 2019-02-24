@@ -68,6 +68,12 @@ namespace Rhisis.Login
                     // TODO
                     break;
                 case AuthenticationResult.Success:
+                    if (loginServer.IsClientConnected(certifyPacket.Username))
+                    {
+                        AuthenticationFailed(client, ErrorType.DUPLICATE_ACCOUNT, "client already connected", disconnectClient: false);
+                        return;
+                    }
+
                     LoginPacketFactory.SendServerList(client, certifyPacket.Username, loginServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);
                     Logger.LogInformation($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
@@ -77,11 +83,29 @@ namespace Rhisis.Login
             }
         }
 
-        private static void AuthenticationFailed(LoginClient client, ErrorType error, string reason)
+        [PacketHandler(PacketType.CLOSE_EXISTING_CONNECTION)]
+        public static void OnCloseExistingConnection(LoginClient client, INetPacketStream packet)
+        {
+            var loginServer = DependencyContainer.Instance.Resolve<ILoginServer>();
+            var closeConnectionPacket = new CloseConnectionPacket(packet);
+            var otherConnectedClient = loginServer.GetClientByUsername(closeConnectionPacket.Username);
+
+            if (otherConnectedClient == null)
+            {
+                Logger.LogWarning($"Cannot find user with username '{closeConnectionPacket.Username}'.");
+                return;
+            }
+
+            // TODO: disconnect client from server and ISC.
+        }
+
+        private static void AuthenticationFailed(LoginClient client, ErrorType error, string reason, bool disconnectClient = true)
         {
             Logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
             LoginPacketFactory.SendLoginError(client, error);
-            client.Disconnect();
+
+            if (disconnectClient)
+                client.Disconnect();
         }
     }
 }
