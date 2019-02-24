@@ -43,10 +43,19 @@ namespace Rhisis.Core.Cryptography
         /// Encrypts a string.
         /// </summary>
         /// <param name="input">Input string</param>
-        /// <param name="key">Encryption key</param>
+        /// <param name="key">Encryption key as byte array</param>
         /// <returns>Encrypted string converted in base 64</returns>
         public static string EncryptString(string input, byte[] key) 
             => Convert.ToBase64String(EncryptByteArray(Encoding.UTF8.GetBytes(input), key));
+
+        /// <summary>
+        /// Encrypts a string.
+        /// </summary>
+        /// <param name="input">Input string</param>
+        /// <param name="key">Encryption key as string</param>
+        /// <returns>Encrypted string converted in base 64</returns>
+        public static string EncryptString(string input, string key)
+            => Convert.ToBase64String(EncryptByteArray(Encoding.UTF8.GetBytes(input), Convert.FromBase64String(key)));
 
         /// <summary>
         /// Decrypt a byte array into a string using the Rijndael algorithm.
@@ -73,6 +82,24 @@ namespace Rhisis.Core.Cryptography
 
             return decrypted;
         }
+
+        /// <summary>
+        /// Decrypt a string.
+        /// </summary>
+        /// <param name="input">Input string to decrypt</param>
+        /// <param name="key">Encryption key as byte array</param>
+        /// <returns>Decrypted string</returns>
+        public static string DecryptString(string input, byte[] key)
+            => DecryptByteArray(Convert.FromBase64String(input), key);
+
+        /// <summary>
+        /// Decrypt a string.
+        /// </summary>
+        /// <param name="input">Input string to decrypt</param>
+        /// <param name="key">Encryption key as string</param>
+        /// <returns>Decrypted string</returns>
+        public static string DecryptString(string input, string key)
+            => DecryptByteArray(Convert.FromBase64String(input), Convert.FromBase64String(key));
 
         /// <summary>
         /// Build the encryption key from a string value using default encoding.
@@ -114,15 +141,18 @@ namespace Rhisis.Core.Cryptography
         }
 
         /// <summary>
-        /// Generates an encryption key.
+        /// Generates an encryption key converted in base 64 string.
         /// </summary>
-        /// <param name="keySize"></param>
+        /// <param name="keySize">Encryption key size</param>
         /// <returns></returns>
-        public static string GenerateKey()
+        public static string GenerateKey(int keySize)
         {
+            if (keySize != 128 && keySize != 192 && keySize != 256)
+                throw new InvalidOperationException("The key size of the Aes encryption must be 128, 192 or 256 bits. Please check https://blogs.msdn.microsoft.com/shawnfa/2006/10/09/the-differences-between-rijndael-and-aes/ for more informations.");
+
             var crypto = new AesCryptoServiceProvider
             {
-                KeySize = 128,
+                KeySize = keySize,
                 BlockSize = 128
             };
 

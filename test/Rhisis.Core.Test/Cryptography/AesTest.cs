@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Cryptography;
+using System;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -66,12 +67,58 @@ namespace Rhisis.Core.Test.Cryptography
             Assert.Equal(Key, encryptedKey);
         }
 
-        [Fact]
-        public void GenerateEncryptionKey()
+        [Theory]
+        [InlineData(128, false)]
+        [InlineData(192, false)]
+        [InlineData(256, false)]
+        [InlineData(512, true)]
+        [InlineData(64, true)]
+        [InlineData(243, true)]
+        public void GenerateEncryptionKey(int keySize, bool shouldThrowException)
         {
-            var generatedKey = Aes.GenerateKey();
+            if (shouldThrowException)
+                Assert.Throws<InvalidOperationException>(() => Aes.GenerateKey(keySize));
+            else
+            {
+                var generatedKey = Aes.GenerateKey(keySize);
 
-            Assert.NotNull(generatedKey);
+                Assert.NotNull(generatedKey);
+            }
+        }
+
+        [Theory]
+        [InlineData(128)]
+        [InlineData(192)]
+        [InlineData(256)]
+        public void EncryptDecryptStringWithGeneratedKey(int keySize)
+        {
+            string generatedKey = Aes.GenerateKey(keySize);
+            string encryptedData = Aes.EncryptString(DecryptedMessage, generatedKey);
+
+            Assert.NotNull(encryptedData);
+
+            string decryptedData = Aes.DecryptString(encryptedData, generatedKey);
+
+            Assert.NotNull(decryptedData);
+            Assert.Equal(DecryptedMessage, decryptedData);
+        }
+
+        [Theory]
+        [InlineData(128)]
+        [InlineData(192)]
+        [InlineData(256)]
+        public void EncryptDecryptByteArrayWithGeneratedKey(int keySize)
+        {
+            byte[] decryptedMessageBytes = Encoding.UTF8.GetBytes(DecryptedMessage);
+            byte[] generatedKey = Convert.FromBase64String(Aes.GenerateKey(keySize));
+            byte[] encryptedData = Aes.EncryptByteArray(decryptedMessageBytes, generatedKey);
+
+            Assert.NotNull(encryptedData);
+
+            string decryptedData = Aes.DecryptByteArray(encryptedData, generatedKey);
+
+            Assert.NotNull(decryptedData);
+            Assert.Equal(DecryptedMessage, decryptedData);
         }
     }
 }

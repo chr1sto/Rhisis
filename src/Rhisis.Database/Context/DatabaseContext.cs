@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.Helpers;
 using Rhisis.Database.Attributes;
 using Rhisis.Database.Converters;
 using Rhisis.Database.Entities;
@@ -110,6 +108,7 @@ namespace Rhisis.Database.Context
                 foreach (var property in entityType.GetProperties())
                 {
                     var attributes = property.PropertyInfo.GetCustomAttributes(typeof(EncryptedAttribute), false);
+
                     if (attributes.Any())
                         property.SetValueConverter(new EncryptionConverter(this._configuration.EncryptionKey));
                 }

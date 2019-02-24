@@ -63,7 +63,7 @@ namespace Rhisis.API.Controllers
         /// <param name="email">Email address to check</param>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpGet("email/exists/{email}")]
+        [HttpGet("mail/exists/{email}")]
         public IActionResult EmailExists(string email)
         {
             this._logger.LogInformation($"An unknown user want to check if email '{email}' exists.");

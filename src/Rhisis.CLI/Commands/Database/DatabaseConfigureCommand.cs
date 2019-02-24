@@ -20,7 +20,7 @@ namespace Rhisis.CLI.Commands.Database
 
             var dbConfiguration = new DatabaseConfiguration()
             {
-                EncryptionKey = Aes.GenerateKey()
+                EncryptionKey = Aes.GenerateKey(256)
             };
 
             Console.WriteLine("Select one of the available providers:");
