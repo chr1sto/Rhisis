@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhisis.Database.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,12 +18,10 @@ namespace Rhisis.Database.Entities
         public short ItemQuantity { get; set; }
 
         [Required]
-        [MaxLength(32)]
-        [Column(TypeName = "VARCHAR(32)")]
+        [Encrypted]
         public string Title { get; set; }
 
-        [MaxLength(256)]
-        [Column(TypeName = "VARCHAR(256)")]
+        [Encrypted]
         public string Text { get; set; }
 
         public bool HasBeenRead { get; set; }

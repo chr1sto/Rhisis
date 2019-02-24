@@ -19,6 +19,13 @@ namespace Rhisis.Core.Services
         bool HasUser(string username);
 
         /// <summary>
+        /// Check if the email address exists in the database.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        bool HasUserWithEmail(string email);
+
+        /// <summary>
         /// Creates a new user in the database.
         /// </summary>
         /// <param name="registerModel">Registrer model</param>

@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Common;
-using System.ComponentModel.DataAnnotations;
+using Rhisis.Database.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
@@ -26,9 +26,8 @@ namespace Rhisis.Database.Entities
         public uint UserId { get; set; }
 
         public uint ObjectData { get; set; }
-        
-        [MaxLength(128)]
-        [Column(TypeName = "VARCHAR(128)")]
+
+        [Encrypted]
         public string Text { get; set; }
 
         public DbCharacter Character { get; set; }

@@ -42,7 +42,7 @@ namespace Rhisis.API.Controllers
         }
 
         /// <summary>
-        /// Check if a user is already using the given username.
+        /// Check if a user is already used using the given username.
         /// </summary>
         /// <param name="username">Username to check</param>
         /// <returns></returns>
@@ -55,6 +55,22 @@ namespace Rhisis.API.Controllers
             bool exists = this._userService.HasUser(username);
             
             return Ok(exists);
+        }
+
+        /// <summary>
+        /// Check if the email address is used.
+        /// </summary>
+        /// <param name="email">Email address to check</param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("mail/exists/{email}")]
+        public IActionResult EmailExists(string email)
+        {
+            this._logger.LogInformation($"An unknown user want to check if email '{email}' exists.");
+
+            bool emailExists = this._userService.HasUserWithEmail(email);
+
+            return Ok(emailExists);
         }
     }
 }

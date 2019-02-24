@@ -1,5 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Helpers;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using System;
@@ -17,7 +18,10 @@ namespace Rhisis.CLI.Commands.Database
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = "config/database.json";
 
-            var dbConfiguration = new DatabaseConfiguration();
+            var dbConfiguration = new DatabaseConfiguration()
+            {
+                EncryptionKey = Aes.GenerateKey(256)
+            };
 
             Console.WriteLine("Select one of the available providers:");
             ConsoleHelper.DisplayEnum<DatabaseProvider>();

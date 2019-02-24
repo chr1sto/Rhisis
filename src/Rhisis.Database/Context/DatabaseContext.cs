@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Rhisis.Core.Helpers;
+using Rhisis.Core.Exceptions;
+using Rhisis.Database.Attributes;
+using Rhisis.Database.Converters;
 using Rhisis.Database.Entities;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rhisis.Database.Context
@@ -93,10 +95,24 @@ namespace Rhisis.Database.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (string.IsNullOrEmpty(this._configuration.EncryptionKey))
+                throw new RhisisConfigurationException($"Database configuration doesn't contain a valid encryption key.");
+
             modelBuilder.Entity<DbCharacter>()
                 .HasMany(x => x.ReceivedMails).WithOne(x => x.Receiver);
             modelBuilder.Entity<DbCharacter>()
                 .HasMany(x => x.SentMails).WithOne(x => x.Sender);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    var attributes = property.PropertyInfo.GetCustomAttributes(typeof(EncryptedAttribute), false);
+
+                    if (attributes.Any())
+                        property.SetValueConverter(new EncryptionConverter(this._configuration.EncryptionKey));
+                }
+            }
         }
 
         /// <summary>

@@ -13,5 +13,8 @@ namespace Rhisis.Core.Models
 
         [DataMember]
         public string PasswordConfirmation { get; set; }
+
+        [DataMember]
+        public string Email { get; set; }
     }
 }
