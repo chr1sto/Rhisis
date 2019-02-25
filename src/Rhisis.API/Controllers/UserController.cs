@@ -72,5 +72,18 @@ namespace Rhisis.API.Controllers
 
             return Ok(emailExists);
         }
+
+        /// <summary>
+        /// Authenticates the user.
+        /// </summary>
+        /// <param name="userLogin">User login model</param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost("auth")]
+        public IActionResult Authenticate([FromBody] UserLoginModel userLogin)
+        {
+            // TODO: authenticate user and generate JWT
+            return Ok();
+        }
     }
 }

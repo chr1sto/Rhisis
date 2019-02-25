@@ -70,10 +70,10 @@ namespace Rhisis.Database.Repositories
         public IEnumerable<T> GetAll(Func<T, bool> func) => this.GetQueryable(this._context).Where(func).AsEnumerable();
 
         /// <inheritdoc />
-        public int Count() => this.GetQueryable(this._context).Count();
+        public int Count() => this._context.Set<T>().AsNoTracking().Count();
 
         /// <inheritdoc />
-        public int Count(Func<T, bool> func) => this.GetQueryable(this._context).Count(func);
+        public int Count(Func<T, bool> func) => this._context.Set<T>().AsNoTracking().Count(func);
 
         /// <inheritdoc />
         public bool HasAny(Func<T, bool> predicate) => this._context.Set<T>().AsNoTracking().Any(predicate);

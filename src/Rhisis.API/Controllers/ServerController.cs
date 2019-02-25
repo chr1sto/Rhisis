@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Rhisis.Core.Models;
+using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
 using System;
 using System.Net.NetworkInformation;
@@ -16,16 +18,19 @@ namespace Rhisis.API.Controllers
     {
         private readonly ILogger<ServerController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IStatisticsService _statisticsService;
 
         /// <summary>
         /// Creates a new <see cref="ServerController"/> instance.
         /// </summary>
         /// <param name="logger">Logger</param>
         /// <param name="configuration">Configuration</param>
-        public ServerController(ILogger<ServerController> logger, IConfiguration configuration)
+        /// <param name="statisticsService">Statistics service</param>
+        public ServerController(ILogger<ServerController> logger, IConfiguration configuration, IStatisticsService statisticsService)
         {
             this._logger = logger;
             this._configuration = configuration;
+            this._statisticsService = statisticsService;
         }
 
         /// <summary>
@@ -51,6 +56,19 @@ namespace Rhisis.API.Controllers
             }
 
             return Ok(worldServerConnected);
+        }
+
+        [HttpGet("stats")]
+        public IActionResult GetServerStatistics()
+        {
+            var serverStats = new ServerStatisticsModel
+            {
+                NumberOfUsers = this._statisticsService.GetRegisteredUsers(),
+                NumberOfCharacters = this._statisticsService.GetNumberOfCharacters(),
+                NumberOfPlayersOnline = 0 // TODO: make request to server
+            };
+
+            return Ok(serverStats);
         }
     }
 }
