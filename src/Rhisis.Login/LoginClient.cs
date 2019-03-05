@@ -29,7 +29,7 @@ namespace Rhisis.Login
         /// <summary>
         /// Gets the remote end point (IP and port) for this client.
         /// </summary>
-        public string RemoteEndPoint => this.Socket.RemoteEndPoint.ToString();
+        public string RemoteEndPoint => this.Socket?.RemoteEndPoint?.ToString();
 
         /// <summary>
         /// Check if the client is connected.
@@ -81,7 +81,7 @@ namespace Rhisis.Login
 
             if (Socket == null)
             {
-                this._logger.LogTrace("Skip to handle packet from {0}. Reason: client is no more connected.", this.RemoteEndPoint);
+                this._logger.LogTrace("Skip to handle packet. Reason: client is no more connected.");
                 return;
             }
 

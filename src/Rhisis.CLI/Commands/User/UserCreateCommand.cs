@@ -1,6 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Helpers;
 using Rhisis.Core.Common;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.Extensions;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
@@ -35,7 +36,7 @@ namespace Rhisis.CLI.Commands.User
             Console.Write("Password confirmation: ");
             string passwordConfirmation = ConsoleHelper.ReadPassword();
 
-            Console.WriteLine("Password salt:");
+            Console.Write("Password salt: ");
             string passwordSalt = ConsoleHelper.ReadStringOrDefault();
 
             Console.WriteLine("Authority: ");
@@ -80,8 +81,7 @@ namespace Rhisis.CLI.Commands.User
                     return;
                 }
 
-                if (!string.IsNullOrEmpty(passwordSalt))
-                    user.Password = passwordSalt + user.Password;
+                user.Password = MD5.GetMD5Hash(passwordSalt, user.Password);
 
                 this._database.Users.Create(user);
                 this._database.Complete();
