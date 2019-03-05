@@ -35,6 +35,9 @@ namespace Rhisis.CLI.Commands.User
             Console.Write("Password confirmation: ");
             string passwordConfirmation = ConsoleHelper.ReadPassword();
 
+            Console.WriteLine("Password salt:");
+            string passwordSalt = ConsoleHelper.ReadStringOrDefault();
+
             Console.WriteLine("Authority: ");
             ConsoleHelper.DisplayEnum<AuthorityType>();
             user.Authority = (int)ConsoleHelper.ReadEnum<AuthorityType>();
@@ -76,6 +79,9 @@ namespace Rhisis.CLI.Commands.User
                     Console.WriteLine("Passwords doesn't match.");
                     return;
                 }
+
+                if (!string.IsNullOrEmpty(passwordSalt))
+                    user.Password = passwordSalt + user.Password;
 
                 this._database.Users.Create(user);
                 this._database.Complete();
