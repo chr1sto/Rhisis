@@ -5,10 +5,12 @@ using Rhisis.Core.Cryptography;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Database;
 using Rhisis.Login.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
+using System;
 
 namespace Rhisis.Login
 {
@@ -72,6 +74,22 @@ namespace Rhisis.Login
                     {
                         AuthenticationFailed(client, ErrorType.DUPLICATE_ACCOUNT, "client already connected", disconnectClient: false);
                         return;
+                    }
+                    
+                    using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
+                    {
+                        var user = database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
+
+                        if (user == null)
+                        {
+                            AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "Cannot find user in database");
+                            Logger.LogCritical($"Cannot find user '{certifyPacket.Username}' in database to update last connection time.");
+                            return;
+                        }
+
+                        user.LastConnectionTime = DateTime.UtcNow;
+                        database.Users.Update(user);
+                        database.Complete();
                     }
 
                     LoginPacketFactory.SendServerList(client, certifyPacket.Username, loginServer.GetConnectedClusters());

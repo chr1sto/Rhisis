@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Database.Attributes;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
@@ -7,8 +8,6 @@ namespace Rhisis.Database.Entities
     [Table("shortcuts")]
     public sealed class DbShortcut : DbEntity
     {
-        public int CharacterId { get; set; }
-
         public ShortcutTaskbarTarget TargetTaskbar { get; set; }
 
         public int? SlotLevelIndex { get; set; }
@@ -30,6 +29,10 @@ namespace Rhisis.Database.Entities
         [Encrypted]
         public string Text { get; set; }
 
+        [Required]
+        public int CharacterId { get; set; }
+
+        [ForeignKey(nameof(CharacterId))]
         public DbCharacter Character { get; set; }
 
         public DbShortcut()

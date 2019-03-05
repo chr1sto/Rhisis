@@ -19,6 +19,7 @@ using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -163,6 +164,7 @@ namespace Rhisis.World.Handlers
 
             // 4th: player is now spawned
             client.Player.Object.Spawned = true;
+            client.LoggedInAt = DateTime.UtcNow;
         }
     }
 }

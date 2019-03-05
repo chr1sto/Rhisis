@@ -8,21 +8,22 @@ namespace Rhisis.Database.Entities
     [Table("mails")]
     public sealed class DbMail : DbEntity
     {
-        [Column(TypeName = "BIGINT")]
-        public uint Gold { get; set; }
-
-        public int? ItemId { get; set; }
-
-        public DbItem Item { get; set; }
-
-        public short ItemQuantity { get; set; }
-
         [Required]
         [Encrypted]
         public string Title { get; set; }
 
         [Encrypted]
         public string Text { get; set; }
+
+        [Column(TypeName = "BIGINT")]
+        public uint Gold { get; set; }
+
+        public int? ItemId { get; set; }
+
+        [ForeignKey(nameof(ItemId))]
+        public DbItem Item { get; set; }
+
+        public short ItemQuantity { get; set; }
 
         public bool HasBeenRead { get; set; }
 
@@ -35,9 +36,13 @@ namespace Rhisis.Database.Entities
         public DateTime CreateTime { get; set; }
         
         public int SenderId { get; set; }
+
+        [ForeignKey(nameof(SenderId))]
         public DbCharacter Sender { get; set; }
 
         public int ReceiverId { get; set; }
+
+        [ForeignKey(nameof(ReceiverId))]
         public DbCharacter Receiver { get; set; }
 
         public DbMail()

@@ -9,7 +9,7 @@ using Rhisis.Database.Context;
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20190223194344_InitialMigration")]
+    [Migration("20190305201603_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,9 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<int>("Intelligence");
 
+                    b.Property<DateTime>("LastConnectionTime")
+                        .HasColumnType("DATETIME");
+
                     b.Property<int>("Level");
 
                     b.Property<int>("MapId");
@@ -60,6 +63,9 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<long>("PlayTime")
+                        .HasColumnType("BIGINT");
 
                     b.Property<float>("PosX");
 
@@ -199,6 +205,9 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<int>("Authority");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("DATETIME");
+
                     b.Property<string>("Email")
                         .IsRequired();
 
@@ -212,6 +221,9 @@ namespace Rhisis.Database.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username", "Email")
+                        .IsUnique();
 
                     b.ToTable("users");
                 });
