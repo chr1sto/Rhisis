@@ -40,14 +40,13 @@ namespace Rhisis.CLI.Helpers
         /// <summary>
         /// Displays an enum as a numbered list.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public static void DisplayEnum<T>()
+        /// <typeparam name="TEnum"></typeparam>
+        public static void DisplayEnum<TEnum>() where TEnum : struct
         {
-            string[] providerNames = Enum.GetNames(typeof(T));
-            int[] providerValues = (int[])Enum.GetValues(typeof(T));
+            string[] providerNames = Enum.GetNames(typeof(TEnum));
 
-            for (int i = 1; i < providerNames.Length; i++)
-                Console.WriteLine($"{providerValues[i]}. {providerNames[i]}");
+            for (int i = 0; i < providerNames.Length; i++)
+                Console.WriteLine($"{i}. {providerNames[i]}");
         }
 
         /// <summary>
@@ -58,11 +57,15 @@ namespace Rhisis.CLI.Helpers
         public static TEnum ReadEnum<TEnum>() where TEnum : struct
         {
             var value = default(TEnum);
-            int[] providerValues = (int[])Enum.GetValues(typeof(TEnum));
+            string[] providerNames = Enum.GetNames(typeof(TEnum));
             string selectedProvider = Console.ReadLine();
 
-            if (int.TryParse(selectedProvider, out int selectedProviderValue) && selectedProviderValue > 0 && selectedProviderValue < providerValues.Length)
-                value = (TEnum)(object)selectedProviderValue;
+            if (int.TryParse(selectedProvider, out int selectedProviderValue) && 
+                selectedProviderValue > 0)
+            {
+                if (selectedProviderValue < providerNames.Length)
+                    value = Enum.Parse<TEnum>(providerNames[selectedProviderValue], true);
+            }
             else if (Enum.TryParse(selectedProvider, true, out TEnum provider))
                 value = provider;
 

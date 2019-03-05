@@ -61,6 +61,7 @@ namespace Rhisis.Database
             this.Characters = new CharacterRepository(this._databaseContext);
             this.Items = new ItemRepository(this._databaseContext);
             this.Mails = new MailRepository(this._databaseContext);
+            this.TaskbarShortcuts = new ShortcutRepository(this._databaseContext);
         }
     }
 }
