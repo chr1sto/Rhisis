@@ -1,26 +1,61 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
 {
     [Table("items")]
     public sealed class DbItem : DbEntity
     {        
+        /// <summary>
+        /// Gets or sets the real item Id.
+        /// </summary>
+        [Required]
         public int ItemId { get; set; }
         
-        public int CharacterId { get; set; }
-        
+        /// <summary>
+        /// Gets or sets the amount of items.
+        /// </summary>
+        [Required]
         public int ItemCount { get; set; }
         
+        /// <summary>
+        /// Gets or sets the item slot.
+        /// </summary>
         public int ItemSlot { get; set; }
         
+        /// <summary>
+        /// Gets or sets the item creator id.
+        /// </summary>
         public int CreatorId { get; set; }
         
+        /// <summary>
+        /// Gets or sets the item refine.
+        /// </summary>
+        [DefaultValue(0)]
         public byte Refine { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the item element.
+        /// </summary>
+        [DefaultValue(0)]
         public byte Element { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the item element refine.
+        /// </summary>
+        [DefaultValue(0)]
         public byte ElementRefine { get; set; }
 
+        /// <summary>
+        /// Gets or sets the character Id associated to this item.
+        /// </summary>
+        public int CharacterId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the character associated to this item.
+        /// </summary>
+        [ForeignKey(nameof(CharacterId))]
         public DbCharacter Character { get; set; }
 
         public DbItem()

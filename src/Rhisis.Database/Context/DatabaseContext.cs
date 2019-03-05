@@ -98,6 +98,10 @@ namespace Rhisis.Database.Context
             if (string.IsNullOrEmpty(this._configuration.EncryptionKey))
                 throw new RhisisConfigurationException($"Database configuration doesn't contain a valid encryption key.");
 
+            modelBuilder.Entity<DbUser>()
+                .HasIndex(c => new { c.Username, c.Email })
+                .IsUnique();
+
             modelBuilder.Entity<DbCharacter>()
                 .HasMany(x => x.ReceivedMails).WithOne(x => x.Receiver);
             modelBuilder.Entity<DbCharacter>()

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Rhisis.Database.Entities
 {
@@ -31,16 +32,28 @@ namespace Rhisis.Database.Entities
         public string Email { get; set; }
 
         /// <summary>
+        /// Gets or sets the user's creation date.
+        /// </summary>
+        [Column(TypeName = "DATETIME")]
+        public DateTime CreatedAt { get; private set; }
+
+        /// <summary>
         /// Gets or sets the last time the user logged in.
         /// </summary>
         [Column(TypeName = "DATETIME")]
         public DateTime LastConnectionTime { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the user's authority.
         /// </summary>
         [Required]
         public int Authority { get; set; }
+
+        /// <summary>
+        /// Gets the total play time of this user in seconds.
+        /// </summary>
+        [NotMapped]
+        public long PlayTime => this.Characters.Sum(x => x.PlayTime);
 
         /// <summary>
         /// Gets or sets the user's characters list.
@@ -52,6 +65,7 @@ namespace Rhisis.Database.Entities
         /// </summary>
         public DbUser()
         {
+            this.CreatedAt = DateTime.UtcNow;
             this.Characters = new HashSet<DbCharacter>();
         }
     }

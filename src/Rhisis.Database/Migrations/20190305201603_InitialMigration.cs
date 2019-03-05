@@ -17,6 +17,7 @@ namespace Rhisis.Database.Migrations
                     Username = table.Column<string>(nullable: false),
                     Password = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     LastConnectionTime = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     Authority = table.Column<int>(nullable: false)
                 },
@@ -31,7 +32,6 @@ namespace Rhisis.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Gender = table.Column<byte>(nullable: false),
                     Level = table.Column<int>(nullable: false),
@@ -58,7 +58,10 @@ namespace Rhisis.Database.Migrations
                     Angle = table.Column<float>(nullable: false),
                     BankCode = table.Column<int>(nullable: false),
                     StatPoints = table.Column<int>(nullable: false),
-                    SkillPoints = table.Column<int>(nullable: false)
+                    SkillPoints = table.Column<int>(nullable: false),
+                    LastConnectionTime = table.Column<DateTime>(type: "DATETIME", nullable: false),
+                    PlayTime = table.Column<long>(type: "BIGINT", nullable: false),
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,13 +81,13 @@ namespace Rhisis.Database.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ItemId = table.Column<int>(nullable: false),
-                    CharacterId = table.Column<int>(nullable: false),
                     ItemCount = table.Column<int>(nullable: false),
                     ItemSlot = table.Column<int>(nullable: false),
                     CreatorId = table.Column<int>(nullable: false),
                     Refine = table.Column<byte>(nullable: false),
                     Element = table.Column<byte>(nullable: false),
-                    ElementRefine = table.Column<byte>(nullable: false)
+                    ElementRefine = table.Column<byte>(nullable: false),
+                    CharacterId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,7 +106,6 @@ namespace Rhisis.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CharacterId = table.Column<int>(nullable: false),
                     TargetTaskbar = table.Column<int>(nullable: false),
                     SlotLevelIndex = table.Column<int>(nullable: true),
                     SlotIndex = table.Column<int>(nullable: false),
@@ -113,7 +115,8 @@ namespace Rhisis.Database.Migrations
                     ObjectIndex = table.Column<uint>(nullable: false),
                     UserId = table.Column<uint>(nullable: false),
                     ObjectData = table.Column<uint>(nullable: false),
-                    Text = table.Column<string>(nullable: true)
+                    Text = table.Column<string>(nullable: true),
+                    CharacterId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,11 +135,11 @@ namespace Rhisis.Database.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(nullable: false),
+                    Text = table.Column<string>(nullable: true),
                     Gold = table.Column<long>(type: "BIGINT", nullable: false),
                     ItemId = table.Column<int>(nullable: true),
                     ItemQuantity = table.Column<short>(nullable: false),
-                    Title = table.Column<string>(nullable: false),
-                    Text = table.Column<string>(nullable: true),
                     HasBeenRead = table.Column<bool>(nullable: false),
                     HasReceivedItem = table.Column<bool>(nullable: false),
                     HasReceivedGold = table.Column<bool>(nullable: false),
@@ -197,6 +200,12 @@ namespace Rhisis.Database.Migrations
                 name: "IX_shortcuts_CharacterId",
                 table: "shortcuts",
                 column: "CharacterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_Username_Email",
+                table: "users",
+                columns: new[] { "Username", "Email" },
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

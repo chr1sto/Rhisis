@@ -46,6 +46,11 @@ namespace Rhisis.World
         public string RemoteEndPoint { get; private set; }
 
         /// <summary>
+        /// Gets or sets the time the player has logged in.
+        /// </summary>
+        public DateTime LoggedInAt { get; set; }
+
+        /// <summary>
         /// Creates a new <see cref="WorldClient"/> instance.
         /// </summary>
         public WorldClient()
@@ -124,6 +129,9 @@ namespace Rhisis.World
 
                 if (character != null)
                 {
+                    character.LastConnectionTime = this.LoggedInAt;
+                    character.PlayTime += (long)(DateTime.UtcNow - this.LoggedInAt).TotalSeconds;
+
                     character.PosX = this.Player.Object.Position.X;
                     character.PosY = this.Player.Object.Position.Y;
                     character.PosZ = this.Player.Object.Position.Z;
