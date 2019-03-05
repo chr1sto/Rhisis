@@ -2,8 +2,8 @@
   "profiles": {
     "Rhisis.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "database configure",
-      "workingDirectory": "../../../bin"
+      "commandLineArgs": "user create",
+      "workingDirectory": "../../bin"
     }
   }
 }

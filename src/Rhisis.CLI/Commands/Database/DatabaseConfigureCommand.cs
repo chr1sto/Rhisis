@@ -16,7 +16,7 @@ namespace Rhisis.CLI.Commands.Database
         public void OnExecute(CommandLineApplication app, IConsole console)
         {
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
-                DatabaseConfigurationFile = "config/database.json";
+                DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
 
             var dbConfiguration = new DatabaseConfiguration()
             {
