@@ -48,6 +48,8 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<int>("Intelligence");
 
+                    b.Property<bool>("IsDeleted");
+
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
 
@@ -104,6 +106,8 @@ namespace Rhisis.Database.Migrations
                     b.Property<byte>("Element");
 
                     b.Property<byte>("ElementRefine");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int>("ItemCount");
 
@@ -208,6 +212,8 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired();
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");

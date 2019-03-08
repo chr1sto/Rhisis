@@ -31,6 +31,11 @@ namespace Rhisis.Business.Services
                 return AuthenticationResult.BadUsername;
             }
 
+            if (_dbUser.IsDeleted)
+            {
+                return AuthenticationResult.AccountDeleted;
+            }
+
             if (!_dbUser.Password.Equals(password, StringComparison.OrdinalIgnoreCase))
             {
                 return AuthenticationResult.BadPassword;

@@ -48,6 +48,12 @@ namespace Rhisis.Database.Entities
         public byte ElementRefine { get; set; }
 
         /// <summary>
+        /// Gets or sets a flag that indicates if the item is deleted.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; }
+
+        /// <summary>
         /// Gets or sets the character Id associated to this item.
         /// </summary>
         public int CharacterId { get; set; }

@@ -14,6 +14,8 @@ using Rhisis.Network.ISC.Structures;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Cluster;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Cluster
 {
@@ -61,7 +63,10 @@ namespace Rhisis.Cluster
                 }
 
                 Logger.LogDebug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
-                ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+
+                IEnumerable<DbCharacter> userCharacters = dbUser.Characters.Where(x => !x.IsDeleted);
+
+                ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, userCharacters);
                 ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
 
                 if (clusterConfiguration.EnableLoginProtect)
@@ -191,6 +196,13 @@ namespace Rhisis.Cluster
                     return;
                 }
 
+                if (dbCharacter.IsDeleted)
+                {
+                    Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                           "Reason: character is already deleted.");
+                    return;
+                }
+
                 database.Characters.Delete(dbCharacter);
                 database.Complete();
                 Logger.LogInformation("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
@@ -216,6 +228,14 @@ namespace Rhisis.Cluster
                 Logger.LogWarning($"[SECURITY] Unable to prejoin character id '{pak.CharacterName}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                     $"Reason: no character with id {pak.CharacterId}.");
                 client.Disconnect();
+                return;
+            }
+
+            // Check if the character is deleted.
+            if (dbCharacter.IsDeleted)
+            {
+                Logger.LogWarning($"[SECURITY] Unable to prejoin with character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                              "Reason: character is deleted.");
                 return;
             }
 

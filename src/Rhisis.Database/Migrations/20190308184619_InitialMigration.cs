@@ -19,7 +19,8 @@ namespace Rhisis.Database.Migrations
                     Email = table.Column<string>(nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     LastConnectionTime = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    Authority = table.Column<int>(nullable: false)
+                    Authority = table.Column<int>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,6 +62,7 @@ namespace Rhisis.Database.Migrations
                     SkillPoints = table.Column<int>(nullable: false),
                     LastConnectionTime = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     PlayTime = table.Column<long>(type: "BIGINT", nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -87,6 +89,7 @@ namespace Rhisis.Database.Migrations
                     Refine = table.Column<byte>(nullable: false),
                     Element = table.Column<byte>(nullable: false),
                     ElementRefine = table.Column<byte>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
                     CharacterId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

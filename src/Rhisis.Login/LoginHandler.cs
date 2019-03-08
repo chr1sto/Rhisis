@@ -69,6 +69,9 @@ namespace Rhisis.Login
                 case AuthenticationResult.AccountTemporarySuspended:
                     // TODO
                     break;
+                case AuthenticationResult.AccountDeleted:
+                    AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "logged in with deleted account");
+                    break;
                 case AuthenticationResult.Success:
                     if (loginServer.IsClientConnected(certifyPacket.Username))
                     {
