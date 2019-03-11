@@ -168,6 +168,12 @@ namespace Rhisis.Database.Entities
         public long PlayTime { get; set; }
 
         /// <summary>
+        /// Gets or sets a flag that indicates if the character is deleted.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; }
+
+        /// <summary>
         /// Gets the character associated user id.
         /// </summary>
         [Required]

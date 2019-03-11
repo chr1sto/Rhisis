@@ -6,6 +6,7 @@
         BadUsername,
         BadPassword,
         AccountSuspended,
-        AccountTemporarySuspended
+        AccountTemporarySuspended,
+        AccountDeleted
     }
 }

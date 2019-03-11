@@ -44,6 +44,12 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
+            if (character.IsDeleted)
+            {
+                Logger.Warn($"Cannot connect with character '{character.Name}' for user '{character.User.Username}'. Reason: character is deleted.");
+                return;
+            }
+
             if (character.User.Authority <= 0)
             {
                 Logger.Info($"User {character.User.Username} is banned.");

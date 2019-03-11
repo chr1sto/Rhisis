@@ -1,6 +1,7 @@
 ﻿using Rhisis.Database.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -48,6 +49,12 @@ namespace Rhisis.Database.Entities
         /// </summary>
         [Required]
         public int Authority { get; set; }
+
+        /// <summary>
+        /// Gets or sets a flag that indicates if the user is deleted.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; }
 
         /// <summary>
         /// Gets the total play time of this user in seconds.

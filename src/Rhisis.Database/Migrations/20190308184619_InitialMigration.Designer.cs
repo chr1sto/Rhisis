@@ -9,7 +9,7 @@ using Rhisis.Database.Context;
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20190305201603_InitialMigration")]
+    [Migration("20190308184619_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,6 +49,8 @@ namespace Rhisis.Database.Migrations
                     b.Property<int>("Hp");
 
                     b.Property<int>("Intelligence");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
@@ -106,6 +108,8 @@ namespace Rhisis.Database.Migrations
                     b.Property<byte>("Element");
 
                     b.Property<byte>("ElementRefine");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int>("ItemCount");
 
@@ -210,6 +214,8 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired();
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");

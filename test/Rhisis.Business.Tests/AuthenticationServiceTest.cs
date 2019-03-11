@@ -35,6 +35,9 @@ namespace Rhisis.Business.Tests
         [InlineData("mayer", "c31f44c8-fc9c-4cea-872c-66f91be16589", AuthenticationResult.Success)]
         [InlineData("Eastrall", "a833300qsdnisqd45646djfdec6db", AuthenticationResult.BadUsername)]
         [InlineData("Nita", "a833300c-be76367-46bd77bec6db", AuthenticationResult.BadPassword)]
+        [InlineData("Armstrong", "daf059bc-e76c-4b8f-b431-e049617ebb31", AuthenticationResult.AccountDeleted)]
+        [InlineData("Stacey", "c96f0d63-f16c-48b2-a1c9-0b7b2af3dee5", AuthenticationResult.AccountDeleted)]
+        [InlineData("Weber", "8a946c3f-7261-4871-8ab9-a7cf02a18149", AuthenticationResult.AccountDeleted)]
         public void AuthenticationTest(string username, string password, AuthenticationResult expectedResult)
         {
             AuthenticationResult result = this._service.Authenticate(username, password);
