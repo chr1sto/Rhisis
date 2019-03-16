@@ -1,6 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Microsoft.EntityFrameworkCore.DataEncryption.Providers;
 using Rhisis.CLI.Helpers;
-using Rhisis.Core.Cryptography;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using System;
@@ -20,7 +20,7 @@ namespace Rhisis.CLI.Commands.Database
 
             var dbConfiguration = new DatabaseConfiguration()
             {
-                EncryptionKey = Aes.GenerateKey(256)
+                EncryptionKey = Convert.ToBase64String(AesProvider.GenerateKey(AesKeySize.AES256Bits).Key)
             };
 
             Console.WriteLine("Select one of the available providers:");

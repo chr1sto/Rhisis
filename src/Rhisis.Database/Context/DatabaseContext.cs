@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.DataEncryption;
+using Microsoft.EntityFrameworkCore.DataEncryption.Providers;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Rhisis.Core.Exceptions;
-using Rhisis.Database.Attributes;
-using Rhisis.Database.Converters;
 using Rhisis.Database.Entities;
 using System;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace Rhisis.Database.Context
@@ -18,6 +19,7 @@ namespace Rhisis.Database.Context
         private const string MsSqlConnectionString = "Server={0};Database={1};User Id={2};Password={3};";
 
         private readonly DatabaseConfiguration _configuration;
+        private readonly IEncryptionProvider _encryptionProvider;
 
         /// <summary>
         /// Gets or sets the users.
@@ -59,7 +61,15 @@ namespace Rhisis.Database.Context
         /// <param name="configuration"></param>
         public DatabaseContext(DatabaseConfiguration configuration)
         {
+            if (string.IsNullOrEmpty(configuration.EncryptionKey))
+                throw new RhisisConfigurationException($"Database configuration doesn't contain a valid encryption key.");
+
             this._configuration = configuration;
+            this._encryptionProvider = new AesProvider(
+                Convert.FromBase64String(this._configuration.EncryptionKey), 
+                Enumerable.Repeat<byte>(0, 16).ToArray(), 
+                CipherMode.CBC, 
+                PaddingMode.Zeros);
         }
 
         /// <inheritdoc />
@@ -95,28 +105,14 @@ namespace Rhisis.Database.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (string.IsNullOrEmpty(this._configuration.EncryptionKey))
-                throw new RhisisConfigurationException($"Database configuration doesn't contain a valid encryption key.");
-
+            modelBuilder.UseEncryption(this._encryptionProvider);
             modelBuilder.Entity<DbUser>()
                 .HasIndex(c => new { c.Username, c.Email })
                 .IsUnique();
-
             modelBuilder.Entity<DbCharacter>()
                 .HasMany(x => x.ReceivedMails).WithOne(x => x.Receiver);
             modelBuilder.Entity<DbCharacter>()
                 .HasMany(x => x.SentMails).WithOne(x => x.Sender);
-
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                foreach (var property in entityType.GetProperties())
-                {
-                    var attributes = property.PropertyInfo.GetCustomAttributes(typeof(EncryptedAttribute), false);
-
-                    if (attributes.Any())
-                        property.SetValueConverter(new EncryptionConverter(this._configuration.EncryptionKey));
-                }
-            }
         }
 
         /// <summary>
