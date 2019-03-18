@@ -8,9 +8,6 @@ namespace Rhisis.CLI.Commands.Database
     [Subcommand(typeof(DatabaseInitializationCommand))]
     public class DatabaseCommand
     {
-        public void OnExecute(CommandLineApplication app, IConsole console)
-        {
-            app.ShowHelp();
-        }
+        public void OnExecute(CommandLineApplication app, IConsole console) => app.ShowHelp();
     }
 }
