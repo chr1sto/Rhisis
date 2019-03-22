@@ -6,7 +6,6 @@ using Rhisis.Core.Structures.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Rhisis.CLI.Commands.Setup
 {
@@ -26,6 +25,7 @@ namespace Rhisis.CLI.Commands.Setup
         {
             Console.WriteLine("Welcome to Rhisis!");
             Console.WriteLine($"-------------------------------{Environment.NewLine}");
+            Console.WriteLine($"This command will help you configure your Rhisis server instance.{Environment.NewLine}");
             
             this.ConfigureLoginServer();
             this.ConfigureClusterServer();
@@ -50,7 +50,7 @@ namespace Rhisis.CLI.Commands.Setup
             Console.Write("Client Build Version (20100412): ");
             loginConfiguration.BuildVersion = ConsoleHelper.ReadStringOrDefault("20100412");
 
-            loginConfiguration.AccountVerification = ConsoleHelper.AskConfirmation("Use encryption?");
+            loginConfiguration.AccountVerification = ConsoleHelper.AskConfirmation("Use account verification?");
             loginConfiguration.PasswordEncryption = ConsoleHelper.AskConfirmation("Use password encryption?");
 
             if (loginConfiguration.PasswordEncryption)
@@ -66,8 +66,8 @@ namespace Rhisis.CLI.Commands.Setup
             loginConfiguration.ISC.Port = ConsoleHelper.ReadIntegerOrDefault(15000);
 
             Console.Write("ISC Password: ");
-            loginConfiguration.ISC.Password = Console.ReadLine();
-            
+            loginConfiguration.ISC.Password = ConsoleHelper.ReadPassword();
+
             Console.WriteLine("--------------------------------");
             Console.WriteLine("Login Server Configuration:");
             Console.WriteLine($"Host: {loginConfiguration.Host}");
@@ -77,7 +77,6 @@ namespace Rhisis.CLI.Commands.Setup
             Console.WriteLine($"Use password encryption: {loginConfiguration.PasswordEncryption}");
             Console.WriteLine($"ISC Host: {loginConfiguration.ISC.Host}");
             Console.WriteLine($"ISC Port: {loginConfiguration.ISC.Port}");
-            Console.WriteLine($"ISC Password: {loginConfiguration.ISC.Password}");
 
             bool response = ConsoleHelper.AskConfirmation("Save this configuration?");
 
@@ -114,7 +113,7 @@ namespace Rhisis.CLI.Commands.Setup
             clusterConfiguration.ISC.Port = ConsoleHelper.ReadIntegerOrDefault(15000);
 
             Console.Write("ISC Password: ");
-            clusterConfiguration.ISC.Password = Console.ReadLine();
+            clusterConfiguration.ISC.Password = ConsoleHelper.ReadPassword();
 
             Console.WriteLine("--------------------------------");
             Console.WriteLine("Cluster Server Configuration:");
@@ -123,7 +122,6 @@ namespace Rhisis.CLI.Commands.Setup
             Console.WriteLine($"Use login protect: {clusterConfiguration.EnableLoginProtect}");
             Console.WriteLine($"ISC Host: {clusterConfiguration.ISC.Host}");
             Console.WriteLine($"ISC Port: {clusterConfiguration.ISC.Port}");
-            Console.WriteLine($"ISC Password: {clusterConfiguration.ISC.Password}");
 
             bool response = ConsoleHelper.AskConfirmation("Save this configuration?");
 
@@ -142,8 +140,8 @@ namespace Rhisis.CLI.Commands.Setup
             Console.Write("Host (127.0.0.1): ");
             worldConfiguration.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
 
-            Console.Write("Port (28000): ");
-            worldConfiguration.Port = ConsoleHelper.ReadIntegerOrDefault(28000);
+            Console.Write("Port (5400): ");
+            worldConfiguration.Port = ConsoleHelper.ReadIntegerOrDefault(5400);
 
             Console.Write("Parent cluster Id: ");
             worldConfiguration.ClusterId = ConsoleHelper.ReadIntegerOrDefault();
@@ -153,6 +151,15 @@ namespace Rhisis.CLI.Commands.Setup
 
             Console.Write("World channel name (Channel 1): ");
             worldConfiguration.Name = ConsoleHelper.ReadStringOrDefault("Channel 1");
+
+            Console.Write("ISC Server Host (127.0.0.1): ");
+            worldConfiguration.ISC.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
+
+            Console.Write("ISC Port (15000): ");
+            worldConfiguration.ISC.Port = ConsoleHelper.ReadIntegerOrDefault(15000);
+
+            Console.Write("ISC Password: ");
+            worldConfiguration.ISC.Password = ConsoleHelper.ReadPassword();
 
             Console.WriteLine("----- Drops -----");
             Console.Write("Drop rate (1): ");
@@ -179,7 +186,6 @@ namespace Rhisis.CLI.Commands.Setup
             Console.WriteLine($"Port: {worldConfiguration.Port}");
             Console.WriteLine($"ISC Host: {worldConfiguration.ISC.Host}");
             Console.WriteLine($"ISC Port: {worldConfiguration.ISC.Port}");
-            Console.WriteLine($"ISC Password: {worldConfiguration.ISC.Password}");
 
             Console.WriteLine("Rates:");
             Console.WriteLine($"Drop: x{worldConfiguration.Rates.Drop}");
