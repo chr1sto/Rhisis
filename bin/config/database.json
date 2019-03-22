@@ -1,9 +1,0 @@
-{
-  "host": "localhost",
-  "port": 3306,
-  "username": "root",
-  "password": "hello_world",
-  "database": "rhisis",
-  "provider": 1,
-  "encryptionKey": "3qoyRCYjJJfSuN/UymvxlnzQ0EZUd8VRYC+8sxHHjkI="
-}

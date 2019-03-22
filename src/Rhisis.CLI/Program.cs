@@ -4,7 +4,7 @@ namespace Rhisis.CLI
 {
     public static class Program
     {
-        public const string Description = "This tool is a command line interface allowing user to manage their own servers easily.";
+        public const string Description = "This tool is a command line interface allowing administrators to manage their own servers easily.";
 
         /// <summary>
         /// Program entry point.

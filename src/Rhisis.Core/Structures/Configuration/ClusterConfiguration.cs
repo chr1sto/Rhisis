@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Configuration
 {
@@ -12,6 +13,7 @@ namespace Rhisis.Core.Structures.Configuration
         /// Gets or sets the cluster server id.
         /// </summary>
         [DataMember(Name = "id")]
+        [DefaultValue(1)]
         public int Id { get; set; }
 
         /// <summary>
