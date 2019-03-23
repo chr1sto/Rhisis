@@ -1,11 +1,13 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Commands.Database;
+using Rhisis.CLI.Commands.Setup;
 using Rhisis.CLI.Commands.User;
 
 namespace Rhisis.CLI
 {
     [Command(ThrowOnUnexpectedArgument = false, Description = Program.Description)]
     [Subcommand(typeof(DatabaseCommand))]
+    [Subcommand(typeof(SetupCommand))]
     [Subcommand(typeof(UserCommand))]
     public class Application
     {

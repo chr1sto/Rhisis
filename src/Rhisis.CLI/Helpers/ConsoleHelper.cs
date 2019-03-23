@@ -118,8 +118,9 @@ namespace Rhisis.CLI.Helpers
             Console.Write($"{confirmationMessage} (y/n): ");
             string response = Console.ReadLine();
 
-            return response.Equals("y", StringComparison.OrdinalIgnoreCase) 
-                || response.Equals("yes", StringComparison.OrdinalIgnoreCase);
+            return response.Equals("y", StringComparison.OrdinalIgnoreCase)
+                || response.Equals("yes", StringComparison.OrdinalIgnoreCase)
+                || string.IsNullOrEmpty(response);
         }
     }
 }

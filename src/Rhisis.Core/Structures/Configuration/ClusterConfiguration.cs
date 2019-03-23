@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Configuration
 {
@@ -11,40 +12,32 @@ namespace Rhisis.Core.Structures.Configuration
         /// <summary>
         /// Gets or sets the cluster server id.
         /// </summary>
-        [DataMember(Name = "id")]
+        [DataMember]
+        [DefaultValue(1)]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the cluster server name.
         /// </summary>
-        [DataMember(Name = "name")]
+        [DataMember]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the login protect state.
         /// </summary>
-        [DataMember(Name = "enableLoginProtect")]
+        [DataMember]
         public bool EnableLoginProtect { get; set; }
 
         /// <summary>
         /// Gets or sets the Inter-Server configuration.
         /// </summary>
-        [DataMember(Name = "isc")]
-        public ISCConfiguration ISC { get; set; }
+        [DataMember]
+        public ISCConfiguration ISC { get; set; } = new ISCConfiguration();
 
         /// <summary>
         /// Gets or sets the default character configuration.
         /// </summary>
-        [DataMember(Name = "defaultCharacter")]
-        public DefaultCharacter DefaultCharacter { get; set; }
-
-        /// <summary>
-        /// Creates a new <see cref="ClusterConfiguration"/> instance.
-        /// </summary>
-        public ClusterConfiguration()
-        {
-            this.ISC = new ISCConfiguration();
-            this.DefaultCharacter = new DefaultCharacter();
-        }
+        [DataMember]
+        public DefaultCharacter DefaultCharacter { get; set; } = new DefaultCharacter();
     }
 }

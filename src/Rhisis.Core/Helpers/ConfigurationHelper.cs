@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Rhisis.Core.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -35,10 +36,17 @@ namespace Rhisis.Core.Helpers
 
         public static void Save<T>(string path, T value) where T : class, new()
         {
+            var serializerSettings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DefaultValueHandling = DefaultValueHandling.Include
+            };
+
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
-            string valueSerialized = JsonConvert.SerializeObject(value, Formatting.Indented);
+            string valueSerialized = JsonConvert.SerializeObject(value, serializerSettings);
 
             File.WriteAllText(path, valueSerialized);
         }
