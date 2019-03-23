@@ -1,0 +1,15 @@
+﻿// This is a single line comment
+
+/*
+** This is a multiple line comment
+*/
+
+IDS_TEXT_00001		Hello world!
+IDS_TEXT_WITH_SPACES      This is a text is only spaces.
+
+//IDS_TEXT_SINGLE_COMMENT		I'm commened
+
+/*
+** This text definition is commented
+** IDS_TEXT_COMMENTED	I'm also commented
+*/

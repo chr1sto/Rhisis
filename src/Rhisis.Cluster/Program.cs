@@ -1,12 +1,16 @@
-﻿using System;
+﻿using Rhisis.Core;
 
 namespace Rhisis.Cluster
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            Console.WriteLine("Hello World!");
+            ConsoleAppBootstrapper.CreateApp()
+                .SetConsoleTitle("Rhisis - Cluster Server")
+                .SetCulture("en-US")
+                .UseStartup<ClusterServerStartup>()
+                .Run();
         }
     }
 }

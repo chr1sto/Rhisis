@@ -1,1 +1,0 @@
-dotnet run --project ../src/Rhisis.Login/Rhisis.Login.csproj --configuration Release

@@ -1,1 +1,0 @@
-dotnet run --project ../src/Rhisis.World/Hellion.Rhisis.csproj --configuration Release

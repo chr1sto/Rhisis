@@ -1,12 +1,33 @@
+# General build informations
 language: csharp
-dist: trusty
 sudo: required
 mono: none
-dotnet: 1.0.4
-script:
-  - dotnet restore
-  - dotnet build src/Rhisis.Core/ -f netstandard1.3
-  - dotnet build src/Rhisis.Database/ -f netstandard1.6
-  - dotnet build src/Rhisis.Login/ -f netcoreapp1.0
-  - dotnet build src/Rhisis.Cluster/ -f netcoreapp1.0
-  - dotnet build src/Rhisis.World/ -f netcoreapp1.0
+dist: xenial
+dotnet: 2.2
+
+matrix:
+  env:
+    - DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# Define the jobs
+jobs:
+    include:
+      - stage: "Build"
+        script: 
+        - dotnet build src/Rhisis.Core/  --configuration Release
+        - dotnet build src/Rhisis.Database/ --configuration Release
+        - dotnet build src/Rhisis.Business/ --configuration Release
+        - dotnet build src/Rhisis.Login/ --configuration Release
+        - dotnet build src/Rhisis.Cluster/ --configuration Release
+        - dotnet build src/Rhisis.World/ --configuration Release
+        name: "Rhisis Servers"
+      - script:
+        - dotnet build src/Rhisis.API/ --configuration Release
+        - dotnet build src/Rhisis.CLI/ --configuration Release
+        name: "Rhisis Tools"
+
+      - stage: "Tests"
+        script: 
+        - dotnet test test/Rhisis.Core.Test/
+        - dotnet test test/Rhisis.Business.Tests/
+        name: "Rhisis Tests"

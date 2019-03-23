@@ -1,12 +1,16 @@
-﻿using System;
+﻿using Rhisis.Core;
 
 namespace Rhisis.World
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            Console.WriteLine("Hello World!");
+            ConsoleAppBootstrapper.CreateApp()
+                .SetConsoleTitle("Rhisis - World Server")
+                .SetCulture("en-US")
+                .UseStartup<WorldServerStartup>()
+                .Run();
         }
     }
 }
