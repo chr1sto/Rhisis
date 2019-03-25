@@ -1,12 +1,15 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using NLog;
+using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Repositories;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
@@ -43,6 +46,11 @@ namespace Rhisis.World
         public string RemoteEndPoint { get; private set; }
 
         /// <summary>
+        /// Gets or sets the time the player has logged in.
+        /// </summary>
+        public DateTime LoggedInAt { get; set; }
+
+        /// <summary>
         /// Creates a new <see cref="WorldClient"/> instance.
         /// </summary>
         public WorldClient()
@@ -74,7 +82,6 @@ namespace Rhisis.World
         /// <inheritdoc />
         public override void HandleMessage(INetPacketStream packet)
         {
-            FFPacket pak = null;
             uint packetHeaderNumber = 0;
 
             if (Socket == null)
@@ -85,22 +92,21 @@ namespace Rhisis.World
 
             try
             {
-                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF
-
-                pak = packet as FFPacket;
+                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
                 packetHeaderNumber = packet.Read<uint>();
 
                 if (Logger.IsTraceEnabled)
                     Logger.Trace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
 
-                PacketHandler<WorldClient>.Invoke(this, pak, (PacketType)packetHeaderNumber);
-            }
-            catch (KeyNotFoundException)
-            {
-                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                    Logger.Warn("Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
-                else
-                    Logger.Warn("[SECURITY] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                bool packetInvokSuccess = PacketHandler<WorldClient>.Invoke(this, packet as FFPacket, (PacketType)packetHeaderNumber);
+
+                if (!packetInvokSuccess)
+                {
+                    if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                        Logger.Warn("Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                    else
+                        Logger.Warn("[SECURITY] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                }
             }
             catch (RhisisPacketException packetException)
             {
@@ -117,14 +123,15 @@ namespace Rhisis.World
             if (this.Player == null)
                 return;
 
-            this.Player.Object.Spawned = false;
-
-            using (DatabaseContext db = DatabaseService.GetContext())
+            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {
-                Character character = db.Characters.Get(this.Player.PlayerData.Id);
+                DbCharacter character = database.Characters.Get(this.Player.PlayerData.Id);
 
                 if (character != null)
                 {
+                    character.LastConnectionTime = this.LoggedInAt;
+                    character.PlayTime += (long)(DateTime.UtcNow - this.LoggedInAt).TotalSeconds;
+
                     character.PosX = this.Player.Object.Position.X;
                     character.PosY = this.Player.Object.Position.Y;
                     character.PosZ = this.Player.Object.Position.Z;
@@ -140,14 +147,14 @@ namespace Rhisis.World
 
                     character.Gold = this.Player.PlayerData.Gold;
 
-                    character.Strength = this.Player.Statistics.Strenght;
+                    character.Strength = this.Player.Statistics.Strength;
                     character.Stamina = this.Player.Statistics.Stamina;
                     character.Dexterity = this.Player.Statistics.Dexterity;
                     character.Intelligence = this.Player.Statistics.Intelligence;
                     character.StatPoints = this.Player.Statistics.StatPoints;
 
                     // Delete items
-                    var itemsToDelete = new List<Item>(character.Items.Count);
+                    var itemsToDelete = new List<DbItem>(character.Items.Count);
                     itemsToDelete.AddRange(from dbItem
                         in character.Items
                         let inventoryItem = this.Player.Inventory.GetItem(x => x.DbId == dbItem.Id) ?? new Game.Structures.Item()
@@ -163,7 +170,7 @@ namespace Rhisis.World
                             continue;
                         }
 
-                        Item dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
+                        DbItem dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
 
                         if (dbItem != null)
                         {
@@ -174,11 +181,11 @@ namespace Rhisis.World
                             dbItem.Refine = item.Refine;
                             dbItem.Element = item.Element;
                             dbItem.ElementRefine = item.ElementRefine;
-                            db.Items.Update(dbItem);
+                            database.Items.Update(dbItem);
                         }
                         else
                         {
-                            dbItem = new Item
+                            dbItem = new DbItem
                             {
                                 CharacterId = this.Player.PlayerData.Id,
                                 CreatorId = item.CreatorId,
@@ -190,12 +197,60 @@ namespace Rhisis.World
                                 ElementRefine = item.ElementRefine
                             };
 
-                            db.Items.Create(dbItem);
+                            database.Items.Create(dbItem);
                         }
+                    }
+
+                    // Taskbar
+                    character.TaskbarShortcuts.Clear();
+                    
+                    foreach (var applet in Player.Taskbar.Applets.Shortcuts)
+                    {
+                        if (applet == null)
+                            continue;
+
+                        var dbApplet = new DbShortcut(ShortcutTaskbarTarget.Applet, applet.SlotIndex, applet.Type, applet.ObjId, applet.ObjectType, applet.ObjIndex, applet.UserId, applet.ObjData, applet.Text);
+
+                        if (applet.Type == ShortcutType.Item)
+                        {
+                            var item = this.Player.Inventory.GetItem((int)applet.ObjId);
+                            dbApplet.ObjectId = (uint)item.Slot;
+                        }
+
+                        character.TaskbarShortcuts.Add(dbApplet);
+                    }
+
+
+                    for (int slotLevel = 0; slotLevel < Player.Taskbar.Items.Shortcuts.Count; slotLevel++)
+                    {
+                        for (int slot = 0; slot < Player.Taskbar.Items.Shortcuts[slotLevel].Count; slot++)
+                        {
+                            var itemShortcut = Player.Taskbar.Items.Shortcuts[slotLevel][slot];
+                            if (itemShortcut == null)
+                                continue;
+
+                            var dbItem = new DbShortcut(ShortcutTaskbarTarget.Item, slotLevel, itemShortcut.SlotIndex, itemShortcut.Type, itemShortcut.ObjId, itemShortcut.ObjectType, itemShortcut.ObjIndex, itemShortcut.UserId, itemShortcut.ObjData, itemShortcut.Text);
+
+                            if (itemShortcut.Type == ShortcutType.Item)
+                            {
+                                var item = this.Player.Inventory.GetItem((int)itemShortcut.ObjId);
+                                dbItem.ObjectId = (uint)item.Slot;
+                            }
+
+                            character.TaskbarShortcuts.Add(dbItem);
+                        }
+                    }
+
+                    foreach (var queueItem in Player.Taskbar.Queue.Shortcuts)
+                    {
+                        if (queueItem == null)
+                            continue;
+
+                        character.TaskbarShortcuts.Add(new DbShortcut(ShortcutTaskbarTarget.Queue, queueItem.SlotIndex, queueItem.Type, queueItem.ObjId, queueItem.ObjectType, queueItem.ObjIndex, queueItem.UserId, queueItem.ObjData, queueItem.Text));
                     }
                 }
 
-                db.SaveChanges();
+                database.Complete();
             }
         }
 
@@ -208,6 +263,8 @@ namespace Rhisis.World
             IEnumerable<IEntity> entitiesAround = from x in currentMap.Entities
                                                   where this.Player.Object.Position.IsInCircle(x.Object.Position, VisibilitySystem.VisibilityRange) && x != this.Player
                                                   select x;
+
+            this.Player.Object.Spawned = false;
 
             foreach (IEntity entity in entitiesAround)
             {
@@ -225,8 +282,8 @@ namespace Rhisis.World
         {
             if (disposing)
             {
-                if (this.Player != null && World.WorldServer.Maps.TryGetValue(this.Player.Object.MapId, out IMapInstance currentMap))
-                    this.DespawnPlayer(currentMap);
+                if (this.Player != null)
+                    this.DespawnPlayer(this.Player.Object.CurrentMap);
 
                 this.Save();
             }

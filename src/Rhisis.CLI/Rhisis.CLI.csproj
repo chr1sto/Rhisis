@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+    <StartupObject>Rhisis.CLI.Program</StartupObject>
+    <RuntimeIdentifiers>win10-x64;win7-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>../../bin/tools/Rhisis.CLI/</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>../../bin/tools/Rhisis.CLI/</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+    <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
+  </ItemGroup>
+
+</Project>

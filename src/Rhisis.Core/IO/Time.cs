@@ -60,5 +60,7 @@ namespace Rhisis.Core.IO
         {
             return Environment.TickCount - Start;
         }
+
+        public static long GetTicks() => Environment.TickCount;
     }
 }

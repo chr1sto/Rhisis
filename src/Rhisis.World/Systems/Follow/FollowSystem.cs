@@ -1,29 +1,22 @@
 ﻿using NLog;
+using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems.Follow
 {
-    [System]
-    public sealed class FollowSystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    public sealed class FollowSystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
-
-        /// <summary>
-        /// Creates a new <see cref="FollowSystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public FollowSystem(IContext context) 
-            : base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
         /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IMovableEntity movableEntity) || !e.CheckArguments())
             {
@@ -49,7 +42,17 @@ namespace Rhisis.World.Systems.Follow
                 return;
             }
 
-            entity.Follow.Target = entityToFollow;
+            if (entity.Follow.Target != entityToFollow)
+            {
+                entity.Follow.Target = entityToFollow;
+                entity.MovableComponent.DestinationPosition = entityToFollow.Object.Position.Clone();
+            }
+
+            if (entity is IMonsterEntity monster)
+            {
+                monster.Timers.NextMoveTime = Time.TimeInSeconds() + 5;
+            }
+
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);
         }
     }

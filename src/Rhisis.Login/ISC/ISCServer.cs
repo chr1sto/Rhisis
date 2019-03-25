@@ -1,8 +1,8 @@
 ﻿using Ether.Network.Server;
 using NLog;
-using Rhisis.Core.ISC;
-using Rhisis.Core.ISC.Structures;
-using Rhisis.Core.Network;
+using Rhisis.Network.ISC;
+using Rhisis.Network.ISC.Structures;
+using Rhisis.Network;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Login.ISC.Packets;
 using System;

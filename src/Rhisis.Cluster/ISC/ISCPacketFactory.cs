@@ -1,7 +1,7 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
-using Rhisis.Core.ISC;
-using Rhisis.Core.ISC.Packets;
+using Rhisis.Network.ISC;
+using Rhisis.Network.ISC.Packets;
 
 namespace Rhisis.Cluster.ISC
 {

@@ -1,8 +1,10 @@
 ﻿using NLog;
 using Rhisis.Core.Data;
-using Rhisis.Core.Structures.Game;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
@@ -11,22 +13,16 @@ using System;
 
 namespace Rhisis.World.Systems.NpcShop
 {
-    [System]
-    public class NpcShopSystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    public class NpcShopSystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
+        public WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
-        public NpcShopSystem(IContext context) 
-            : base(context)
-        {
-        }
-
-        /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity player) ||
                 !e.CheckArguments())
@@ -96,7 +92,10 @@ namespace Rhisis.World.Systems.NpcShop
         /// <param name="e"></param>
         private void BuyItem(IPlayerEntity player, NpcShopBuyEventArgs e)
         {
-            if (!WorldServer.Npcs.TryGetValue(player.PlayerData.CurrentShopName, out NpcData npcData))
+            var npcLoader = DependencyContainer.Instance.Resolve<NpcLoader>();
+            var npcData = npcLoader.GetNpcData(player.PlayerData.CurrentShopName);
+
+            if (npcData == null)
             {
                 Logger.Error($"ShopSystem: Cannot find NPC: {player.PlayerData.CurrentShopName}");
                 return;

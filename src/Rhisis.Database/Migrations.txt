@@ -1,3 +1,0 @@
-﻿To create a new migration, execute this command in the NuGet PMC (Package Manager Console):
-
-$> Add-Migration -Name #MigrationName# -Project "Rhisis.Database" -StartupProject Rhisis.World

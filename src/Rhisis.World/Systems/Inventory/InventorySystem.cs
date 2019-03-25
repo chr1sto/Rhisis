@@ -4,6 +4,7 @@ using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
@@ -13,8 +14,8 @@ using System.Collections.Generic;
 
 namespace Rhisis.World.Systems.Inventory
 {
-    [System]
-    public class InventorySystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    public class InventorySystem : ISystem
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         public static readonly int RightWeaponSlot = 52;
@@ -22,21 +23,13 @@ namespace Rhisis.World.Systems.Inventory
         public static readonly int MaxItems = 73;
         public static readonly int InventorySize = EquipOffset;
         public static readonly int MaxHumanParts = MaxItems - EquipOffset;
+        public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
-
-        /// <summary>
-        /// Creates a new <see cref="InventorySystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public InventorySystem(IContext context)
-            : base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Player;
 
         /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity playerEntity))
                 return;
@@ -79,7 +72,7 @@ namespace Rhisis.World.Systems.Inventory
 
             if (e.Items != null)
             {
-                foreach (Database.Entities.Item item in e.Items)
+                foreach (Database.Entities.DbItem item in e.Items)
                 {
                     int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
 
@@ -214,7 +207,7 @@ namespace Rhisis.World.Systems.Inventory
                 return;
             }
 
-            if (item.Id > 0 && item.Slot > EquipOffset)
+            if (item.Id > 0 && item.IsEquipped())
             {
                 int parts = Math.Abs(sourceSlot - EquipOffset);
 

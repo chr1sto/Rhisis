@@ -1,6 +1,6 @@
 ﻿using Ether.Network.Packets;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using System.Collections.Generic;
@@ -11,14 +11,17 @@ namespace Rhisis.World.Packets
 {
     public static partial class WorldPacketFactory
     {
-        public static void SendToVisible(INetPacketStream packet, IEntity player)
+        public static void SendToVisible(INetPacketStream packet, IEntity entity, bool sendToPlayer = false)
         {
-            IEnumerable<IPlayerEntity> visiblePlayers = from x in player.Object.Entities
+            IEnumerable<IPlayerEntity> visiblePlayers = from x in entity.Object.Entities
                                                         where x.Type == WorldEntityType.Player
                                                         select x as IPlayerEntity;
 
             foreach (IPlayerEntity visiblePlayer in visiblePlayers)
                 visiblePlayer.Connection.Send(packet);
+
+            if (sendToPlayer && entity is IPlayerEntity player)
+                player.Connection.Send(packet);
         }
 
         public static void SendDestinationPosition(IMovableEntity movableEntity)
@@ -46,20 +49,6 @@ namespace Rhisis.World.Packets
                 SendToVisible(packet, entity);
             }
         }
-
-        public static void SendDefinedText(IPlayerEntity entity, int textId)
-        {
-            using (var packet = new FFPacket())
-            {
-                packet.StartNewMergedPacket(entity.Id, SnapshotType.DEFINEDTEXT);
-                packet.Write(textId);
-                packet.Write(0);
-
-                entity.Connection.Send(packet);
-            }
-        }
-
-        public static void SendDefinedText(IPlayerEntity entity, DefineText text) => SendDefinedText(entity, (int)text);
 
         public static void SendUpdateAttributes(IPlayerEntity entity, DefineAttributes attribute, int newValue)
         {

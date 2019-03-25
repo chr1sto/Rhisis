@@ -1,4 +1,5 @@
 ﻿using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Core.Systems;
 using System;
 using System.Collections.Generic;
 
@@ -12,7 +13,7 @@ namespace Rhisis.World.Game.Core
         /// <summary>
         /// Gets the entity id.
         /// </summary>
-        int Id { get; }
+        uint Id { get; }
 
         /// <summary>
         /// Gets the entity context.
@@ -34,7 +35,7 @@ namespace Rhisis.World.Game.Core
         /// </summary>
         /// <typeparam name="TSystem">System type</typeparam>
         /// <param name="e">System event arguments</param>
-        void NotifySystem<TSystem>(SystemEventArgs e) where TSystem : INotifiableSystem;
+        void NotifySystem<TSystem>(SystemEventArgs e = null) where TSystem : ISystem;
 
         /// <summary>
         /// Finds an entity in the spawn list of the current entity.
@@ -42,6 +43,6 @@ namespace Rhisis.World.Game.Core
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="id">Entity id</param>
         /// <returns>Entity</returns>
-        TEntity FindEntity<TEntity>(int id) where TEntity : IEntity;
+        TEntity FindEntity<TEntity>(uint id) where TEntity : IEntity;
     }
 }

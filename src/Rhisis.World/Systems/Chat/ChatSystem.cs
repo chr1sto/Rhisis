@@ -1,8 +1,9 @@
 ﻿using NLog;
 using Rhisis.Core.Common;
-using Rhisis.Core.Reflection;
+using Rhisis.Core.Helpers;
 using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using System;
@@ -13,8 +14,8 @@ using System.Text.RegularExpressions;
 
 namespace Rhisis.World.Systems.Chat
 {
-    [System]
-    public class ChatSystem : NotifiableSystemBase
+    [System(SystemType.Notifiable)]
+    public class ChatSystem : ISystem
     {
         private sealed class ChatCommandDefinition
         {
@@ -45,26 +46,17 @@ namespace Rhisis.World.Systems.Chat
         private const string MsgUnableExecuteCmd = "Unable to execute chat command '{0}' for player '{1}'. Reason: {2}.";
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
+        public WorldEntityType Type => WorldEntityType.Player;
 
-        /// <summary>
-        /// Creates a new <see cref="ChatSystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public ChatSystem(IContext context)
-            : base(context)
-        {
-        }
-        
         /// <inheritdoc />
-        public override void Execute(IEntity entity, SystemEventArgs e)
+        public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(e is ChatEventArgs chatEvent) || !(entity is IPlayerEntity player))
                 return;
             if (!chatEvent.CheckArguments())
                 return;
 
-            if (chatEvent.Message.StartsWith("/"))
+            if (chatEvent.Message.StartsWith("/") || chatEvent.Message.StartsWith("."))
             {
                 string commandName = chatEvent.Message.Split(' ').FirstOrDefault();
                 string[] commandParameters = GetCommandParameters(chatEvent.Message, commandName);
@@ -76,7 +68,7 @@ namespace Rhisis.World.Systems.Chat
                     else
                     {
                         command.Method.Invoke(player, commandParameters);
-                        Logger.Info("Command '{0}' executed for player '{1}'.");
+                        Logger.Info("Command '{0}' executed for player '{1}'.", commandName, player.Object.Name);
                     }
                 }
                 else

@@ -9,8 +9,7 @@
 
 Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 2.0.
 
-This project has been created for learning purposes about the network and game logic problematics on the server-side. Also, this is a rework of the Hellion emulator.
-
+This project has been created for learning purposes about the network and game logic problematics on the server-side.
 We choose to use the [Ether.Network][ethernetwork] because it provides a clients management system and also a robust packet management system entirely customisable.
 
 ## Details
@@ -22,7 +21,9 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Configuration files type: `JSON`
 - External libraries used:
 	- [Ether.Network][ethernetwork]
-	- Entity Framework Core
+	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
+	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+	- [NLog](https://github.com/NLog/NLog)
 - Environment: Visual Studio 2017
 
 ## Features
@@ -55,12 +56,17 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Connect to the world
 - Load resources
    - Defines & texts
-   - Movers
+   - Monsters
    - Maps
+   - Items
    - NPC Data/Shops/Dialogs
+   - Job Data
+   - Exp table
+   - Behaviors (AI)
 - Spawn monsters and NPC
 - Visibility System
 - Mobility System
+- Respawn System
 - Chat System
 	- Chat commands:
 		- Create item : `/ci` or `/createitem`
@@ -75,6 +81,14 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- Sell items
 - Trade System
 - NPC Dialog System
+- MailBox System
+- Drop System
+- Battle System
+	- Melee Attack
+		- Player VS Monster
+	- Monster death
+	- Monster item/gold drop
+- Character customization system
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
@@ -82,24 +96,31 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 1. Download or Clone the `develop` branch
 2. Install the .NET Core SDK 2.0 : https://www.microsoft.com/net/download/windows
 3. Install `MsSQL Express` or `MySQL Server`
-4. Edit the files in `bin/config/` (`database.json`, `login.json`, `cluster.json`, `world.json`)
-5. Create an account in your database (tool available soon)
-6. Start the emulator
-- Start `login.bat`
-- Start `cluster.bat`
-- Start `world.bat`
+4. Edit the files in `bin/config/` (`login.json`, `cluster.json`, `world.json`)
+5. Compile Rhisis solution using the `scripts/compile_solution.bat`
+6. Open a command prompt in folder `bin/`
+7. Type the following command: `./rhisis-cli.bat database initialize` and follow the instructions
+7. Create an account in table `users` of your database 
+8. Start the emulator
+- Start `1.login.bat`
+- Start `2.cluster.bat`
+- Start `3.world.bat`
 
 ## Contributors
 
-- Eastrall
-- Steve-Nzr
-- Freezeraid
+- [Eastrall](https://github.com/Eastrall)
+- [Steve-Nzr](https://github.com/Steve-Nzr)
+- [Freezeraid](https://github.com/Freezeraid)
+- [Skeatwin](https://github.com/Skeatwin)
+- [johmarjac](https://github.com/johmarjac)
+- [Kaev](https://github.com/Kaev)
+- [YarinNet](https://github.com/YarinNet)
+- [Almewty](https://github.com/Almewty)
 
 ## Supporters
 
 - Ukiyo
 - Kinami
 - Sauce
-- Yothri
 
 [ethernetwork]: https://github.com/Eastrall/Ether.Network

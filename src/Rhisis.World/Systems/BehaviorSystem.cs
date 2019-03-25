@@ -1,47 +1,30 @@
 ﻿using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems
 {
     [System]
-    public sealed class BehaviorSystem : SystemBase
+    public sealed class BehaviorSystem : ISystem
     {
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player;
-
-        /// <summary>
-        /// Creates a new <see cref="BehaviorSystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public BehaviorSystem(IContext context) 
-            : base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster | WorldEntityType.Npc;
 
         /// <inheritdoc />
-        public override void Execute(IEntity entity)
+        public void Execute(IEntity entity, SystemEventArgs args)
         {
-            // TODO: instead of updating every monster of each player
-            // we need to setup map chunks that contains the monster
-            // references so we just need them instead of looping
-            // through the player's list
-            foreach (var otherEntity in entity.Object.Entities)
+            switch (entity)
             {
-                switch (otherEntity)
-                {
-                    case IMonsterEntity monster:
-                        monster.Behavior.Update(monster);
-                        break;
-                    case INpcEntity npc:
-                        npc.Behavior.Update(npc);
-                        break;
-                    case IPlayerEntity player:
-                        player.Behavior.Update(player);
-                        break;
-                }
+                case IMonsterEntity monster:
+                    monster.Behavior?.Update(monster);
+                    break;
+                case INpcEntity npc:
+                    npc.Behavior?.Update(npc);
+                    break;
+                case IPlayerEntity player:
+                    player.Behavior?.Update(player);
+                    break;
             }
-
-            
         }
     }
 }

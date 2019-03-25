@@ -1,14 +1,20 @@
 ﻿using Ether.Network.Common;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using Rhisis.Database.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Core.IO;
 
 namespace Rhisis.Cluster.Packets
 {
     public static class ClusterPacketFactory
     {
+        /// <summary>
+        /// Send welcome packet to new client.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="sessionId"></param>
         public static void SendWelcome(NetUser client, uint sessionId)
         {
             using (var packet = new FFPacket())
@@ -20,6 +26,11 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
+        /// <summary>
+        /// Send pong packet to client.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="time"></param>
         public static void SendPong(NetUser client, int time)
         {
             using (var packet = new FFPacket())
@@ -31,6 +42,11 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
+        /// <summary>
+        /// Send an error packet to the client
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="error"></param>
         public static void SendError(NetUser client, ErrorType error)
         {
             using (var packet = new FFPacket())
@@ -42,7 +58,13 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
-        public static void SendPlayerList(NetUser client, int authenticationKey, IEnumerable<Character> characters)
+        /// <summary>
+        /// Sends the client's player list.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="authenticationKey"></param>
+        /// <param name="characters"></param>
+        public static void SendPlayerList(NetUser client, int authenticationKey, IEnumerable<DbCharacter> characters)
         {
             using (var packet = new FFPacket())
             {
@@ -90,6 +112,11 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
+        /// <summary>
+        /// Send the selected world server address.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="address"></param>
         public static void SendWorldAddress(NetUser client, string address)
         {
             using (var packet = new FFPacket())
@@ -101,6 +128,11 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
+        /// <summary>
+        /// Send the Login num pad if the 2nd password option is enabled.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="loginProtectValue"></param>
         public static void SendLoginNumPad(NetUser client, int loginProtectValue)
         {
             using (var packet = new FFPacket())
@@ -112,6 +144,11 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
+        /// <summary>
+        /// Send the login protect data.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="loginProtectValue"></param>
         public static void SendLoginProtect(NetUser client, int loginProtectValue)
         {
             using (var packet = new FFPacket())
@@ -124,11 +161,28 @@ namespace Rhisis.Cluster.Packets
             }
         }
 
+        /// <summary>
+        /// Sends a request telling the player can join the world.
+        /// </summary>
+        /// <param name="client"></param>
         public static void SendJoinWorld(NetUser client)
         {
             using (var packet = new FFPacket())
             {
                 packet.WriteHeader(PacketType.PRE_JOIN);
+
+                client.Send(packet);
+            }
+        }
+
+        public static void SendQueryTickCount(NetUser client, uint time)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.QUERYTICKCOUNT);
+
+                packet.Write(time);
+                packet.Write(Time.GetElapsedTime());
 
                 client.Send(packet);
             }

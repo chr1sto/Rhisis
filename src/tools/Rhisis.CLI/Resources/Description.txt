@@ -1,5 +1,0 @@
-﻿
-Welcome to Rhisis!
--------------------------------
-
-This tool is a command line interface allowing user to manage their own servers easily.

@@ -1,6 +1,10 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Loaders;
+using Rhisis.World.Game.Maps;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Components
@@ -65,21 +69,40 @@ namespace Rhisis.World.Game.Components
         public IList<IEntity> Entities { get; }
 
         /// <summary>
+        /// Gets the current map instance.
+        /// </summary>
+        public IMapInstance CurrentMap => DependencyContainer.Instance.Resolve<MapLoader>().GetMapById(this.MapId); // TODO: find better implementation
+
+        /// <summary>
+        /// Gets the current map layer.
+        /// </summary>
+        public IMapLayer CurrentLayer => this.CurrentMap?.GetMapLayer(this.LayerId);
+
+        /// <summary>
+        /// Gets or sets the moving flags.
+        /// </summary>
+        public ObjectState MovingFlags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the motion flags.
+        /// </summary>
+        public StateFlags MotionFlags { get; set; }
+
+        /// <summary>
         /// Creates and initializes a new <see cref="ObjectComponent"/>.
         /// </summary>
         public ObjectComponent()
         {
             this.Position = new Vector3();
             this.Entities = new List<IEntity>();
+            this.Size = DefaultObjectSize;
+            this.MovingFlags = ObjectState.OBJSTA_STAND;
         }
 
         /// <summary>
         /// To String
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return $"Object: {this.Name}";
-        }
+        public override string ToString() => $"Object: {this.Name}";
     }
 }

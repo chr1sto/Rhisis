@@ -2,11 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>bin\Debug\netcoreapp1.0\</OutputPath>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -16,12 +12,15 @@
 
   <ItemGroup>
     <PackageReference Include="Ether.Network" Version="3.0.0" />
-    <PackageReference Include="NLog" Version="4.5.7" />
+    <PackageReference Include="NLog" Version="4.6.0" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Rhisis.Business\Rhisis.Business.csproj" />
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
+    <ProjectReference Include="..\Rhisis.Network\Rhisis.Network.csproj" />
   </ItemGroup>
 
   <ItemGroup>

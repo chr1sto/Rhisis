@@ -1,32 +1,27 @@
-﻿using Rhisis.World.Game.Core;
+﻿using NLog;
+using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using System;
 
 namespace Rhisis.World.Systems
 {
     [System]
-    public class MobilitySystem : SystemBase
+    public class MobilitySystem : ISystem
     {
-        /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        /// <summary>
-        /// Creates a new <see cref="MobilitySystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public MobilitySystem(IContext context)
-            : base(context)
-        {
-        }
+        /// <inheritdoc />
+        public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
 
         /// <summary>
         /// Executes the <see cref="MobilitySystem"/> logic.
         /// </summary>
         /// <param name="entity">Current entity</param>
-        public override void Execute(IEntity entity)
+        public void Execute(IEntity entity, SystemEventArgs args)
         {
             var movableEntity = entity as IMovableEntity;
-
+            
             if (movableEntity.MovableComponent.DestinationPosition.IsZero())
                 return;
 
@@ -41,11 +36,14 @@ namespace Rhisis.World.Systems
         {
             if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
             {
-                entity.MovableComponent.DestinationPosition.Reset();
+                entity.MovableComponent.HasArrived = true;
+                entity.MovableComponent.DestinationPosition = entity.Object.Position.Clone();
             }
             else
             {
-                double speed = ((entity.MovableComponent.Speed * 100) * this.Context.GameTime);
+                entity.MovableComponent.HasArrived = false;
+                double entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor;
+                double speed = ((entitySpeed * 100f) * entity.Context.GameTime);
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
                 float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);

@@ -1,13 +1,16 @@
 ﻿using NLog;
 using Rhisis.Core.Common;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Regions;
+using Rhisis.World.Game.Loaders;
+using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
@@ -25,7 +28,7 @@ namespace Rhisis.World.Game.Maps
 
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
-        private readonly List<IRegion> _regions;
+        private readonly List<IMapRegion> _regions;
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
@@ -42,7 +45,7 @@ namespace Rhisis.World.Game.Maps
         public IReadOnlyList<IMapLayer> Layers => this._layers;
 
         /// <inheritdoc />
-        public IReadOnlyList<IRegion> Regions => this._regions;
+        public IReadOnlyList<IMapRegion> Regions => this._regions;
 
         /// <summary>
         /// Creates a new <see cref="MapInstance"/>.
@@ -56,7 +59,9 @@ namespace Rhisis.World.Game.Maps
             this.Name = name;
             this._mapPath = mapPath;
             this._layers = new List<IMapLayer>();
-            this._regions = new List<IRegion>();
+            this._regions = new List<IMapRegion>();
+            this._cancellationTokenSource = new CancellationTokenSource();
+            this._cancellationToken = this._cancellationTokenSource.Token;
         }
 
         /// <inheritdoc />
@@ -80,12 +85,13 @@ namespace Rhisis.World.Game.Maps
 
             using (var rgnFile = new RgnFile(rgn))
             {
-                IEnumerable<IRegion> monsterRegions = rgnFile.Elements
-                        .Where(x => x is RgnRespawn7)
-                        .Cast<RgnRespawn7>()
-                        .Select(x => new RespawnerRegion(x.Left, x.Top, x.Right, x.Bottom, x.Time, x.Type, x.Model, x.Count));
+                IEnumerable<IMapRespawnRegion> respawnersRgn = rgnFile.GetElements<RgnRespawn7>()
+                    .Select(x => MapRespawnRegion.FromRgnElement(x));
 
-                this._regions.AddRange(monsterRegions);
+                // TODO: load wrapzones
+                // TODO: load collector regions
+
+                this._regions.AddRange(respawnersRgn);
             }
         }
 
@@ -131,48 +137,44 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public override void Update()
         {
-            // TODO
+            lock (SyncRoot)
+            {
+                foreach (var entity in this.Entities)
+                    SystemManager.Instance.ExecuteUpdatable(entity);
+
+                foreach (var mapLayer in this._layers)
+                    mapLayer.Update();
+            }
         }
 
         /// <inheritdoc />
         public void StartUpdateTask(int delay)
         {
-            double previousTime = 0f;
-
             Task.Run(async () =>
             {
+                const double FrameRatePerSeconds = 0.66666f;
+                double previousTime = 0;
+
                 while (true)
                 {
                     if (this._cancellationToken.IsCancellationRequested)
                         break;
 
-                    double currentTime = Rhisis.Core.IO.Time.TimeInMilliseconds();
+                    double currentTime = Rhisis.Core.IO.Time.GetElapsedTime();
                     double deltaTime = currentTime - previousTime;
                     previousTime = currentTime;
 
-                    this.GameTime = deltaTime / 1000f;
+                    this.GameTime = (deltaTime * FrameRatePerSeconds) / 1000f;
 
                     try
                     {
-                        lock (SyncRoot)
-                        {
-                            foreach (var entity in this.Entities)
-                            {
-                                foreach (var system in this.Systems)
-                                {
-                                    if (!(system is INotifiableSystem) && system.Match(entity))
-                                        system.Execute(entity);
-                                }
-                            }
-
-                            foreach (var mapLayer in this._layers)
-                                mapLayer.Update();
-                        }
+                        this.Update();
                     }
                     catch (Exception e)
                     {
                         Logger.Error(e);
                     }
+
                     await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
@@ -187,6 +189,8 @@ namespace Rhisis.World.Game.Maps
         /// <param name="element"></param>
         private void CreateNpc(NpcDyoElement element)
         {
+            var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
+            var npcs = DependencyContainer.Instance.Resolve<NpcLoader>();
             var npc = this.CreateEntity<NpcEntity>();
 
             npc.Object = new ObjectComponent
@@ -195,33 +199,33 @@ namespace Rhisis.World.Game.Maps
                 ModelId = element.Index,
                 Name = element.Name,
                 Angle = element.Angle,
-                Type = WorldObjectType.Mover,
                 Position = element.Position.Clone(),
                 Size = (short)(ObjectComponent.DefaultObjectSize * element.Scale.X),
                 Spawned = true,
+                Type = WorldObjectType.Mover,
                 Level = 1
             };
-            npc.Behavior = WorldServer.NpcBehaviors.GetBehavior(npc.Object.ModelId);
+            npc.Behavior = behaviors.NpcBehaviors.GetBehavior(npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
 
-            if (WorldServer.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
+            npc.Data = npcs.GetNpcData(npc.Object.Name);
+
+
+            if (npc.Data != null && npc.Data.HasShop)
             {
-                npc.Data = npcData;
+                ShopData npcShopData = npc.Data.Shop;
+                npc.Shop = new ItemContainerComponent[npcShopData.Items.Length];
 
-                if (npcData.HasShop)
+                for (var i = 0; i < npcShopData.Items.Length; i++)
                 {
-                    npc.Shop = new ItemContainerComponent[npcData.Shop.Items.Length];
+                    npc.Shop[i] = new ItemContainerComponent(100);
 
-                    for (var i = 0; i < npcData.Shop.Items.Length; i++)
+                    for (var j = 0; j < npcShopData.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
                     {
-                        npc.Shop[i] = new ItemContainerComponent(100);
+                        ItemBase item = npcShopData.Items[i][j];
+                        ItemData itemData = GameResources.Instance.Items[item.Id];
 
-                        for (var j = 0; j < npcData.Shop.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
-                        {
-                            ItemBase item = npcData.Shop.Items[i][j];
-
-                            npc.Shop[i].Items[j] = new Item(item.Id, WorldServer.Items[item.Id].PackMax, -1, j, j, item.Refine, item.Element, item.ElementRefine);
-                        }
+                        npc.Shop[i].Items[j] = new Item(item.Id, itemData.PackMax, -1, j, j, item.Refine, item.Element, item.ElementRefine);
                     }
                 }
             }

@@ -25,10 +25,10 @@ namespace Rhisis.Core.Structures.Game
         public ItemKind1 ItemKind1 { get; set; }
 
         [DataMember(Name = "dwItemKind2")]
-        public ItemKind1 ItemKind2 { get; set; }
+        public ItemKind2 ItemKind2 { get; set; }
 
         [DataMember(Name = "dwItemKind3")]
-        public ItemKind1 ItemKind3 { get; set; }
+        public ItemKind3 ItemKind3 { get; set; }
 
         [DataMember(Name = "dwItemSex")]
         public int ItemSex { get; set; }
@@ -42,6 +42,22 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwParts")]
         public int Parts { get; set; }
 
+        [DataMember(Name = "dwWeaponType")]
+        public WeaponType WeaponType { get; set; }
+
+        [DataMember(Name = "dwAbilityMin")]
+        public int AbilityMin { get; set; }
+
+        [DataMember(Name = "dwAbilityMax")]
+        public int AbilityMax { get; set; }
+
+        [DataMember(Name = "dwItemLV")]
+        public int Level { get; set; }
+
+        [DataMember(Name = "dwItemRare")]
+        public int Rare { get; set; }
+
+        [IgnoreDataMember]
         public bool IsStackable => this.PackMax > 1;
     }
 }

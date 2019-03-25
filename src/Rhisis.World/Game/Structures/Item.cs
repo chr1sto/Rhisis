@@ -1,5 +1,7 @@
 ﻿using Ether.Network.Packets;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
+using Rhisis.World.Systems.Inventory;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Structures
@@ -173,7 +175,7 @@ namespace Rhisis.World.Game.Structures
             this.Refine = refine;
             this.Element = element;
             this.ElementRefine = elementRefine;
-            this.Data = WorldServer.Items.ContainsKey(this.Id) ? WorldServer.Items[this.Id] : null;
+            this.Data = GameResources.Instance.Items[this.Id];
             this.ExtraUsed = extraUsed;
         }
 
@@ -181,7 +183,7 @@ namespace Rhisis.World.Game.Structures
         /// Creates a new <see cref="Item"/> based on a database item.
         /// </summary>
         /// <param name="dbItem">Database item</param>
-        public Item(Database.Entities.Item dbItem)
+        public Item(Database.Entities.DbItem dbItem)
             : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
                 dbItem.Element, dbItem.ElementRefine, 0)
         {
@@ -194,9 +196,16 @@ namespace Rhisis.World.Game.Structures
         /// <param name="packet"></param>
         public void Serialize(INetPacketStream packet)
         {
+            packet.Write(this.UniqueId);
             packet.Write(this.Id);
+            
             packet.Write(0); // Serial number
-            packet.Write(this.Data.Name.Substring(0, this.Data.Name.Length > 31 ? 31 : this.Data.Name.Length));
+
+            if (this.Data != null)
+                packet.Write(this.Data.Name.Substring(0, this.Data.Name.Length > 31 ? 31 : this.Data.Name.Length));
+            else
+                packet.Write("Unknown");
+
             packet.Write((short) this.Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp
@@ -227,6 +236,8 @@ namespace Rhisis.World.Game.Structures
                 this.ElementRefine, this.ExtraUsed);
         }
 
+        public bool IsEquipped() => this.Slot > InventorySystem.EquipOffset;
+
         /// <summary>
         /// Reset the item.
         /// </summary>
@@ -247,7 +258,7 @@ namespace Rhisis.World.Game.Structures
         /// <returns></returns>
         public override string ToString()
         {
-            return $"Item: Id{this.Id} Slot:{this.Slot} UniqueId:{this.UniqueId}";
+            return $"{this.Data?.Name}";
         }
     }
 }

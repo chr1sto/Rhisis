@@ -1,53 +1,63 @@
 ﻿using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
+using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Packets;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Systems
 {
     [System]
-    public class VisibilitySystem : SystemBase
+    public class VisibilitySystem : ISystem
     {
         public static readonly float VisibilityRange = 75f;
 
         /// <inheritdoc />
-        protected override WorldEntityType Type => WorldEntityType.Mover;
-
-        /// <summary>
-        /// Creates a new <see cref="VisibilitySystem"/> instance.
-        /// </summary>
-        /// <param name="context"></param>
-        public VisibilitySystem(IContext context)
-            : base(context)
-        {
-        }
+        public WorldEntityType Type => WorldEntityType.Mover;
 
         /// <summary>
         /// Executes the <see cref="VisibilitySystem"/> logic.
         /// </summary>
         /// <param name="entity">Current entity</param>
-        public override void Execute(IEntity entity)
+        public void Execute(IEntity entity, SystemEventArgs args)
         {
             var currentMap = entity.Context as IMapInstance;
             IMapLayer currentMapLayer = currentMap?.GetMapLayer(entity.Object.LayerId);
 
-            UpdateContextVisibility(entity, currentMapLayer);
-            UpdateContextVisibility(entity, this.Context);
+            if (currentMapLayer != null)
+                UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
+
+            if (currentMap != null)
+                UpdateEntitiesVisibility(entity, currentMap?.Entities);
+
+            if (entity.Type == WorldEntityType.Player)
+            {
+                foreach (var region in currentMapLayer.Regions)
+                {
+                    if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
+                    {
+                        region.IsActive = true;
+                    }
+
+                    if (region.IsActive && region is IMapRespawnRegion respawner)
+                    {
+                        UpdateEntitiesVisibility(entity, respawner.Entities);
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Update context visibility.
+        /// Update entities visibility.
         /// </summary>
         /// <param name="entity">Current entity</param>
-        /// <param name="context">Context containing entities</param>
-        private static void UpdateContextVisibility(IEntity entity, IContext context)
+        /// <param name="entities">Entities</param>
+        private static void UpdateEntitiesVisibility(IEntity entity, IEnumerable<IEntity> entities)
         {
-            if (context == null)
-                return;
-
-            foreach (IEntity otherEntity in context.Entities)
+            foreach (IEntity otherEntity in entities)
             {
-                if (entity.Id == otherEntity.Id || !otherEntity.Object.Spawned)
+                if (entity.Id == otherEntity.Id)
                     continue;
 
                 if (otherEntity.Type == WorldEntityType.Player && entity.Object.LayerId != otherEntity.Object.LayerId)
@@ -55,7 +65,7 @@ namespace Rhisis.World.Systems
 
                 bool canSee = entity.Object.Position.IsInCircle(otherEntity.Object.Position, VisibilityRange) && entity != otherEntity;
 
-                if (canSee)
+                if (canSee && otherEntity.Object.Spawned)
                 {
                     if (!entity.Object.Entities.Contains(otherEntity))
                         SpawnOtherEntity(entity, otherEntity);

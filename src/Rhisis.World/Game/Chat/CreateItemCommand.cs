@@ -1,12 +1,12 @@
 ﻿using NLog;
 using Rhisis.Core.Common;
 using Rhisis.Core.Data;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
-using System.Linq;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -37,8 +37,7 @@ namespace Rhisis.World.Game.Chat
 
             if (!int.TryParse(parameters[0], out int itemId))
             {
-                ItemData itemData = WorldServer.Items.Values.FirstOrDefault(x =>
-                    string.Equals(x.Name, parameters[0], System.StringComparison.OrdinalIgnoreCase));
+                ItemData itemData = GameResources.Instance.Items[parameters[0]];
 
                 itemId = itemData?.Id ?? -1;
             }
@@ -47,7 +46,7 @@ namespace Rhisis.World.Game.Chat
                 int.TryParse(parameters[1], out quantity);
 
             var createItemEvent = new InventoryCreateItemEventArgs(itemId, quantity, player.PlayerData.Id);
-            player.Context.NotifySystem<InventorySystem>(player, createItemEvent);
+            player.NotifySystem<InventorySystem>(createItemEvent);
         }
     }
 }

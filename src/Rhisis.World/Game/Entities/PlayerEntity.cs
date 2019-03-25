@@ -29,10 +29,25 @@ namespace Rhisis.World.Game.Entities
         public TradeComponent Trade { get; set; }
 
         /// <inheritdoc />
+        public PartyComponent Party { get; set; }
+
+        /// <inheritdoc />
+        public TaskbarComponent Taskbar { get; set; }
+
+        /// <inheritdoc />
         public NetUser Connection { get; set; }
 
         /// <inheritdoc />
         public FollowComponent Follow { get; set; }
+
+        /// <inheritdoc />
+        public InteractionComponent Interaction { get; set; }
+
+        /// <inheritdoc />
+        public BattleComponent Battle { get; set; }
+
+        /// <inheritdoc />
+        public HealthComponent Health { get; set; }
 
         /// <inheritdoc />
         public IBehavior<IPlayerEntity> Behavior { get; set; }
@@ -44,8 +59,15 @@ namespace Rhisis.World.Game.Entities
         public PlayerEntity(IContext context)
             : base(context)
         {
+            this.MovableComponent = new MovableComponent();
+            this.PlayerData = new PlayerDataComponent();
             this.Trade = new TradeComponent();
+            this.Party = new PartyComponent();
+            this.Taskbar = new TaskbarComponent();
             this.Follow = new FollowComponent();
+            this.Interaction = new InteractionComponent();
+            this.Battle = new BattleComponent();
+            this.Health = new HealthComponent();
         }
     }
 }

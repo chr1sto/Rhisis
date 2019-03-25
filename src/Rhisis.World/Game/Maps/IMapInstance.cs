@@ -1,5 +1,5 @@
 ﻿using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Regions;
+using Rhisis.World.Game.Maps.Regions;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Maps
@@ -27,7 +27,7 @@ namespace Rhisis.World.Game.Maps
         /// <summary>
         /// Gets the map regions.
         /// </summary>
-        IReadOnlyList<IRegion> Regions { get; }
+        IReadOnlyList<IMapRegion> Regions { get; }
 
         /// <summary>
         /// Load NPC from the DYO file.

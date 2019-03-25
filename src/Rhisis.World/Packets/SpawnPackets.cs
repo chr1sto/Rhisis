@@ -1,11 +1,13 @@
-﻿using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
+﻿using Rhisis.Core.Resources;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
+using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
+using Rhisis.World.Systems.Inventory;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Packets
 {
@@ -44,9 +46,9 @@ namespace Rhisis.World.Packets
 
                 packet.Write<short>(0); // m_dwMotion
                 packet.Write<byte>(1); // m_bPlayer
-                packet.Write(230); // HP
-                packet.Write(0); // moving flags
-                packet.Write(0); // motion flags
+                packet.Write(player.Health.Hp); // HP
+                packet.Write((int)player.Object.MovingFlags); // moving flags
+                packet.Write((int)player.Object.MotionFlags); // motion flags
                 packet.Write<byte>(1); // m_dwBelligerence
 
                 packet.Write(-1); // m_dwMoverSfxId
@@ -58,14 +60,14 @@ namespace Rhisis.World.Packets
                 packet.Write(player.VisualAppearance.HairColor);
                 packet.Write((byte)player.VisualAppearance.FaceId);
                 packet.Write(player.PlayerData.Id);
-                packet.Write((byte)1); // Job
+                packet.Write((byte)player.PlayerData.JobId); // Job
 
-                packet.Write((short) player.Statistics.Strenght);
+                packet.Write((short) player.Statistics.Strength);
                 packet.Write((short) player.Statistics.Stamina);
                 packet.Write((short) player.Statistics.Dexterity);
                 packet.Write((short) player.Statistics.Intelligence);
 
-                packet.Write((short)1); // Levels
+                packet.Write((short)player.Object.Level); // Level
                 packet.Write(-1); // Fuel
                 packet.Write(0); // Actuel fuel
 
@@ -79,7 +81,7 @@ namespace Rhisis.World.Packets
                 packet.Write<byte>(0); // have party or not
 
                 packet.Write((byte)player.PlayerData.Authority); // authority
-                packet.Write(0); // mode
+                packet.Write((uint)player.PlayerData.Mode); // mode
                 packet.Write(0); // state mode
                 packet.Write(0x000001F6); // item used ??
                 packet.Write(0); // last pk time.
@@ -91,9 +93,9 @@ namespace Rhisis.World.Packets
                 packet.Write(-1); // titles
                 
                 // Serialize visible effects
-                IEnumerable<Item> equipedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                IEnumerable<Item> equippedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
-                foreach (var item in equipedItems)
+                foreach (var item in equippedItems)
                     packet.Write(item.Refines);
 
                 packet.Write(0); // guild war state
@@ -101,12 +103,12 @@ namespace Rhisis.World.Packets
                 for (int i = 0; i < 26; ++i)
                     packet.Write(0);
 
-                packet.Write((short)0); // MP
-                packet.Write((short)0); // FP
+                packet.Write((short)player.Health.Mp); // MP
+                packet.Write((short)player.Health.Fp); // FP
                 packet.Write(0); // tutorial state
                 packet.Write(0); // fly experience
                 packet.Write(player.PlayerData.Gold); // Gold
-                packet.Write((long)0); // exp
+                packet.Write(player.PlayerData.Experience); // exp
                 packet.Write(0); // skill level
                 packet.Write(0); // skill points
                 packet.Write<long>(0); // death exp
@@ -130,7 +132,7 @@ namespace Rhisis.World.Packets
                 packet.Write<short>(0); // always 0
 
                 // item mask
-                foreach (var item in equipedItems)
+                foreach (var item in equippedItems)
                     packet.Write(item.Id);
 
                 // skills
@@ -205,6 +207,15 @@ namespace Rhisis.World.Packets
 
                 // buffs
                 packet.Write(0); // count
+                
+                player.Connection.Send(packet);
+            }
+                                   
+            // Taskbar
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(player.Id, SnapshotType.TASKBAR);
+                player.Taskbar.Serialize(packet);
 
                 player.Connection.Send(packet);
             }
@@ -238,13 +249,13 @@ namespace Rhisis.World.Packets
 
                     packet.Write<short>(0);
                     packet.Write<byte>(1); // is player?
-                    packet.Write(230); // HP
-                    packet.Write(0); // moving flags
-                    packet.Write(0); // motion flags
+                    packet.Write(playerEntity.Health.Hp); // HP
+                    packet.Write((int)player.Object.MovingFlags); // moving flags
+                    packet.Write((int)player.Object.MotionFlags); // motion flags
                     packet.Write<byte>(0);
                     packet.Write(-1); // baby buffer
 
-                    packet.Write(entityToSpawn.Object.Name);
+                    packet.Write(playerEntity.Object.Name);
                     packet.Write(playerEntity.VisualAppearance.Gender);
                     packet.Write((byte)playerEntity.VisualAppearance.SkinSetId);
                     packet.Write((byte)playerEntity.VisualAppearance.HairId);
@@ -252,11 +263,11 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)playerEntity.VisualAppearance.FaceId);
                     packet.Write(playerEntity.PlayerData.Id);
                     packet.Write((byte)1);
-                    packet.Write((short)0); // STR
-                    packet.Write((short)0); // STA
-                    packet.Write((short)0); // DEX
-                    packet.Write((short)0); // INT
-                    packet.Write((short)1); // Level
+                    packet.Write((short)playerEntity.Statistics.Strength); // STR
+                    packet.Write((short)playerEntity.Statistics.Stamina); // STA
+                    packet.Write((short)playerEntity.Statistics.Dexterity); // DEX
+                    packet.Write((short)playerEntity.Statistics.Intelligence); // INT
+                    packet.Write((short)playerEntity.Object.Level); // Level
 
                     packet.Write(-1);
                     packet.Write(0);
@@ -277,7 +288,7 @@ namespace Rhisis.World.Packets
                     packet.Write(0); // fame
                     packet.Write<byte>(0); // duel
                     packet.Write(-1); // titles
-                    
+
                     // Serialize visible effects
                     IEnumerable<Item> equipedItems = playerEntity.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
@@ -305,12 +316,14 @@ namespace Rhisis.World.Packets
                 }
                 else if (entityToSpawn.Type == WorldEntityType.Monster)
                 {
+                    var monsterEntity = entityToSpawn as IMonsterEntity;
+
                     packet.Write<short>(5);
                     packet.Write<byte>(0);
-                    packet.Write(WorldServer.Movers[entityToSpawn.Object.ModelId].MaxHP);
+                    packet.Write(monsterEntity.Health.Hp);
                     packet.Write(1);
                     packet.Write(0);
-                    packet.Write((byte)WorldServer.Movers[entityToSpawn.Object.ModelId].Belligerence);
+                    packet.Write((byte)GameResources.Instance.Movers[entityToSpawn.Object.ModelId].Belligerence);
                     packet.Write(-1);
 
                     packet.Write((byte)0);
@@ -329,7 +342,7 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)0);
                     packet.Write((byte)0);
                     packet.Write(0);
-                    packet.Write(1f); // speed factor
+                    packet.Write(monsterEntity.MovableComponent.SpeedFactor); // speed factor
                     packet.Write(0);
                 }
                 else if (entityToSpawn.Type == WorldEntityType.Npc)
@@ -352,6 +365,12 @@ namespace Rhisis.World.Packets
                     packet.Write(0);
                     packet.Write<float>(1); // speed factor
                     packet.Write(0);
+                }
+                else if (entityToSpawn.Type == WorldEntityType.Drop)
+                {
+                    var dropItemEntity = entityToSpawn as IItemEntity;
+                    
+                    dropItemEntity.Drop.Item.Serialize(packet);
                 }
 
                 player.Connection.Send(packet);

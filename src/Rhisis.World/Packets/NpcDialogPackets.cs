@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Rhisis.Core.Data;
-using Rhisis.Core.Network;
-using Rhisis.Core.Network.Packets;
-using Rhisis.Core.Structures.Game;
+using Rhisis.Network;
+using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
+using Rhisis.Core.Structures.Game.Dialogs;
 
 namespace Rhisis.World.Packets
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rhisis.Core.Resources
 {
@@ -22,6 +23,18 @@ namespace Rhisis.Core.Resources
         {
             this._elements = new List<RgnElement>();
             this.Read();
+        }
+
+        /// <summary>
+        /// Gets a list of <typeparamref name="T"/> that inherits from <see cref="RgnElement"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetElements<T>() where T : RgnElement
+        {
+            return from x in this._elements
+                   where x is T
+                   select x as T;
         }
 
         /// <summary>
@@ -60,6 +73,7 @@ namespace Rhisis.Core.Resources
             }
         }
 
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (disposing)

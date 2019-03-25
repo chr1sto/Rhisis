@@ -1,50 +1,79 @@
-﻿using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
+using Rhisis.Core.Common;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures
 {
     [DataContract]
     public class DefaultCharacter
     {
-        [DataMember(Name = "level")]
-        public int Level { get; set; }
+        public const int DefaultLevel = 1;
+        public const int DefaultStrength = 15;
+        public const int DefaultStamina = 15;
+        public const int DefaultDexterity = 15;
+        public const int DefaultIntelligence = 15;
+        public const int DefaultMapId = 1;
+        public const float DefaultPosX = 6968.0f;
+        public const float DefaultPosY = 100.0f;
+        public const float DefaultPosZ = 3328.0f;
 
-        [DataMember(Name = "gold")]
+        [DefaultValue(DefaultLevel)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int Level { get; set; } = DefaultLevel;
+
+        [DefaultValue(0)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int Gold { get; set; }
 
-        [DataMember(Name = "strength")]
-        public int Strength { get; set; }
+        [DefaultValue(DefaultStrength)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int Strength { get; set; } = DefaultStrength;
 
-        [DataMember(Name = "stamina")]
-        public int Stamina { get; set; }
+        [DefaultValue(DefaultStamina)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int Stamina { get; set; } = DefaultStamina;
 
-        [DataMember(Name = "dexterity")]
-        public int Dexterity { get; set; }
+        [DefaultValue(DefaultDexterity)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int Dexterity { get; set; } = DefaultDexterity;
 
-        [DataMember(Name = "intelligence")]
-        public int Intelligence { get; set; }
+        [DefaultValue(DefaultIntelligence)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int Intelligence { get; set; } = DefaultIntelligence;
 
-        [DataMember(Name = "mapId")]
-        public int MapId { get; set; }
+        [DefaultValue(DefaultMapId)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int MapId { get; set; } = DefaultMapId;
 
-        [DataMember(Name = "posX")]
-        public float PosX { get; set; }
+        [DefaultValue(DefaultPosX)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public float PosX { get; set; } = DefaultPosX;
 
-        [DataMember(Name = "posY")]
-        public float PosY { get; set; }
+        [DefaultValue(DefaultPosY)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public float PosY { get; set; } = DefaultPosY;
 
-        [DataMember(Name = "posZ")]
-        public float PosZ { get; set; }
-        
-        [DataMember(Name = "man")]
-        public DefaultStartItem Man { get; set; }
+        [DefaultValue(DefaultPosZ)]
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public float PosZ { get; set; } = DefaultPosZ;
 
-        [DataMember(Name = "woman")]
-        public DefaultStartItem Woman { get; set; }
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public DefaultStartItems Man { get; set; } = new DefaultStartItems(GenderType.Male);
 
-        public DefaultCharacter()
-        {
-            this.Man = new DefaultStartItem();
-            this.Woman = new DefaultStartItem();
-        }
+        [DataMember]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public DefaultStartItems Woman { get; set; } = new DefaultStartItems(GenderType.Female);
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rhisis.Database.Interfaces;
+using Rhisis.Database.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Rhisis.Database.Repositories
 {
@@ -10,8 +11,8 @@ namespace Rhisis.Database.Repositories
     /// Abstract implementation of a repository.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class RepositoryBase<T> : IRepository<T> 
-        where T : class, IDatabaseEntity
+    public abstract class RepositoryBase<T> : IRepository<T>
+        where T : DbEntity
     {
         private readonly DbContext _context;
 
@@ -24,92 +25,60 @@ namespace Rhisis.Database.Repositories
             this._context = context;
         }
 
-        /// <summary>
-        /// Creates a new entity.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public T Create(T entity)
         {
             this._context.Set<T>().Add(entity);
-            this._context.SaveChanges();
 
             return entity;
         }
 
-        /// <summary>
-        /// Updates an existing entity.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
+        public async Task<T> CreateAsync(T entity)
+        {
+            var trackedEntity = await this._context.Set<T>().AddAsync(entity);
+
+            return trackedEntity.Entity;
+        }
+
+        /// <inheritdoc />
         public T Update(T entity)
         {
-            this._context.Set<T>().Update(entity);
-            this._context.SaveChanges();
+            var trackedEntity = this._context.Set<T>().Update(entity);
 
-            return entity;
+            return trackedEntity.Entity;
         }
 
-        /// <summary>
-        /// Delete an existing entity.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public T Delete(T entity)
         {
-            this._context.Set<T>().Remove(entity);
-            this._context.SaveChanges();
+            var trackedEntity = this._context.Set<T>().Remove(entity);
 
-            return entity;
+            return trackedEntity.Entity;
         }
 
-        /// <summary>
-        /// Gets an entity by his Id.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public T Get(int id) => this.GetQueryable().FirstOrDefault(x => x.Id == id);
+        /// <inheritdoc />
+        public T Get(int id) => this.Get(x => x.Id == id);
 
-        /// <summary>
-        /// Gets an entity with a filter expression.
-        /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public T Get(Func<T, bool> func) => this.GetQueryable().FirstOrDefault(func);
+        /// <inheritdoc />
+        public T Get(Func<T, bool> func) => this.GetQueryable(this._context).FirstOrDefault(func);
 
-        /// <summary>
-        /// Get all records from the repository.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<T> GetAll() => this.GetQueryable().AsEnumerable();
+        /// <inheritdoc />
+        public IEnumerable<T> GetAll() => this.GetQueryable(this._context).AsEnumerable();
 
-        /// <summary>
-        /// Gets all records from the repository with a filter expression.
-        /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public IEnumerable<T> GetAll(Func<T, bool> func) => this.GetQueryable().Where(func).AsEnumerable();
+        /// <inheritdoc />
+        public IEnumerable<T> GetAll(Func<T, bool> func) => this.GetQueryable(this._context).Where(func).AsEnumerable();
 
-        /// <summary>
-        /// Get the total amount of records from the repository.
-        /// </summary>
-        /// <returns></returns>
-        public int Count() => this._context.Set<T>().Count();
+        /// <inheritdoc />
+        public int Count() => this._context.Set<T>().AsNoTracking().Count();
 
-        /// <summary>
-        /// Get the total amount of records from the repository with a filter expression.
-        /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public int Count(Func<T, bool> func) => this._context.Set<T>().Count(func);
+        /// <inheritdoc />
+        public int Count(Func<T, bool> func) => this._context.Set<T>().AsNoTracking().Count(func);
 
-        /// <summary>
-        /// Get the queryable request.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual IQueryable<T> GetQueryable()
-        {
-            return this._context.Set<T>().AsQueryable();
-        }
+        /// <inheritdoc />
+        public bool HasAny(Func<T, bool> predicate) => this._context.Set<T>().AsNoTracking().Any(predicate);
+
+        /// <inheritdoc />
+        protected virtual IQueryable<T> GetQueryable(DbContext context) => context.Set<T>().AsQueryable();
     }
 }

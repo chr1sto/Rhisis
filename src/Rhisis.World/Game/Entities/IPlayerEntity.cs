@@ -5,7 +5,7 @@ using Rhisis.World.Game.Core;
 
 namespace Rhisis.World.Game.Entities
 {
-    public interface IPlayerEntity : IEntity, IMovableEntity
+    public interface IPlayerEntity : IEntity, IMovableEntity, ILivingEntity
     {
         VisualAppearenceComponent VisualAppearance { get; set; }
 
@@ -13,10 +13,12 @@ namespace Rhisis.World.Game.Entities
 
         ItemContainerComponent Inventory { get; set; }
 
-        StatisticsComponent Statistics { get; set; }
-
         TradeComponent Trade { get; set; }
-        
+
+        PartyComponent Party { get; set; }
+
+        TaskbarComponent Taskbar { get; set; }
+
         NetUser Connection { get; set; }
 
         IBehavior<IPlayerEntity> Behavior { get; set; }
