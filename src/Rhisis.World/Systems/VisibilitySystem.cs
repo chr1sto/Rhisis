@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.Core.Exceptions;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
@@ -22,11 +23,15 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         public void Execute(IEntity entity, SystemEventArgs args)
         {
-            var currentMap = entity.Context as IMapInstance;
-            IMapLayer currentMapLayer = currentMap?.GetMapLayer(entity.Object.LayerId);
+            var currentMapLayer = entity.Context as IMapLayer;
+
+            if (currentMapLayer == null)
+                throw new RhisisSystemException($"Object {entity.Object.Name}:{entity.Id} doesn't belong to a map layer.");
+
+            var currentMap = currentMapLayer.Parent;
 
             if (currentMap != null)
-                UpdateEntitiesVisibility(entity, currentMap?.Entities);
+                UpdateEntitiesVisibility(entity, currentMap.Entities);
 
             if (currentMapLayer != null)
             {
