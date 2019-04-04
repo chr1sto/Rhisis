@@ -93,14 +93,13 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
 
-1. Download or Clone the `develop` branch
-2. Install the .NET Core SDK 2.0 : https://www.microsoft.com/net/download/windows
+1. Download or Clone the `develop` branch.
+2. Install the latest .NET Core SDK : https://dotnet.microsoft.com/download
 3. Install `MsSQL Express` or `MySQL Server`
-4. Edit the files in `bin/config/` (`login.json`, `cluster.json`, `world.json`)
-5. Compile Rhisis solution using the `scripts/compile_solution.bat`
-6. Open a command prompt in folder `bin/`
-7. Type the following command: `./rhisis-cli.bat database initialize` and follow the instructions
-7. Create an account in table `users` of your database 
+4. Go to your Rhisis folder, open a `cmd` or `PowerShell` and compile the solution with the command : `dotnet build`
+5. Go to the `bin/` folder, open a `cmd` or `PowerShell` and type: `./rhisis-cli.bat setup`
+> ℹ️ The `rhisis-cli setup` command will guide you through the rhisis configuration and will setup the database for you.
+6. Create an account using the `./rhisis-cli user create` command
 8. Start the emulator
 - Start `1.login.bat`
 - Start `2.cluster.bat`
