@@ -2,6 +2,7 @@
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures.Game;
@@ -139,43 +140,39 @@ namespace Rhisis.World.Game.Maps
         {
             lock (SyncRoot)
             {
-                foreach (var entity in this.Entities)
-                    SystemManager.Instance.ExecuteUpdatable(entity);
+                for (int i = 0; i < this.Entities.Count(); i++)
+                    SystemManager.Instance.ExecuteUpdatable(this.Entities.ElementAt(i));
 
-                foreach (var mapLayer in this._layers)
-                    mapLayer.Update();
+                for (int i = 0; i < this._layers.Count; i++)
+                    this._layers[i].Update();
             }
         }
 
         /// <inheritdoc />
-        public void StartUpdateTask(int delay)
+        public void StartUpdateTask()
         {
+            const double FramesPerSeconds = 1000.0 / 60.0;
+            double lastTime = Time.TimeInMilliseconds();
+            double elapsedTime = 0;
+
             Task.Run(async () =>
             {
-                const double FrameRatePerSeconds = 0.66666f;
-                double previousTime = 0;
-
-                while (true)
+                while (!this._cancellationToken.IsCancellationRequested)
                 {
-                    if (this._cancellationToken.IsCancellationRequested)
-                        break;
+                    double now = Time.TimeInMilliseconds();
 
-                    double currentTime = Rhisis.Core.IO.Time.GetElapsedTime();
-                    double deltaTime = currentTime - previousTime;
-                    previousTime = currentTime;
+                    elapsedTime += (now - lastTime) / FramesPerSeconds;
+                    lastTime = now;
 
-                    this.GameTime = (deltaTime * FrameRatePerSeconds) / 1000f;
-
-                    try
+                    if (elapsedTime >= 1)
                     {
                         this.Update();
+                        elapsedTime--;
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Logger.Error(e);
+                        await Task.Delay(TimeSpan.FromMilliseconds(FramesPerSeconds - elapsedTime));
                     }
-
-                    await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }
@@ -207,10 +204,8 @@ namespace Rhisis.World.Game.Maps
             };
             npc.Behavior = behaviors.NpcBehaviors.GetBehavior(npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
-
             npc.Data = npcs.GetNpcData(npc.Object.Name);
-
-
+            
             if (npc.Data != null && npc.Data.HasShop)
             {
                 ShopData npcShopData = npc.Data.Shop;
@@ -246,6 +241,7 @@ namespace Rhisis.World.Game.Maps
             map.LoadDyo();
             map.LoadRgn();
             map.CreateMapLayer(DefaultMapLayerId);
+            map.StartUpdateTask();
 
             return map;
         }

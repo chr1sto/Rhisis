@@ -67,21 +67,19 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public override void Update()
         {
-            this.GameTime = this.Parent.GameTime;
+            for (int i = 0; i < this.Entities.Count(); i++)
+                SystemManager.Instance.ExecuteUpdatable(this.Entities.ElementAt(i));
 
-            foreach (var entity in this.Entities)
-                SystemManager.Instance.ExecuteUpdatable(entity);
-            
-            foreach (var region in this._regions)
-            {
-                if (region.IsActive && region is IMapRespawnRegion respawnRegion)
-                {
-                    foreach (var entity in respawnRegion.Entities)
-                    {
-                        SystemManager.Instance.ExecuteUpdatable(entity);
-                    }
-                }
-            }
+            //foreach (var region in this._regions)
+            //{
+            //    if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+            //    {
+            //        foreach (var entity in respawnRegion.Entities)
+            //        {
+            //            SystemManager.Instance.ExecuteUpdatable(entity);
+            //        }
+            //    }
+            //}
         }
 
         /// <inheritdoc />

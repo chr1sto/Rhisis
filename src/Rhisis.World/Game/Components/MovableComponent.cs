@@ -9,8 +9,7 @@ namespace Rhisis.World.Game.Components
         public long LastMoveTime { get; set; }
         
         public long NextMoveTime { get; set; }
-
-
+        
         public Vector3 DestinationPosition { get; set; }
 
         public bool HasArrived { get; set; }

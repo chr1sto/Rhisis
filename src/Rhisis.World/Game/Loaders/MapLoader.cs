@@ -69,7 +69,6 @@ namespace Rhisis.World.Game.Loaders
                 IMapInstance map = MapInstance.Create(Path.Combine(GameResources.MapsPath, mapName), mapName, mapId);
 
                 _maps.Add(mapId, map);
-                map.StartUpdateTask(50);
             }
 
             this._logger.LogInformation("-> {0} maps loaded.", _maps.Count);

@@ -7,7 +7,7 @@ namespace Rhisis.World.Game.Maps
     /// <summary>
     /// Describes the behavior of a Map instance.
     /// </summary>
-    public interface IMapInstance : IAsyncContext
+    public interface IMapInstance : IContext
     {
         /// <summary>
         /// Gets the map id.
@@ -70,5 +70,15 @@ namespace Rhisis.World.Game.Maps
         /// </summary>
         /// <param name="id"></param>
         void DeleteMapLayer(int id);
+
+        /// <summary>
+        /// Starts a context in a parallel task.
+        /// </summary>
+        void StartUpdateTask();
+
+        /// <summary>
+        /// Stops the context and the task.
+        /// </summary>
+        void StopUpdateTask();
     }
 }

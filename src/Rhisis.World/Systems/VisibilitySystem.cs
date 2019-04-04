@@ -25,24 +25,26 @@ namespace Rhisis.World.Systems
             var currentMap = entity.Context as IMapInstance;
             IMapLayer currentMapLayer = currentMap?.GetMapLayer(entity.Object.LayerId);
 
-            if (currentMapLayer != null)
-                UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
-
             if (currentMap != null)
                 UpdateEntitiesVisibility(entity, currentMap?.Entities);
 
-            if (entity.Type == WorldEntityType.Player)
+            if (currentMapLayer != null)
             {
-                foreach (var region in currentMapLayer.Regions)
-                {
-                    if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
-                    {
-                        region.IsActive = true;
-                    }
+                UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
 
-                    if (region.IsActive && region is IMapRespawnRegion respawner)
+                if (entity.Type == WorldEntityType.Player)
+                {
+                    foreach (var region in currentMapLayer.Regions)
                     {
-                        UpdateEntitiesVisibility(entity, respawner.Entities);
+                        if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
+                        {
+                            region.IsActive = true;
+                        }
+
+                        if (region.IsActive && region is IMapRespawnRegion respawner)
+                        {
+                            UpdateEntitiesVisibility(entity, respawner.Entities);
+                        }
                     }
                 }
             }
