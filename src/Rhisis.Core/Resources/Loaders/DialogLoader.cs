@@ -40,9 +40,10 @@ namespace Rhisis.Core.Resources.Loaders
                 string lang = new DirectoryInfo(dialogPath).Name;
                 string[] dialogFiles = Directory.GetFiles(dialogPath);
 
+                var dialogSet = new DialogSet(lang);
+
                 foreach (string dialogFile in dialogFiles)
                 {
-                    var dialogSet = new DialogSet(lang);
                     string dialogFileContent = File.ReadAllText(dialogFile);
                     var dialogsParsed = JToken.Parse(dialogFileContent, this._jsonSettings);
 
@@ -57,10 +58,10 @@ namespace Rhisis.Core.Resources.Loaders
                     {
                         this.AddDialog(dialogSet, dialogsParsed.ToObject<DialogData>());   
                     }
-
-                    this._dialogs.Add(lang, dialogSet);
-                    this._logger.LogInformation($"-> {dialogSet.Count} dialogs loaded for language {lang}.");
                 }
+
+                this._dialogs.Add(lang, dialogSet);
+                this._logger.LogInformation($"-> {dialogSet.Count} dialogs loaded for language {lang}.");
             }
         }
 
