@@ -60,7 +60,7 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity">Current entity</param>
         /// <param name="entities">Entities</param>
-        private static void UpdateEntitiesVisibility(IEntity entity, IEnumerable<IEntity> entities)
+        private void UpdateEntitiesVisibility(IEntity entity, IEnumerable<IEntity> entities)
         {
             foreach (IEntity otherEntity in entities)
             {
@@ -90,19 +90,21 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="otherEntity"></param>
-        private static void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
-            var player = entity as IPlayerEntity;
-
             entity.Object.Entities.Add(otherEntity);
-            WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
+
+            if (entity is IPlayerEntity player)
+                WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
 
             if (otherEntity.Type != WorldEntityType.Player && !otherEntity.Object.Entities.Contains(entity))
                 otherEntity.Object.Entities.Add(entity);
 
             if (otherEntity is IMovableEntity movableEntity &&
                 movableEntity.MovableComponent.DestinationPosition != movableEntity.Object.Position)
+            {
                 WorldPacketFactory.SendDestinationPosition(movableEntity);
+            }
         }
 
         /// <summary>
@@ -110,11 +112,11 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity">Current entity</param>
         /// <param name="otherEntity">other entity</param>
-        private static void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
-            var player = entity as IPlayerEntity;
+            if (entity is IPlayerEntity player)
+                WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
 
-            WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
             entity.Object.Entities.Remove(otherEntity);
             
             if (otherEntity.Type != WorldEntityType.Player && otherEntity.Object.Entities.Contains(entity))

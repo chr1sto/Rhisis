@@ -328,7 +328,7 @@ namespace Rhisis.Core.Structures
             float power = RandomHelper.FloatRandom(0f, radius);
 
             newVector.X += (float)Math.Sin(angle) * power;
-            newVector.Z += (float)Math.Cos(angle) * power;
+            newVector.Z -= (float)Math.Cos(angle) * power;
 
             return newVector;
         }

@@ -21,6 +21,7 @@ namespace Rhisis.World.Systems.Drop
         private const int DropGoldLimit1 = 9;
         private const int DropGoldLimit2 = 49;
         private const int DropGoldLimit3 = 99;
+        private const float DropCircleRadius = 2f;
 
         private static readonly ILogger<DropSystem> Logger = DependencyContainer.Instance.Resolve<ILogger<DropSystem>>();
 
@@ -78,7 +79,7 @@ namespace Rhisis.World.Systems.Drop
                 LayerId = entity.Object.LayerId,
                 ModelId = e.Item.Id,
                 Spawned = true,
-                Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, 0.5f),
+                Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, DropCircleRadius),
                 Type = WorldObjectType.Item
             };
         }

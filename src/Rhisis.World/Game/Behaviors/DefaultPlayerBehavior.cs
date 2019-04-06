@@ -7,7 +7,7 @@ namespace Rhisis.World.Game.Behaviors
     {
         public void Update(IPlayerEntity entity)
         {
-            this.UpdateFollowState(entity);
+            //this.UpdateFollowState(entity);
         }
 
         private void UpdateFollowState(IPlayerEntity entity)

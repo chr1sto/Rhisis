@@ -2,6 +2,7 @@
 using NLog;
 using Rhisis.Core.Common;
 using Rhisis.Core.Common.Game.Structures;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
@@ -83,7 +84,8 @@ namespace Rhisis.World.Handlers
                 Size = 100,
                 Name = character.Name,
                 Spawned = false,
-                Level = character.Level
+                Level = character.Level,
+                MovingFlags = ObjectState.OBJSTA_STAND
             };
 
             client.Player.Health = new HealthComponent
