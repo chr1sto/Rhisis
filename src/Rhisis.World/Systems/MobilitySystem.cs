@@ -1,5 +1,4 @@
-﻿using NLog;
-using Rhisis.Core.Data;
+﻿using Rhisis.Core.Data;
 using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
@@ -11,7 +10,7 @@ namespace Rhisis.World.Systems
     [System]
     public class MobilitySystem : ISystem
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private const float ArrivalRangeRadius = 0.1f;
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
@@ -24,10 +23,10 @@ namespace Rhisis.World.Systems
         {
             var movableEntity = entity as IMovableEntity;
 
-            if (movableEntity.MovableComponent.NextMoveTime > Time.GetTicks())
+            if (movableEntity.MovableComponent.NextMoveTime > Time.GetElapsedTime())
                 return;
 
-            movableEntity.MovableComponent.NextMoveTime = Time.GetTicks() + 10;
+            movableEntity.MovableComponent.NextMoveTime = Time.GetElapsedTime() + 10;
 
             if (movableEntity.MovableComponent.DestinationPosition.IsZero())
                 return;
@@ -44,7 +43,7 @@ namespace Rhisis.World.Systems
                     movableEntity.Object.MovingFlags |= ObjectState.OBJSTA_FMOVE;
                 }
                 if (movableEntity.Object.Position.IsInCircle(movableEntity.Follow.Target.Object.Position, movableEntity.Follow.FollowDistance) &&
-                    movableEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE))
+                    !movableEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
                 {
                     // Arrived
                     movableEntity.Object.MovingFlags = ObjectState.OBJSTA_STAND;
@@ -60,21 +59,26 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
-            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
+            if (entity.Object.Position.IsInCircle(entity.MovableComponent.DestinationPosition, ArrivalRangeRadius))
             {
                 entity.MovableComponent.HasArrived = true;
                 entity.MovableComponent.DestinationPosition = entity.Object.Position.Clone();
                 entity.Object.MovingFlags &= ~ObjectState.OBJSTA_FMOVE;
                 entity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
+
+                if (entity is IMonsterEntity monster)
+                    monster.Behavior.OnArrived(monster);
+                else if (entity is IPlayerEntity player)
+                    player.Behavior.OnArrived(player);
             }
             else
             {
                 entity.MovableComponent.HasArrived = false;
-                double entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor;
+                float entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor; // TODO: Add speed bonuses
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
                 float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
-
+                
                 // Normalize
                 double deltaX = distanceX / distance;
                 double deltaZ = distanceZ / distance;

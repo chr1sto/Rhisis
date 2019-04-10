@@ -38,7 +38,7 @@ namespace Rhisis.Core.IO
         }
 
         /// <summary>
-        /// Gets the time in milliseconds.
+        /// Gets the time in milliseconds since UTC.
         /// </summary>
         /// <returns></returns>
         public static double TimeInMilliseconds()
@@ -53,14 +53,12 @@ namespace Rhisis.Core.IO
         }
 
         /// <summary>
-        /// Gets the number of milliseconds since the program has started.
+        /// Gets the number of ticks since the program has started.
         /// </summary>
         /// <returns></returns>
         public static long GetElapsedTime()
         {
             return Environment.TickCount - Start;
         }
-
-        public static long GetTicks() => Environment.TickCount;
     }
 }

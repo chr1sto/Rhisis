@@ -151,28 +151,28 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public void StartUpdateTask()
         {
-            const double FramesPerSeconds = 1000.0 / 60.0;
-            double lastTime = Time.TimeInMilliseconds();
-            double elapsedTime = 0;
+            // TODO: Find a better way to handle the MapInstance game loop. Keeping things like this for now.
+            const float FrameRatePerSeconds = 15f;
+            double previousTime = Time.TimeInMilliseconds();
 
             Task.Run(async () =>
             {
                 while (!this._cancellationToken.IsCancellationRequested)
                 {
-                    double now = Time.TimeInMilliseconds();
+                    double currentTime = Time.TimeInMilliseconds();
+                    double deltaTime = currentTime - previousTime;
 
-                    elapsedTime += (now - lastTime) / FramesPerSeconds;
-                    lastTime = now;
-
-                    if (elapsedTime >= 1)
+                    try
                     {
                         this.Update();
-                        elapsedTime--;
                     }
-                    else
+                    catch (Exception e)
                     {
-                        await Task.Delay(TimeSpan.FromMilliseconds(FramesPerSeconds - elapsedTime));
+                        Logger.Error(e);
                     }
+
+                    previousTime = currentTime;
+                    await Task.Delay((int)Math.Abs(FrameRatePerSeconds - deltaTime), this._cancellationToken).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }

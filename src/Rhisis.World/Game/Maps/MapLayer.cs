@@ -18,7 +18,7 @@ namespace Rhisis.World.Game.Maps
 {
     public class MapLayer : Context, IMapLayer
     {
-        private readonly IList<IMapRegion> _regions;
+        private readonly List<IMapRegion> _regions;
 
         /// <inheritdoc />
         public int Id { get; }
@@ -70,13 +70,13 @@ namespace Rhisis.World.Game.Maps
             for (int i = 0; i < this.Entities.Count(); i++)
                 SystemManager.Instance.ExecuteUpdatable(this.Entities.ElementAt(i));
 
-            foreach (var region in this._regions)
+            for (int i = 0; i < this._regions.Count; i++)
             {
-                if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+                if (this._regions[i].IsActive && this._regions[i] is IMapRespawnRegion respawnRegion)
                 {
-                    foreach (var entity in respawnRegion.Entities)
+                    for (int j = 0; j < respawnRegion.Entities.Count; j++)
                     {
-                        SystemManager.Instance.ExecuteUpdatable(entity);
+                        SystemManager.Instance.ExecuteUpdatable(respawnRegion.Entities[j]);
                     }
                 }
             }
@@ -89,9 +89,9 @@ namespace Rhisis.World.Game.Maps
 
             if (entity == null)
             {
-                foreach (var region in this._regions)
+                for (int i = 0; i < this._regions.Count; i++)
                 {
-                    if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+                    if (this._regions[i].IsActive && this._regions[i] is IMapRespawnRegion respawnRegion)
                     {
                         var regionEntity = respawnRegion.Entities.FirstOrDefault(x => x.Id == id);
 
@@ -129,7 +129,8 @@ namespace Rhisis.World.Game.Maps
                 Name = moverData.Name,
                 Size = ObjectComponent.DefaultObjectSize,
                 Spawned = true,
-                Level = moverData.Level
+                Level = moverData.Level,
+                MovingFlags = ObjectState.OBJSTA_STAND
             };
             monster.Timers = new TimerComponent
             {
@@ -137,7 +138,7 @@ namespace Rhisis.World.Game.Maps
             };
             monster.MovableComponent = new MovableComponent
             {
-                Speed = moverData.Speed,
+                Speed = moverData.Speed / 2,
                 DestinationPosition = monster.Object.Position.Clone()
             };
             monster.Health = new HealthComponent
@@ -156,6 +157,7 @@ namespace Rhisis.World.Game.Maps
             monster.Behavior = behaviors.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawnRegion;
             monster.Data = moverData;
+
             if (moverData.Class == MoverClassType.RANK_BOSS)
                 monster.Object.Size *= 2;
 

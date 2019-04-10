@@ -21,7 +21,7 @@ namespace Rhisis.World.Systems.Drop
         private const int DropGoldLimit1 = 9;
         private const int DropGoldLimit2 = 49;
         private const int DropGoldLimit3 = 99;
-        private const float DropCircleRadius = 2f;
+        private const float DropCircleRadius = 0.1f;
 
         private static readonly ILogger<DropSystem> Logger = DependencyContainer.Instance.Resolve<ILogger<DropSystem>>();
 

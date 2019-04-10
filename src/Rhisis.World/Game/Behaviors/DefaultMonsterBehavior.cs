@@ -4,6 +4,7 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems;
 using Rhisis.World.Systems.Battle;
 
 namespace Rhisis.World.Game.Behaviors
@@ -22,10 +23,22 @@ namespace Rhisis.World.Game.Behaviors
             if (!entity.Object.Spawned || entity.Health.IsDead)
                 return;
 
+            if (entity.Timers.LastAICheck > Time.GetElapsedTime())
+                return;
+
             if (entity.Battle.IsFighting)
                 this.ProcessMonsterFight(entity);
             else
                 this.ProcessMonsterMovements(entity);
+            
+            entity.Timers.LastAICheck = Time.GetElapsedTime() + (long)(entity.Data.Speed * 100f);
+        }
+
+        /// <inheritdoc />
+        public virtual void OnArrived(IMonsterEntity entity)
+        {
+            if (!entity.Battle.IsFighting)
+                entity.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 10);
         }
 
         /// <summary>
@@ -65,7 +78,6 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="destPosition"></param>
         private void MoveToPosition(IMonsterEntity monster, Vector3 destPosition)
         {
-            monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20);
             monster.Object.Angle = Vector3.AngleBetween(monster.Object.Position, destPosition);
             monster.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
             monster.MovableComponent.DestinationPosition = destPosition.Clone();
@@ -90,7 +102,7 @@ namespace Rhisis.World.Game.Behaviors
                     WorldPacketFactory.SendSpeedFactor(monster, monster.MovableComponent.SpeedFactor);
                 }
 
-                if (monster.Object.Position.GetDistance2D(monster.MovableComponent.DestinationPosition) > 1f)
+                if (!monster.Object.Position.IsInCircle(monster.MovableComponent.DestinationPosition, 1f))
                 {
                     monster.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
                     WorldPacketFactory.SendFollowTarget(monster, monster.Follow.Target, 1f);
@@ -105,10 +117,6 @@ namespace Rhisis.World.Game.Behaviors
                         monster.NotifySystem<BattleSystem>(meleeAttack);
                     }
                 }
-            }
-            else
-            {
-                monster.Follow.Target = null;
             }
         }
     }
