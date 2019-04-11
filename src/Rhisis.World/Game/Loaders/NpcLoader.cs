@@ -112,5 +112,13 @@ namespace Rhisis.World.Game.Loaders
         /// <param name="npcId">Npc Id</param>
         /// <returns></returns>
         public NpcData GetNpcData(string npcId) => this._npcData.TryGetValue(npcId, out NpcData value) ? value : null;
+
+        /// <summary>
+        /// Try to get an <see cref="NpcData"/> by the NPC ID.
+        /// </summary>
+        /// <param name="npcId">Npc Id.</param>
+        /// <param name="value"><see cref="NpcData"/> matching the Npc Id.</param>
+        /// <returns>True if the NPC has been found, false otherwise.</returns>
+        public bool GetNpcData(string npcId, out NpcData value) => this._npcData.TryGetValue(npcId, out value);
     }
 }
