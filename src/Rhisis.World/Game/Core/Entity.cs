@@ -46,17 +46,18 @@ namespace Rhisis.World.Game.Core
             where TEntity : IEntity => (TEntity)this.Object.Entities.FirstOrDefault(x => x is TEntity && x.Id == id);
 
         /// <inheritdoc />
-        public bool Equals(IEntity x, IEntity y) => x.Id == y.Id;
+        public void Delete() => this.Context.DeleteEntity(this);
 
         /// <inheritdoc />
-        public int GetHashCode(IEntity obj)
-        {
-            var hashCode = 181846194; //TODO: implement constant and explain this number.
+        public bool Equals(IEntity x, IEntity y) => x.Equals(y);
 
-            hashCode *= -1521134295 + EqualityComparer<IEntity>.Default.GetHashCode(this); //TODO: implement constant and explain this number.
+        /// <inheritdoc />
+        public bool Equals(IEntity other) 
+            => (this.Id, this.Type, this.Object.MapId, this.Object.LayerId) == (other.Id, other.Type, other.Object.MapId, other.Object.LayerId);
 
-            return hashCode;
-        }
+        /// <inheritdoc />
+        public int GetHashCode(IEntity obj) 
+            => (this.Id, this.Type, this.Object.Name, this.Object.Type).GetHashCode();
 
         /// <inheritdoc />
         public void Dispose()

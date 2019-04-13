@@ -8,7 +8,7 @@ namespace Rhisis.World.Game.Core
     /// <summary>
     /// Describes the Entity behavior.
     /// </summary>
-    public interface IEntity : IDisposable, IEqualityComparer<IEntity>
+    public interface IEntity : IDisposable, IEqualityComparer<IEntity>, IEquatable<IEntity>
     {
         /// <summary>
         /// Gets the entity id.
@@ -44,5 +44,10 @@ namespace Rhisis.World.Game.Core
         /// <param name="id">Entity id</param>
         /// <returns>Entity</returns>
         TEntity FindEntity<TEntity>(uint id) where TEntity : IEntity;
+
+        /// <summary>
+        /// Deletes this entity from the current context.
+        /// </summary>
+        void Delete();
     }
 }

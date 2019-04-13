@@ -13,6 +13,7 @@ using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
 using Rhisis.Core.Data;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -78,6 +79,28 @@ namespace Rhisis.World.Game.Maps
                     {
                         SystemManager.Instance.ExecuteUpdatable(respawnRegion.Entities[j]);
                     }
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public override void UpdateDeletedEntities()
+        {
+            while (this._entitiesToDelete.TryDequeue(out uint entityIdToDelete))
+            {
+                var entityToDelete = this.FindEntity<IEntity>(entityIdToDelete);
+
+                if (entityToDelete != null)
+                {
+                    foreach (IEntity entity in entityToDelete.Object.Entities)
+                    {
+                        if (entity.Type == WorldEntityType.Player)
+                            WorldPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, entityToDelete);
+
+                        entity.Object.Entities.Remove(entityToDelete);
+                    }
+
+                    this._entities.Remove(entityIdToDelete);
                 }
             }
         }
