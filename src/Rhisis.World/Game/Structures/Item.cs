@@ -250,6 +250,7 @@ namespace Rhisis.World.Game.Structures
             this.Element = 0;
             this.ElementRefine = 0;
             this.ExtraUsed = 0;
+            this.Slot = -1;
         }
 
         /// <summary>

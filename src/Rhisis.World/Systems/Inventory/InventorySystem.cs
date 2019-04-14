@@ -9,6 +9,8 @@ using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Drop;
+using Rhisis.World.Systems.Drop.EventArgs;
 using Rhisis.World.Systems.Inventory.EventArgs;
 using System;
 using System.Collections.Generic;
@@ -41,7 +43,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void Execute(IEntity entity, SystemEventArgs e)
         {
-            if (!(entity is IPlayerEntity playerEntity))
+            if (!(entity is IPlayerEntity player))
                 return;
             
             if (!e.CheckArguments())
@@ -53,16 +55,19 @@ namespace Rhisis.World.Systems.Inventory
             switch (e)
             {
                 case InventoryInitializeEventArgs inventoryInitializeEvent:
-                    this.InitializeInventory(playerEntity, inventoryInitializeEvent);
+                    this.InitializeInventory(player, inventoryInitializeEvent);
                     break;
                 case InventoryMoveEventArgs inventoryMoveEvent:
-                    this.MoveItem(playerEntity, inventoryMoveEvent);
+                    this.MoveItem(player, inventoryMoveEvent);
                     break;
                 case InventoryEquipEventArgs inventoryEquipEvent:
-                    this.EquipItem(playerEntity, inventoryEquipEvent);
+                    this.EquipItem(player, inventoryEquipEvent);
                     break;
-                case InventoryCreateItemEventArgs inventoryCreateItemEventArgs:
-                    this.CreateItem(playerEntity, inventoryCreateItemEventArgs);
+                case InventoryCreateItemEventArgs inventoryCreateItemEvent:
+                    this.CreateItem(player, inventoryCreateItemEvent);
+                    break;
+                case InventoryDropItemEventArgs inventoryDropItemEvent:
+                    this.DropItem(player, inventoryDropItemEvent);
                     break;
                 default:
                     Logger.LogWarning("Unknown inventory action type: {0} for player {1}", e.GetType(), entity.Object.Name);
@@ -304,6 +309,39 @@ namespace Rhisis.World.Systems.Inventory
                     WorldPacketFactory.SendItemCreation(player, newItem);
                 }
             }
+        }
+
+        /// <summary>
+        /// Drops an item from the inventory to the ground.
+        /// </summary>
+        /// <param name="player">Player entity.</param>
+        /// <param name="e">Drop item event arguments.</param>
+        private void DropItem(IPlayerEntity player, InventoryDropItemEventArgs e)
+        {
+            Item inventoryItem = player.Inventory.GetItem(e.UniqueItemId);
+
+            if (inventoryItem == null)
+            {
+                Logger.LogWarning($"Cannot find item with unique Id: {e.UniqueItemId}");
+                return;
+            }
+
+            int quantityToDrop = Math.Min(e.Quantity, inventoryItem.Quantity);
+            if (quantityToDrop < 0)
+            {
+                Logger.LogError($"{player.Object.Name} tried to drop a negative quantity.");
+                return;
+            }
+
+            Item itemToDrop = inventoryItem.Clone();
+            itemToDrop.Quantity = quantityToDrop;
+            player.NotifySystem<DropSystem>(new DropItemEventArgs(itemToDrop));
+
+            inventoryItem.Quantity -= quantityToDrop;
+            if (inventoryItem.Quantity <= 0)
+                inventoryItem.Reset();
+
+            WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
         }
     }
 }
