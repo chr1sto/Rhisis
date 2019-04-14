@@ -302,7 +302,7 @@ namespace Rhisis.World.Systems.Inventory
                     var newItem = new Item(e.ItemId, 1, e.CreatorId)
                     {
                         Slot = availableSlot,
-                        UniqueId = availableSlot,
+                        UniqueId = player.Inventory.Items[availableSlot].UniqueId,
                     };
 
                     player.Inventory.Items[availableSlot] = newItem;

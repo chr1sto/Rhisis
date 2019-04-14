@@ -244,6 +244,7 @@ namespace Rhisis.World.Game.Structures
         public void Reset()
         {
             this.Id = -1;
+            this.DbId = -1;
             this.Quantity = 0;
             this.CreatorId = -1;
             this.Refine = 0;
