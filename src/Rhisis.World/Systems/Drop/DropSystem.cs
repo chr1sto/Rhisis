@@ -108,7 +108,7 @@ namespace Rhisis.World.Systems.Drop
             else if (goldAmount > (DropGoldLimit3 * worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED4;
 
-            this.DropItem(entity, new DropItemEventArgs(new Item(goldItemId, goldAmount), entity));
+            this.DropItem(entity, new DropItemEventArgs(new Item(goldItemId, goldAmount), e.Owner));
         }
     }
 }

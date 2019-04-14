@@ -2,6 +2,8 @@
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Inventory.EventArgs;
 using System;
 
 namespace Rhisis.World.Game.Behaviors
@@ -10,60 +12,62 @@ namespace Rhisis.World.Game.Behaviors
     public sealed class DefaultPlayerBehavior : IBehavior<IPlayerEntity>
     {
         /// <inheritdoc />
-        public void Update(IPlayerEntity entity)
+        public void Update(IPlayerEntity player)
         {
             // TODO
         }
 
         /// <inheritdoc />
-        public void OnArrived(IPlayerEntity entity)
+        public void OnArrived(IPlayerEntity player)
         {
-            if (entity.Follow.IsFollowing && entity.Follow.Target.Type == WorldEntityType.Drop)
+            if (player.Follow.IsFollowing && player.Follow.Target.Type == WorldEntityType.Drop)
             {
-                this.PickUpDroppedItem(entity, entity.Follow.Target as IItemEntity);
+                this.PickUpDroppedItem(player, player.Follow.Target as IItemEntity);
+                player.Follow.Reset();
             }
         }
 
         /// <summary>
         /// Verify all conditions to pickup a dropped item.
         /// </summary>
-        /// <param name="entity">The player trying to pick-up the dropped item.</param>
+        /// <param name="player">The player trying to pick-up the dropped item.</param>
         /// <param name="droppedItem">The dropped item.</param>
-        private void PickUpDroppedItem(IPlayerEntity entity, IItemEntity droppedItem)
+        private void PickUpDroppedItem(IPlayerEntity player, IItemEntity droppedItem)
         {
-            Console.WriteLine($"{entity.Object.Name} picking up {droppedItem.Drop.Item.Quantity} {droppedItem.Drop.Item.Data.Name}");
-
             // TODO: check if drop belongs to a party.
 
-            if (droppedItem.Drop.HasOwner && droppedItem.Drop.Owner != entity)
+            if (droppedItem.Drop.HasOwner && droppedItem.Drop.Owner != player)
             {
-                WorldPacketFactory.SendDefinedText(entity, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{droppedItem.Object.Name}\"");
+                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{droppedItem.Object.Name}\"");
                 return;
             }
 
             if (droppedItem.Drop.IsGold)
             {
                 int droppedGoldAmount = droppedItem.Drop.Item.Quantity;
-                long gold = entity.PlayerData.Gold + droppedGoldAmount;
+                long gold = player.PlayerData.Gold + droppedGoldAmount;
 
                 if (gold > int.MaxValue || gold < 0) // Check gold overflow
                 {
-                    WorldPacketFactory.SendDefinedText(entity, DefineText.TID_GAME_TOOMANYMONEY_USE_PERIN);
+                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_TOOMANYMONEY_USE_PERIN);
                     return;
                 }
                 else
                 {
-                    entity.PlayerData.Gold = (int)gold;
-                    WorldPacketFactory.SendUpdateAttributes(entity, DefineAttributes.GOLD, entity.PlayerData.Gold);
-                    WorldPacketFactory.SendDefinedText(entity, DefineText.TID_GAME_REAPMONEY, droppedGoldAmount.ToString("###,###,###,###"), gold.ToString("###,###,###,###"));
-                    WorldPacketFactory.SendMotion(entity, ObjectMessageType.OBJMSG_PICKUP);
-                    droppedItem.Delete();
+                    player.PlayerData.Gold = (int)gold;
+                    WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, droppedGoldAmount.ToString("###,###,###,###"), gold.ToString("###,###,###,###"));
                 }
             }
             else
             {
-                // TODO: pickup items
+                var inventoryItemCreationEvent = new InventoryCreateItemEventArgs(droppedItem.Drop.Item.Id, droppedItem.Drop.Item.Quantity, -1);
+                player.NotifySystem<InventorySystem>(inventoryItemCreationEvent);
+                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPITEM, $"\"{droppedItem.Object.Name}\"");
             }
+
+            WorldPacketFactory.SendMotion(player, ObjectMessageType.OBJMSG_PICKUP);
+            droppedItem.Delete();
         }
     }
 }

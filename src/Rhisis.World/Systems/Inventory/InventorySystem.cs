@@ -1,5 +1,6 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
@@ -17,7 +18,6 @@ namespace Rhisis.World.Systems.Inventory
     [System(SystemType.Notifiable)]
     public class InventorySystem : ISystem
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         public static readonly int RightWeaponSlot = 52;
         public static readonly int EquipOffset = 42;
         public static readonly int MaxItems = 73;
@@ -25,8 +25,18 @@ namespace Rhisis.World.Systems.Inventory
         public static readonly int MaxHumanParts = MaxItems - EquipOffset;
         public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
 
+        private readonly ILogger Logger;
+
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;
+
+        /// <summary>
+        /// Creates a new <see cref="InventorySystem"/> instance.
+        /// </summary>
+        public InventorySystem()
+        {
+            this.Logger = DependencyContainer.Instance.Resolve<ILogger<InventorySystem>>();
+        }
 
         /// <inheritdoc />
         public void Execute(IEntity entity, SystemEventArgs e)
@@ -36,7 +46,7 @@ namespace Rhisis.World.Systems.Inventory
             
             if (!e.CheckArguments())
             {
-                Logger.Error("Cannot execute inventory action: {0} due to invalid arguments.", e.GetType());
+                Logger.LogError("Cannot execute inventory action: {0} due to invalid arguments.", e.GetType());
                 return;
             }
 
@@ -55,7 +65,7 @@ namespace Rhisis.World.Systems.Inventory
                     this.CreateItem(playerEntity, inventoryCreateItemEventArgs);
                     break;
                 default:
-                    Logger.Warn("Unknown inventory action type: {0} for player {1}", e.GetType(), entity.Object.Name);
+                    Logger.LogWarning("Unknown inventory action type: {0} for player {1}", e.GetType(), entity.Object.Name);
                     break;
             }
         }
@@ -109,7 +119,7 @@ namespace Rhisis.World.Systems.Inventory
             Item sourceItem = items[sourceSlot];
             Item destItem = items[destinationSlot];
             
-            Logger.Debug("Moving item from {0} to {1}", sourceSlot, destinationSlot);
+            Logger.LogDebug("Moving item from {0} to {1}", sourceSlot, destinationSlot);
 
             if (sourceItem.Id == destItem.Id && sourceItem.Data.IsStackable)
             {
@@ -137,7 +147,7 @@ namespace Rhisis.World.Systems.Inventory
             var uniqueId = e.UniqueId;
             var part = e.Part;
 
-            Logger.Debug("UniqueId: {0} | Part: {1}", uniqueId, part);
+            Logger.LogDebug("UniqueId: {0} | Part: {1}", uniqueId, part);
 
             Item item = player.Inventory.GetItem(uniqueId);
             if (item == null)
@@ -145,23 +155,23 @@ namespace Rhisis.World.Systems.Inventory
 
             bool equip = part == -1;
 
-            Logger.Debug("Equip item: {0}", equip.ToString());
+            Logger.LogDebug("Equip item: {0}", equip.ToString());
 
             if (equip)
             {
-                Logger.Debug("Item: {0}", item.ToString());
+                Logger.LogDebug("Item: {0}", item.ToString());
 
                 // TODO: check if the player fits the item requirements
                 if (item.Data.ItemKind1 == ItemKind1.ARMOR && item.Data.ItemSex != player.VisualAppearance.Gender)
                 {
-                    Logger.Debug("Wrong sex for armor");
+                    Logger.LogDebug("Wrong sex for armor");
                     // TODO: Send invalid sex error
                     return;
                 }
 
                 if (player.Object.Level < item.Data.LimitLevel)
                 {
-                    Logger.Debug("Player level to low");
+                    Logger.LogDebug("Player level to low");
                     // TODO: Send low level error
                     return;
                 }
@@ -198,11 +208,11 @@ namespace Rhisis.World.Systems.Inventory
         {
             int sourceSlot = item.Slot;
             int availableSlot = player.Inventory.GetAvailableSlot();
-            Logger.Debug("Available slot: {0}", availableSlot);
+            Logger.LogDebug("Available slot: {0}", availableSlot);
 
             if (availableSlot < 0)
             {
-                Logger.Debug("No available slots.");
+                Logger.LogDebug("No available slots.");
                 WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
@@ -229,7 +239,48 @@ namespace Rhisis.World.Systems.Inventory
 
             if (itemData.IsStackable)
             {
-                // TODO: stackable items
+                int quantity = Math.Min(e.Quantity, itemData.PackMax);
+
+                for (int i = 0; i < EquipOffset; i++)
+                {
+                    Item inventoryItem = player.Inventory.Items[i];
+
+                    if (inventoryItem == null)
+                        continue;
+
+                    if (inventoryItem.Id == e.ItemId)
+                    {
+                        if (inventoryItem.Quantity + quantity > itemData.PackMax)
+                        {
+                            inventoryItem.Quantity = itemData.PackMax;
+                            quantity -= itemData.PackMax - inventoryItem.Quantity;
+                        }
+                        else
+                        {
+                            inventoryItem.Quantity += quantity;
+                            quantity = 0;
+                        }
+
+                        WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
+                    }
+                }
+
+                if (quantity > 0)
+                {
+                    if (!player.Inventory.HasAvailableSlots())
+                        WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+                    else
+                    {
+                        var item = new Item(e.ItemId, quantity, -1);
+
+                        if (player.Inventory.CreateItem(item))
+                            WorldPacketFactory.SendItemCreation(player, item);
+                        else
+                        {
+                            Logger.LogError("Inventory: Failed to create item.");
+                        }
+                    }
+                }
             }
             else
             {
@@ -242,8 +293,6 @@ namespace Rhisis.World.Systems.Inventory
                         WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                         break;
                     }
-
-                    Logger.Debug("Available slot: {0}", availableSlot);
 
                     var newItem = new Item(e.ItemId, 1, e.CreatorId)
                     {
