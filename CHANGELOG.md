@@ -4,6 +4,8 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Unreleased]
 
+## 0.2.0 - 2019-05-31
+
 ### World Server
 
 #### Fixes
