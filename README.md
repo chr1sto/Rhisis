@@ -76,6 +76,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- Move items
 	- Equip/Unequip items
 	- Save inventory
+	- Drop items on the ground
 - Shop System
 	- Buy items
 	- Sell items
@@ -83,6 +84,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - NPC Dialog System
 - MailBox System
 - Drop System
+	- Pickup Gold / Items
 - Battle System
 	- Melee Attack
 		- Player VS Monster
