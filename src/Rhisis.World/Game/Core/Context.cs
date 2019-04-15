@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Exceptions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Core
@@ -7,12 +8,10 @@ namespace Rhisis.World.Game.Core
     public abstract class Context : IContext
     {
         protected static readonly object SyncRoot = new object();
-
-        private readonly IDictionary<uint, IEntity> _entities;
+        
+        protected readonly ConcurrentQueue<uint> _entitiesToDelete;
+        protected readonly IDictionary<uint, IEntity> _entities;
         private bool _disposedValue;
-
-        /// <inheritdoc />
-        public double GameTime { get; protected set; }
 
         /// <inheritdoc />
         public IEnumerable<IEntity> Entities => this._entities.Values;
@@ -23,6 +22,7 @@ namespace Rhisis.World.Game.Core
         public Context()
         {
             this._entities = new Dictionary<uint, IEntity>();
+            this._entitiesToDelete = new ConcurrentQueue<uint>();
         }
 
         /// <inheritdoc />
@@ -43,20 +43,13 @@ namespace Rhisis.World.Game.Core
         }
 
         /// <inheritdoc />
-        public bool DeleteEntity(uint id)
+        public void DeleteEntity(uint id)
         {
-            bool removed = false;
-
-            lock (SyncRoot)
-            {
-                removed = this._entities.Remove(id);
-            }
-            
-            return removed;
+            this._entitiesToDelete.Enqueue(id);
         }
 
         /// <inheritdoc />
-        public bool DeleteEntity(IEntity entity) => this.DeleteEntity(entity.Id);
+        public void DeleteEntity(IEntity entity) => this.DeleteEntity(entity.Id);
 
         /// <inheritdoc />
         public virtual TEntity FindEntity<TEntity>(uint id) where TEntity : IEntity 
@@ -64,6 +57,9 @@ namespace Rhisis.World.Game.Core
 
         /// <inheritdoc />
         public abstract void Update();
+
+        /// <inheritdoc />
+        public abstract void UpdateDeletedEntities();
 
         /// <inheritdoc />
         public void Dispose()

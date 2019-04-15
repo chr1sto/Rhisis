@@ -13,6 +13,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
+using Rhisis.World.Packets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +33,7 @@ namespace Rhisis.World.Game.Maps
         private readonly List<IMapRegion> _regions;
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly ReaderWriterLockSlim _layerLock;
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         private IMapLayer _defaultMapLayer;
@@ -63,6 +65,7 @@ namespace Rhisis.World.Game.Maps
             this._regions = new List<IMapRegion>();
             this._cancellationTokenSource = new CancellationTokenSource();
             this._cancellationToken = this._cancellationTokenSource.Token;
+            this._layerLock = new ReaderWriterLockSlim();
         }
 
         /// <inheritdoc />
@@ -109,7 +112,9 @@ namespace Rhisis.World.Game.Maps
         {
             var mapLayer = new MapLayer(this, id);
 
+            this._layerLock.EnterWriteLock();
             this._layers.Add(mapLayer);
+            this._layerLock.ExitWriteLock();
 
             if (this._defaultMapLayer == null)
                 this._defaultMapLayer = mapLayer;
@@ -118,7 +123,22 @@ namespace Rhisis.World.Game.Maps
         }
 
         /// <inheritdoc />
-        public IMapLayer GetMapLayer(int id) => this._layers.FirstOrDefault(x => x.Id == id);
+        public IMapLayer GetMapLayer(int id)
+        {
+            IMapLayer layer = null;
+
+            this._layerLock.EnterReadLock();
+            try
+            {
+                layer = this._layers.FirstOrDefault(x => x.Id == id);
+            }
+            finally
+            {
+                this._layerLock.ExitReadLock();
+            }
+
+            return layer;
+        }
 
         /// <inheritdoc />
         public IMapLayer GetDefaultMapLayer() => this._defaultMapLayer;
@@ -131,8 +151,10 @@ namespace Rhisis.World.Game.Maps
             if (layer == null)
                 return;
 
+            this._layerLock.EnterWriteLock();
             layer.Dispose();
             this._layers.Remove(layer);
+            this._layerLock.ExitWriteLock();
         }
 
         /// <inheritdoc />
@@ -143,9 +165,38 @@ namespace Rhisis.World.Game.Maps
                 for (int i = 0; i < this.Entities.Count(); i++)
                     SystemManager.Instance.ExecuteUpdatable(this.Entities.ElementAt(i));
 
+                this._layerLock.EnterReadLock();
                 for (int i = 0; i < this._layers.Count; i++)
                     this._layers[i].Update();
+                this._layerLock.ExitReadLock();
             }
+        }
+
+        /// <inheritdoc />
+        public override void UpdateDeletedEntities()
+        {
+            while (this._entitiesToDelete.TryDequeue(out uint entityIdToDelete))
+            {
+                var entityToDelete = this.FindEntity<IEntity>(entityIdToDelete);
+
+                if (entityToDelete != null)
+                {
+                    foreach (IEntity entity in entityToDelete.Object.Entities)
+                    {
+                        if (entity.Type == WorldEntityType.Player)
+                            WorldPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, entityToDelete);
+
+                        entity.Object.Entities.Remove(entityToDelete);
+                    }
+
+                    this._entities.Remove(entityIdToDelete);
+                }
+            }
+
+            this._layerLock.EnterReadLock();
+            for (int i = 0; i < this._layers.Count; i++)
+                this._layers[i].UpdateDeletedEntities();
+            this._layerLock.ExitReadLock();
         }
 
         /// <inheritdoc />
@@ -165,6 +216,7 @@ namespace Rhisis.World.Game.Maps
                     try
                     {
                         this.Update();
+                        this.UpdateDeletedEntities();
                     }
                     catch (Exception e)
                     {
@@ -205,7 +257,7 @@ namespace Rhisis.World.Game.Maps
             npc.Behavior = behaviors.NpcBehaviors.GetBehavior(npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
             npc.Data = npcs.GetNpcData(npc.Object.Name);
-            
+
             if (npc.Data != null && npc.Data.HasShop)
             {
                 ShopData npcShopData = npc.Data.Shop;

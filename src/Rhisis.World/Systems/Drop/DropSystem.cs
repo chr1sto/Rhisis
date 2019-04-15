@@ -64,7 +64,7 @@ namespace Rhisis.World.Systems.Drop
             var worldServerConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
             var drop = entity.Object.CurrentLayer.CreateEntity<ItemEntity>();
 
-            drop.Drop.Item = new Item(e.Item.Id, 1, -1, -1, -1, e.Item.Refine);
+            drop.Drop.Item = new Item(e.Item.Id, e.Item.Quantity, -1, -1, -1, e.Item.Refine);
 
             if (e.Owner != null)
             {
@@ -78,6 +78,7 @@ namespace Rhisis.World.Systems.Drop
                 MapId = entity.Object.MapId,
                 LayerId = entity.Object.LayerId,
                 ModelId = e.Item.Id,
+                Name = drop.Drop.Item.Data.Name,
                 Spawned = true,
                 Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, DropCircleRadius),
                 Type = WorldObjectType.Item
@@ -107,7 +108,7 @@ namespace Rhisis.World.Systems.Drop
             else if (goldAmount > (DropGoldLimit3 * worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED4;
 
-            this.DropItem(entity, new DropItemEventArgs(new Item(goldItemId, goldAmount), entity));
+            this.DropItem(entity, new DropItemEventArgs(new Item(goldItemId, goldAmount), e.Owner));
         }
     }
 }

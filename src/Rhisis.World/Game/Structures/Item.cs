@@ -244,12 +244,14 @@ namespace Rhisis.World.Game.Structures
         public void Reset()
         {
             this.Id = -1;
+            this.DbId = -1;
             this.Quantity = 0;
             this.CreatorId = -1;
             this.Refine = 0;
             this.Element = 0;
             this.ElementRefine = 0;
             this.ExtraUsed = 0;
+            this.Slot = -1;
         }
 
         /// <summary>

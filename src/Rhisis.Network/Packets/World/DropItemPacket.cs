@@ -17,7 +17,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the unique item id.
         /// </summary>
-        public uint ItemId { get; set; }
+        public int ItemId { get; set; }
 
         /// <summary>
         /// Gets the item quantity.
@@ -36,8 +36,8 @@ namespace Rhisis.Network.Packets.World
         public DropItemPacket(INetPacketStream packet)
         {
             ItemType = packet.Read<uint>();
-            ItemId = packet.Read<uint>();
-            ItemQuantity = packet.Read<int>();
+            ItemId = packet.Read<int>();
+            ItemQuantity = packet.Read<short>();
             Position = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
         }
 

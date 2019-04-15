@@ -7,14 +7,9 @@ using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Repositories;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
-using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Maps;
-using Rhisis.World.Packets;
-using Rhisis.World.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -242,38 +237,13 @@ namespace Rhisis.World
             }
         }
 
-        /// <summary>
-        /// Despawns the current player and notify other players arround.
-        /// </summary>
-        /// <param name="currentMap"></param>
-        private void DespawnPlayer(IMapInstance currentMap)
-        {
-            IEnumerable<IEntity> entitiesAround = from x in currentMap.Entities
-                                                  where this.Player.Object.Position.IsInCircle(x.Object.Position, VisibilitySystem.VisibilityRange) && x != this.Player
-                                                  select x;
-
-            this.Player.Object.Spawned = false;
-
-            foreach (IEntity entity in entitiesAround)
-            {
-                if (entity.Type == WorldEntityType.Player)
-                    WorldPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, this.Player);
-
-                entity.Object.Entities.Remove(this.Player);
-            }
-
-            currentMap.DeleteEntity(this.Player);
-        }
-
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (this.Player != null)
-                    this.DespawnPlayer(this.Player.Object.CurrentMap);
-
                 this.Save();
+                this.Player?.Delete();
             }
 
             base.Dispose(disposing);

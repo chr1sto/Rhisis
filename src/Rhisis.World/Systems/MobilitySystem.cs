@@ -10,7 +10,7 @@ namespace Rhisis.World.Systems
     [System]
     public class MobilitySystem : ISystem
     {
-        private const float ArrivalRangeRadius = 0.1f;
+        private const float ArrivalRangeRadius = 1f;
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;

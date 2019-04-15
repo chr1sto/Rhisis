@@ -7,16 +7,16 @@ namespace Rhisis.World.Systems.Drop.EventArgs
 {
     public class DropItemEventArgs : SystemEventArgs
     {
-        public ItemBase Item { get; set; }
+        public Item Item { get; set; }
 
         public IEntity Owner { get; set; }
 
-        public DropItemEventArgs(ItemBase item)
+        public DropItemEventArgs(Item item)
             : this(item, null)
         {
         }
 
-        public DropItemEventArgs(ItemBase item, IEntity owner)
+        public DropItemEventArgs(Item item, IEntity owner)
         {
             this.Item = item;
             this.Owner = owner;
