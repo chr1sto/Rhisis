@@ -75,6 +75,12 @@ namespace Rhisis.World.Systems
             {
                 entity.MovableComponent.HasArrived = false;
                 float entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor; // TODO: Add speed bonuses
+
+                if (entity.Object.MotionFlags.HasFlag(StateFlags.OBJSTAF_WALK))
+                    entitySpeed /= 5f;
+                else if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE))
+                    entitySpeed /= 4f;
+
                 float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
                 float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
@@ -90,8 +96,28 @@ namespace Rhisis.World.Systems
                 if (Math.Abs(offsetZ) > Math.Abs(distanceZ))
                     offsetZ = distanceZ;
 
-                entity.Object.Position.X += (float)offsetX;
-                entity.Object.Position.Z += (float)offsetZ;
+                if (entity.Type == WorldEntityType.Player && entity.MovableComponent.IsMovingWithKeyboard)
+                {
+                    float angle = entity.Object.Angle;
+                    var movementX = (float)(Math.Sin(angle * (Math.PI / 180)) * Math.Sqrt(offsetX * offsetX + offsetZ * offsetZ));
+                    var movementZ = (float)(Math.Cos(angle * (Math.PI / 180)) * Math.Sqrt(offsetX * offsetX + offsetZ * offsetZ));
+
+                    if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE))
+                    {
+                        entity.Object.Position.X += movementX;
+                        entity.Object.Position.Z -= movementZ;
+                    }
+                    else if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE))
+                    {
+                        entity.Object.Position.X -= movementX;
+                        entity.Object.Position.Z += movementZ;
+                    }
+                }
+                else
+                {
+                    entity.Object.Position.X += (float)offsetX;
+                    entity.Object.Position.Z += (float)offsetZ;
+                }
             }
         }
     }
