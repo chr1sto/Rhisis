@@ -78,5 +78,39 @@ namespace Rhisis.World.Handlers
                 playerMovedPacket.MotionOption, 
                 playerMovedPacket.TickCount);
         }
+
+        [PacketHandler(PacketType.PLAYERBEHAVIOR)]
+        public static void OnPlayerBehavior(WorldClient client, INetPacketStream packet)
+        {
+            var playerBehaviorPacket = new PlayerBehaviorPacket(packet);
+
+            if (client.Player.Health.IsDead)
+            {
+                Logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
+                return;
+            }
+
+            // TODO: check if player is flying
+
+            client.Player.Object.Position = playerBehaviorPacket.BeginPosition + playerBehaviorPacket.DestinationPosition;
+            client.Player.Object.Angle = playerBehaviorPacket.Angle;
+            client.Player.Object.MovingFlags = (ObjectState)playerBehaviorPacket.State;
+            client.Player.Object.MotionFlags = (StateFlags)playerBehaviorPacket.StateFlag;
+            client.Player.MovableComponent.IsMovingWithKeyboard = client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE) ||
+                client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE);
+            client.Player.MovableComponent.DestinationPosition = playerBehaviorPacket.BeginPosition + playerBehaviorPacket.DestinationPosition;
+
+            WorldPacketFactory.SendMoverBehavior(client.Player,
+                playerBehaviorPacket.BeginPosition,
+                playerBehaviorPacket.DestinationPosition,
+                client.Player.Object.Angle,
+                (uint)client.Player.Object.MovingFlags,
+                (uint)client.Player.Object.MotionFlags,
+                playerBehaviorPacket.Motion,
+                playerBehaviorPacket.MotionEx,
+                playerBehaviorPacket.Loop,
+                playerBehaviorPacket.MotionOption,
+                playerBehaviorPacket.TickCount);
+        }
     }
 }
