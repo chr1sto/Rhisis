@@ -40,7 +40,7 @@ namespace Rhisis.World.Packets
                 packet.Write(beginPosition.X);
                 packet.Write(beginPosition.Y);
                 packet.Write(beginPosition.Z);
-                packet.Write(destinationPosition.Z);
+                packet.Write(destinationPosition.X);
                 packet.Write(destinationPosition.Y);
                 packet.Write(destinationPosition.Z);
                 packet.Write(angle);
@@ -66,7 +66,7 @@ namespace Rhisis.World.Packets
                 packet.Write(beginPosition.X);
                 packet.Write(beginPosition.Y);
                 packet.Write(beginPosition.Z);
-                packet.Write(destinationPosition.Z);
+                packet.Write(destinationPosition.X);
                 packet.Write(destinationPosition.Y);
                 packet.Write(destinationPosition.Z);
                 packet.Write(angle);
