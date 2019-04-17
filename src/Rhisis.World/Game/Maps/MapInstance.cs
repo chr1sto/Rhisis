@@ -133,8 +133,7 @@ namespace Rhisis.World.Game.Maps
                     {
                         case RegionInfo.RI_REVIVAL:
                             int revivalMapId = this._worldInformations.RevivalMapId == 0 ? this.Id : this._worldInformations.RevivalMapId;
-                            var newRevivalRegion = new MapRevivalRegion(region.Left, region.Top, region.Right, region.Bottom,
-                                revivalMapId, region.Key, region.Position.Clone());
+                            var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
                             this._regions.Add(newRevivalRegion);
 
                             if (this._worldInformations.RevivalMapId != 0) // Set global revival region
