@@ -30,16 +30,6 @@ namespace Rhisis.World.Game.Maps
         IReadOnlyList<IMapRegion> Regions { get; }
 
         /// <summary>
-        /// Load NPC from the DYO file.
-        /// </summary>
-        void LoadDyo();
-
-        /// <summary>
-        /// Load regions from the RGN file.
-        /// </summary>
-        void LoadRgn();
-
-        /// <summary>
         /// Creates a new map layer and gives it a random id.
         /// </summary>
         /// <returns></returns>

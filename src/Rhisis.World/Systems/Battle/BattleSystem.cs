@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
@@ -79,6 +80,7 @@ namespace Rhisis.World.Systems.Battle
             WorldPacketFactory.SendMeleeAttack(attacker, e.AttackType, defender.Id, e.UnknownParameter, meleeAttackResult.Flags);
 
             defender.Health.Hp -= meleeAttackResult.Damages;
+            WorldPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
 
             if (defender.Health.IsDead)
             {
@@ -86,10 +88,11 @@ namespace Rhisis.World.Systems.Battle
                 defender.Health.Hp = 0;
                 this.ClearBattleTargets(defender);
                 this.ClearBattleTargets(attacker);
-                WorldPacketFactory.SendDie(attacker as IPlayerEntity, defender, attacker, e.AttackType);
+                WorldPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
 
                 if (defender is IMonsterEntity deadMonster)
                 {
+                    WorldPacketFactory.SendDie(attacker as IPlayerEntity, defender, attacker, e.AttackType);
                     var worldServerConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
                     var itemsData = DependencyContainer.Instance.Resolve<ItemLoader>();
                     var expTable = DependencyContainer.Instance.Resolve<ExpTableLoader>();
@@ -146,6 +149,10 @@ namespace Rhisis.World.Systems.Battle
                     deadMonster.NotifySystem<DropSystem>(new DropGoldEventArgs(goldDropped, attacker));
 
                     // TODO: give exp
+                }
+                else if (defender is IPlayerEntity deadPlayer)
+                {
+                    WorldPacketFactory.SendDie(deadPlayer, defender, attacker, e.AttackType);
                 }
             }
         }
