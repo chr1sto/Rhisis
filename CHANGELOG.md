@@ -16,6 +16,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 - Pick-up drop items (PR [#203](https://github.com/Eastrall/Rhisis/pull/203))
 - Drop items from inventory (PR [#203](https://github.com/Eastrall/Rhisis/pull/203))
+- WSAD movements and Jump behavior (PR [#204](https://github.com/Eastrall/Rhisis/pull/204))
 
 #### Resources
 
