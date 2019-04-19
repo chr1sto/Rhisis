@@ -33,13 +33,19 @@ namespace Rhisis.World.Game.Core
             if (entity == null)
                 throw new RhisisException($"An error occured while creating an entity of type {typeof(TEntity)}");
 
+            this.AddEntity(entity);
+
+            return (TEntity)entity;
+        }
+
+        /// <inheritdoc />
+        public void AddEntity(IEntity entity)
+        {
             lock (SyncRoot)
             {
                 if (!this._entities.TryAdd(entity.Id, entity))
                     throw new RhisisException($"An error occured while adding the entity to the context list.");
             }
-
-            return (TEntity)entity;
         }
 
         /// <inheritdoc />

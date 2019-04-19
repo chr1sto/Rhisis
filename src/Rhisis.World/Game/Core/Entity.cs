@@ -18,7 +18,7 @@ namespace Rhisis.World.Game.Core
         public uint Id { get; }
 
         /// <inheritdoc />
-        public IContext Context { get; }
+        public IContext Context { get; private set; }
 
         /// <inheritdoc />
         public abstract WorldEntityType Type { get; }
@@ -47,6 +47,14 @@ namespace Rhisis.World.Game.Core
 
         /// <inheritdoc />
         public void Delete() => this.Context.DeleteEntity(this);
+
+        /// <inheritdoc />
+        public void SwitchContext(IContext newContext)
+        {
+            this.Delete();
+            this.Context = newContext;
+            this.Context.AddEntity(this);
+        }
 
         /// <inheritdoc />
         public bool Equals(IEntity x, IEntity y) => x.Equals(y);

@@ -3,6 +3,7 @@ using Rhisis.Core.Structures;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Packets
 {
@@ -79,6 +80,45 @@ namespace Rhisis.World.Packets
                 packet.Write(tickCount);
 
                 SendToVisible(packet, entity, sendToPlayer: false);
+            }
+        }
+
+        public static void SendDestinationPosition(IMovableEntity movableEntity)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(movableEntity.Id, SnapshotType.DESTPOS);
+                packet.Write(movableEntity.MovableComponent.DestinationPosition.X);
+                packet.Write(movableEntity.MovableComponent.DestinationPosition.Y);
+                packet.Write(movableEntity.MovableComponent.DestinationPosition.Z);
+                packet.Write<byte>(1);
+
+                SendToVisible(packet, movableEntity);
+            }
+        }
+
+        public static void SendMoverPosition(IEntity entity)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.SETPOS);
+                packet.Write(entity.Object.Position.X);
+                packet.Write(entity.Object.Position.Y);
+                packet.Write(entity.Object.Position.Z);
+
+                SendToVisible(packet, entity, sendToPlayer: true);
+            }
+        }
+
+        public static void SendDestinationAngle(IEntity entity, bool left)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.DESTANGLE);
+                packet.Write(entity.Object.Angle);
+                packet.Write(left);
+
+                SendToVisible(packet, entity);
             }
         }
     }

@@ -49,5 +49,11 @@ namespace Rhisis.World.Game.Core
         /// Deletes this entity from the current context.
         /// </summary>
         void Delete();
+
+        /// <summary>
+        /// Switch to another context.
+        /// </summary>
+        /// <param name="newContext">New context</param>
+        void SwitchContext(IContext newContext);
     }
 }

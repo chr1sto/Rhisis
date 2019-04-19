@@ -24,32 +24,6 @@ namespace Rhisis.World.Packets
                 player.Connection.Send(packet);
         }
 
-        public static void SendDestinationPosition(IMovableEntity movableEntity)
-        {
-            using (var packet = new FFPacket())
-            {
-                packet.StartNewMergedPacket(movableEntity.Id, SnapshotType.DESTPOS);
-                packet.Write(movableEntity.MovableComponent.DestinationPosition.X);
-                packet.Write(movableEntity.MovableComponent.DestinationPosition.Y);
-                packet.Write(movableEntity.MovableComponent.DestinationPosition.Z);
-                packet.Write<byte>(1);
-
-                SendToVisible(packet, movableEntity);
-            }
-        }
-
-        public static void SendDestinationAngle(IEntity entity, bool left)
-        {
-            using (var packet = new FFPacket())
-            {
-                packet.StartNewMergedPacket(entity.Id, SnapshotType.DESTANGLE);
-                packet.Write(entity.Object.Angle);
-                packet.Write(left);
-
-                SendToVisible(packet, entity);
-            }
-        }
-
         public static void SendFollowTarget(IEntity entity, IEntity targetEntity, float distance)
         {
             using (var packet = new FFPacket())

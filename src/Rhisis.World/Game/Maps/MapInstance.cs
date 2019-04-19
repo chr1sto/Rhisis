@@ -5,6 +5,7 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
+using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
@@ -45,6 +46,9 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public string Name { get; }
 
+        /// <inheritdoc />
+        public IMapRevivalRegion DefaultRevivalRegion { get; private set; }
+
         /// <summary>
         /// Gets the map instance width.
         /// </summary>
@@ -60,11 +64,6 @@ namespace Rhisis.World.Game.Maps
 
         /// <inheritdoc />
         public IReadOnlyList<IMapRegion> Regions => this._regions;
-
-        /// <summary>
-        /// Gets the map instance default revival region.
-        /// </summary>
-        public IMapRevivalRegion DefaultRevivalRegion { get; private set; }
 
         /// <summary>
         /// Creates a new <see cref="MapInstance"/>.
@@ -135,11 +134,15 @@ namespace Rhisis.World.Game.Maps
                             int revivalMapId = this._worldInformations.RevivalMapId == 0 ? this.Id : this._worldInformations.RevivalMapId;
                             var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
                             this._regions.Add(newRevivalRegion);
-
-                            if (this._worldInformations.RevivalMapId != 0) // Set global revival region
-                                this.DefaultRevivalRegion = newRevivalRegion;
                             break;
                     }
+                }
+
+                if (!this._regions.Any(x => x is IMapRevivalRegion))
+                {
+                    // Loads the default revival region if no revival region is loaded.
+                    this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0, 
+                        this._worldInformations.RevivalMapId, this._worldInformations.RevivalKey, null, false);
                 }
 
                 // TODO: load wrapzones
@@ -279,6 +282,37 @@ namespace Rhisis.World.Game.Maps
 
         /// <inheritdoc />
         public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
+
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => this.GetNearRevivalRegion(position, false);
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = from x in this._regions
+                                                            where x is IMapRevivalRegion y && y.IsChaoRegion == isChaoMode
+                                                            let region = x as IMapRevivalRegion
+                                                            let distance = position.GetDistance3D(region.RevivalPosition)
+                                                            orderby distance ascending
+                                                            select region;
+
+            return revivalRegions.FirstOrDefault() ?? this.DefaultRevivalRegion;
+        }
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey) => this.GetRevivalRegion(revivalKey, false);
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = this._regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            IEnumerable<IMapRevivalRegion> revivalRegion = from x in revivalRegions
+                                                           where x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode
+                                                           select x;
+
+            return revivalRegion.FirstOrDefault() ?? this.DefaultRevivalRegion;
+        }
 
         /// <summary>
         /// Creates a NPC.
