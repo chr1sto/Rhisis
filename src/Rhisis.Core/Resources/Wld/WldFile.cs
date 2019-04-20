@@ -9,6 +9,7 @@ namespace Rhisis.Core.Resources
     /// </summary>
     public class WldFile : FileStream, IDisposable
     {
+        private static readonly char[] SplitCharacters = new[] { ' ', '\t' };
         public WldFileInformations WorldInformations { get; private set; }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace Rhisis.Core.Resources
                 if (line.StartsWith("//") || string.IsNullOrEmpty(line))
                     continue;
 
-                string[] lineArray = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] lineArray = line.Split(SplitCharacters, StringSplitOptions.RemoveEmptyEntries);
 
                 switch (lineArray[0].ToLower())
                 {
@@ -64,7 +65,7 @@ namespace Rhisis.Core.Resources
                 }
             }
 
-            this.WorldInformations = new WldFileInformations((int)size.X, (int)size.Z, mpu, isIndoor, canFly, revivalMapId, revivalKey);
+            this.WorldInformations = new WldFileInformations((int)size?.X, (int)size?.Z, mpu, isIndoor, canFly, revivalMapId, revivalKey);
         }
 
         /// <summary>
