@@ -6,7 +6,9 @@ using Rhisis.Core.Structures;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
+using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Death;
 using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.PlayerData.EventArgs;
@@ -111,6 +113,18 @@ namespace Rhisis.World.Handlers
                 playerBehaviorPacket.Loop,
                 playerBehaviorPacket.MotionOption,
                 playerBehaviorPacket.TickCount);
+        }
+
+        [PacketHandler(PacketType.REVIVAL_TO_LODESTAR)]
+        public static void OnRevivalToLodestar(WorldClient client, INetPacketStream _)
+        {
+            if (!client.Player.Health.IsDead)
+            {
+                Logger.LogWarning($"Player '{client.Player.Object.Name}' tried to revival to lodestar without being dead.");
+                return;
+            }
+
+            client.Player.NotifySystem<DeathSystem>();
         }
     }
 }

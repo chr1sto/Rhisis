@@ -21,6 +21,12 @@ namespace Rhisis.World.Game.Core
         TEntity CreateEntity<TEntity>() where TEntity : IEntity;
 
         /// <summary>
+        /// Adds an existing entity to the current context.
+        /// </summary>
+        /// <param name="entity">Entity to add.</param>
+        void AddEntity(IEntity entity);
+
+        /// <summary>
         /// Find an entity in this context.
         /// </summary>
         /// <typeparam name="TEntity">Entity type</typeparam>

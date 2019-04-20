@@ -3,8 +3,10 @@ using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.World.Game.Maps;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rhisis.World.Game.Loaders
 {
@@ -86,5 +88,12 @@ namespace Rhisis.World.Game.Loaders
         /// <param name="id">Map id</param>
         /// <returns>Map if exists, null otherwise</returns>
         public IMapInstance GetMapById(int id) => this._maps.TryGetValue(id, out IMapInstance value) ? value : null;
+
+        /// <summary>
+        /// Gets a map matching the given predicate.
+        /// </summary>
+        /// <param name="predicate">Predicate.</param>
+        /// <returns>Map that matches the given predicat.</returns>
+        public IMapInstance GetMap(Func<IMapInstance, bool> predicate) => this._maps.Values.FirstOrDefault(predicate);
     }
 }

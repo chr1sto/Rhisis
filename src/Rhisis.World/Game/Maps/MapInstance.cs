@@ -1,10 +1,11 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
+using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
@@ -34,15 +35,29 @@ namespace Rhisis.World.Game.Maps
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly ReaderWriterLockSlim _layerLock;
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = DependencyContainer.Instance.Resolve<ILogger<MapInstance>>();
 
         private IMapLayer _defaultMapLayer;
+        private WldFileInformations _worldInformations;
 
         /// <inheritdoc />
         public int Id { get; }
 
         /// <inheritdoc />
         public string Name { get; }
+
+        /// <inheritdoc />
+        public IMapRevivalRegion DefaultRevivalRegion { get; private set; }
+
+        /// <summary>
+        /// Gets the map instance width.
+        /// </summary>
+        public int Width => this._worldInformations.Width;
+
+        /// <summary>
+        /// Gets the map instance length.
+        /// </summary>
+        public int Length => this._worldInformations.Length;
 
         /// <inheritdoc />
         public IReadOnlyList<IMapLayer> Layers => this._layers;
@@ -68,10 +83,25 @@ namespace Rhisis.World.Game.Maps
             this._layerLock = new ReaderWriterLockSlim();
         }
 
-        /// <inheritdoc />
-        public void LoadDyo()
+        /// <summary>
+        /// Loads the world map informations from the WLD file.
+        /// </summary>
+        public void LoadWld()
         {
-            string dyo = Path.Combine(this._mapPath, this.Name + ".dyo");
+            string wldFilePath = Path.Combine(this._mapPath, $"{this.Name}.wld");
+
+            using (var wldFile = new WldFile(wldFilePath))
+            {
+                this._worldInformations = wldFile.WorldInformations;
+            }
+        }
+
+        /// <summary>
+        /// Load NPC from the DYO file.
+        /// </summary>
+        private void LoadDyo()
+        {
+            string dyo = Path.Combine(this._mapPath, $"{this.Name}.dyo");
 
             using (var dyoFile = new DyoFile(dyo))
             {
@@ -82,20 +112,41 @@ namespace Rhisis.World.Game.Maps
             }
         }
 
-        /// <inheritdoc />
-        public void LoadRgn()
+        /// <summary>
+        /// Load regions from the RGN file.
+        /// </summary>
+        private void LoadRgn()
         {
-            string rgn = Path.Combine(this._mapPath, this.Name + ".rgn");
+            string rgn = Path.Combine(this._mapPath, $"{this.Name}.rgn");
 
             using (var rgnFile = new RgnFile(rgn))
             {
                 IEnumerable<IMapRespawnRegion> respawnersRgn = rgnFile.GetElements<RgnRespawn7>()
                     .Select(x => MapRespawnRegion.FromRgnElement(x));
 
+                this._regions.AddRange(respawnersRgn);
+
+                foreach (RgnRegion3 region in rgnFile.GetElements<RgnRegion3>())
+                {
+                    switch (region.Index)
+                    {
+                        case RegionInfo.RI_REVIVAL:
+                            int revivalMapId = this._worldInformations.RevivalMapId == 0 ? this.Id : this._worldInformations.RevivalMapId;
+                            var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
+                            this._regions.Add(newRevivalRegion);
+                            break;
+                    }
+                }
+
+                if (!this._regions.Any(x => x is IMapRevivalRegion))
+                {
+                    // Loads the default revival region if no revival region is loaded.
+                    this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0, 
+                        this._worldInformations.RevivalMapId, this._worldInformations.RevivalKey, null, false);
+                }
+
                 // TODO: load wrapzones
                 // TODO: load collector regions
-
-                this._regions.AddRange(respawnersRgn);
             }
         }
 
@@ -220,7 +271,7 @@ namespace Rhisis.World.Game.Maps
                     }
                     catch (Exception e)
                     {
-                        Logger.Error(e);
+                        Logger.LogError(e, $"An error occured while updating map {this.Name} gameloop.");
                     }
 
                     previousTime = currentTime;
@@ -231,6 +282,37 @@ namespace Rhisis.World.Game.Maps
 
         /// <inheritdoc />
         public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
+
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => this.GetNearRevivalRegion(position, false);
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = from x in this._regions
+                                                            where x is IMapRevivalRegion y && y.IsChaoRegion == isChaoMode
+                                                            let region = x as IMapRevivalRegion
+                                                            let distance = position.GetDistance3D(region.RevivalPosition)
+                                                            orderby distance ascending
+                                                            select region;
+
+            return revivalRegions.FirstOrDefault() ?? this.DefaultRevivalRegion;
+        }
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey) => this.GetRevivalRegion(revivalKey, false);
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = this._regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            IEnumerable<IMapRevivalRegion> revivalRegion = from x in revivalRegions
+                                                           where x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode
+                                                           select x;
+
+            return revivalRegion.FirstOrDefault() ?? this.DefaultRevivalRegion;
+        }
 
         /// <summary>
         /// Creates a NPC.
@@ -287,9 +369,10 @@ namespace Rhisis.World.Game.Maps
         /// <returns></returns>
         public static IMapInstance Create(string mapPath, string mapName, int mapId)
         {
-            IMapInstance map = new MapInstance(mapId, mapName, mapPath);
+            var map = new MapInstance(mapId, mapName, mapPath);
 
-            // TODO: Load map heights, revival zones
+            // TODO: Load map heights
+            map.LoadWld();
             map.LoadDyo();
             map.LoadRgn();
             map.CreateMapLayer(DefaultMapLayerId);

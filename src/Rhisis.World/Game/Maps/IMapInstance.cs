@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.Core.Structures;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Maps.Regions;
 using System.Collections.Generic;
 
@@ -20,6 +21,11 @@ namespace Rhisis.World.Game.Maps
         string Name { get; }
 
         /// <summary>
+        /// Gets the map default revival region.
+        /// </summary>
+        IMapRevivalRegion DefaultRevivalRegion { get; }
+
+        /// <summary>
         /// Gets the map layers.
         /// </summary>
         IReadOnlyList<IMapLayer> Layers { get; }
@@ -28,16 +34,6 @@ namespace Rhisis.World.Game.Maps
         /// Gets the map regions.
         /// </summary>
         IReadOnlyList<IMapRegion> Regions { get; }
-
-        /// <summary>
-        /// Load NPC from the DYO file.
-        /// </summary>
-        void LoadDyo();
-
-        /// <summary>
-        /// Load regions from the RGN file.
-        /// </summary>
-        void LoadRgn();
 
         /// <summary>
         /// Creates a new map layer and gives it a random id.
@@ -80,5 +76,35 @@ namespace Rhisis.World.Game.Maps
         /// Stops the context and the task.
         /// </summary>
         void StopUpdateTask();
+
+        /// <summary>
+        /// Gets the nearest revival region from a given position.
+        /// </summary>
+        /// <param name="position">Position.</param>
+        /// <returns>The nearest revival region.</returns>
+        IMapRevivalRegion GetNearRevivalRegion(Vector3 position);
+
+        /// <summary>
+        /// Gets the nearest revival region from a given position and if the region should be for chao mode (PK mode).
+        /// </summary>
+        /// <param name="position">Position.</param>
+        /// <param name="isChaoMode">Region is chao mode (PK mode).</param>
+        /// <returns>The nearest revival region.</returns>
+        IMapRevivalRegion GetNearRevivalRegion(Vector3 position, bool isChaoMode);
+
+        /// <summary>
+        /// Gets a revival region by his key.
+        /// </summary>
+        /// <param name="revivalKey">Revival region key.</param>
+        /// <returns>Revival region matching the key.</returns>
+        IMapRevivalRegion GetRevivalRegion(string revivalKey);
+
+        /// <summary>
+        /// Gets a revival region by his key and if the region should be for chao mode (PK mode).
+        /// </summary>
+        /// <param name="revivalKey">Revival region key.</param>
+        /// <param name="isChaoMode">Region is chao mode (PK mode).</param>
+        /// <returns>Revival region matching the key and the chao mode.</returns>
+        IMapRevivalRegion GetRevivalRegion(string revivalKey, bool isChaoMode);
     }
 }
