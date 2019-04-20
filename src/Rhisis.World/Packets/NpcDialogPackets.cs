@@ -15,17 +15,20 @@ namespace Rhisis.World.Packets
         /// <param name="player">Player</param>
         /// <param name="text">Npc dialog text</param>
         /// <param name="dialogLinks">Npc dialog links</param>
-        public static void SendDialog(IPlayerEntity player, string text, IEnumerable<DialogLink> dialogLinks)
+        public static void SendDialog(IPlayerEntity player, IEnumerable<string> dialogTexts, IEnumerable<DialogLink> dialogLinks)
         {
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
                 packet.Write((short)DialogOptions.FUNCTYPE_REMOVEALLKEY);
 
-                packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
-                packet.Write((short)DialogOptions.FUNCTYPE_SAY);
-                packet.Write(text);
-                packet.Write(0); // quest id
+                foreach (string text in dialogTexts)
+                {
+                    packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
+                    packet.Write((short)DialogOptions.FUNCTYPE_SAY);
+                    packet.Write(text);
+                    packet.Write(0); // quest id
+                }
 
                 foreach (DialogLink link in dialogLinks)
                 {

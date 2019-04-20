@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game.Dialogs
 {
@@ -18,19 +19,19 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         public string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets the dialog link text.
+        /// Gets or sets the dialog link texts.
         /// </summary>
         /// <remarks>
         /// This text will appear once the client has clicked on the link title.
         /// </remarks>
-        [DataMember(Name = "text")]
-        public string Text { get; set; }
+        [DataMember(Name = "texts")]
+        public IList<string> Texts { get; set; }
 
         /// <summary>
         /// Create an empty <see cref="DialogLink"/> instance.
         /// </summary>
         public DialogLink()
-            : this(string.Empty, string.Empty, string.Empty)
+            : this(string.Empty, string.Empty)
         {
         }
 
@@ -40,11 +41,11 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// <param name="id">Dialog link id</param>
         /// <param name="title">Dialog link title</param>
         /// <param name="text">Dialog link text</param>
-        public DialogLink(string id, string title, string text)
+        public DialogLink(string id, string title)
         {
             this.Id = id;
             this.Title = title;
-            this.Text = text;
+            this.Texts = new List<string>();
         }
     }
 }
