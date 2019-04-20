@@ -97,7 +97,7 @@ namespace Rhisis.World.Systems.Battle
                     var itemsData = DependencyContainer.Instance.Resolve<ItemLoader>();
                     var expTable = DependencyContainer.Instance.Resolve<ExpTableLoader>();
 
-                    deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5;
+                    deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5; // Configure this timer on world configuration
 
                     // Drop items
                     int itemCount = 0;
