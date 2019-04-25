@@ -10,6 +10,7 @@ using Rhisis.Database;
 using Rhisis.Network;
 using System;
 using System.Text;
+using Rhisis.Database.Context;
 
 namespace Rhisis.Login
 {
@@ -25,7 +26,13 @@ namespace Rhisis.Login
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             PacketHandler<LoginClient>.Initialize();
-            DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
+            
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
+            DependencyContainer.Instance
+                .GetServiceCollection()
+                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
+            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
+            
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<ILoginServer, LoginServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>

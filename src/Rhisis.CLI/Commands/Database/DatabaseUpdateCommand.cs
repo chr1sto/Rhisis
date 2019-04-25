@@ -1,6 +1,10 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Database;
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Helpers;
+using Rhisis.Database.Context;
 
 namespace Rhisis.CLI.Commands.Database
 {
@@ -18,9 +22,14 @@ namespace Rhisis.CLI.Commands.Database
             try
             {
                 Console.WriteLine("Starting database structure update...");
-                DatabaseFactory.Instance.Initialize(DatabaseConfigurationFile);
                 
-                using (var rhisisDbContext = DatabaseFactory.Instance.CreateDbContext())
+                var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+                DependencyContainer.Instance
+                    .GetServiceCollection()
+                    .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
+//                DatabaseFactory.Instance.Initialize();
+
+                using (var rhisisDbContext = DependencyContainer.Instance.Resolve<DatabaseContext>())
                 {
                     if (rhisisDbContext.DatabaseExists())
                     {

@@ -14,6 +14,7 @@ using Rhisis.Network;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Rhisis.Database.Context;
 
 namespace Rhisis.Cluster
 {
@@ -36,7 +37,13 @@ namespace Rhisis.Cluster
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             PacketHandler<ISCClient>.Initialize();
             PacketHandler<ClusterClient>.Initialize();
-            DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
+            
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
+            DependencyContainer.Instance
+                .GetServiceCollection()
+                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
+            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
+            
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<IClusterServer, ClusterServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>

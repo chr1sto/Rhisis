@@ -23,7 +23,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
-    <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
+    <ProjectReference Include="..\Rhisis.PostgreSQL\Rhisis.PostgreSQL.csproj" />
+    <ProjectReference Include="..\Rhisis.MsySQL\Rhisis.MsySQL.csproj" />
   </ItemGroup>
 
 </Project>

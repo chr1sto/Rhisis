@@ -17,6 +17,8 @@ using Rhisis.World.Systems.Party;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Rhisis.Database.Context;
+using Rhisis.Migrations;
 
 namespace Rhisis.World
 {
@@ -55,7 +57,13 @@ namespace Rhisis.World
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             PacketHandler<ISCClient>.Initialize();
             PacketHandler<WorldClient>.Initialize();
-            DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
+            
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
+            DependencyContainer.Instance
+                .GetServiceCollection()
+                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
+            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
+            
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<IWorldServer, WorldServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Register(typeof(PartyManager), ServiceLifetime.Singleton);

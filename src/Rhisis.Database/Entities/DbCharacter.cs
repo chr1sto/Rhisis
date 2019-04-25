@@ -157,13 +157,11 @@ namespace Rhisis.Database.Entities
         /// <summary>
         /// Gets or sets the last connection time.
         /// </summary>
-        [Column(TypeName = "DATETIME")]
         public DateTime LastConnectionTime { get; set; }
 
         /// <summary>
         /// Gets or sets the play time amount in seconds.
         /// </summary>
-        [Column(TypeName = "BIGINT")]
         public long PlayTime { get; set; }
 
         /// <summary>

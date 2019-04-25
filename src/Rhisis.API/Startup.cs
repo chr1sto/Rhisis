@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Business;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Database;
+using Rhisis.Database.Context;
 
 namespace Rhisis.API
 {
@@ -39,9 +40,12 @@ namespace Rhisis.API
             var databaseConfiguration = this.Configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>();
 
             DependencyContainer.Instance.SetServiceCollection(services);
-            DatabaseFactory.Instance.Initialize(databaseConfiguration);
             BusinessLayer.Initialize();
-            services.AddSingleton(this.Configuration);
+            services.AddSingleton(Configuration);
+            
+            services.AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(databaseConfiguration));
+            services.AddSingleton(databaseConfiguration);
+            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

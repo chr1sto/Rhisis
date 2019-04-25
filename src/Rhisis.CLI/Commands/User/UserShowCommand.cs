@@ -4,6 +4,10 @@ using Rhisis.Database.Entities;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Helpers;
+using Rhisis.Database.Context;
 
 namespace Rhisis.CLI.Commands.User
 {
@@ -24,8 +28,12 @@ namespace Rhisis.CLI.Commands.User
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 this.DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
 
-            DatabaseFactory.Instance.Initialize(this.DatabaseConfigurationFile);
-            this._database = new Rhisis.Database.Database();
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+            DependencyContainer.Instance
+                .GetServiceCollection()
+                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
+            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
+            this._database = DependencyContainer.Instance.Resolve<Rhisis.Database.Database>();
 
             DbUser user = this._database.Users.Get(x => x.Username.Equals(this.Username, StringComparison.OrdinalIgnoreCase));
 
