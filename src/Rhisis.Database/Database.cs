@@ -30,7 +30,6 @@ namespace Rhisis.Database
         public Database(DatabaseContext databaseContext)
         {
             this._databaseContext = databaseContext;
-//            this._databaseContext = DatabaseFactory.Instance.CreateDbContext();
             this.InitializeRepositories();
         }
 
