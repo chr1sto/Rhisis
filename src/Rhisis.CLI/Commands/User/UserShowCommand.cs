@@ -1,13 +1,10 @@
-﻿using McMaster.Extensions.CommandLineUtils;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Helpers;
-using Rhisis.Database.Context;
+using Rhisis.Database;
+using Rhisis.Database.Entities;
 
 namespace Rhisis.CLI.Commands.User
 {
@@ -27,12 +24,6 @@ namespace Rhisis.CLI.Commands.User
         {
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 this.DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
-
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
-            DependencyContainer.Instance
-                .GetServiceCollection()
-                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
-            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
             this._database = DependencyContainer.Instance.Resolve<Rhisis.Database.Database>();
 
             DbUser user = this._database.Users.Get(x => x.Username.Equals(this.Username, StringComparison.OrdinalIgnoreCase));

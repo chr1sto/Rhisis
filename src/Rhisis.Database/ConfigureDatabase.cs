@@ -1,5 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Database.Context;
 
 namespace Rhisis.Database
 {
@@ -50,6 +52,16 @@ namespace Rhisis.Database
             }
 
             return optionsBuilder;
+        }
+
+        public static IServiceCollection RegisterDatabaseServices(this IServiceCollection serviceCollection, 
+            DatabaseConfiguration configuration)
+        {
+            return serviceCollection
+                .AddSingleton<DatabaseConfiguration>(configuration)
+                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(configuration))
+                .AddTransient<IDatabase, Database>()
+                .AddTransient<Database>();
         }
     }
 }

@@ -1,15 +1,12 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using System;
+using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Helpers;
 using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Helpers;
-using Rhisis.Database.Context;
 
 namespace Rhisis.CLI.Commands.User
 {
@@ -58,11 +55,6 @@ namespace Rhisis.CLI.Commands.User
 
             if (response)
             {
-                var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
-                DependencyContainer.Instance
-                    .GetServiceCollection()
-                    .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
-                DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
                 this._database = DependencyContainer.Instance.Resolve<Rhisis.Database.Database>();
 
                 if (this._database.Users.HasAny(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))

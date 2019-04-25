@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Extensions.Logging;
 using Rhisis.Business;
 using Rhisis.Core;
@@ -8,9 +11,7 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Network;
-using System;
-using System.Text;
-using Rhisis.Database.Context;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Rhisis.Login
 {
@@ -30,8 +31,7 @@ namespace Rhisis.Login
             var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
             DependencyContainer.Instance
                 .GetServiceCollection()
-                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
-            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
+                .RegisterDatabaseServices(dbConfig);
             
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<ILoginServer, LoginServer>(ServiceLifetime.Singleton);
@@ -77,7 +77,7 @@ namespace Rhisis.Login
         public void Dispose()
         {
             this._server?.Dispose();
-            NLog.LogManager.Shutdown();
+            LogManager.Shutdown();
         }
     }
 }

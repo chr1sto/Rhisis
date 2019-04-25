@@ -1,4 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Helpers;
+using Rhisis.Database;
 
 namespace Rhisis.CLI
 {
@@ -10,6 +13,16 @@ namespace Rhisis.CLI
         /// Program entry point.
         /// </summary>
         /// <param name="args"></param>
-        public static void Main(string[] args) => CommandLineApplication.Execute<Application>(args);
+        public static void Main(string[] args)
+        {
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(Application.DefaultDatabaseConfigurationFile);
+            DependencyContainer.Instance
+                .GetServiceCollection()
+                .RegisterDatabaseServices(dbConfig);
+
+            DependencyContainer.Instance.BuildServiceProvider();
+                
+            CommandLineApplication.Execute<Application>(args);
+        }
     }
 }

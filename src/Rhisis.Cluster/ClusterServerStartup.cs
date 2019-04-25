@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Extensions.Logging;
 using Rhisis.Business;
 using Rhisis.Cluster.ISC;
@@ -11,10 +15,7 @@ using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Network;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Rhisis.Database.Context;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Rhisis.Cluster
 {
@@ -41,8 +42,7 @@ namespace Rhisis.Cluster
             var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
             DependencyContainer.Instance
                 .GetServiceCollection()
-                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
-            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
+                .RegisterDatabaseServices(dbConfig);
             
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<IClusterServer, ClusterServer>(ServiceLifetime.Singleton);
@@ -90,7 +90,7 @@ namespace Rhisis.Cluster
         public void Dispose()
         {
             this._server?.Dispose();
-            NLog.LogManager.Shutdown();
+            LogManager.Shutdown();
         }
     }
 }

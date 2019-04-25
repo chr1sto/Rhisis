@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
@@ -14,11 +17,7 @@ using Rhisis.Network;
 using Rhisis.World.Game.Loaders;
 using Rhisis.World.ISC;
 using Rhisis.World.Systems.Party;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Rhisis.Database.Context;
-using Rhisis.Migrations;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Rhisis.World
 {
@@ -61,15 +60,14 @@ namespace Rhisis.World
             var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
             DependencyContainer.Instance
                 .GetServiceCollection()
-                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(dbConfig));
-            DependencyContainer.Instance.Register<IDatabase, Rhisis.Database.Database>();
+                .RegisterDatabaseServices(dbConfig);
             
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<IWorldServer, WorldServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Register(typeof(PartyManager), ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
             {
-                builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                builder.SetMinimumLevel(LogLevel.Trace);
                 builder.AddNLog(new NLogProviderOptions
                 {
                     CaptureMessageTemplates = true,
