@@ -25,7 +25,7 @@ namespace Rhisis.Database
                             configuration.Password,
                             configuration.Database,
                             configuration.Port),
-                        options => options.MigrationsAssembly("Rhisis.MsySql"));
+                        options => options.MigrationsAssembly("Rhisis.MsySQL"));
                     break;
 
                 case DatabaseProvider.MsSql:
@@ -35,7 +35,7 @@ namespace Rhisis.Database
                             configuration.Database,
                             configuration.Username,
                             configuration.Password),
-                        options => options.MigrationsAssembly("Rhisis.MsySql"));
+                        options => options.MigrationsAssembly("Rhisis.MsySQL"));
                     break;
 
                 case DatabaseProvider.PostgreSql:

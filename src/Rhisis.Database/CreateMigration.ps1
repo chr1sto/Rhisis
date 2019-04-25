@@ -4,6 +4,7 @@
  # This method is used to create Db contexts but it is not used **yet** in Entity Framework Core.
  # So this script is an alternative.
  # Tracking issue: https://github.com/aspnet/EntityFrameworkCore/issues/8332
+ # !!!THIS NEEDS UPDATING, DOES NOT WORK ANYMORE WITH NEW MULTIPLE PROVIDERS PROJECT SETUP!!!
  #>
 
 $migration_name = Read-Host 'Migration name?'
