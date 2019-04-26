@@ -23,6 +23,8 @@ namespace Rhisis.CLI
             DependencyContainer.Instance.BuildServiceProvider();
                 
             CommandLineApplication.Execute<Application>(args);
+            
+            DependencyContainer.Instance.Dispose();
         }
     }
 }

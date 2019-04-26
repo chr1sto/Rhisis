@@ -58,10 +58,9 @@ namespace Rhisis.Database
             DatabaseConfiguration configuration)
         {
             return serviceCollection
-                .AddSingleton<DatabaseConfiguration>(configuration)
+                .AddSingleton(configuration)
                 .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(configuration))
-                .AddTransient<IDatabase, Database>()
-                .AddTransient<Database>();
+                .AddTransient<IDatabase, Database>();
         }
     }
 }

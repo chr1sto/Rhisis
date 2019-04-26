@@ -39,9 +39,6 @@ namespace Rhisis.Database
         /// <inheritdoc />
         public async Task CompleteAsync() => await this._databaseContext.SaveChangesAsync();
 
-        /// <inheritdoc />
-        public void Dispose() => this._databaseContext.Dispose();
-
         /// <summary>
         /// Initializes the repositories.
         /// </summary>

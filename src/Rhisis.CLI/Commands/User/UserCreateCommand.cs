@@ -11,7 +11,7 @@ using Rhisis.Database.Entities;
 namespace Rhisis.CLI.Commands.User
 {
     [Command("create", Description = "Created a new user")]
-    public sealed class UserCreateCommand : IDisposable
+    public sealed class UserCreateCommand
     {
         private IDatabase _database;
 
@@ -55,7 +55,7 @@ namespace Rhisis.CLI.Commands.User
 
             if (response)
             {
-                this._database = DependencyContainer.Instance.Resolve<Rhisis.Database.Database>();
+                this._database = DependencyContainer.Instance.Resolve<IDatabase>();
 
                 if (this._database.Users.HasAny(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -88,7 +88,5 @@ namespace Rhisis.CLI.Commands.User
                 Console.WriteLine($"User '{user.Username}' created.");
             }
         }
-
-        public void Dispose() => this._database?.Dispose();
     }
 }

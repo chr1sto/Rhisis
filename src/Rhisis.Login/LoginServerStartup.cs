@@ -77,6 +77,7 @@ namespace Rhisis.Login
         public void Dispose()
         {
             this._server?.Dispose();
+            DependencyContainer.Instance.Dispose();
             LogManager.Shutdown();
         }
     }

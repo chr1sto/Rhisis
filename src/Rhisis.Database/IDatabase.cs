@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Rhisis.Database
 {
-    public interface IDatabase : IDisposable
+    public interface IDatabase
     {
         /// <summary>
         /// Gets the users.
