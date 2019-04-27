@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
-using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 
@@ -11,7 +11,7 @@ namespace Rhisis.CLI.Commands.User
     [Command("show", Description = "Show an user.")]
     public sealed class UserShowCommand
     {
-        private IDatabase _database;
+        private readonly IDatabase _database;
 
         [Required]
         [Argument(0)]
@@ -19,13 +19,18 @@ namespace Rhisis.CLI.Commands.User
 
         [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
         public string DatabaseConfigurationFile { get; set; }
-
-        public void OnExecute(CommandLineApplication app, IConsole console)
+        
+        public UserShowCommand(DatabaseFactory databaseFactory)
         {
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
-                this.DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
-            this._database = DependencyContainer.Instance.Resolve<IDatabase>();
+                DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
+            
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+            _database = databaseFactory.GetDatabase(dbConfig);
+        }
 
+        public void OnExecute()
+        {
             DbUser user = this._database.Users.Get(x => x.Username.Equals(this.Username, StringComparison.OrdinalIgnoreCase));
 
             if (user == null)

@@ -1,10 +1,10 @@
 ﻿using System;
 using McMaster.Extensions.CommandLineUtils;
-using Rhisis.CLI.Helpers;
+using Rhisis.CLI.Services;
 using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
-using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
+using Rhisis.Core.Helpers;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 
@@ -13,16 +13,25 @@ namespace Rhisis.CLI.Commands.User
     [Command("create", Description = "Created a new user")]
     public sealed class UserCreateCommand
     {
-        private IDatabase _database;
+        private readonly IDatabase _database;
+        private readonly ConsoleHelper _consoleHelper;
 
         [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
         public string DatabaseConfigurationFile { get; set; }
 
-        public void OnExecute(CommandLineApplication app, IConsole console)
+        public UserCreateCommand(DatabaseFactory databaseFactory, ConsoleHelper consoleHelper)
         {
+            _consoleHelper = consoleHelper;
+            
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
+            
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+            _database = databaseFactory.GetDatabase(dbConfig);
+        }
 
+        public void OnExecute()
+        {
             var user = new DbUser();
 
             Console.Write("Username: ");
@@ -32,17 +41,17 @@ namespace Rhisis.CLI.Commands.User
             user.Email = Console.ReadLine();
 
             Console.Write("Password: ");
-            user.Password = ConsoleHelper.ReadPassword();
+            user.Password = _consoleHelper.ReadPassword();
 
             Console.Write("Password confirmation: ");
-            string passwordConfirmation = ConsoleHelper.ReadPassword();
+            string passwordConfirmation = _consoleHelper.ReadPassword();
 
             Console.Write("Password salt: ");
-            string passwordSalt = ConsoleHelper.ReadStringOrDefault();
+            string passwordSalt = _consoleHelper.ReadStringOrDefault();
 
             Console.WriteLine("Authority: ");
-            ConsoleHelper.DisplayEnum<AuthorityType>();
-            user.Authority = (int)ConsoleHelper.ReadEnum<AuthorityType>();
+            _consoleHelper.DisplayEnum<AuthorityType>();
+            user.Authority = (int)_consoleHelper.ReadEnum<AuthorityType>();
 
             Console.WriteLine("--------------------------------");
             Console.WriteLine("User account informations:");
@@ -51,12 +60,10 @@ namespace Rhisis.CLI.Commands.User
             Console.WriteLine($"Authority: {(AuthorityType)user.Authority}");
             Console.WriteLine("--------------------------------");
 
-            bool response = ConsoleHelper.AskConfirmation("Create user?");
+            bool response = _consoleHelper.AskConfirmation("Create user?");
 
             if (response)
             {
-                this._database = DependencyContainer.Instance.Resolve<IDatabase>();
-
                 if (this._database.Users.HasAny(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.WriteLine($"User '{user.Username}' is already used.");

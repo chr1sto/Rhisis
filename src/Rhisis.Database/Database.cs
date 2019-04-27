@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
 using Rhisis.Database.Context;
 using Rhisis.Database.Repositories;
 using Rhisis.Database.Repositories.Implementation;
-using System.Threading.Tasks;
 
 namespace Rhisis.Database
 {
@@ -23,6 +22,8 @@ namespace Rhisis.Database
 
         /// <inheritdoc />
         public IShortcutRepository TaskbarShortcuts { get; private set; }
+
+        public DatabaseContext DatabaseContext => _databaseContext;
 
         /// <summary>
         /// Creates a new <see cref="Database"/> object instance.

@@ -1,30 +1,32 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Helpers;
+using Microsoft.Extensions.DependencyInjection;
+using Rhisis.CLI.Services;
 using Rhisis.Database;
 
 namespace Rhisis.CLI
 {
     public static class Program
     {
-        public const string Description = "This tool is a command line interface allowing administrators to manage their own servers easily.";
-
         /// <summary>
         /// Program entry point.
         /// </summary>
         /// <param name="args"></param>
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(Application.DefaultDatabaseConfigurationFile);
-            DependencyContainer.Instance
-                .GetServiceCollection()
-                .RegisterDatabaseServices(dbConfig);
-
-            DependencyContainer.Instance.BuildServiceProvider();
-                
-            CommandLineApplication.Execute<Application>(args);
+            var services = new ServiceCollection()
+                .RegisterDatabaseFactory()
+                .AddSingleton<ConsoleHelper>()
+                .AddSingleton(PhysicalConsole.Singleton);
             
-            DependencyContainer.Instance.Dispose();
+            using (var diContext = services.BuildServiceProvider())
+            {
+                var application = new CommandLineApplication<Application>();
+                application.Conventions
+                    .UseDefaultConventions()
+                    .UseConstructorInjection(diContext);
+                
+                return application.Execute(args);    
+            }
         }
     }
 }
