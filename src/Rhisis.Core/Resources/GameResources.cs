@@ -32,6 +32,7 @@ namespace Rhisis.Core.Resources
         public const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
         public const string ObjectIgnoredMessage = "{0} id '{1}' was ignored. Reason: {2}.";
         public const string ObjectOverridedMessage = "{0} id '{1}' was overrided. Reason: {2}.";
+        public const string ObjectErrorMessage = "{0} with id '{1}' has an error. Reason: {2}";
 
         private ILogger<GameResources> _logger;
         private IEnumerable<Type> _loaders;
