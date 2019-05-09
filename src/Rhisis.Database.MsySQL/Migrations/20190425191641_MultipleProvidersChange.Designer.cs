@@ -2,22 +2,22 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Rhisis.Database.Context;
 
-namespace PostgreSQL.Migrations
+namespace Rhisis.Database.MySQL.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20190425191641_MultipleProvidersChange")]
+    partial class MultipleProvidersChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
                 {
@@ -173,13 +173,13 @@ namespace PostgreSQL.Migrations
 
                     b.Property<int>("CharacterId");
 
-                    b.Property<long>("ObjectData");
+                    b.Property<uint>("ObjectData");
 
-                    b.Property<long>("ObjectId");
+                    b.Property<uint>("ObjectId");
 
-                    b.Property<long>("ObjectIndex");
+                    b.Property<uint>("ObjectIndex");
 
-                    b.Property<long>("ObjectType");
+                    b.Property<uint>("ObjectType");
 
                     b.Property<int>("SlotIndex");
 
@@ -189,9 +189,9 @@ namespace PostgreSQL.Migrations
 
                     b.Property<string>("Text");
 
-                    b.Property<long>("Type");
+                    b.Property<uint>("Type");
 
-                    b.Property<long>("UserId");
+                    b.Property<uint>("UserId");
 
                     b.HasKey("Id");
 

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Rhisis.MySQL.Migrations
+namespace Rhisis.Database.MsySQL.Migrations
 {
     public partial class InitialMigration : Migration
     {

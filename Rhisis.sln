@@ -45,9 +45,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.CLI", "src\Rhisis.CL
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{7717B79E-C4CB-4315-B81D-4350041A93AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.PostgreSQL", "src\Rhisis.PostgreSQL\Rhisis.PostgreSQL.csproj", "{65E9F7C7-2518-49E4-A9F7-CF96F0DCF3E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Database.PostgreSQL", "src\Rhisis.Database.PostgreSQL\Rhisis.Database.PostgreSQL.csproj", "{65E9F7C7-2518-49E4-A9F7-CF96F0DCF3E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.MsySQL", "src\Rhisis.MsySQL\Rhisis.MsySQL.csproj", "{87D57E25-C0F9-489F-8733-CAED55DE1D67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Database.MsySQL", "src\Rhisis.Database.MsySQL\Rhisis.Database.MsySQL.csproj", "{87D57E25-C0F9-489F-8733-CAED55DE1D67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

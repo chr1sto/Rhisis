@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Rhisis.MySQL.Migrations
+namespace Rhisis.Database.MySQL.Migrations
 {
     public partial class MultipleProvidersChange : Migration
     {

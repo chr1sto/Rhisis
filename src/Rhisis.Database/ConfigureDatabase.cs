@@ -25,7 +25,7 @@ namespace Rhisis.Database
                             configuration.Password,
                             configuration.Database,
                             configuration.Port),
-                        options => options.MigrationsAssembly("Rhisis.MsySQL"));
+                        options => options.MigrationsAssembly("Rhisis.Database.MsySQL"));
                     break;
 
                 case DatabaseProvider.MsSql:
@@ -35,7 +35,7 @@ namespace Rhisis.Database
                             configuration.Database,
                             configuration.Username,
                             configuration.Password),
-                        options => options.MigrationsAssembly("Rhisis.MsySQL"));
+                        options => options.MigrationsAssembly("Rhisis.Database.MsySQL"));
                     break;
 
                 case DatabaseProvider.PostgreSql:
@@ -45,7 +45,7 @@ namespace Rhisis.Database
                             configuration.Database,
                             configuration.Username,
                             configuration.Password),
-                        options => options.MigrationsAssembly("Rhisis.PostgreSQL"));
+                        options => options.MigrationsAssembly("Rhisis.Database.PostgreSQL"));
                     break;
 
                 default: throw new NotImplementedException($"Provider {configuration.Provider} not implemented yet.");

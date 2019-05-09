@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace PostgreSQL.Migrations
+namespace Rhisis.PostgreSQL.Database.Migrations
 {
     public partial class InitialMigration : Migration
     {
