@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game.Dialogs;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rhisis.Core.Resources.Loaders
 {
@@ -93,9 +95,18 @@ namespace Rhisis.Core.Resources.Loaders
         private void AddDialog(DialogSet dialogSet, DialogData dialog)
         {
             if (dialogSet.ContainsKey(dialog.Name))
+            {
                 this._logger.LogDebug(GameResources.ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
-            else
-                dialogSet.Add(dialog.Name, dialog);
+                return;
+            }
+
+            if (dialog.Links.HasDuplicates(x => x.Id))
+            {
+                this._logger.LogError(GameResources.ObjectErrorMessage, "Dialog", dialog.Name, "duplicate dialog link keys.");
+                return;
+            }
+
+            dialogSet.Add(dialog.Name, dialog);
         }
     }
 }

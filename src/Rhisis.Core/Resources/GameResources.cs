@@ -32,11 +32,13 @@ namespace Rhisis.Core.Resources
         public const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
         public const string ObjectIgnoredMessage = "{0} id '{1}' was ignored. Reason: {2}.";
         public const string ObjectOverridedMessage = "{0} id '{1}' was overrided. Reason: {2}.";
+        public const string ObjectErrorMessage = "{0} with id '{1}' has an error. Reason: {2}";
 
         private ILogger<GameResources> _logger;
         private IEnumerable<Type> _loaders;
         private MoverLoader _movers;
         private ItemLoader _items;
+        private ExpTableLoader _expTables;
 
         /// <summary>
         /// Gets the movers data.
@@ -47,6 +49,11 @@ namespace Rhisis.Core.Resources
         /// Gets the items data.
         /// </summary>
         public ItemLoader Items => this._items ?? (this._items = DependencyContainer.Instance.Resolve<ItemLoader>());
+
+        /// <summary>
+        /// Gets the exp table data.
+        /// </summary>
+        public ExpTableLoader ExpTables => this._expTables ?? (this._expTables = DependencyContainer.Instance.Resolve<ExpTableLoader>());
 
         /// <summary>
         /// Initialize the <see cref="GameResources"/> with loaders.

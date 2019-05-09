@@ -34,5 +34,41 @@ namespace Rhisis.World.Packets
                 player.Connection.Send(packet);
             }
         }
+
+        /// <summary>
+        /// Send player update level.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="level"></param>
+        public static void SendPlayerSetLevel(IPlayerEntity player, int level)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(player.Id, SnapshotType.SETLEVEL);
+                packet.Write((short)level);
+
+                SendToVisible(packet, player);
+            }
+        }
+
+        /// <summary>
+        /// Send Player experience.
+        /// </summary>
+        /// <param name="player"></param>
+        public static void SendPlayerExperience(IPlayerEntity player)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(player.Id, SnapshotType.SETEXPERIENCE);
+                packet.Write(player.PlayerData.Experience);
+                packet.Write((short)player.Object.Level);
+                packet.Write(0);
+                packet.Write((int)player.Statistics.SkillPoints);
+                packet.Write(long.MaxValue); // death exp
+                packet.Write(short.MaxValue); // death level
+
+                player.Connection.Send(packet);
+            }
+        }
     }
 }

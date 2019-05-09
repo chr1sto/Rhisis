@@ -128,17 +128,18 @@ namespace Rhisis.World
                 character.Level = this.Player.Object.Level;
 
                 character.Gold = this.Player.PlayerData.Gold;
+                character.Experience = this.Player.PlayerData.Experience;
 
                 character.Strength = this.Player.Statistics.Strength;
                 character.Stamina = this.Player.Statistics.Stamina;
                 character.Dexterity = this.Player.Statistics.Dexterity;
                 character.Intelligence = this.Player.Statistics.Intelligence;
                 character.StatPoints = this.Player.Statistics.StatPoints;
+                character.SkillPoints = this.Player.Statistics.SkillPoints;
 
                 // Delete items
                 var itemsToDelete = new List<DbItem>(character.Items.Count);
-                itemsToDelete.AddRange(from dbItem
-                        in character.Items
+                itemsToDelete.AddRange(from dbItem in character.Items
                     let inventoryItem = this.Player.Inventory.GetItem(x => x.DbId == dbItem.Id) ??
                                         new Game.Structures.Item()
                     where inventoryItem.Id == -1

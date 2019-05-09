@@ -14,6 +14,12 @@ namespace Rhisis.World.Game.Components
 
         public ushort StatPoints { get; set; }
 
+        public ushort SkillPoints { get; set; }
+
+        public StatisticsComponent()
+        {
+        }
+
         public StatisticsComponent(DbCharacter character)
         {
             this.Strength = (ushort)character.Strength;
@@ -21,10 +27,7 @@ namespace Rhisis.World.Game.Components
             this.Dexterity = (ushort)character.Dexterity;
             this.Intelligence = (ushort)character.Intelligence;
             this.StatPoints = (ushort)character.StatPoints;
-        }
-
-        public StatisticsComponent()
-        {
+            this.SkillPoints = (ushort)character.SkillPoints;
         }
     }
 }
