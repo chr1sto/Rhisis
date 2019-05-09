@@ -20,8 +20,10 @@ namespace Rhisis.World.Systems.Death
         private readonly ILogger<DeathSystem> _logger = DependencyContainer.Instance.Resolve<ILogger<DeathSystem>>();
         private readonly MapLoader _mapLoader = DependencyContainer.Instance.Resolve<MapLoader>();
 
+        /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;
 
+        /// <inheritdoc />
         public void Execute(IEntity entity, SystemEventArgs args)
         {
             if (!(entity is IPlayerEntity player))
@@ -44,10 +46,6 @@ namespace Rhisis.World.Systems.Death
             player.Health.Hp = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, playerStats.Stamina, jobData.MaxHpFactor) * RecoveryRate);
             player.Health.Mp = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, playerStats.Intelligence, jobData.MaxMpFactor, true) * RecoveryRate);
             player.Health.Fp = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, playerStats.Stamina, playerStats.Dexterity, playerStats.Strength, jobData.MaxFpFactor, true) * RecoveryRate);
-
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
 
             bool shouldReplace = false;
             if (revivalRegion.MapId != player.Object.MapId)
@@ -84,6 +82,9 @@ namespace Rhisis.World.Systems.Death
             WorldPacketFactory.SendMotion(player, ObjectMessageType.OBJMSG_ACC_STOP | ObjectMessageType.OBJMSG_STOP_TURN | ObjectMessageType.OBJMSG_STAND);
             WorldPacketFactory.SendPlayerRevival(player);
             WorldPacketFactory.SendMoverPosition(player);
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
         }
     }
 }

@@ -109,7 +109,7 @@ namespace Rhisis.World.Packets
                 packet.Write(player.PlayerData.Gold); // Gold
                 packet.Write(player.PlayerData.Experience); // exp
                 packet.Write(0); // skill level
-                packet.Write(0); // skill points
+                packet.Write((int)player.Statistics.SkillPoints); // skill points
                 packet.Write<long>(0); // death exp
                 packet.Write(0); // death level
 

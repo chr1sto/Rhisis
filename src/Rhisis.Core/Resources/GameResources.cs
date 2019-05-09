@@ -38,6 +38,7 @@ namespace Rhisis.Core.Resources
         private IEnumerable<Type> _loaders;
         private MoverLoader _movers;
         private ItemLoader _items;
+        private ExpTableLoader _expTables;
 
         /// <summary>
         /// Gets the movers data.
@@ -48,6 +49,11 @@ namespace Rhisis.Core.Resources
         /// Gets the items data.
         /// </summary>
         public ItemLoader Items => this._items ?? (this._items = DependencyContainer.Instance.Resolve<ItemLoader>());
+
+        /// <summary>
+        /// Gets the exp table data.
+        /// </summary>
+        public ExpTableLoader ExpTables => this._expTables ?? (this._expTables = DependencyContainer.Instance.Resolve<ExpTableLoader>());
 
         /// <summary>
         /// Initialize the <see cref="GameResources"/> with loaders.
