@@ -22,5 +22,17 @@ namespace Rhisis.World.Packets
                 player.Connection.Send(packet);
             }
         }
+
+        public static void SendPlayerStatsPoints(IPlayerEntity player)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(player.Id, SnapshotType.SET_GROWTH_LEARNING_POINT);
+                packet.Write((long)player.Statistics.StatPoints);
+                packet.Write<long>(0);
+
+                player.Connection.Send(packet);
+            }
+        }
     }
 }
