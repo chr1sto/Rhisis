@@ -80,7 +80,7 @@ namespace Rhisis.World.Systems.Mailbox
 
             var textClient = DependencyContainer.Instance.Resolve<TextClientLoader>();
             var worldConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
-            var neededGold = worldConfiguration.MailShippingCost;
+            var neededGold = worldConfiguration.Mails.MailShippingCost;
             
             using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
             {

@@ -2,6 +2,7 @@
 using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Structures.Configuration;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -19,6 +20,7 @@ namespace Rhisis.World.Systems.Death
 
         private readonly ILogger<DeathSystem> _logger = DependencyContainer.Instance.Resolve<ILogger<DeathSystem>>();
         private readonly MapLoader _mapLoader = DependencyContainer.Instance.Resolve<MapLoader>();
+        private readonly WorldConfiguration _worldConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;
@@ -85,6 +87,20 @@ namespace Rhisis.World.Systems.Death
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+
+            this.ProcessDeathPenality(player);
+        }
+
+        /// <summary>
+        /// Applies death penality if enabled.
+        /// </summary>
+        /// <param name="player">Death player entity.</param>
+        private void ProcessDeathPenality(IPlayerEntity player)
+        {
+            if (this._worldConfiguration.Death.DeathPenalityEnabled)
+            {
+                // TODO: process death penality
+            }
         }
     }
 }
