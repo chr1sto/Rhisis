@@ -24,6 +24,11 @@ namespace Rhisis.World.Game.Maps.Regions
         bool IsChaoRegion { get; }
 
         /// <summary>
+        /// Gets a value that indicates if the current region has to target another revival key.
+        /// </summary>
+        bool TargetRevivalKey { get; }
+
+        /// <summary>
         /// Gets the revival position.
         /// </summary>
         Vector3 RevivalPosition { get; }

@@ -15,6 +15,9 @@ namespace Rhisis.World.Game.Maps.Regions
         public bool IsChaoRegion { get; }
 
         /// <inheritdoc />
+        public bool TargetRevivalKey { get; }
+
+        /// <inheritdoc />
         public Vector3 RevivalPosition { get; }
 
         /// <summary>
@@ -28,13 +31,15 @@ namespace Rhisis.World.Game.Maps.Regions
         /// <param name="key">Revival map key.</param>
         /// <param name="position">Revival position.</param>
         /// <param name="isChao">Indicates that the region is a revival region for PK players.</param>
-        public MapRevivalRegion(int x, int z, int width, int length, int mapId, string key, Vector3 position, bool isChao)
+        /// <param name="targetRevivalKey">Indicates that the region has a revival target.</param>
+        public MapRevivalRegion(int x, int z, int width, int length, int mapId, string key, Vector3 position, bool isChao, bool targetRevivalKey)
             : base(x, z, width, length)
         {
             this.MapId = mapId;
             this.Key = key;
             this.RevivalPosition = position;
             this.IsChaoRegion = isChao;
+            this.TargetRevivalKey = targetRevivalKey;
         }
 
         /// <summary>
@@ -45,6 +50,6 @@ namespace Rhisis.World.Game.Maps.Regions
         /// <returns>New <see cref="MapRevivalRegion"/> instance.</returns>
         public static IMapRevivalRegion FromRgnElement(RgnRegion3 region, int revivalMapId)
             => new MapRevivalRegion(region.Left, region.Top, region.Right, region.Bottom,
-                                    revivalMapId, region.Key, region.Position.Clone(), region.ChaoKey);
+                                    revivalMapId, region.Key, region.Position.Clone(), region.ChaoKey, region.TargetKey);
     }
 }

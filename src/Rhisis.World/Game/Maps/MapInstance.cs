@@ -141,8 +141,8 @@ namespace Rhisis.World.Game.Maps
                 if (!this._regions.Any(x => x is IMapRevivalRegion))
                 {
                     // Loads the default revival region if no revival region is loaded.
-                    this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0, 
-                        this._worldInformations.RevivalMapId, this._worldInformations.RevivalKey, null, false);
+                    this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0,
+                        this._worldInformations.RevivalMapId, this._worldInformations.RevivalKey, null, false, false);
                 }
 
                 // TODO: load wrapzones
@@ -283,19 +283,24 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
 
-
         /// <inheritdoc />
         public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => this.GetNearRevivalRegion(position, false);
 
         /// <inheritdoc />
         public IMapRevivalRegion GetNearRevivalRegion(Vector3 position, bool isChaoMode)
         {
-            IEnumerable<IMapRevivalRegion> revivalRegions = from x in this._regions
-                                                            where x is IMapRevivalRegion y && y.IsChaoRegion == isChaoMode
-                                                            let region = x as IMapRevivalRegion
-                                                            let distance = position.GetDistance3D(region.RevivalPosition)
-                                                            orderby distance ascending
-                                                            select region;
+            IEnumerable<IMapRevivalRegion> revivalRegions = this._regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            var nearestRevivalRegion = revivalRegions.FirstOrDefault(x => x.MapId == this.Id && x.IsChaoRegion == isChaoMode && x.Contains(position) && x.TargetRevivalKey);
+
+            if (nearestRevivalRegion != null)
+                return this.GetRevivalRegion(nearestRevivalRegion.Key, isChaoMode);
+
+            revivalRegions = from x in this._regions
+                             where x is IMapRevivalRegion y && y.IsChaoRegion == isChaoMode && !y.TargetRevivalKey
+                             let region = x as IMapRevivalRegion
+                             let distance = position.GetDistance3D(region.RevivalPosition)
+                             orderby distance ascending
+                             select region;
 
             return revivalRegions.FirstOrDefault() ?? this.DefaultRevivalRegion;
         }
@@ -308,7 +313,7 @@ namespace Rhisis.World.Game.Maps
         {
             IEnumerable<IMapRevivalRegion> revivalRegions = this._regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
             IEnumerable<IMapRevivalRegion> revivalRegion = from x in revivalRegions
-                                                           where x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode
+                                                           where x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode && !x.TargetRevivalKey
                                                            select x;
 
             return revivalRegion.FirstOrDefault() ?? this.DefaultRevivalRegion;
