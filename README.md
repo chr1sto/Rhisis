@@ -35,7 +35,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Packet handler
 
 ### Database
-- Multi-DB support (MySQL, MsSQL and PostgreSQL)
+- Multi-DB support (MySQL, MsSQL)
 
 ### Login
 - Inter-Server authentication process (ISC)
@@ -97,7 +97,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 
 1. Download or Clone the `develop` branch.
 2. Install the latest .NET Core SDK : https://dotnet.microsoft.com/download
-3. Install `MsSQL Express` or `MySQL Server` or `PostgreSQL`
+3. Install `MsSQL Express` or `MySQL Server`
 4. Go to your Rhisis folder, open a `cmd` or `PowerShell` and compile the solution with the command : `dotnet build`
 5. Go to the `bin/` folder, open a `cmd` or `PowerShell` and type: `./rhisis-cli.bat setup`
 > ℹ️ The `rhisis-cli setup` command will guide you through the rhisis configuration and will setup the database for you.
@@ -118,6 +118,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - [YarinNet](https://github.com/YarinNet)
 - [Almewty](https://github.com/Almewty)
 - [Anjuts](https://github.com/Anjuts)
+- [MarkWilds](https://github.com/MarkWilds)
 
 ## Supporters
 

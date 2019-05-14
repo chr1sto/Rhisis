@@ -34,11 +34,13 @@ namespace Rhisis.Database.Entities
         /// <summary>
         /// Gets or sets the user's creation date.
         /// </summary>
+        [Column(TypeName = "DATETIME")]
         public DateTime CreatedAt { get; private set; }
 
         /// <summary>
         /// Gets or sets the last time the user logged in.
         /// </summary>
+        [Column(TypeName = "DATETIME")]
         public DateTime LastConnectionTime { get; set; }
         
         /// <summary>

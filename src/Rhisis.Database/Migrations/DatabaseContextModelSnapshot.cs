@@ -14,7 +14,7 @@ namespace Rhisis.Database.MySQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
@@ -50,7 +50,8 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<DateTime>("LastConnectionTime");
+                    b.Property<DateTime>("LastConnectionTime")
+                        .HasColumnType("DATETIME");
 
                     b.Property<int>("Level");
 
@@ -63,7 +64,8 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<long>("PlayTime");
+                    b.Property<long>("PlayTime")
+                        .HasColumnType("BIGINT");
 
                     b.Property<float>("PosX");
 
@@ -205,14 +207,16 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.Property<int>("Authority");
 
-                    b.Property<DateTime>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("DATETIME");
 
                     b.Property<string>("Email")
                         .IsRequired();
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<DateTime>("LastConnectionTime");
+                    b.Property<DateTime>("LastConnectionTime")
+                        .HasColumnType("DATETIME");
 
                     b.Property<string>("Password")
                         .IsRequired();
