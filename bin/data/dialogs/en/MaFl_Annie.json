@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Annie",
   "oralText": "Please visit me if you have any questions about the 1vs1 Guild Siege.",
-  "introText": "Why hello there, young one. You certainly look strong! I bet you could even handle 1v2! Hahaha! Yes, I'm lying... you'll probably last about 2 seconds.",
+  "introText": [
+    "Why hello there, young one. You certainly look strong! I bet you could even handle 1v2! Hahaha! Yes, I'm lying... you'll probably last about 2 seconds."
+  ],
   "byeText": "Toodles!",
   "links": [
     {

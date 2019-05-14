@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Helper_ver12",
   "oralText": "New to Madrigal? Visit your friendly neighborhood Buff Pang!",
-  "introText": "Hello there! I'm granting buffs to adventurers who haven't completed their second job change yet. Come see me anytime if you ever find yourself in need of a boost to your stats!",
+  "introText": [
+    "Hello there! I'm granting buffs to adventurers who haven't completed their second job change yet. Come see me anytime if you ever find yourself in need of a boost to your stats!"
+  ],
   "byeText": "Enjoy your stay in Madrigal!",
   "links": [
     {

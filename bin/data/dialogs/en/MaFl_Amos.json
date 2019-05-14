@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Amos",
   "oralText": "Welcome, Flarinians! Sign up here for entry into the 1vs1 Guild Siege!",
-  "introText": "A guild is only as strong as it's weakest member, my friend, and this is where we separate the bark from the bite. Test your mettle in the 1vs1 Guild Siege if you think you're strong enough!",
+  "introText": [
+    "A guild is only as strong as it's weakest member, my friend, and this is where we separate the bark from the bite. Test your mettle in the 1vs1 Guild Siege if you think you're strong enough!"
+  ],
   "byeText": "For Glory!",
   "links": [
     {

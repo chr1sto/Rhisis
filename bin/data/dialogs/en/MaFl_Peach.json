@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Peach",
   "oralText": "Would anyone like a jewel crafted or perhaps a jewelry setting created ?",
-  "introText": "Hi there! I offer jewelry services to the citizens of Flarine and create and set jewels for those wishing to modify their Ultimate Weapons. I also remove blessings and level reductions from items, among other things!",
+  "introText": [
+    "Hi there! I offer jewelry services to the citizens of Flarine and create and set jewels for those wishing to modify their Ultimate Weapons. I also remove blessings and level reductions from items, among other things!"
+  ],
   "byeText": "Take care. Remember, for anything to do with jewels. I'm your girl!",
   "links": [
     {

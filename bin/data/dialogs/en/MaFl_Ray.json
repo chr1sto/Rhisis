@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Ray",
   "oralText": "Hey, you two! Stop that bickering, it's pointless! Take it to the arena!",
-  "introText": "In the PvP arena, you can fight other adventurers such as yourself. If you meet unfortunate circumstances, and are slain on the arena floor, you will not incur any death penalties.",
+  "introText": [
+    "In the PvP arena, you can fight other adventurers such as yourself. If you meet unfortunate circumstances, and are slain on the arena floor, you will not incur any death penalties."
+  ],
   "byeText": "Another one bites the dust!",
   "links": [
     {

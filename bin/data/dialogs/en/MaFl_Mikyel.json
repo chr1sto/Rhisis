@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Mikyel",
   "oralText": "Welcome to the Flarine Quest Office! Looking for work? I may have a job for you...",
-  "introText": "My apologies, there are no quests available for an adventurer of your talent and skill at this time.",
+  "introText": [
+    "My apologies, there are no quests available for an adventurer of your talent and skill at this time."
+  ],
   "byeText": "Farewell!",
   "links": [
     {

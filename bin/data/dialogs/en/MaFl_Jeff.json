@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Jeff",
   "oralText": "*sigh* I miss Kimberly so much. I can barely focus on my duties...",
-  "introText": "Ugh, I still get so many complaints about the machine I sold to Saint City and Darken City. I may have used substandard building materials from the Dekane Mines. Ah well...",
+  "introText": [
+    "Ugh, I still get so many complaints about the machine I sold to Saint City and Darken City. I may have used substandard building materials from the Dekane Mines. Ah well..."
+  ],
   "byeText": "Say hello to my wife, kimberly, in Saint City if you happen to see her, will you?",
   "links": [
     {

@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Donaris",
   "oralText": "Check in here to review the weekly results of the Guild Siege!",
-  "introText": "Only the most cunning of guilds can hope to achieve victory in the Guild Sieges. Are you ready for the challenge?",
+  "introText": [
+    "Only the most cunning of guilds can hope to achieve victory in the Guild Sieges. Are you ready for the challenge?"
+  ],
   "byeText": "Good luck to you! I hope I see you in ranking charts!",
   "links": [
     {

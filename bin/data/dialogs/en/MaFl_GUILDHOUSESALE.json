@@ -5,7 +5,9 @@
 {
   "name": "MaFl_GUILDHOUSESALE",
   "oralText": "Talk to me if you would like to learn about Guild Houses.",
-  "introText": "Every guild deserves a home to call their own, don't you agree? Besides, I hear the buffs come in very handy!",
+  "introText": [
+    "Every guild deserves a home to call their own, don't you agree? Besides, I hear the buffs come in very handy!"
+  ],
   "byeText": "I know my service don't come cheap, but I think you will find they are definitely worth it. Think about it for a little while.",
   "links": [
     {

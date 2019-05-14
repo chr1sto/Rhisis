@@ -5,7 +5,9 @@
 {
   "name": "MaFl_GuildWar",
   "oralText": "Welcome, competitors! The Guild Siege Application Center is open for business!",
-  "introText": "If your guild has reached the point where you think you have the strength and numbers to compete against another guild, then you're in the right place. Prove to everyone that you;re able to become a legend like Badza!",
+  "introText": [
+    "If your guild has reached the point where you think you have the strength and numbers to compete against another guild, then you're in the right place. Prove to everyone that you;re able to become a legend like Badza!"
+  ],
   "byeText": "For Glory!",
   "links": [
     {

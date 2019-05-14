@@ -57,7 +57,7 @@ namespace Rhisis.World.Systems.NpcDialog
                 return;
             }
 
-            IEnumerable<string> dialogTexts = new[] { npcEntity.Data.Dialog.IntroText };
+            IEnumerable<string> dialogTexts = npcEntity.Data.Dialog.IntroText;
 
             if (!string.IsNullOrEmpty(e.DialogKey))
             {
