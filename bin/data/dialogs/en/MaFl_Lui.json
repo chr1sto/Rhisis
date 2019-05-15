@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Lui",
   "oralText": "Come one, come all! Get your supplies here! You're gonna need it!",
-  "introText": "Going somewhere? You look a little unprepared, so I'd think twice about leaving Flarine without stocking up on supplies. Good thing for you, I'm here. So, whaddya need?",
+  "introText": [
+    "Going somewhere? You look a little unprepared, so I'd think twice about leaving Flarine without stocking up on supplies. Good thing for you, I'm here. So, whaddya need?"
+  ],
   "byeText": "Don't forget to shop at Handsome Lui's General Shop for your adventuring needs!",
   "links": [
     {

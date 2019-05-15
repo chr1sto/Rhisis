@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Gergantes",
   "oralText": "*scribbles* Ah, yes! This is good stuff... I'm such a great writer! Now I just need a good protagonist...",
-  "introText": "I am writing one of my best novels yet! It's action-packed, fast faced, dark, and even a little scary! It's about this hero who enters a dark cave and... well  wait, if I tell you, you might steal my idea! Who are you anyway!?",
+  "introText": [
+    "I am writing one of my best novels yet! It's action-packed, fast faced, dark, and even a little scary! It's about this hero who enters a dark cave and... well  wait, if I tell you, you might steal my idea! Who are you anyway!?"
+  ],
   "byeText": "My next novel will be a best seller, I'm sure! Keep an eye out for it!",
   "links": [
     {

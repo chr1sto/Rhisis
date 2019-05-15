@@ -5,7 +5,9 @@
 {
   "name": "MaFl_FlaMayor",
   "oralText": "Welcome to Flarine! Please, enjoy your stay!",
-  "introText": "Flarine is the capital city of Madrigal. It may be a small city, but it's certainly the most beautiful. Feel free to come see me if you ever need anything.",
+  "introText": [
+    "Flarine is the capital city of Madrigal. It may be a small city, but it's certainly the most beautiful. Feel free to come see me if you ever need anything."
+  ],
   "byeText": "We have a Guild Siege every Saturday. Speak to the Guild Siege Managers for more information!",
   "links": [
     {

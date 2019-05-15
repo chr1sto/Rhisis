@@ -22,7 +22,7 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// Gets or sets the dialog's introduction text.
         /// </summary>
         [DataMember(Name = "introText")]
-        public string IntroText { get; set; }
+        public IEnumerable<string> IntroText { get; set; }
 
         /// <summary>
         /// Gets or sets the dialog's goodbye text.
@@ -55,7 +55,7 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         {
             this.Name = name;
             this.OralText = oralText;
-            this.IntroText = introText;
+            this.IntroText = new[] { introText };
             this.ByeText = byeText;
             this.Links = new List<DialogLink>();
         }

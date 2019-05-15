@@ -5,7 +5,9 @@
 {
   "name": "MaFl_PetTamer",
   "oralText": "Raising your own pet takes patience and dedication. Are you ready?",
-  "introText": "Rawr! Tee hee! ^^ Sorry, I was just practicing my tiger call. Do you have a pet? I love pets, it's what I live for!",
+  "introText": [
+    "Rawr! Tee hee! ^^ Sorry, I was just practicing my tiger call. Do you have a pet? I love pets, it's what I live for!"
+  ],
   "byeText": "Don't forget to feed your pet!",
   "links": [
     {

@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Martinyc",
   "oralText": "The history of Madrigal... strange to say that least. I must discover the secrets!",
-  "introText": "Do you know anything about the history of Madrigal? No? Well I've been uncovering some fascinating information as of late. It seems that much of our history has been conveniently covered up. Interesting, huh?",
+  "introText": [
+    "Do you know anything about the history of Madrigal? No? Well I've been uncovering some fascinating information as of late. It seems that much of our history has been conveniently covered up. Interesting, huh?"
+  ],
   "byeText": "If you learn of any interesting facts about Madrigal's history, be sure to stop by again!",
   "links": [
     {

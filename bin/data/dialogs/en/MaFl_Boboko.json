@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Boboko",
   "oralText": "The perfect shields of the Bobo family are only here, in the Shield Shop of Boboku!",
-  "introText": "You won't find a better armor selection in all of Flaris, I'll guarantee you that!",
+  "introText": [
+    "You won't find a better armor selection in all of Flaris, I'll guarantee you that!"
+  ],
   "byeText": "Tell your friends buy Bobo Family Equipment!",
   "links": [
     {

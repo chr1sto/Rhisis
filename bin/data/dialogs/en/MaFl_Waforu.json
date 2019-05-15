@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Waforu",
   "oralText": "Step right up, champions! Welcome to the Red Chip Emporium!",
-  "introText": "Heya stranger! If your guild wins the Guild Siege, you will be awarded Red Chips for your victory. The armor sets I sell here in my shop are absolutely the best you can find! So how many Red Chips do you have, hmmmm?",
+  "introText": [
+    "Heya stranger! If your guild wins the Guild Siege, you will be awarded Red Chips for your victory. The armor sets I sell here in my shop are absolutely the best you can find! So how many Red Chips do you have, hmmmm?"
+  ],
   "byeText": "So long, contender. May Rhisis be with you.",
   "links": [
     {

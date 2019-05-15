@@ -5,7 +5,9 @@
 {
   "name": "MaFl_Bobochan",
   "oralText": "Step right up, adventurers! BoBoChan's Upgrade Shop is open for business!",
-  "introText": "Rhisis have mercy on this poor soul. You actually fight monsters with that?! Good grief! Please, allow me to help you upgrade it...",
+  "introText": [
+    "Rhisis have mercy on this poor soul. You actually fight monsters with that?! Good grief! Please, allow me to help you upgrade it..."
+  ],
   "byeText": "Goodbye, friend! Remember, for the best upgrades in Madrigal, visit BoBoChan!",
   "links": [
     {
