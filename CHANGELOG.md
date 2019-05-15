@@ -11,16 +11,24 @@ This is the changelog of the Rhisis project. All notable changes to this project
 #### Fixes
 
 - Fix real-time position calculation (PR [#200](https://github.com/Eastrall/Rhisis/pull/200))
+- Prevent dialogs from having duplicate links id. (PR [#213](https://github.com/Eastrall/Rhisis/pull/213))
 
 #### Features
 
 - Pick-up drop items (PR [#203](https://github.com/Eastrall/Rhisis/pull/203))
 - Drop items from inventory (PR [#203](https://github.com/Eastrall/Rhisis/pull/203))
 - WSAD movements and Jump behavior (PR [#204](https://github.com/Eastrall/Rhisis/pull/204))
+- Add multiple dialog texts on DialogLinks. Allow next button on game (PR [#207](https://github.com/Eastrall/Rhisis/pull/207))
+- Death System and resurection (PR [#206](https://github.com/Eastrall/Rhisis/pull/206)
+- Experience and Level up (PR [#214](https://github.com/Eastrall/Rhisis/pull/214))
 
 #### Resources
 
-- Add Flarine dialogs (PR [#197](https://github.com/Eastrall/Rhisis/pull/197), [#199](https://github.com/Eastrall/Rhisis/pull/199), [#202](https://github.com/Eastrall/Rhisis/pull/202))
+- Add Flarine dialogs (PR [#197](https://github.com/Eastrall/Rhisis/pull/197), [#199](https://github.com/Eastrall/Rhisis/pull/199), [#202](https://github.com/Eastrall/Rhisis/pull/202), [#209](https://github.com/Eastrall/Rhisis/pull/209))
+
+#### Changes
+
+- `MailShippingCost` configuration is now inside the `MailConfiguration` structure.
 
 ## [Released]
 
