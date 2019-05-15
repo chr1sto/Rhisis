@@ -123,7 +123,7 @@ namespace Rhisis.World.Systems.Death
                     }
                 }
 
-                // TODO: send exp loss packet
+                WorldPacketFactory.SendPlayerExperience(player);
             }
         }
     }

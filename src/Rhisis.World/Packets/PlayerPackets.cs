@@ -65,7 +65,7 @@ namespace Rhisis.World.Packets
                 packet.Write(0);
                 packet.Write((int)player.Statistics.SkillPoints);
                 packet.Write(long.MaxValue); // death exp
-                packet.Write(short.MaxValue); // death level
+                packet.Write((short)player.PlayerData.DeathLevel);
 
                 player.Connection.Send(packet);
             }
