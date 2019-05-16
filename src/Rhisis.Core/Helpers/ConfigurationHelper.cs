@@ -30,7 +30,8 @@ namespace Rhisis.Core.Helpers
             return JsonConvert.DeserializeObject<T>(fileContent, new JsonSerializerSettings
             {
                 MissingMemberHandling = MissingMemberHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
         }
 

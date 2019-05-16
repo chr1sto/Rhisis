@@ -10,9 +10,7 @@ namespace Rhisis.Core.Structures.Configuration
     public class WorldConfiguration : BaseConfiguration
     {
         public const string DefaultLanguage = "en";
-        public const int DefaultMailShippingCost = 500;
         
-
         /// <summary>
         /// Gets or sets the world's id.
         /// </summary>
@@ -65,13 +63,13 @@ namespace Rhisis.Core.Structures.Configuration
         /// Gets or sets the IPC configuration.
         /// </summary>
         [DataMember(Name = "isc")]
-        public ISCConfiguration ISC { get; set; }
+        public ISCConfiguration ISC { get; set; } = new ISCConfiguration();
 
         /// <summary>
-        /// Gets or sets mail shipping costs.
+        /// Gets or sets the mails configuration.
         /// </summary>
-        [DataMember(Name = "mailShippingCost")]
-        public uint MailShippingCost { get; set; }
+        [DataMember(Name = "mails")]
+        public MailConfiguration Mails { get; set; } = new MailConfiguration();
 
         /// <summary>
         /// Gets or sets the Style Customization settings.
@@ -86,15 +84,18 @@ namespace Rhisis.Core.Structures.Configuration
         public PartyConfiguration PartyConfiguration { get; set; } = new PartyConfiguration();
 
         /// <summary>
+        /// Gets or sets the death configuration settings.
+        /// </summary>
+        [DataMember(Name = "death")]
+        public DeathConfiguration Death { get; set; } = new DeathConfiguration();
+
+        /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
         /// </summary>
         public WorldConfiguration()
         {
             this.Language = DefaultLanguage;
             this.Systems = new Dictionary<string, bool>();
-            this.ISC = new ISCConfiguration();
-            this.Rates = new WorldRates();
-            this.MailShippingCost = DefaultMailShippingCost;
         }
     }
 }

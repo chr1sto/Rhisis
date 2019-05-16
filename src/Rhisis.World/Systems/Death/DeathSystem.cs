@@ -2,6 +2,9 @@
 using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Resources;
+using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -15,10 +18,9 @@ namespace Rhisis.World.Systems.Death
     [System(SystemType.Notifiable)]
     public sealed class DeathSystem : ISystem
     {
-        private const float RecoveryRate = 0.2f;
-
         private readonly ILogger<DeathSystem> _logger = DependencyContainer.Instance.Resolve<ILogger<DeathSystem>>();
         private readonly MapLoader _mapLoader = DependencyContainer.Instance.Resolve<MapLoader>();
+        private readonly WorldConfiguration _worldConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;
@@ -40,12 +42,13 @@ namespace Rhisis.World.Systems.Death
                 return;
             }
 
+            decimal recoveryRate = GameResources.Instance.Penalities.GetRevivalPenality(player.Object.Level) / 100;
             var jobData = player.PlayerData.JobData;
             var playerStats = player.Statistics;
 
-            player.Health.Hp = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, playerStats.Stamina, jobData.MaxHpFactor) * RecoveryRate);
-            player.Health.Mp = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, playerStats.Intelligence, jobData.MaxMpFactor, true) * RecoveryRate);
-            player.Health.Fp = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, playerStats.Stamina, playerStats.Dexterity, playerStats.Strength, jobData.MaxFpFactor, true) * RecoveryRate);
+            player.Health.Hp = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, playerStats.Stamina, jobData.MaxHpFactor) * recoveryRate);
+            player.Health.Mp = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, playerStats.Intelligence, jobData.MaxMpFactor, true) * recoveryRate);
+            player.Health.Fp = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, playerStats.Stamina, playerStats.Dexterity, playerStats.Strength, jobData.MaxFpFactor, true) * recoveryRate);
 
             bool shouldReplace = false;
             if (revivalRegion.MapId != player.Object.MapId)
@@ -85,6 +88,43 @@ namespace Rhisis.World.Systems.Death
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+
+            this.ProcessDeathPenality(player);
+        }
+
+        /// <summary>
+        /// Applies death penality if enabled.
+        /// </summary>
+        /// <param name="player">Death player entity.</param>
+        private void ProcessDeathPenality(IPlayerEntity player)
+        {
+            if (this._worldConfiguration.Death.DeathPenalityEnabled)
+            {
+                decimal expLossPercent = GameResources.Instance.Penalities.GetDecExpPenality(player.Object.Level);
+
+                if (expLossPercent <= 0)
+                    return;
+
+                player.PlayerData.Experience -= player.PlayerData.Experience * (long)(expLossPercent / 100m);
+                player.PlayerData.DeathLevel = player.Object.Level;
+
+                if (player.PlayerData.Experience < 0)
+                {
+                    if (GameResources.Instance.Penalities.GetLevelDownPenality(player.Object.Level))
+                    {
+                        CharacterExpTableData previousLevelExp = GameResources.Instance.ExpTables.GetCharacterExp(player.Object.Level - 1);
+
+                        player.Object.Level--;
+                        player.PlayerData.Experience = previousLevelExp.Exp + player.PlayerData.Experience;
+                    }
+                    else
+                    {
+                        player.PlayerData.Experience = 0;
+                    }
+                }
+
+                WorldPacketFactory.SendPlayerExperience(player);
+            }
         }
     }
 }

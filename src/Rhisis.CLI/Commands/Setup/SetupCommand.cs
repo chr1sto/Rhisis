@@ -176,7 +176,6 @@ namespace Rhisis.CLI.Commands.Setup
                 "WI_WORLD_MADRIGAL"
             };
             worldConfiguration.Language = "en";
-            worldConfiguration.MailShippingCost = 500;
             worldConfiguration.Drops.OwnershipTime = 7;
             worldConfiguration.Drops.DespawnTime = 120;
 

@@ -27,9 +27,11 @@ namespace Rhisis.Core.Resources
         public static readonly string JobPropPath = Path.Combine(DataSub1Path, "propJob.inc");
         public static readonly string TextClientPath = Path.Combine(DataSub1Path, "textClient.inc");
         public static readonly string ExpTablePath = Path.Combine(DataSub0Path, "expTable.inc");
+        public static readonly string DeathPenalityPath = Path.Combine(ResourcePath, "deathPenality.json");
 
         // Logs messages
         public const string UnableLoadMapMessage = "Unable to load map '{0}'. Reason: {1}.";
+        public const string UnableLoadMessage = "Unable to load {0}. Reason: {1}";
         public const string ObjectIgnoredMessage = "{0} id '{1}' was ignored. Reason: {2}.";
         public const string ObjectOverridedMessage = "{0} id '{1}' was overrided. Reason: {2}.";
         public const string ObjectErrorMessage = "{0} with id '{1}' has an error. Reason: {2}";
@@ -39,6 +41,7 @@ namespace Rhisis.Core.Resources
         private MoverLoader _movers;
         private ItemLoader _items;
         private ExpTableLoader _expTables;
+        private PenalityLoader _penalities;
 
         /// <summary>
         /// Gets the movers data.
@@ -54,6 +57,11 @@ namespace Rhisis.Core.Resources
         /// Gets the exp table data.
         /// </summary>
         public ExpTableLoader ExpTables => this._expTables ?? (this._expTables = DependencyContainer.Instance.Resolve<ExpTableLoader>());
+
+        /// <summary>
+        /// Gets the penality resources.
+        /// </summary>
+        public PenalityLoader Penalities => this._penalities ?? (this._penalities = DependencyContainer.Instance.Resolve<PenalityLoader>());
 
         /// <summary>
         /// Initialize the <see cref="GameResources"/> with loaders.
