@@ -29,6 +29,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 #### Changes
 
 - `MailShippingCost` configuration is now inside the `MailConfiguration` structure.
+- Review of database assembly (PR [#208](https://github.com/Eastrall/Rhisis/pull/208))
 
 ## [Released]
 
