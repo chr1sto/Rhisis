@@ -27,19 +27,9 @@ namespace Rhisis.Database
         /// <summary>
         /// Creates a new <see cref="Database"/> object instance.
         /// </summary>
-        public Database()
+        public Database(DatabaseContext databaseContext)
         {
-            this._databaseContext = DatabaseFactory.Instance.CreateDbContext();
-            this.InitializeRepositories();
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="Database"/> with EF context options.
-        /// </summary>
-        /// <param name="options"></param>
-        public Database(DbContextOptions options)
-        {
-            this._databaseContext = DatabaseFactory.Instance.CreateDbContext(options);
+            this._databaseContext = databaseContext;
             this.InitializeRepositories();
         }
 
@@ -48,9 +38,6 @@ namespace Rhisis.Database
 
         /// <inheritdoc />
         public async Task CompleteAsync() => await this._databaseContext.SaveChangesAsync();
-
-        /// <inheritdoc />
-        public void Dispose() => this._databaseContext.Dispose();
 
         /// <summary>
         /// Initializes the repositories.

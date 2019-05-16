@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
@@ -14,9 +17,7 @@ using Rhisis.Network;
 using Rhisis.World.Game.Loaders;
 using Rhisis.World.ISC;
 using Rhisis.World.Systems.Party;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Rhisis.World
 {
@@ -56,13 +57,19 @@ namespace Rhisis.World
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             PacketHandler<ISCClient>.Initialize();
             PacketHandler<WorldClient>.Initialize();
-            DatabaseFactory.Instance.Initialize(DatabaseConfigFile);
+            
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
+            DependencyContainer.Instance
+                .GetServiceCollection()
+                .RegisterDatabaseServices(dbConfig);
+            
             BusinessLayer.Initialize();
             DependencyContainer.Instance.Register<IWorldServer, WorldServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Register(typeof(PartyManager), ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
             {
-                builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                builder.AddFilter("Microsoft", LogLevel.Warning);
+                builder.SetMinimumLevel(LogLevel.Trace);
                 builder.AddNLog(new NLogProviderOptions
                 {
                     CaptureMessageTemplates = true,
@@ -104,6 +111,7 @@ namespace Rhisis.World
         public void Dispose()
         {
             this._server?.Dispose();
+            DependencyContainer.Instance.Dispose();
             LogManager.Shutdown();
         }
     }

@@ -1,16 +1,17 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using System;
+using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Helpers;
 using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using System;
 
 namespace Rhisis.CLI.Commands.User
 {
     [Command("create", Description = "Created a new user")]
-    public sealed class UserCreateCommand : IDisposable
+    public sealed class UserCreateCommand
     {
         private IDatabase _database;
 
@@ -54,8 +55,7 @@ namespace Rhisis.CLI.Commands.User
 
             if (response)
             {
-                DatabaseFactory.Instance.Initialize(this.DatabaseConfigurationFile);
-                this._database = new Rhisis.Database.Database();
+                this._database = DependencyContainer.Instance.Resolve<IDatabase>();
 
                 if (this._database.Users.HasAny(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -88,7 +88,5 @@ namespace Rhisis.CLI.Commands.User
                 Console.WriteLine($"User '{user.Username}' created.");
             }
         }
-
-        public void Dispose() => this._database?.Dispose();
     }
 }

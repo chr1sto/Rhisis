@@ -4,8 +4,6 @@
     {
         Unknown = 0,
         MySql,
-        MsSql,
-        PostgreSql,
-        SqLite,
+        MsSql
     }
 }

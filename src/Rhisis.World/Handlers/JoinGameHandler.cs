@@ -36,8 +36,8 @@ namespace Rhisis.World.Handlers
             var joinPacket = new JoinPacket(packet);
             DbCharacter character = null;
 
-            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
-                character = database.Characters.Get(joinPacket.PlayerId);
+            var database = DependencyContainer.Instance.Resolve<IDatabase>();
+            character = database.Characters.Get(joinPacket.PlayerId);
 
             if (character == null)
             {

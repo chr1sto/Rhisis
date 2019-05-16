@@ -82,7 +82,7 @@ namespace Rhisis.Core.DependencyInjection
 
             addServiceMethod(implementationType, serviceType);
         }
-
+        
         /// <summary>
         /// Register a new service.
         /// </summary>

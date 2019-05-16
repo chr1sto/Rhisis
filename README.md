@@ -35,7 +35,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Packet handler
 
 ### Database
-- Multi-DB support (MySQL and MsSQL)
+- Multi-DB support (MySQL, MsSQL)
 
 ### Login
 - Inter-Server authentication process (ISC)
@@ -118,6 +118,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - [YarinNet](https://github.com/YarinNet)
 - [Almewty](https://github.com/Almewty)
 - [Anjuts](https://github.com/Anjuts)
+- [MarkWilds](https://github.com/MarkWilds)
 
 ## Supporters
 

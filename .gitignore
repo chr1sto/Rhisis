@@ -244,3 +244,4 @@ dist/
 
 # Rhisis related
 bin/config/
+.idea/

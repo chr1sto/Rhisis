@@ -1,14 +1,15 @@
-﻿using McMaster.Extensions.CommandLineUtils;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using McMaster.Extensions.CommandLineUtils;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Database;
+using Rhisis.Database.Entities;
 
 namespace Rhisis.CLI.Commands.User
 {
     [Command("show", Description = "Show an user.")]
-    public sealed class UserShowCommand : IDisposable
+    public sealed class UserShowCommand
     {
         private IDatabase _database;
 
@@ -23,9 +24,7 @@ namespace Rhisis.CLI.Commands.User
         {
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 this.DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
-
-            DatabaseFactory.Instance.Initialize(this.DatabaseConfigurationFile);
-            this._database = new Rhisis.Database.Database();
+            this._database = DependencyContainer.Instance.Resolve<IDatabase>();
 
             DbUser user = this._database.Users.Get(x => x.Username.Equals(this.Username, StringComparison.OrdinalIgnoreCase));
 
@@ -59,7 +58,5 @@ namespace Rhisis.CLI.Commands.User
                 }
             }
         }
-
-        public void Dispose() => this._database?.Dispose();
     }
 }
