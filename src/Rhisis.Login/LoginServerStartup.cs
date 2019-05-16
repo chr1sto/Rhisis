@@ -37,6 +37,7 @@ namespace Rhisis.Login
             DependencyContainer.Instance.Register<ILoginServer, LoginServer>(ServiceLifetime.Singleton);
             DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
             {
+                builder.AddFilter("Microsoft", LogLevel.Warning);
                 builder.SetMinimumLevel(LogLevel.Trace);
                 builder.AddNLog(new NLogProviderOptions
                 {
