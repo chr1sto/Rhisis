@@ -112,7 +112,7 @@ namespace Rhisis.World
             if (character != null)
             {
                 character.LastConnectionTime = this.LoggedInAt;
-                character.PlayTime += (long) (DateTime.UtcNow - this.LoggedInAt).TotalSeconds;
+                character.PlayTime += (long)(DateTime.UtcNow - this.LoggedInAt).TotalSeconds;
 
                 character.PosX = this.Player.Object.Position.X;
                 character.PosY = this.Player.Object.Position.Y;
@@ -137,13 +137,17 @@ namespace Rhisis.World
                 character.StatPoints = this.Player.Statistics.StatPoints;
                 character.SkillPoints = this.Player.Statistics.SkillPoints;
 
+                character.Hp = this.Player.Health.Hp;
+                character.Mp = this.Player.Health.Mp;
+                character.Fp = this.Player.Health.Fp;
+
                 // Delete items
                 var itemsToDelete = new List<DbItem>(character.Items.Count);
                 itemsToDelete.AddRange(from dbItem in character.Items
-                    let inventoryItem = this.Player.Inventory.GetItem(x => x.DbId == dbItem.Id) ??
-                                        new Game.Structures.Item()
-                    where inventoryItem.Id == -1
-                    select dbItem);
+                                       let inventoryItem = this.Player.Inventory.GetItem(x => x.DbId == dbItem.Id) ??
+                                                           new Game.Structures.Item()
+                                       where inventoryItem.Id == -1
+                                       select dbItem);
                 itemsToDelete.ForEach(x => character.Items.Remove(x));
 
                 // Add or update items
@@ -198,8 +202,8 @@ namespace Rhisis.World
 
                     if (applet.Type == ShortcutType.Item)
                     {
-                        var item = this.Player.Inventory.GetItem((int) applet.ObjId);
-                        dbApplet.ObjectId = (uint) item.Slot;
+                        var item = this.Player.Inventory.GetItem((int)applet.ObjId);
+                        dbApplet.ObjectId = (uint)item.Slot;
                     }
 
                     character.TaskbarShortcuts.Add(dbApplet);
@@ -220,8 +224,8 @@ namespace Rhisis.World
 
                         if (itemShortcut.Type == ShortcutType.Item)
                         {
-                            var item = this.Player.Inventory.GetItem((int) itemShortcut.ObjId);
-                            dbItem.ObjectId = (uint) item.Slot;
+                            var item = this.Player.Inventory.GetItem((int)itemShortcut.ObjId);
+                            dbItem.ObjectId = (uint)item.Slot;
                         }
 
                         character.TaskbarShortcuts.Add(dbItem);
@@ -240,7 +244,6 @@ namespace Rhisis.World
             }
 
             database.Complete();
-            
         }
 
         /// <inheritdoc />
