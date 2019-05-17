@@ -5,15 +5,17 @@ using Rhisis.CLI.Commands.User;
 
 namespace Rhisis.CLI
 {
-    [Command(ThrowOnUnexpectedArgument = false, Description = Program.Description)]
+    [Command(ThrowOnUnexpectedArgument = false, Description = Description)]
     [Subcommand(typeof(DatabaseCommand))]
     [Subcommand(typeof(SetupCommand))]
     [Subcommand(typeof(UserCommand))]
     public class Application
     {
         public const string DefaultDatabaseConfigurationFile = "config/database.json";
-
-        public void OnExecute(CommandLineApplication app, IConsole console)
+        public const string Description = "This tool is a command line interface allowing " +
+                                          "administrators to manage their own servers easily.";
+        
+        public void OnExecute(CommandLineApplication app)
         {
             app.ShowHelp();
         }

@@ -1,11 +1,12 @@
-﻿using McMaster.Extensions.CommandLineUtils;
-using Rhisis.CLI.Commands.Database;
-using Rhisis.CLI.Helpers;
-using Rhisis.Core.Helpers;
-using Rhisis.Core.Structures.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using McMaster.Extensions.CommandLineUtils;
+using Rhisis.CLI.Commands.Database;
+using Rhisis.CLI.Services;
+using Rhisis.Core.Helpers;
+using Rhisis.Core.Structures.Configuration;
+using Rhisis.Database;
 
 namespace Rhisis.CLI.Commands.Setup
 {
@@ -15,13 +16,16 @@ namespace Rhisis.CLI.Commands.Setup
         private const string ClusterServerConfigurationPath = "config/cluster.json";
         private const string WorldServerConfigurationPath = "config/world.json";
         private readonly DatabaseInitializationCommand _databaseInitializationCommand;
+        
+        private readonly ConsoleHelper _consoleHelper;
 
-        public SetupCommand()
+        public SetupCommand(DatabaseFactory databaseFactory, ConsoleHelper consoleHelper)
         {
-            this._databaseInitializationCommand = new DatabaseInitializationCommand();
+            _consoleHelper = consoleHelper;
+            this._databaseInitializationCommand = new DatabaseInitializationCommand(databaseFactory, consoleHelper);
         }
 
-        public void OnExecute(CommandLineApplication app, IConsole console)
+        public void OnExecute()
         {
             Console.WriteLine("Welcome to Rhisis!");
             Console.WriteLine($"-------------------------------{Environment.NewLine}");
@@ -32,7 +36,7 @@ namespace Rhisis.CLI.Commands.Setup
             this.ConfigureWorldServer();
 
             // Configure database access
-            this._databaseInitializationCommand.OnExecute(app, console);
+            this._databaseInitializationCommand.OnExecute();
         }
 
         private void ConfigureLoginServer()
@@ -42,31 +46,31 @@ namespace Rhisis.CLI.Commands.Setup
             Console.WriteLine("#### Configuring Login Server ####");
 
             Console.Write("Host (127.0.0.1): ");
-            loginConfiguration.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
+            loginConfiguration.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
             Console.Write("Port (23000): ");
-            loginConfiguration.Port = ConsoleHelper.ReadIntegerOrDefault(23000);
+            loginConfiguration.Port = _consoleHelper.ReadIntegerOrDefault(23000);
 
             Console.Write("Client Build Version (20100412): ");
-            loginConfiguration.BuildVersion = ConsoleHelper.ReadStringOrDefault("20100412");
+            loginConfiguration.BuildVersion = _consoleHelper.ReadStringOrDefault("20100412");
 
-            loginConfiguration.AccountVerification = ConsoleHelper.AskConfirmation("Use account verification?");
-            loginConfiguration.PasswordEncryption = ConsoleHelper.AskConfirmation("Use password encryption?");
+            loginConfiguration.AccountVerification = _consoleHelper.AskConfirmation("Use account verification?");
+            loginConfiguration.PasswordEncryption = _consoleHelper.AskConfirmation("Use password encryption?");
 
             if (loginConfiguration.PasswordEncryption)
             {
                 Console.Write("Encryption key: (dldhsvmflvm): ");
-                loginConfiguration.EncryptionKey = ConsoleHelper.ReadStringOrDefault("dldhsvmflvm");
+                loginConfiguration.EncryptionKey = _consoleHelper.ReadStringOrDefault("dldhsvmflvm");
             }
 
             Console.Write("ISC Host (127.0.0.1): ");
-            loginConfiguration.ISC.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
+            loginConfiguration.ISC.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
             Console.Write("ISC Port (15000): ");
-            loginConfiguration.ISC.Port = ConsoleHelper.ReadIntegerOrDefault(15000);
+            loginConfiguration.ISC.Port = _consoleHelper.ReadIntegerOrDefault(15000);
 
             Console.Write("ISC Password: ");
-            loginConfiguration.ISC.Password = ConsoleHelper.ReadPassword();
+            loginConfiguration.ISC.Password = _consoleHelper.ReadPassword();
 
             Console.WriteLine("--------------------------------");
             Console.WriteLine("Login Server Configuration:");
@@ -78,7 +82,7 @@ namespace Rhisis.CLI.Commands.Setup
             Console.WriteLine($"ISC Host: {loginConfiguration.ISC.Host}");
             Console.WriteLine($"ISC Port: {loginConfiguration.ISC.Port}");
 
-            bool response = ConsoleHelper.AskConfirmation("Save this configuration?");
+            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
             if (response)
             {
@@ -93,27 +97,27 @@ namespace Rhisis.CLI.Commands.Setup
 
             Console.WriteLine("#### Configuring Cluster Server ####");
             Console.Write("Host (127.0.0.1): ");
-            clusterConfiguration.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
+            clusterConfiguration.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
             Console.Write("Port (28000): ");
-            clusterConfiguration.Port = ConsoleHelper.ReadIntegerOrDefault(28000);
+            clusterConfiguration.Port = _consoleHelper.ReadIntegerOrDefault(28000);
 
             Console.Write("Cluster Id: ");
-            clusterConfiguration.Id = ConsoleHelper.ReadIntegerOrDefault();
+            clusterConfiguration.Id = _consoleHelper.ReadIntegerOrDefault();
 
             Console.Write("Cluster name (Rhisis): ");
-            clusterConfiguration.Name = ConsoleHelper.ReadStringOrDefault("Rhisis");
+            clusterConfiguration.Name = _consoleHelper.ReadStringOrDefault("Rhisis");
             
-            clusterConfiguration.EnableLoginProtect = ConsoleHelper.AskConfirmation("Enable second password verification (LoginProtect)");
+            clusterConfiguration.EnableLoginProtect = _consoleHelper.AskConfirmation("Enable second password verification (LoginProtect)");
 
             Console.Write("ISC Server Host (127.0.0.1): ");
-            clusterConfiguration.ISC.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
+            clusterConfiguration.ISC.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
             Console.Write("ISC Port (15000): ");
-            clusterConfiguration.ISC.Port = ConsoleHelper.ReadIntegerOrDefault(15000);
+            clusterConfiguration.ISC.Port = _consoleHelper.ReadIntegerOrDefault(15000);
 
             Console.Write("ISC Password: ");
-            clusterConfiguration.ISC.Password = ConsoleHelper.ReadPassword();
+            clusterConfiguration.ISC.Password = _consoleHelper.ReadPassword();
 
             Console.WriteLine("--------------------------------");
             Console.WriteLine("Cluster Server Configuration:");
@@ -123,7 +127,7 @@ namespace Rhisis.CLI.Commands.Setup
             Console.WriteLine($"ISC Host: {clusterConfiguration.ISC.Host}");
             Console.WriteLine($"ISC Port: {clusterConfiguration.ISC.Port}");
 
-            bool response = ConsoleHelper.AskConfirmation("Save this configuration?");
+            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
             if (response)
             {
@@ -138,38 +142,38 @@ namespace Rhisis.CLI.Commands.Setup
 
             Console.WriteLine("#### Configuring World Server ####");
             Console.Write("Host (127.0.0.1): ");
-            worldConfiguration.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
+            worldConfiguration.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
             Console.Write("Port (5400): ");
-            worldConfiguration.Port = ConsoleHelper.ReadIntegerOrDefault(5400);
+            worldConfiguration.Port = _consoleHelper.ReadIntegerOrDefault(5400);
 
             Console.Write("Parent cluster Id: ");
-            worldConfiguration.ClusterId = ConsoleHelper.ReadIntegerOrDefault();
+            worldConfiguration.ClusterId = _consoleHelper.ReadIntegerOrDefault();
 
             Console.Write("World channel Id: ");
-            worldConfiguration.Id = ConsoleHelper.ReadIntegerOrDefault();
+            worldConfiguration.Id = _consoleHelper.ReadIntegerOrDefault();
 
             Console.Write("World channel name (Channel 1): ");
-            worldConfiguration.Name = ConsoleHelper.ReadStringOrDefault("Channel 1");
+            worldConfiguration.Name = _consoleHelper.ReadStringOrDefault("Channel 1");
 
             Console.Write("ISC Server Host (127.0.0.1): ");
-            worldConfiguration.ISC.Host = ConsoleHelper.ReadStringOrDefault("127.0.0.1");
+            worldConfiguration.ISC.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
             Console.Write("ISC Port (15000): ");
-            worldConfiguration.ISC.Port = ConsoleHelper.ReadIntegerOrDefault(15000);
+            worldConfiguration.ISC.Port = _consoleHelper.ReadIntegerOrDefault(15000);
 
             Console.Write("ISC Password: ");
-            worldConfiguration.ISC.Password = ConsoleHelper.ReadPassword();
+            worldConfiguration.ISC.Password = _consoleHelper.ReadPassword();
 
             Console.WriteLine("----- Drops -----");
             Console.Write("Drop rate (1): ");
-            worldConfiguration.Rates.Drop = ConsoleHelper.ReadIntegerOrDefault(1);
+            worldConfiguration.Rates.Drop = _consoleHelper.ReadIntegerOrDefault(1);
 
             Console.Write("Gold drop rate (1): ");
-            worldConfiguration.Rates.Gold = ConsoleHelper.ReadIntegerOrDefault(1);
+            worldConfiguration.Rates.Gold = _consoleHelper.ReadIntegerOrDefault(1);
 
             Console.Write("Experience rate (1): ");
-            worldConfiguration.Rates.Experience = ConsoleHelper.ReadIntegerOrDefault(1);
+            worldConfiguration.Rates.Experience = _consoleHelper.ReadIntegerOrDefault(1);
 
             worldConfiguration.Maps = new List<string>
             {
@@ -197,7 +201,7 @@ namespace Rhisis.CLI.Commands.Setup
                 Console.WriteLine($"- {worldConfiguration.Maps.ElementAt(i)}");
             }
 
-            bool response = ConsoleHelper.AskConfirmation("Save this configuration?");
+            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
             if (response)
             {

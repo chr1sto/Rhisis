@@ -7,13 +7,14 @@ namespace Rhisis.Database
 {
     public static class ConfigureDatabase
     {
-        private const string MySqlConnectionString = "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
+        private const string MySqlConnectionString =
+            "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
+
         private const string MsSqlConnectionString = "Server={0};Database={1};User Id={2};Password={3};";
 
-        public static DbContextOptionsBuilder ConfigureCorrectDatabase(this DbContextOptionsBuilder optionsBuilder, 
+        public static DbContextOptionsBuilder ConfigureCorrectDatabase(this DbContextOptionsBuilder optionsBuilder,
             DatabaseConfiguration configuration)
         {
-            
             switch (configuration.Provider)
             {
                 case DatabaseProvider.MySql:
@@ -41,7 +42,12 @@ namespace Rhisis.Database
             return optionsBuilder;
         }
 
-        public static IServiceCollection RegisterDatabaseServices(this IServiceCollection serviceCollection, 
+        public static IServiceCollection RegisterDatabaseFactory(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection.AddTransient<DatabaseFactory>();
+        }
+
+        public static IServiceCollection RegisterDatabaseServices(this IServiceCollection serviceCollection,
             DatabaseConfiguration configuration)
         {
             return serviceCollection
