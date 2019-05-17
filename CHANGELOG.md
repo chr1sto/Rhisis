@@ -19,8 +19,10 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - Drop items from inventory (PR [#203](https://github.com/Eastrall/Rhisis/pull/203))
 - WSAD movements and Jump behavior (PR [#204](https://github.com/Eastrall/Rhisis/pull/204))
 - Add multiple dialog texts on DialogLinks. Allow next button on game (PR [#207](https://github.com/Eastrall/Rhisis/pull/207))
-- Death System and resurection (PR [#206](https://github.com/Eastrall/Rhisis/pull/206)
+- Add multiple dialog texts on introduction text. (PR [#215](https://github.com/Eastrall/Rhisis/pull/215))
+- Death System and resurection (PR [#206](https://github.com/Eastrall/Rhisis/pull/206))
 - Experience and Level up (PR [#214](https://github.com/Eastrall/Rhisis/pull/214))
+- Experience loss on death (PR [#216](https://github.com/Eastrall/Rhisis/pull/216))
 
 #### Resources
 
