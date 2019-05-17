@@ -21,7 +21,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - Add multiple dialog texts on DialogLinks. Allow next button on game (PR [#207](https://github.com/Eastrall/Rhisis/pull/207))
 - Add multiple dialog texts on introduction text. (PR [#215](https://github.com/Eastrall/Rhisis/pull/215))
 - Death System and resurection (PR [#206](https://github.com/Eastrall/Rhisis/pull/206))
-- Experience and Level up (PR [#214](https://github.com/Eastrall/Rhisis/pull/214))
+- Experience and Level up (PR [#214](https://github.com/Eastrall/Rhisis/pull/214), [#218](https://github.com/Eastrall/Rhisis/pull/218))
 - Experience loss on death (PR [#216](https://github.com/Eastrall/Rhisis/pull/216))
 
 #### Resources
@@ -32,6 +32,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 - `MailShippingCost` configuration is now inside the `MailConfiguration` structure.
 - Review of database assembly (PR [#208](https://github.com/Eastrall/Rhisis/pull/208))
+- CLI code refactoring (PR [#217](https://github.com/Eastrall/Rhisis/pull/217))
 
 ## [Released]
 
