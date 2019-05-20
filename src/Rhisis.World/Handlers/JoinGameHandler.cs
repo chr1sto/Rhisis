@@ -114,7 +114,7 @@ namespace Rhisis.World.Handlers
                 JobId = character.ClassId
             };
 
-            client.Player.MovableComponent = new MovableComponent
+            client.Player.Moves = new MovableComponent
             {
                 Speed = GameResources.Instance.Movers[client.Player.Object.ModelId].Speed,
                 DestinationPosition = client.Player.Object.Position.Clone(),

@@ -12,8 +12,8 @@ namespace Rhisis.World.Handlers
             var setDestPositionPacket = new SetDestPositionPacket(packet);
 
             client.Player.Object.MovingFlags = Core.Data.ObjectState.OBJSTA_FMOVE;
-            client.Player.MovableComponent.DestinationPosition = new Vector3(setDestPositionPacket.X, setDestPositionPacket.Y, setDestPositionPacket.Z);
-            client.Player.Object.Angle = Vector3.AngleBetween(client.Player.Object.Position, client.Player.MovableComponent.DestinationPosition);
+            client.Player.Moves.DestinationPosition = new Vector3(setDestPositionPacket.X, setDestPositionPacket.Y, setDestPositionPacket.Z);
+            client.Player.Object.Angle = Vector3.AngleBetween(client.Player.Object.Position, client.Player.Moves.DestinationPosition);
             client.Player.Follow.Target = null;
 
             WorldPacketFactory.SendDestinationPosition(client.Player);

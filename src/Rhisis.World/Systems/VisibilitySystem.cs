@@ -101,7 +101,7 @@ namespace Rhisis.World.Systems
                 otherEntity.Object.Entities.Add(entity);
 
             if (otherEntity is IMovableEntity movableEntity &&
-                movableEntity.MovableComponent.DestinationPosition != movableEntity.Object.Position)
+                movableEntity.Moves.DestinationPosition != movableEntity.Object.Position)
             {
                 WorldPacketFactory.SendDestinationPosition(movableEntity);
             }

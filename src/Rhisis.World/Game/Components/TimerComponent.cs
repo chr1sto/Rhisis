@@ -11,5 +11,7 @@
         public long NextAttackTime { get; set; }
 
         public long LastAICheck { get; set; }
+
+        public long NextHealTime { get; set; }
     }
 }

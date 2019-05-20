@@ -44,7 +44,7 @@ namespace Rhisis.World.Systems.Follow
             }
 
             entity.Follow.Target = entityToFollow;
-            entity.MovableComponent.DestinationPosition = entityToFollow.Object.Position.Clone();
+            entity.Moves.DestinationPosition = entityToFollow.Object.Position.Clone();
             entity.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
 
             WorldPacketFactory.SendFollowTarget(entity, entityToFollow, e.Distance);

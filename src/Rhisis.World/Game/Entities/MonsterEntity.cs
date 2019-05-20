@@ -18,7 +18,7 @@ namespace Rhisis.World.Game.Entities
         public IMapRespawnRegion Region { get; set; }
 
         /// <inheritdoc />
-        public MovableComponent MovableComponent { get; set; }
+        public MovableComponent Moves { get; set; }
 
         /// <inheritdoc />
         public IBehavior<IMonsterEntity> Behavior { get; set; }
@@ -51,7 +51,7 @@ namespace Rhisis.World.Game.Entities
         public MonsterEntity(IContext context)
             : base(context)
         {
-            this.MovableComponent = new MovableComponent();
+            this.Moves = new MovableComponent();
             this.Timers = new TimerComponent();
             this.Follow = new FollowComponent();
             this.Interaction = new InteractionComponent();

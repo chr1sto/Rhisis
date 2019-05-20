@@ -64,9 +64,9 @@ namespace Rhisis.World.Handlers
             client.Player.Object.Angle = playerMovedPacket.Angle;
             client.Player.Object.MovingFlags = (ObjectState)playerMovedPacket.State;
             client.Player.Object.MotionFlags = (StateFlags)playerMovedPacket.StateFlag;
-            client.Player.MovableComponent.IsMovingWithKeyboard = client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE) || 
+            client.Player.Moves.IsMovingWithKeyboard = client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE) || 
                 client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE);
-            client.Player.MovableComponent.DestinationPosition = playerMovedPacket.BeginPosition + playerMovedPacket.DestinationPosition;
+            client.Player.Moves.DestinationPosition = playerMovedPacket.BeginPosition + playerMovedPacket.DestinationPosition;
 
             WorldPacketFactory.SendMoverMoved(client.Player,
                 playerMovedPacket.BeginPosition, 
@@ -98,9 +98,9 @@ namespace Rhisis.World.Handlers
             client.Player.Object.Angle = playerBehaviorPacket.Angle;
             client.Player.Object.MovingFlags = (ObjectState)playerBehaviorPacket.State;
             client.Player.Object.MotionFlags = (StateFlags)playerBehaviorPacket.StateFlag;
-            client.Player.MovableComponent.IsMovingWithKeyboard = client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE) ||
+            client.Player.Moves.IsMovingWithKeyboard = client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE) ||
                 client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE);
-            client.Player.MovableComponent.DestinationPosition = playerBehaviorPacket.BeginPosition + playerBehaviorPacket.DestinationPosition;
+            client.Player.Moves.DestinationPosition = playerBehaviorPacket.BeginPosition + playerBehaviorPacket.DestinationPosition;
 
             WorldPacketFactory.SendMoverBehavior(client.Player,
                 playerBehaviorPacket.BeginPosition,

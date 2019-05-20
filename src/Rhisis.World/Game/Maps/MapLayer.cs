@@ -159,7 +159,7 @@ namespace Rhisis.World.Game.Maps
             {
                 NextMoveTime = RandomHelper.LongRandom(8, 20)
             };
-            monster.MovableComponent = new MovableComponent
+            monster.Moves = new MovableComponent
             {
                 Speed = moverData.Speed / 2,
                 DestinationPosition = monster.Object.Position.Clone()
