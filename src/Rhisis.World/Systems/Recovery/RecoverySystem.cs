@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common.Formulas;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems.Recovery.EventArgs;
 using System;
 using System.Collections.Generic;
@@ -93,7 +95,20 @@ namespace Rhisis.World.Systems.Recovery
             int recoveryMp = HealthFormulas.GetMpRecovery(maxMp, player.Object.Level, player.Statistics.Intelligence, player.PlayerData.JobData.MpRecoveryFactor);
             int recoveryFp = HealthFormulas.GetFpRecovery(maxFp, player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.FpRecoveryFactor);
 
-            // TODO: set player hp, mp, fp and send packet
+            player.Health.Hp += recoveryHp;
+            player.Health.Mp += recoveryMp;
+            player.Health.Fp += recoveryFp;
+
+            if (player.Health.Hp > maxHp)
+                player.Health.Hp = maxHp;
+            if (player.Health.Mp > maxMp)
+                player.Health.Mp = maxMp;
+            if (player.Health.Fp > maxFp)
+                player.Health.Fp = maxFp;
+
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
+            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
         }
     }
 }
