@@ -229,10 +229,6 @@ namespace Rhisis.World.Game.Maps
                     for (int i = 0; i < this._layers.Count; i++)
                         this._layers[i].Update();
                 }
-                catch
-                {
-                    throw;
-                }
                 finally
                 {
                     this._layerLock.ExitReadLock();
@@ -262,9 +258,16 @@ namespace Rhisis.World.Game.Maps
             }
 
             this._layerLock.EnterReadLock();
-            for (int i = 0; i < this._layers.Count; i++)
-                this._layers[i].UpdateDeletedEntities();
-            this._layerLock.ExitReadLock();
+
+            try
+            {
+                for (int i = 0; i < this._layers.Count; i++)
+                    this._layers[i].UpdateDeletedEntities();
+            }
+            finally
+            {
+                this._layerLock.ExitReadLock();
+            }
         }
 
         /// <inheritdoc />
