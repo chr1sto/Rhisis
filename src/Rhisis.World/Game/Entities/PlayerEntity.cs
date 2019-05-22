@@ -71,6 +71,7 @@ namespace Rhisis.World.Game.Entities
             this.Interaction = new InteractionComponent();
             this.Battle = new BattleComponent();
             this.Health = new HealthComponent();
+            this.Timers = new TimerComponent();
         }
     }
 }

@@ -23,12 +23,12 @@ namespace Rhisis.World.Systems.Recovery
         /// <summary>
         /// Gets the number of seconds for next idle heal when the player is sitted.
         /// </summary>
-        private const int NextIdleHealSit = 2;
+        public const int NextIdleHealSit = 2;
 
         /// <summary>
         /// Gets the number of seconds for the idle heal when the player stands up.
         /// </summary>
-        private const int NextIdleHealStand = 3;
+        public const int NextIdleHealStand = 3;
 
         private readonly ILogger<RecoverySystem> _logger;
 
@@ -76,14 +76,9 @@ namespace Rhisis.World.Systems.Recovery
         /// <param name="e">Idle recovery event args.</param>
         private void IdleHeal(IPlayerEntity player, IdleRecoveryEventArgs e)
         {
-            if (e.IsSitted)
-            {
-                player.Timers.NextHealTime += Time.TimeInSeconds() + NextIdleHealSit;
-            }
-            else
-            {
-                player.Timers.NextHealTime += Time.TimeInSeconds() + NextIdleHealStand;
-            }
+            int nextHealDelay = e.IsSitted ? NextIdleHealSit : NextIdleHealStand;
+
+            player.Timers.NextHealTime = Time.TimeInSeconds() + nextHealDelay;
 
             if (player.Health.IsDead)
                 return;

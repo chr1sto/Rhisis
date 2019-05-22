@@ -20,6 +20,7 @@ using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
+using Rhisis.World.Systems.Recovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,6 +124,7 @@ namespace Rhisis.World.Handlers
             };
 
             client.Player.Statistics = new StatisticsComponent(character);
+            client.Player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
 
             var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
             client.Player.Behavior = behaviors.PlayerBehaviors.DefaultBehavior;

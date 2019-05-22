@@ -203,9 +203,16 @@ namespace Rhisis.World.Game.Maps
                 return;
 
             this._layerLock.EnterWriteLock();
-            layer.Dispose();
-            this._layers.Remove(layer);
-            this._layerLock.ExitWriteLock();
+
+            try
+            {
+                layer.Dispose();
+                this._layers.Remove(layer);
+            }
+            finally
+            {
+                this._layerLock.ExitWriteLock();
+            }
         }
 
         /// <inheritdoc />
@@ -217,9 +224,19 @@ namespace Rhisis.World.Game.Maps
                     SystemManager.Instance.ExecuteUpdatable(this.Entities.ElementAt(i));
 
                 this._layerLock.EnterReadLock();
-                for (int i = 0; i < this._layers.Count; i++)
-                    this._layers[i].Update();
-                this._layerLock.ExitReadLock();
+                try
+                {
+                    for (int i = 0; i < this._layers.Count; i++)
+                        this._layers[i].Update();
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    this._layerLock.ExitReadLock();
+                }
             }
         }
 
