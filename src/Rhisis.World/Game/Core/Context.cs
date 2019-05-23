@@ -7,7 +7,7 @@ namespace Rhisis.World.Game.Core
 {
     public abstract class Context : IContext
     {
-        protected static readonly object SyncRoot = new object();
+        protected readonly object SyncRoot = new object();
         
         protected readonly ConcurrentQueue<uint> _entitiesToDelete;
         protected readonly IDictionary<uint, IEntity> _entities;

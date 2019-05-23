@@ -73,7 +73,7 @@ namespace Rhisis.World.Systems.Death
             }
 
             player.Object.Position = revivalRegion.RevivalPosition.Clone();
-            player.MovableComponent.DestinationPosition = revivalRegion.RevivalPosition.Clone();
+            player.Moves.DestinationPosition = revivalRegion.RevivalPosition.Clone();
 
             if (shouldReplace)
             {

@@ -23,12 +23,12 @@ namespace Rhisis.World.Systems
         {
             var movableEntity = entity as IMovableEntity;
 
-            if (movableEntity.MovableComponent.NextMoveTime > Time.GetElapsedTime())
+            if (movableEntity.Moves.NextMoveTime > Time.GetElapsedTime())
                 return;
 
-            movableEntity.MovableComponent.NextMoveTime = Time.GetElapsedTime() + 10;
+            movableEntity.Moves.NextMoveTime = Time.GetElapsedTime() + 10;
 
-            if (movableEntity.MovableComponent.DestinationPosition.IsZero())
+            if (movableEntity.Moves.DestinationPosition.IsZero())
                 return;
 
             if (movableEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
@@ -38,7 +38,7 @@ namespace Rhisis.World.Systems
             {
                 if (!movableEntity.Object.Position.IsInCircle(movableEntity.Follow.Target.Object.Position, movableEntity.Follow.FollowDistance))
                 {
-                    movableEntity.MovableComponent.DestinationPosition = movableEntity.Follow.Target.Object.Position.Clone();
+                    movableEntity.Moves.DestinationPosition = movableEntity.Follow.Target.Object.Position.Clone();
                     movableEntity.Object.MovingFlags &= ~ObjectState.OBJSTA_STAND;
                     movableEntity.Object.MovingFlags |= ObjectState.OBJSTA_FMOVE;
                 }
@@ -59,10 +59,10 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
-            if (entity.Object.Position.IsInCircle(entity.MovableComponent.DestinationPosition, ArrivalRangeRadius))
+            if (entity.Object.Position.IsInCircle(entity.Moves.DestinationPosition, ArrivalRangeRadius))
             {
-                entity.MovableComponent.HasArrived = true;
-                entity.MovableComponent.DestinationPosition = entity.Object.Position.Clone();
+                entity.Moves.HasArrived = true;
+                entity.Moves.DestinationPosition = entity.Object.Position.Clone();
                 entity.Object.MovingFlags &= ~ObjectState.OBJSTA_FMOVE;
                 entity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
 
@@ -73,16 +73,16 @@ namespace Rhisis.World.Systems
             }
             else
             {
-                entity.MovableComponent.HasArrived = false;
-                float entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor; // TODO: Add speed bonuses
+                entity.Moves.HasArrived = false;
+                float entitySpeed = entity.Moves.Speed * entity.Moves.SpeedFactor; // TODO: Add speed bonuses
 
                 if (entity.Object.MotionFlags.HasFlag(StateFlags.OBJSTAF_WALK))
                     entitySpeed /= 5f;
                 else if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE))
                     entitySpeed /= 4f;
 
-                float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
-                float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
+                float distanceX = entity.Moves.DestinationPosition.X - entity.Object.Position.X;
+                float distanceZ = entity.Moves.DestinationPosition.Z - entity.Object.Position.Z;
                 double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
                 
                 // Normalize
@@ -96,7 +96,7 @@ namespace Rhisis.World.Systems
                 if (Math.Abs(offsetZ) > Math.Abs(distanceZ))
                     offsetZ = distanceZ;
 
-                if (entity.Type == WorldEntityType.Player && entity.MovableComponent.IsMovingWithKeyboard)
+                if (entity.Type == WorldEntityType.Player && entity.Moves.IsMovingWithKeyboard)
                 {
                     float angle = entity.Object.Angle;
                     var movementX = (float)(Math.Sin(angle * (Math.PI / 180)) * Math.Sqrt(offsetX * offsetX + offsetZ * offsetZ));

@@ -1,9 +1,12 @@
 ﻿using Rhisis.Core.Data;
+using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
+using Rhisis.World.Systems.Recovery;
+using Rhisis.World.Systems.Recovery.EventArgs;
 using System;
 
 namespace Rhisis.World.Game.Behaviors
@@ -14,7 +17,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <inheritdoc />
         public void Update(IPlayerEntity player)
         {
-            // TODO
+            this.ProcessIdleHeal(player);
         }
 
         /// <inheritdoc />
@@ -68,6 +71,21 @@ namespace Rhisis.World.Game.Behaviors
 
             WorldPacketFactory.SendMotion(player, ObjectMessageType.OBJMSG_PICKUP);
             droppedItem.Delete();
+        }
+
+        /// <summary>
+        /// Process Idle heal logic when player is not fighting.
+        /// </summary>
+        /// <param name="player"></param>
+        private void ProcessIdleHeal(IPlayerEntity player)
+        {
+            if (player.Timers.NextHealTime <= Time.TimeInSeconds())
+            {
+                if (!player.Battle.IsFighting)
+                {
+                    player.NotifySystem<RecoverySystem>(new IdleRecoveryEventArgs(isSitted: false));
+                }
+            }
         }
     }
 }

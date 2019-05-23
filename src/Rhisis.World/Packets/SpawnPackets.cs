@@ -341,7 +341,7 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)0);
                     packet.Write((byte)0);
                     packet.Write(0);
-                    packet.Write(monsterEntity.MovableComponent.SpeedFactor); // speed factor
+                    packet.Write(monsterEntity.Moves.SpeedFactor); // speed factor
                     packet.Write(0);
                 }
                 else if (entityToSpawn.Type == WorldEntityType.Npc)

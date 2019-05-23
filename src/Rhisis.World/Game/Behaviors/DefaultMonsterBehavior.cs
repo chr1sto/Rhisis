@@ -54,18 +54,18 @@ namespace Rhisis.World.Game.Behaviors
             }
             else if (monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
             {
-                if (monster.MovableComponent.ReturningToOriginalPosition)
+                if (monster.Moves.ReturningToOriginalPosition)
                 {
                     monster.Health.Hp = monster.Data.AddHp;
                     WorldPacketFactory.SendUpdateAttributes(monster, DefineAttributes.HP, monster.Health.Hp);
-                    monster.MovableComponent.ReturningToOriginalPosition = false;
+                    monster.Moves.ReturningToOriginalPosition = false;
                 }
                 else
                 {
-                    if (monster.MovableComponent.SpeedFactor >= 2f)
+                    if (monster.Moves.SpeedFactor >= 2f)
                     {
-                        monster.MovableComponent.SpeedFactor = 1f;
-                        WorldPacketFactory.SendSpeedFactor(monster, monster.MovableComponent.SpeedFactor);
+                        monster.Moves.SpeedFactor = 1f;
+                        WorldPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
                     }
                 }
             }
@@ -80,7 +80,7 @@ namespace Rhisis.World.Game.Behaviors
         {
             monster.Object.Angle = Vector3.AngleBetween(monster.Object.Position, destPosition);
             monster.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
-            monster.MovableComponent.DestinationPosition = destPosition.Clone();
+            monster.Moves.DestinationPosition = destPosition.Clone();
 
             WorldPacketFactory.SendDestinationPosition(monster);
             WorldPacketFactory.SendDestinationAngle(monster, false);
@@ -94,15 +94,15 @@ namespace Rhisis.World.Game.Behaviors
         {
             if (monster.Follow.IsFollowing)
             {
-                monster.MovableComponent.DestinationPosition = monster.Follow.Target.Object.Position.Clone();
+                monster.Moves.DestinationPosition = monster.Follow.Target.Object.Position.Clone();
 
-                if (monster.MovableComponent.SpeedFactor != 2f)
+                if (monster.Moves.SpeedFactor != 2f)
                 {
-                    monster.MovableComponent.SpeedFactor = 2;
-                    WorldPacketFactory.SendSpeedFactor(monster, monster.MovableComponent.SpeedFactor);
+                    monster.Moves.SpeedFactor = 2;
+                    WorldPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
                 }
 
-                if (!monster.Object.Position.IsInCircle(monster.MovableComponent.DestinationPosition, 1f))
+                if (!monster.Object.Position.IsInCircle(monster.Moves.DestinationPosition, 1f))
                 {
                     monster.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
                     WorldPacketFactory.SendFollowTarget(monster, monster.Follow.Target, 1f);

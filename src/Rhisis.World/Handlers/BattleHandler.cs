@@ -40,10 +40,10 @@ namespace Rhisis.World.Handlers
 
             if (!target.Follow.IsFollowing && target.Type == WorldEntityType.Monster)
             {
-                if (target.MovableComponent.SpeedFactor != 2f)
+                if (target.Moves.SpeedFactor != 2f)
                 {
-                    target.MovableComponent.SpeedFactor = 2f;
-                    WorldPacketFactory.SendSpeedFactor(target, target.MovableComponent.SpeedFactor);
+                    target.Moves.SpeedFactor = 2f;
+                    WorldPacketFactory.SendSpeedFactor(target, target.Moves.SpeedFactor);
                 }
 
                 target.NotifySystem<FollowSystem>(new FollowEventArgs(client.Player.Id, 1f));

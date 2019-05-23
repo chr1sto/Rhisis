@@ -19,11 +19,6 @@ namespace Rhisis.World.Game.Entities
         IBehavior<IMonsterEntity> Behavior { get; set; }
 
         /// <summary>
-        /// Gets the monster's timer component.
-        /// </summary>
-        TimerComponent Timers { get; set; }
-
-        /// <summary>
         /// Gets or sets the monster's mover data.
         /// </summary>
         MoverData Data { get; set; }

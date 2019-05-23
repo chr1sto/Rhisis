@@ -88,9 +88,9 @@ namespace Rhisis.World.Packets
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(movableEntity.Id, SnapshotType.DESTPOS);
-                packet.Write(movableEntity.MovableComponent.DestinationPosition.X);
-                packet.Write(movableEntity.MovableComponent.DestinationPosition.Y);
-                packet.Write(movableEntity.MovableComponent.DestinationPosition.Z);
+                packet.Write(movableEntity.Moves.DestinationPosition.X);
+                packet.Write(movableEntity.Moves.DestinationPosition.Y);
+                packet.Write(movableEntity.Moves.DestinationPosition.Z);
                 packet.Write<byte>(1);
 
                 SendToVisible(packet, movableEntity);

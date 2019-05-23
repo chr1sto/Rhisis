@@ -20,6 +20,7 @@ using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
+using Rhisis.World.Systems.Recovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,7 +115,7 @@ namespace Rhisis.World.Handlers
                 JobId = character.ClassId
             };
 
-            client.Player.MovableComponent = new MovableComponent
+            client.Player.Moves = new MovableComponent
             {
                 Speed = GameResources.Instance.Movers[client.Player.Object.ModelId].Speed,
                 DestinationPosition = client.Player.Object.Position.Clone(),
@@ -123,6 +124,7 @@ namespace Rhisis.World.Handlers
             };
 
             client.Player.Statistics = new StatisticsComponent(character);
+            client.Player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
 
             var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
             client.Player.Behavior = behaviors.PlayerBehaviors.DefaultBehavior;

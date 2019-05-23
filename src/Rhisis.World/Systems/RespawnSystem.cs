@@ -59,8 +59,8 @@ namespace Rhisis.World.Systems
             monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 15);
             monster.Object.Spawned = true;
             monster.Object.Position = monster.Region.GetRandomPosition();
-            monster.MovableComponent.DestinationPosition = monster.Object.Position.Clone();
-            monster.MovableComponent.SpeedFactor = 1;
+            monster.Moves.DestinationPosition = monster.Object.Position.Clone();
+            monster.Moves.SpeedFactor = 1;
             monster.Health.Hp = monster.Data.AddHp;
             monster.Health.Mp = monster.Data.AddMp;
         }

@@ -94,8 +94,8 @@ namespace Rhisis.World.Systems.Battle
             delta.X = (float)(Math.Sin(angle) * dist);
             delta.Z = (float)(-Math.Cos(angle) * dist);
 
-            entity.MovableComponent.DestinationPosition.X += delta.X;
-            entity.MovableComponent.DestinationPosition.Z += delta.Z;
+            entity.Moves.DestinationPosition.X += delta.X;
+            entity.Moves.DestinationPosition.Z += delta.Z;
         }
     }
 }
