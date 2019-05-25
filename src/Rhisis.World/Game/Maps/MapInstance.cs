@@ -256,26 +256,24 @@ namespace Rhisis.World.Game.Maps
             // TODO: Find a better way to handle the MapInstance game loop. Keeping things like this for now.
             const float FrameRatePerSeconds = 15f;
             double previousTime = Time.TimeInMilliseconds();
+            double lag = 0f;
 
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 while (!this._cancellationToken.IsCancellationRequested)
                 {
                     double currentTime = Time.TimeInMilliseconds();
-                    double deltaTime = currentTime - previousTime;
+                    double elaspedTime = currentTime - previousTime;
 
-                    try
+                    previousTime = currentTime;
+                    lag += elaspedTime;
+
+                    while (lag >= FrameRatePerSeconds)
                     {
                         this.Update();
                         this.UpdateDeletedEntities();
+                        lag -= FrameRatePerSeconds;
                     }
-                    catch (Exception e)
-                    {
-                        Logger.LogError(e, $"An error occured while updating map {this.Name} gameloop.");
-                    }
-
-                    previousTime = currentTime;
-                    await Task.Delay((int)Math.Abs(FrameRatePerSeconds - deltaTime), this._cancellationToken).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }
@@ -333,7 +331,7 @@ namespace Rhisis.World.Game.Maps
             {
                 MapId = this.Id,
                 ModelId = element.Index,
-                Name = element.Name,
+                Name = element.CharacterKey,
                 Angle = element.Angle,
                 Position = element.Position.Clone(),
                 Size = (short)(ObjectComponent.DefaultObjectSize * element.Scale.X),

@@ -58,7 +58,7 @@ namespace Rhisis.World.Systems.NpcShop
         /// <param name="e"></param>
         private void OpenShop(IPlayerEntity player, NpcShopOpenEventArgs e)
         {
-            var npc = player.Context.FindEntity<INpcEntity>(e.NpcObjectId);
+            var npc = player.Object.CurrentMap.FindEntity<INpcEntity>(e.NpcObjectId);
             if (npc == null)
             {
                 Logger.Error("ShopSystem: Cannot find NPC with object id : {0}", e.NpcObjectId);

@@ -33,5 +33,8 @@ namespace Rhisis.World.Game.Entities
             this.Object.Type = WorldObjectType.Mover;
             this.Timers = new NpcTimerComponent();
         }
+
+        /// <inheritdoc />
+        public override string ToString() => $"{this.Object.Name}";
     }
 }

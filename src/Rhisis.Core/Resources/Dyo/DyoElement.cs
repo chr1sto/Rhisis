@@ -5,6 +5,8 @@ namespace Rhisis.Core.Resources.Dyo
 {
     public class DyoElement
     {
+        public int ElementType { get; internal set; }
+
         public float Angle { get; private set; }
 
         public Vector3 Axis { get; private set; }
