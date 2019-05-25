@@ -13,8 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Ether.Network" Version="3.0.0" />
-    <PackageReference Include="NLog" Version="4.6.0" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.4.0" />
+    <PackageReference Include="NLog" Version="4.6.3" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.5.0" />
   </ItemGroup>
 
   <ItemGroup>
