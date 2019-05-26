@@ -12,6 +12,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 - Fix real-time position calculation (PR [#200](https://github.com/Eastrall/Rhisis/pull/200))
 - Prevent dialogs from having duplicate links id. (PR [#213](https://github.com/Eastrall/Rhisis/pull/213))
+- Fix NPC loading (PR [#220](https://github.com/Eastrall/Rhisis/pull/220))
 
 #### Features
 
