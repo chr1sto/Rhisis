@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhisis.Core.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,22 +25,32 @@ namespace Rhisis.Core.Resources.Dyo
             this._elements = new List<DyoElement>();
             var memoryReader = new BinaryReader(this);
 
-            while (true)
+            while (memoryReader.BaseStream.Position < memoryReader.BaseStream.Length)
             {
                 DyoElement rgnElement = null;
-                int type = memoryReader.ReadInt32();
+                uint type = memoryReader.ReadUInt32();
 
-                if (type == -1)
-                    break;
-
-                if (type == 5)
+                switch (type)
                 {
-                    rgnElement = new NpcDyoElement();
-                    rgnElement.Read(memoryReader);
+                    case (int)WorldObjectType.Control:
+                        rgnElement = new CommonControlDyoElement();
+                        break;
+                    case (int)WorldObjectType.Mover:
+                        rgnElement = new NpcDyoElement();
+                        break;
+                    case (int)WorldObjectType.Object:
+                    case (int)WorldObjectType.Item:
+                    case (int)WorldObjectType.Ship:
+                        rgnElement = new DyoElement();
+                        break;
                 }
 
-                if (rgnElement != null)
-                    this._elements.Add(rgnElement);
+                if (rgnElement == null)
+                    break;
+
+                rgnElement.ElementType = (int)type;
+                rgnElement.Read(memoryReader);
+                this._elements.Add(rgnElement);
             }
         }
         
