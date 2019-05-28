@@ -21,6 +21,16 @@ namespace Rhisis.World.Game.Maps
         string Name { get; }
 
         /// <summary>
+        /// Gets the map instance width.
+        /// </summary>
+        int Width { get; }
+
+        /// <summary>
+        /// Gets the map instance length.
+        /// </summary>
+        int Length { get; }
+
+        /// <summary>
         /// Gets the map default revival region.
         /// </summary>
         IMapRevivalRegion DefaultRevivalRegion { get; }
@@ -106,5 +116,12 @@ namespace Rhisis.World.Game.Maps
         /// <param name="isChaoMode">Region is chao mode (PK mode).</param>
         /// <returns>Revival region matching the key and the chao mode.</returns>
         IMapRevivalRegion GetRevivalRegion(string revivalKey, bool isChaoMode);
+
+        /// <summary>
+        /// Checks if the given position is enters the map bounds.
+        /// </summary>
+        /// <param name="position">Position.</param>
+        /// <returns>True; if the position is in the map bounds; false otherwise.</returns>
+        bool ContainsPosition(Vector3 position);
     }
 }

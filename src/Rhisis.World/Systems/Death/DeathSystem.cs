@@ -12,6 +12,7 @@ using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Teleport;
 
 namespace Rhisis.World.Systems.Death
 {
@@ -50,8 +51,7 @@ namespace Rhisis.World.Systems.Death
             player.Health.Mp = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, playerStats.Intelligence, jobData.MaxMpFactor, true) * recoveryRate);
             player.Health.Fp = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, playerStats.Stamina, playerStats.Dexterity, playerStats.Strength, jobData.MaxFpFactor, true) * recoveryRate);
 
-            bool shouldReplace = false;
-            if (revivalRegion.MapId != player.Object.MapId)
+            if (player.Object.MapId != revivalRegion.MapId)
             {
                 IMapInstance revivalMap = this._mapLoader.GetMapById(revivalRegion.MapId);
 
@@ -62,29 +62,14 @@ namespace Rhisis.World.Systems.Death
                     return;
                 }
 
-                IMapLayer revivalMapLayer = revivalMap.GetDefaultMapLayer();
-                player.SwitchContext(revivalMapLayer);
-                player.Object.Spawned = false;
-                player.Object.MapId = revivalMap.Id;
-                player.Object.LayerId = revivalMapLayer.Id;
-
-                shouldReplace = true;
                 revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
             }
 
-            player.Object.Position = revivalRegion.RevivalPosition.Clone();
-            player.Moves.DestinationPosition = revivalRegion.RevivalPosition.Clone();
-
-            if (shouldReplace)
-            {
-                WorldPacketFactory.SendReplaceObject(player);
-                WorldPacketFactory.SendPlayerSpawn(player);
-                player.Object.Spawned = true;
-            }
+            var teleportEvent = new TeleportEventArgs(revivalRegion.MapId, revivalRegion.RevivalPosition.X, revivalRegion.RevivalPosition.Z);
+            player.NotifySystem<TeleportSystem>(teleportEvent);
 
             WorldPacketFactory.SendMotion(player, ObjectMessageType.OBJMSG_ACC_STOP | ObjectMessageType.OBJMSG_STOP_TURN | ObjectMessageType.OBJMSG_STAND);
             WorldPacketFactory.SendPlayerRevival(player);
-            WorldPacketFactory.SendMoverPosition(player);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
             WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);

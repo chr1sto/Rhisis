@@ -24,6 +24,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - Death System and resurection (PR [#206](https://github.com/Eastrall/Rhisis/pull/206))
 - Experience and Level up (PR [#214](https://github.com/Eastrall/Rhisis/pull/214), [#218](https://github.com/Eastrall/Rhisis/pull/218))
 - Experience loss on death (PR [#216](https://github.com/Eastrall/Rhisis/pull/216))
+- Teleport system (PR [#222](https://github.com/Eastrall/Rhisis/pull/222))
 
 #### Resources
 

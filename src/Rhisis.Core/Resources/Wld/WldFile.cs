@@ -9,6 +9,7 @@ namespace Rhisis.Core.Resources
     /// </summary>
     public class WldFile : FileStream, IDisposable
     {
+        private const int DefaultMPU = 4;
         private static readonly char[] SplitCharacters = new[] { ' ', '\t' };
         public WldFileInformations WorldInformations { get; private set; }
 
@@ -31,7 +32,7 @@ namespace Rhisis.Core.Resources
             Vector3 size = null;
             bool isIndoor = false;
             bool canFly = false;
-            int mpu = 0;
+            int mpu = DefaultMPU;
             int revivalMapId = 0;
             string revivalKey = string.Empty;
 
