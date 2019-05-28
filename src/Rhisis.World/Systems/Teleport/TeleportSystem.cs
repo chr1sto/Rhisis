@@ -67,7 +67,7 @@ namespace Rhisis.World.Systems.Teleport
 
                 if (destinationMap == null)
                 {
-                    this._logger.LogError($"Cannot find map with id '{destinationMap.Id}'.");
+                    this._logger.LogError($"Cannot find map with id '{e.MapId}'.");
                     return;
                 }
 
