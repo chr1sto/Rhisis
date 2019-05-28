@@ -28,6 +28,7 @@ namespace Rhisis.World.Game.Maps
     public class MapInstance : Context, IMapInstance
     {
         private const int DefaultMapLayerId = 1;
+        private const int MapLandSize = 128;
 
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
@@ -49,14 +50,10 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public IMapRevivalRegion DefaultRevivalRegion { get; private set; }
 
-        /// <summary>
-        /// Gets the map instance width.
-        /// </summary>
+        /// <inheritdoc />
         public int Width => this._worldInformations.Width;
 
-        /// <summary>
-        /// Gets the map instance length.
-        /// </summary>
+        /// <inheritdoc />
         public int Length => this._worldInformations.Length;
 
         /// <inheritdoc />
@@ -335,6 +332,18 @@ namespace Rhisis.World.Game.Maps
                                                            select x;
 
             return revivalRegion.FirstOrDefault() ?? this.DefaultRevivalRegion;
+        }
+
+        /// <inheritdoc />
+        public bool ContainsPosition(Vector3 position)
+        {
+            float x = position.X / this._worldInformations.MPU;
+            float z = position.Z / this._worldInformations.MPU;
+
+            if (x < 0 || x > this.Width * MapLandSize || z < 0 || z > this.Length * MapLandSize)
+                return false;
+
+            return true;
         }
 
         /// <summary>
