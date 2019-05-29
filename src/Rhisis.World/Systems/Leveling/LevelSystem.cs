@@ -56,6 +56,10 @@ namespace Rhisis.World.Systems.Leveling
         /// <param name="e">Experience event info.</param>
         private void GiveExperience(IPlayerEntity player, ExperienceEventArgs e)
         {
+            // Eastrall: Quick fix for not going beyond level 15. Will be removed with job system.
+            if (player.Object.Level >= 15)
+                return;
+
             long experience = this.CalculateExtraExperience(player, e.Experience);
 
             // TODO: experience to party
