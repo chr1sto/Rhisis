@@ -1,10 +1,7 @@
 ﻿using NLog;
 using Rhisis.Core.Common;
-using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Loaders;
-using Rhisis.World.Game.Maps;
-using Rhisis.World.Packets;
+using Rhisis.World.Systems.Teleport;
 using System;
 
 namespace Rhisis.World.Game.Chat
@@ -17,42 +14,35 @@ namespace Rhisis.World.Game.Chat
         [ChatCommand("/teleport", AuthorityType.GameMaster)]
         public static void TeleportCommand(IPlayerEntity player, string[] parameters)
         {
-            Logger.Debug("{0} want to teleport", player.Object.Name);
-
             switch (parameters.Length)
             {
                 case 2: // when you write 2 parameters in the command
-                    TeleportationParameters.TeleportCommandTwoParam(player, parameters);
+                    TeleportCommandTwoParam(player, parameters);
                     break;
                 case 3: // when you write 3 parameters in the command
-                    TeleportationParameters.TeleportCommandThreeParam(player, parameters);
+                    TeleportCommandThreeParam(player, parameters);
                     break;
                 case 4: // when you write 4 parameters in the command
-                    TeleportationParameters.TeleportCommandFourParam(player, parameters);
+                    TeleportCommandFourParam(player, parameters);
                     break;
                 default: // when you write more than 4 or less than 2 parameters in the command
                     Logger.Error("Chat: /teleport command must have 2, 3 or 4 parameters.");
                     return;
             }
-            WorldPacketFactory.SendPlayerTeleport(player);
         }
-    }
-    internal static class TeleportationParameters
-    {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly MapLoader Maps = DependencyContainer.Instance.Resolve<MapLoader>();
 
-        public static void TeleportCommandTwoParam(IPlayerEntity player, string[] parameters)
+        private static void TeleportCommandTwoParam(IPlayerEntity player, string[] parameters)
         {
             if (!float.TryParse(parameters[0], out float posXValue) || !float.TryParse(parameters[1], out float posZValue))
             {
                 throw new ArgumentException("You must write numbers for teleport command's parameters");
             }
 
-            player.Object.Position.X = posXValue;
-            player.Object.Position.Z = posZValue;
+            player.NotifySystem<TeleportSystem>(new TeleportEventArgs(player.Object.MapId, posXValue, posZValue));
+
         }
-        public static void TeleportCommandThreeParam(IPlayerEntity player, string[] parameters)
+
+        private static void TeleportCommandThreeParam(IPlayerEntity player, string[] parameters)
         {
             if (!ushort.TryParse(parameters[0], out ushort mapIdValue) || !float.TryParse(parameters[1], out float posXValue)
                 || !float.TryParse(parameters[2], out float posZValue))
@@ -60,19 +50,11 @@ namespace Rhisis.World.Game.Chat
                 throw new ArgumentException("You must write numbers for teleport command's parameters");
             }
 
-            IMapInstance mapIdResult = Maps[mapIdValue];
 
-            if (mapIdResult == null)
-            {
-                Logger.Error($"Cannot find map Id in define files: {mapIdResult}. Please check you defineWorld.h file.");
-                return;
-            }
-
-            player.Object.MapId = mapIdValue;
-            player.Object.Position.X = posXValue;
-            player.Object.Position.Z = posZValue;
+            player.NotifySystem<TeleportSystem>(new TeleportEventArgs(mapIdValue, posXValue, posZValue));
         }
-        public static void TeleportCommandFourParam(IPlayerEntity player, string[] parameters)
+
+        private static void TeleportCommandFourParam(IPlayerEntity player, string[] parameters)
         {
             if (!ushort.TryParse(parameters[0], out ushort mapIdValue) || !float.TryParse(parameters[1], out float posXValue)
             || !float.TryParse(parameters[2], out float posYValue) || !float.TryParse(parameters[3], out float posZValue))
@@ -80,19 +62,7 @@ namespace Rhisis.World.Game.Chat
                 throw new ArgumentException("You must write numbers for teleport command's parameters");
             }
 
-            IMapInstance mapIdResult = Maps[mapIdValue];
-
-            if (mapIdResult == null)
-            {
-                Logger.Error($"Cannot find map Id in define files: {mapIdValue}. Please check you defineWorld.h file.");
-
-                return;
-            }
-
-            player.Object.MapId = mapIdValue;
-            player.Object.Position.X = posXValue;
-            player.Object.Position.Y = posYValue;
-            player.Object.Position.Z = posZValue;
+            player.NotifySystem<TeleportSystem>(new TeleportEventArgs(mapIdValue, posXValue, posZValue));
         }
     }
 }

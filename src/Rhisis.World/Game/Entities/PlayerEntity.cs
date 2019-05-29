@@ -17,7 +17,10 @@ namespace Rhisis.World.Game.Entities
         public PlayerDataComponent PlayerData { get; set; }
 
         /// <inheritdoc />
-        public MovableComponent MovableComponent { get; set; }
+        public MovableComponent Moves { get; set; }
+
+        /// <inheritdoc />
+        public TimerComponent Timers { get; set; }
 
         /// <inheritdoc />
         public ItemContainerComponent Inventory { get; set; }
@@ -59,7 +62,7 @@ namespace Rhisis.World.Game.Entities
         public PlayerEntity(IContext context)
             : base(context)
         {
-            this.MovableComponent = new MovableComponent();
+            this.Moves = new MovableComponent();
             this.PlayerData = new PlayerDataComponent();
             this.Trade = new TradeComponent();
             this.Party = new PartyComponent();
@@ -68,6 +71,7 @@ namespace Rhisis.World.Game.Entities
             this.Interaction = new InteractionComponent();
             this.Battle = new BattleComponent();
             this.Health = new HealthComponent();
+            this.Timers = new TimerComponent();
         }
     }
 }

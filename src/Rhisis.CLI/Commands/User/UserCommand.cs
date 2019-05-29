@@ -7,6 +7,6 @@ namespace Rhisis.CLI.Commands.User
     [Subcommand(typeof(UserShowCommand))]
     public sealed class UserCommand
     {
-        public void OnExecute(CommandLineApplication app, IConsole console) => app.ShowHelp();
+        public void OnExecute(CommandLineApplication app) => app.ShowHelp();
     }
 }

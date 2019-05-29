@@ -1,9 +1,11 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
+using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
@@ -12,6 +14,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
+using Rhisis.World.Packets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,21 +28,33 @@ namespace Rhisis.World.Game.Maps
     public class MapInstance : Context, IMapInstance
     {
         private const int DefaultMapLayerId = 1;
+        private const int MapLandSize = 128;
 
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
         private readonly List<IMapRegion> _regions;
         private readonly CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancellationTokenSource;
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private readonly ReaderWriterLockSlim _layerLock;
+        private static readonly ILogger Logger = DependencyContainer.Instance.Resolve<ILogger<MapInstance>>();
 
         private IMapLayer _defaultMapLayer;
+        private WldFileInformations _worldInformations;
 
         /// <inheritdoc />
         public int Id { get; }
 
         /// <inheritdoc />
         public string Name { get; }
+
+        /// <inheritdoc />
+        public IMapRevivalRegion DefaultRevivalRegion { get; private set; }
+
+        /// <inheritdoc />
+        public int Width => this._worldInformations.Width;
+
+        /// <inheritdoc />
+        public int Length => this._worldInformations.Length;
 
         /// <inheritdoc />
         public IReadOnlyList<IMapLayer> Layers => this._layers;
@@ -62,12 +77,28 @@ namespace Rhisis.World.Game.Maps
             this._regions = new List<IMapRegion>();
             this._cancellationTokenSource = new CancellationTokenSource();
             this._cancellationToken = this._cancellationTokenSource.Token;
+            this._layerLock = new ReaderWriterLockSlim();
         }
 
-        /// <inheritdoc />
-        public void LoadDyo()
+        /// <summary>
+        /// Loads the world map informations from the WLD file.
+        /// </summary>
+        public void LoadWld()
         {
-            string dyo = Path.Combine(this._mapPath, this.Name + ".dyo");
+            string wldFilePath = Path.Combine(this._mapPath, $"{this.Name}.wld");
+
+            using (var wldFile = new WldFile(wldFilePath))
+            {
+                this._worldInformations = wldFile.WorldInformations;
+            }
+        }
+
+        /// <summary>
+        /// Load NPC from the DYO file.
+        /// </summary>
+        private void LoadDyo()
+        {
+            string dyo = Path.Combine(this._mapPath, $"{this.Name}.dyo");
 
             using (var dyoFile = new DyoFile(dyo))
             {
@@ -78,20 +109,41 @@ namespace Rhisis.World.Game.Maps
             }
         }
 
-        /// <inheritdoc />
-        public void LoadRgn()
+        /// <summary>
+        /// Load regions from the RGN file.
+        /// </summary>
+        private void LoadRgn()
         {
-            string rgn = Path.Combine(this._mapPath, this.Name + ".rgn");
+            string rgn = Path.Combine(this._mapPath, $"{this.Name}.rgn");
 
             using (var rgnFile = new RgnFile(rgn))
             {
                 IEnumerable<IMapRespawnRegion> respawnersRgn = rgnFile.GetElements<RgnRespawn7>()
                     .Select(x => MapRespawnRegion.FromRgnElement(x));
 
+                this._regions.AddRange(respawnersRgn);
+
+                foreach (RgnRegion3 region in rgnFile.GetElements<RgnRegion3>())
+                {
+                    switch (region.Index)
+                    {
+                        case RegionInfo.RI_REVIVAL:
+                            int revivalMapId = this._worldInformations.RevivalMapId == 0 ? this.Id : this._worldInformations.RevivalMapId;
+                            var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
+                            this._regions.Add(newRevivalRegion);
+                            break;
+                    }
+                }
+
+                if (!this._regions.Any(x => x is IMapRevivalRegion))
+                {
+                    // Loads the default revival region if no revival region is loaded.
+                    this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0,
+                        this._worldInformations.RevivalMapId, this._worldInformations.RevivalKey, null, false, false);
+                }
+
                 // TODO: load wrapzones
                 // TODO: load collector regions
-
-                this._regions.AddRange(respawnersRgn);
             }
         }
 
@@ -108,7 +160,9 @@ namespace Rhisis.World.Game.Maps
         {
             var mapLayer = new MapLayer(this, id);
 
+            this._layerLock.EnterWriteLock();
             this._layers.Add(mapLayer);
+            this._layerLock.ExitWriteLock();
 
             if (this._defaultMapLayer == null)
                 this._defaultMapLayer = mapLayer;
@@ -117,7 +171,22 @@ namespace Rhisis.World.Game.Maps
         }
 
         /// <inheritdoc />
-        public IMapLayer GetMapLayer(int id) => this._layers.FirstOrDefault(x => x.Id == id);
+        public IMapLayer GetMapLayer(int id)
+        {
+            IMapLayer layer = null;
+
+            this._layerLock.EnterReadLock();
+            try
+            {
+                layer = this._layers.FirstOrDefault(x => x.Id == id);
+            }
+            finally
+            {
+                this._layerLock.ExitReadLock();
+            }
+
+            return layer;
+        }
 
         /// <inheritdoc />
         public IMapLayer GetDefaultMapLayer() => this._defaultMapLayer;
@@ -130,8 +199,17 @@ namespace Rhisis.World.Game.Maps
             if (layer == null)
                 return;
 
-            layer.Dispose();
-            this._layers.Remove(layer);
+            this._layerLock.EnterWriteLock();
+
+            try
+            {
+                layer.Dispose();
+                this._layers.Remove(layer);
+            }
+            finally
+            {
+                this._layerLock.ExitWriteLock();
+            }
         }
 
         /// <inheritdoc />
@@ -139,49 +217,134 @@ namespace Rhisis.World.Game.Maps
         {
             lock (SyncRoot)
             {
-                foreach (var entity in this.Entities)
-                    SystemManager.Instance.ExecuteUpdatable(entity);
+                for (int i = 0; i < this.Entities.Count(); i++)
+                    SystemManager.Instance.ExecuteUpdatable(this.Entities.ElementAt(i));
 
-                foreach (var mapLayer in this._layers)
-                    mapLayer.Update();
+                this._layerLock.EnterReadLock();
+                try
+                {
+                    for (int i = 0; i < this._layers.Count; i++)
+                        this._layers[i].Update();
+                }
+                finally
+                {
+                    this._layerLock.ExitReadLock();
+                }
             }
         }
 
         /// <inheritdoc />
-        public void StartUpdateTask(int delay)
+        public override void UpdateDeletedEntities()
         {
-            Task.Run(async () =>
+            while (this._entitiesToDelete.TryDequeue(out uint entityIdToDelete))
             {
-                const double FrameRatePerSeconds = 0.66666f;
-                double previousTime = 0;
+                var entityToDelete = this.FindEntity<IEntity>(entityIdToDelete);
 
-                while (true)
+                if (entityToDelete != null)
                 {
-                    if (this._cancellationToken.IsCancellationRequested)
-                        break;
+                    foreach (IEntity entity in entityToDelete.Object.Entities)
+                    {
+                        if (entity.Type == WorldEntityType.Player)
+                            WorldPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, entityToDelete);
 
-                    double currentTime = Rhisis.Core.IO.Time.GetElapsedTime();
-                    double deltaTime = currentTime - previousTime;
+                        entity.Object.Entities.Remove(entityToDelete);
+                    }
+
+                    this._entities.Remove(entityIdToDelete);
+                }
+            }
+
+            this._layerLock.EnterReadLock();
+
+            try
+            {
+                for (int i = 0; i < this._layers.Count; i++)
+                    this._layers[i].UpdateDeletedEntities();
+            }
+            finally
+            {
+                this._layerLock.ExitReadLock();
+            }
+        }
+
+        /// <inheritdoc />
+        public void StartUpdateTask()
+        {
+            // TODO: Find a better way to handle the MapInstance game loop. Keeping things like this for now.
+            const float FrameRatePerSeconds = 15f;
+            double previousTime = Time.TimeInMilliseconds();
+            double lag = 0f;
+
+            Task.Run(() =>
+            {
+                while (!this._cancellationToken.IsCancellationRequested)
+                {
+                    double currentTime = Time.TimeInMilliseconds();
+                    double elaspedTime = currentTime - previousTime;
+
                     previousTime = currentTime;
+                    lag += elaspedTime;
 
-                    this.GameTime = (deltaTime * FrameRatePerSeconds) / 1000f;
-
-                    try
+                    while (lag >= FrameRatePerSeconds)
                     {
                         this.Update();
+                        this.UpdateDeletedEntities();
+                        lag -= FrameRatePerSeconds;
                     }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e);
-                    }
-
-                    await Task.Delay(delay, this._cancellationToken).ConfigureAwait(false);
                 }
             }, this._cancellationToken);
         }
 
         /// <inheritdoc />
         public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => this.GetNearRevivalRegion(position, false);
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = this._regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            var nearestRevivalRegion = revivalRegions.FirstOrDefault(x => x.MapId == this.Id && x.IsChaoRegion == isChaoMode && x.Contains(position) && x.TargetRevivalKey);
+
+            if (nearestRevivalRegion != null)
+                return this.GetRevivalRegion(nearestRevivalRegion.Key, isChaoMode);
+
+            revivalRegions = from x in this._regions
+                             where x is IMapRevivalRegion y && y.IsChaoRegion == isChaoMode && !y.TargetRevivalKey
+                             let region = x as IMapRevivalRegion
+                             let distance = position.GetDistance3D(region.RevivalPosition)
+                             orderby distance ascending
+                             select region;
+
+            return revivalRegions.FirstOrDefault() ?? this.DefaultRevivalRegion;
+        }
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey) => this.GetRevivalRegion(revivalKey, false);
+
+        /// <inheritdoc />
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = this._regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            IEnumerable<IMapRevivalRegion> revivalRegion = from x in revivalRegions
+                                                           where x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode && !x.TargetRevivalKey
+                                                           select x;
+
+            return revivalRegion.FirstOrDefault() ?? this.DefaultRevivalRegion;
+        }
+
+        /// <inheritdoc />
+        public bool ContainsPosition(Vector3 position)
+        {
+            float x = position.X / this._worldInformations.MPU;
+            float z = position.Z / this._worldInformations.MPU;
+
+            if (x < 0 || x > this.Width * MapLandSize || z < 0 || z > this.Length * MapLandSize)
+                return false;
+
+            return true;
+        }
 
         /// <summary>
         /// Creates a NPC.
@@ -197,7 +360,7 @@ namespace Rhisis.World.Game.Maps
             {
                 MapId = this.Id,
                 ModelId = element.Index,
-                Name = element.Name,
+                Name = element.CharacterKey,
                 Angle = element.Angle,
                 Position = element.Position.Clone(),
                 Size = (short)(ObjectComponent.DefaultObjectSize * element.Scale.X),
@@ -207,9 +370,7 @@ namespace Rhisis.World.Game.Maps
             };
             npc.Behavior = behaviors.NpcBehaviors.GetBehavior(npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
-
             npc.Data = npcs.GetNpcData(npc.Object.Name);
-
 
             if (npc.Data != null && npc.Data.HasShop)
             {
@@ -240,12 +401,14 @@ namespace Rhisis.World.Game.Maps
         /// <returns></returns>
         public static IMapInstance Create(string mapPath, string mapName, int mapId)
         {
-            IMapInstance map = new MapInstance(mapId, mapName, mapPath);
+            var map = new MapInstance(mapId, mapName, mapPath);
 
-            // TODO: Load map heights, revival zones
+            // TODO: Load map heights
+            map.LoadWld();
             map.LoadDyo();
             map.LoadRgn();
             map.CreateMapLayer(DefaultMapLayerId);
+            map.StartUpdateTask();
 
             return map;
         }

@@ -2,6 +2,7 @@
 using NLog;
 using Rhisis.Core.Common;
 using Rhisis.Core.Common.Game.Structures;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
@@ -19,6 +20,7 @@ using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Inventory.EventArgs;
+using Rhisis.World.Systems.Recovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +37,8 @@ namespace Rhisis.World.Handlers
             var joinPacket = new JoinPacket(packet);
             DbCharacter character = null;
 
-            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
-                character = database.Characters.Get(joinPacket.PlayerId);
+            var database = DependencyContainer.Instance.Resolve<IDatabase>();
+            character = database.Characters.Get(joinPacket.PlayerId);
 
             if (character == null)
             {
@@ -68,8 +70,8 @@ namespace Rhisis.World.Handlers
 
             IMapLayer mapLayer = map.GetMapLayer(character.MapLayerId) ?? map.GetDefaultMapLayer();
 
-            // 1st: Create the player entity with the map context
-            client.Player = map.CreateEntity<PlayerEntity>();
+            // 1st: Create the player entity with the map layer context
+            client.Player = mapLayer.CreateEntity<PlayerEntity>();
 
             // 2nd: create and initialize the components
             client.Player.Object = new ObjectComponent
@@ -83,7 +85,8 @@ namespace Rhisis.World.Handlers
                 Size = 100,
                 Name = character.Name,
                 Spawned = false,
-                Level = character.Level
+                Level = character.Level,
+                MovingFlags = ObjectState.OBJSTA_STAND
             };
 
             client.Player.Health = new HealthComponent
@@ -112,7 +115,7 @@ namespace Rhisis.World.Handlers
                 JobId = character.ClassId
             };
 
-            client.Player.MovableComponent = new MovableComponent
+            client.Player.Moves = new MovableComponent
             {
                 Speed = GameResources.Instance.Movers[client.Player.Object.ModelId].Speed,
                 DestinationPosition = client.Player.Object.Position.Clone(),
@@ -121,6 +124,7 @@ namespace Rhisis.World.Handlers
             };
 
             client.Player.Statistics = new StatisticsComponent(character);
+            client.Player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
 
             var behaviors = DependencyContainer.Instance.Resolve<BehaviorLoader>();
             client.Player.Behavior = behaviors.PlayerBehaviors.DefaultBehavior;

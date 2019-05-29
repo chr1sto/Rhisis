@@ -46,9 +46,8 @@ namespace Rhisis.World.Game.Core.Systems
                         case SystemType.Updatable:
                             this._updatableActions += (IEntity entity, SystemEventArgs args) =>
                             {
-                                if ((entity.Type & system.Type) == entity.Type)
+                                if ((entity.Type & system.Type) == entity.Type && entity.Object.Spawned)
                                     system.Execute(entity, args);
-
                             };
                             break;
                     }

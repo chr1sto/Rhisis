@@ -80,11 +80,25 @@ namespace Rhisis.World.Game.Components
         public Item GetItem(Func<Item, bool> predicate) => this.Items.FirstOrDefault(predicate);
 
         /// <summary>
+        /// Gets the items matching the predicate.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns>Collection of <see cref="Item"/>.</returns>
+        public IEnumerable<Item> GetItems(Func<Item, bool> predicate) => this.Items.Where(predicate);
+
+        /// <summary>
         /// Gets the item by item id
         /// </summary>
         /// <param name="itemId"></param>
         /// <returns></returns>
         public Item GetItemById(int itemId) => GetItem(x => x.Data != null && x.Data.Id == itemId);
+
+        /// <summary>
+        /// Gets the items matching the item id.
+        /// </summary>
+        /// <param name="itemId">Item id.</param>
+        /// <returns>Colletion of <see cref="Item"/>.</returns>
+        public IEnumerable<Item> GetItemsById(int itemId) => this.GetItems(x => x.Id == itemId);
 
         /// <summary>
         /// Gets whether the container contains at least one item of the specified item id.

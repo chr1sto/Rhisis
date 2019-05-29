@@ -1,4 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.CLI.Services;
+using Rhisis.Database;
 
 namespace Rhisis.CLI.Commands.Database
 {
@@ -11,22 +13,22 @@ namespace Rhisis.CLI.Commands.Database
         [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
         public string DatabaseConfigurationFile { get; set; }
 
-        public DatabaseInitializationCommand()
+        public DatabaseInitializationCommand(DatabaseFactory databaseFactory, ConsoleHelper consoleHelper)
         {
-            this._configurationCommand = new DatabaseConfigureCommand
+            this._configurationCommand = new DatabaseConfigureCommand(consoleHelper)
             {
                 DatabaseConfigurationFile = this.DatabaseConfigurationFile
             };
-            this._updateCommand = new DatabaseUpdateCommand
+            this._updateCommand = new DatabaseUpdateCommand(databaseFactory)
             {
                 DatabaseConfigurationFile = this.DatabaseConfigurationFile
             };
         }
 
-        public void OnExecute(CommandLineApplication app, IConsole console)
+        public void OnExecute()
         {
-            this._configurationCommand.OnExecute(app, console);
-            this._updateCommand.OnExecute(app, console);
+            this._configurationCommand.OnExecute();
+            this._updateCommand.OnExecute();
         }
     }
 }

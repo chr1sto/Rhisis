@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.Core.Exceptions;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
@@ -22,27 +23,33 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         public void Execute(IEntity entity, SystemEventArgs args)
         {
-            var currentMap = entity.Context as IMapInstance;
-            IMapLayer currentMapLayer = currentMap?.GetMapLayer(entity.Object.LayerId);
+            var currentMapLayer = entity.Context as IMapLayer;
 
-            if (currentMapLayer != null)
-                UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
+            if (currentMapLayer == null)
+                throw new RhisisSystemException($"Object {entity.Object.Name}:{entity.Id} doesn't belong to a map layer.");
+
+            var currentMap = currentMapLayer.Parent;
 
             if (currentMap != null)
-                UpdateEntitiesVisibility(entity, currentMap?.Entities);
+                UpdateEntitiesVisibility(entity, currentMap.Entities);
 
-            if (entity.Type == WorldEntityType.Player)
+            if (currentMapLayer != null)
             {
-                foreach (var region in currentMapLayer.Regions)
-                {
-                    if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
-                    {
-                        region.IsActive = true;
-                    }
+                UpdateEntitiesVisibility(entity, currentMapLayer.Entities);
 
-                    if (region.IsActive && region is IMapRespawnRegion respawner)
+                if (entity.Type == WorldEntityType.Player)
+                {
+                    foreach (var region in currentMapLayer.Regions)
                     {
-                        UpdateEntitiesVisibility(entity, respawner.Entities);
+                        if (!region.IsActive && entity.Object.Position.Intersects(region.GetRectangle(), VisibilityRange))
+                        {
+                            region.IsActive = true;
+                        }
+
+                        if (region.IsActive && region is IMapRespawnRegion respawner)
+                        {
+                            UpdateEntitiesVisibility(entity, respawner.Entities);
+                        }
                     }
                 }
             }
@@ -53,7 +60,7 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity">Current entity</param>
         /// <param name="entities">Entities</param>
-        private static void UpdateEntitiesVisibility(IEntity entity, IEnumerable<IEntity> entities)
+        private void UpdateEntitiesVisibility(IEntity entity, IEnumerable<IEntity> entities)
         {
             foreach (IEntity otherEntity in entities)
             {
@@ -83,19 +90,21 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="otherEntity"></param>
-        private static void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private void SpawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
-            var player = entity as IPlayerEntity;
-
             entity.Object.Entities.Add(otherEntity);
-            WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
+
+            if (entity is IPlayerEntity player)
+                WorldPacketFactory.SendSpawnObjectTo(player, otherEntity);
 
             if (otherEntity.Type != WorldEntityType.Player && !otherEntity.Object.Entities.Contains(entity))
                 otherEntity.Object.Entities.Add(entity);
 
             if (otherEntity is IMovableEntity movableEntity &&
-                movableEntity.MovableComponent.DestinationPosition != movableEntity.Object.Position)
+                movableEntity.Moves.DestinationPosition != movableEntity.Object.Position)
+            {
                 WorldPacketFactory.SendDestinationPosition(movableEntity);
+            }
         }
 
         /// <summary>
@@ -103,11 +112,11 @@ namespace Rhisis.World.Systems
         /// </summary>
         /// <param name="entity">Current entity</param>
         /// <param name="otherEntity">other entity</param>
-        private static void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
+        private void DespawnOtherEntity(IEntity entity, IEntity otherEntity)
         {
-            var player = entity as IPlayerEntity;
+            if (entity is IPlayerEntity player)
+                WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
 
-            WorldPacketFactory.SendDespawnObjectTo(player, otherEntity);
             entity.Object.Entities.Remove(otherEntity);
             
             if (otherEntity.Type != WorldEntityType.Player && otherEntity.Object.Entities.Contains(entity))

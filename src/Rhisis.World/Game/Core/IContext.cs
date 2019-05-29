@@ -9,11 +9,6 @@ namespace Rhisis.World.Game.Core
     public interface IContext : IDisposable
     {
         /// <summary>
-        /// Gets the update time of the async context.
-        /// </summary>
-        double GameTime { get; }
-
-        /// <summary>
         /// Gets the list of all entities of this context.
         /// </summary>
         IEnumerable<IEntity> Entities { get; }
@@ -24,6 +19,12 @@ namespace Rhisis.World.Game.Core
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <returns></returns>
         TEntity CreateEntity<TEntity>() where TEntity : IEntity;
+
+        /// <summary>
+        /// Adds an existing entity to the current context.
+        /// </summary>
+        /// <param name="entity">Entity to add.</param>
+        void AddEntity(IEntity entity);
 
         /// <summary>
         /// Find an entity in this context.
@@ -38,19 +39,22 @@ namespace Rhisis.World.Game.Core
         /// </summary>
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <param name="id">Entity id</param>
-        /// <returns></returns>
-        bool DeleteEntity(uint id);
+        void DeleteEntity(uint id);
 
         /// <summary>
         /// Deletes the entity from this context.
         /// </summary>
         /// <param name="entity">Entity instance</param>
-        /// <returns></returns>
-        bool DeleteEntity(IEntity entity);
+        void DeleteEntity(IEntity entity);
 
         /// <summary>
         /// Update this context.
         /// </summary>
         void Update();
+
+        /// <summary>
+        /// Clean up the current context. Removes the entities that needs to be deleted.
+        /// </summary>
+        void UpdateDeletedEntities();
     }
 }

@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Rhisis.Core.Data;
+using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
@@ -9,7 +10,7 @@ namespace Rhisis.World.Systems
     [System]
     public class MobilitySystem : ISystem
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private const float ArrivalRangeRadius = 1f;
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
@@ -21,9 +22,33 @@ namespace Rhisis.World.Systems
         public void Execute(IEntity entity, SystemEventArgs args)
         {
             var movableEntity = entity as IMovableEntity;
-            
-            if (movableEntity.MovableComponent.DestinationPosition.IsZero())
+
+            if (movableEntity.Moves.NextMoveTime > Time.GetElapsedTime())
                 return;
+
+            movableEntity.Moves.NextMoveTime = Time.GetElapsedTime() + 10;
+
+            if (movableEntity.Moves.DestinationPosition.IsZero())
+                return;
+
+            if (movableEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
+                return;
+
+            if (movableEntity.Follow.IsFollowing)
+            {
+                if (!movableEntity.Object.Position.IsInCircle(movableEntity.Follow.Target.Object.Position, movableEntity.Follow.FollowDistance))
+                {
+                    movableEntity.Moves.DestinationPosition = movableEntity.Follow.Target.Object.Position.Clone();
+                    movableEntity.Object.MovingFlags &= ~ObjectState.OBJSTA_STAND;
+                    movableEntity.Object.MovingFlags |= ObjectState.OBJSTA_FMOVE;
+                }
+                if (movableEntity.Object.Position.IsInCircle(movableEntity.Follow.Target.Object.Position, movableEntity.Follow.FollowDistance) &&
+                    !movableEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
+                {
+                    // Arrived
+                    movableEntity.Object.MovingFlags = ObjectState.OBJSTA_STAND;
+                }
+            }
 
             this.Walk(movableEntity);
         }
@@ -34,33 +59,65 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMovableEntity entity)
         {
-            if (entity.MovableComponent.DestinationPosition.IsInCircle(entity.Object.Position, 0.1f))
+            if (entity.Object.Position.IsInCircle(entity.Moves.DestinationPosition, ArrivalRangeRadius))
             {
-                entity.MovableComponent.HasArrived = true;
-                entity.MovableComponent.DestinationPosition = entity.Object.Position.Clone();
+                entity.Moves.HasArrived = true;
+                entity.Moves.DestinationPosition = entity.Object.Position.Clone();
+                entity.Object.MovingFlags &= ~ObjectState.OBJSTA_FMOVE;
+                entity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
+
+                if (entity is IMonsterEntity monster)
+                    monster.Behavior.OnArrived(monster);
+                else if (entity is IPlayerEntity player)
+                    player.Behavior.OnArrived(player);
             }
             else
             {
-                entity.MovableComponent.HasArrived = false;
-                double entitySpeed = entity.MovableComponent.Speed * entity.MovableComponent.SpeedFactor;
-                double speed = ((entitySpeed * 100f) * entity.Context.GameTime);
-                float distanceX = entity.MovableComponent.DestinationPosition.X - entity.Object.Position.X;
-                float distanceZ = entity.MovableComponent.DestinationPosition.Z - entity.Object.Position.Z;
-                double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
+                entity.Moves.HasArrived = false;
+                float entitySpeed = entity.Moves.Speed * entity.Moves.SpeedFactor; // TODO: Add speed bonuses
 
+                if (entity.Object.MotionFlags.HasFlag(StateFlags.OBJSTAF_WALK))
+                    entitySpeed /= 5f;
+                else if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE))
+                    entitySpeed /= 4f;
+
+                float distanceX = entity.Moves.DestinationPosition.X - entity.Object.Position.X;
+                float distanceZ = entity.Moves.DestinationPosition.Z - entity.Object.Position.Z;
+                double distance = Math.Sqrt(distanceX * distanceX + distanceZ * distanceZ);
+                
                 // Normalize
                 double deltaX = distanceX / distance;
                 double deltaZ = distanceZ / distance;
-                double offsetX = deltaX * speed;
-                double offsetZ = deltaZ * speed;
+                double offsetX = deltaX * entitySpeed;
+                double offsetZ = deltaZ * entitySpeed;
 
                 if (Math.Abs(offsetX) > Math.Abs(distanceX))
                     offsetX = distanceX;
                 if (Math.Abs(offsetZ) > Math.Abs(distanceZ))
                     offsetZ = distanceZ;
 
-                entity.Object.Position.X += (float)offsetX;
-                entity.Object.Position.Z += (float)offsetZ;
+                if (entity.Type == WorldEntityType.Player && entity.Moves.IsMovingWithKeyboard)
+                {
+                    float angle = entity.Object.Angle;
+                    var movementX = (float)(Math.Sin(angle * (Math.PI / 180)) * Math.Sqrt(offsetX * offsetX + offsetZ * offsetZ));
+                    var movementZ = (float)(Math.Cos(angle * (Math.PI / 180)) * Math.Sqrt(offsetX * offsetX + offsetZ * offsetZ));
+
+                    if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE))
+                    {
+                        entity.Object.Position.X += movementX;
+                        entity.Object.Position.Z -= movementZ;
+                    }
+                    else if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE))
+                    {
+                        entity.Object.Position.X -= movementX;
+                        entity.Object.Position.Z += movementZ;
+                    }
+                }
+                else
+                {
+                    entity.Object.Position.X += (float)offsetX;
+                    entity.Object.Position.Z += (float)offsetZ;
+                }
             }
         }
     }

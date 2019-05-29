@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
@@ -13,6 +14,8 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Drop.EventArgs;
+using Rhisis.World.Systems.Leveling;
+using Rhisis.World.Systems.Leveling.EventArgs;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
@@ -79,6 +82,7 @@ namespace Rhisis.World.Systems.Battle
             WorldPacketFactory.SendMeleeAttack(attacker, e.AttackType, defender.Id, e.UnknownParameter, meleeAttackResult.Flags);
 
             defender.Health.Hp -= meleeAttackResult.Damages;
+            WorldPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
 
             if (defender.Health.IsDead)
             {
@@ -86,15 +90,16 @@ namespace Rhisis.World.Systems.Battle
                 defender.Health.Hp = 0;
                 this.ClearBattleTargets(defender);
                 this.ClearBattleTargets(attacker);
-                WorldPacketFactory.SendDie(attacker as IPlayerEntity, defender, attacker, e.AttackType);
+                WorldPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
 
-                if (defender is IMonsterEntity deadMonster)
+                if (defender is IMonsterEntity deadMonster && attacker is IPlayerEntity player)
                 {
+                    WorldPacketFactory.SendDie(player, defender, attacker, e.AttackType);
                     var worldServerConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
                     var itemsData = DependencyContainer.Instance.Resolve<ItemLoader>();
                     var expTable = DependencyContainer.Instance.Resolve<ExpTableLoader>();
 
-                    deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5;
+                    deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5; // Configure this timer on world configuration
 
                     // Drop items
                     int itemCount = 0;
@@ -145,7 +150,13 @@ namespace Rhisis.World.Systems.Battle
                     int goldDropped = RandomHelper.Random(deadMonster.Data.DropGoldMin, deadMonster.Data.DropGoldMax);
                     deadMonster.NotifySystem<DropSystem>(new DropGoldEventArgs(goldDropped, attacker));
 
-                    // TODO: give exp
+                    // Give experience
+                    long experience = deadMonster.Data.Experience * worldServerConfiguration.Rates.Experience;
+                    player.NotifySystem<LevelSystem>(new ExperienceEventArgs(experience)); 
+                }
+                else if (defender is IPlayerEntity deadPlayer)
+                {
+                    WorldPacketFactory.SendDie(deadPlayer, defender, attacker, e.AttackType);
                 }
             }
         }

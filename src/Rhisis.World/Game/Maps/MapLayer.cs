@@ -13,12 +13,13 @@ using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
 using Rhisis.Core.Data;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Maps
 {
     public class MapLayer : Context, IMapLayer
     {
-        private readonly IList<IMapRegion> _regions;
+        private readonly List<IMapRegion> _regions;
 
         /// <inheritdoc />
         public int Id { get; }
@@ -67,19 +68,39 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public override void Update()
         {
-            this.GameTime = this.Parent.GameTime;
+            for (int i = 0; i < this.Entities.Count(); i++)
+                SystemManager.Instance.ExecuteUpdatable(this.Entities.ElementAt(i));
 
-            foreach (var entity in this.Entities)
-                SystemManager.Instance.ExecuteUpdatable(entity);
-            
-            foreach (var region in this._regions)
+            for (int i = 0; i < this._regions.Count; i++)
             {
-                if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+                if (this._regions[i].IsActive && this._regions[i] is IMapRespawnRegion respawnRegion)
                 {
-                    foreach (var entity in respawnRegion.Entities)
+                    for (int j = 0; j < respawnRegion.Entities.Count; j++)
                     {
-                        SystemManager.Instance.ExecuteUpdatable(entity);
+                        SystemManager.Instance.ExecuteUpdatable(respawnRegion.Entities[j]);
                     }
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public override void UpdateDeletedEntities()
+        {
+            while (this._entitiesToDelete.TryDequeue(out uint entityIdToDelete))
+            {
+                var entityToDelete = this.FindEntity<IEntity>(entityIdToDelete);
+
+                if (entityToDelete != null)
+                {
+                    foreach (IEntity entity in entityToDelete.Object.Entities)
+                    {
+                        if (entity.Type == WorldEntityType.Player)
+                            WorldPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, entityToDelete);
+
+                        entity.Object.Entities.Remove(entityToDelete);
+                    }
+
+                    this._entities.Remove(entityIdToDelete);
                 }
             }
         }
@@ -91,9 +112,9 @@ namespace Rhisis.World.Game.Maps
 
             if (entity == null)
             {
-                foreach (var region in this._regions)
+                for (int i = 0; i < this._regions.Count; i++)
                 {
-                    if (region.IsActive && region is IMapRespawnRegion respawnRegion)
+                    if (this._regions[i].IsActive && this._regions[i] is IMapRespawnRegion respawnRegion)
                     {
                         var regionEntity = respawnRegion.Entities.FirstOrDefault(x => x.Id == id);
 
@@ -131,15 +152,16 @@ namespace Rhisis.World.Game.Maps
                 Name = moverData.Name,
                 Size = ObjectComponent.DefaultObjectSize,
                 Spawned = true,
-                Level = moverData.Level
+                Level = moverData.Level,
+                MovingFlags = ObjectState.OBJSTA_STAND
             };
             monster.Timers = new TimerComponent
             {
                 NextMoveTime = RandomHelper.LongRandom(8, 20)
             };
-            monster.MovableComponent = new MovableComponent
+            monster.Moves = new MovableComponent
             {
-                Speed = moverData.Speed,
+                Speed = moverData.Speed / 2,
                 DestinationPosition = monster.Object.Position.Clone()
             };
             monster.Health = new HealthComponent
@@ -158,6 +180,7 @@ namespace Rhisis.World.Game.Maps
             monster.Behavior = behaviors.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawnRegion;
             monster.Data = moverData;
+
             if (moverData.Class == MoverClassType.RANK_BOSS)
                 monster.Object.Size *= 2;
 

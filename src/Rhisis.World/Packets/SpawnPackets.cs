@@ -1,7 +1,6 @@
 ﻿using Rhisis.Core.Resources;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
-using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
@@ -62,10 +61,10 @@ namespace Rhisis.World.Packets
                 packet.Write(player.PlayerData.Id);
                 packet.Write((byte)player.PlayerData.JobId); // Job
 
-                packet.Write((short) player.Statistics.Strength);
-                packet.Write((short) player.Statistics.Stamina);
-                packet.Write((short) player.Statistics.Dexterity);
-                packet.Write((short) player.Statistics.Intelligence);
+                packet.Write((short)player.Statistics.Strength);
+                packet.Write((short)player.Statistics.Stamina);
+                packet.Write((short)player.Statistics.Dexterity);
+                packet.Write((short)player.Statistics.Intelligence);
 
                 packet.Write((short)player.Object.Level); // Level
                 packet.Write(-1); // Fuel
@@ -83,7 +82,7 @@ namespace Rhisis.World.Packets
                 packet.Write((byte)player.PlayerData.Authority); // authority
                 packet.Write((uint)player.PlayerData.Mode); // mode
                 packet.Write(0); // state mode
-                packet.Write(0x000001F6); // item used ??
+                packet.Write(0x00000000); // item used ??
                 packet.Write(0); // last pk time.
                 packet.Write(0); // karma
                 packet.Write(0); // pk propensity
@@ -91,7 +90,7 @@ namespace Rhisis.World.Packets
                 packet.Write(0); // fame
                 packet.Write<byte>(0); // duel
                 packet.Write(-1); // titles
-                
+
                 // Serialize visible effects
                 IEnumerable<Item> equippedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
 
@@ -110,7 +109,7 @@ namespace Rhisis.World.Packets
                 packet.Write(player.PlayerData.Gold); // Gold
                 packet.Write(player.PlayerData.Experience); // exp
                 packet.Write(0); // skill level
-                packet.Write(0); // skill points
+                packet.Write((int)player.Statistics.SkillPoints); // skill points
                 packet.Write<long>(0); // death exp
                 packet.Write(0); // death level
 
@@ -127,7 +126,7 @@ namespace Rhisis.World.Packets
                 packet.Write<byte>(0);
                 packet.Write<byte>(0);
 
-                packet.Write(42); // murderer id
+                packet.Write(0); // murderer id
                 packet.Write((short)player.Statistics.StatPoints); // stat points
                 packet.Write<short>(0); // always 0
 
@@ -207,10 +206,10 @@ namespace Rhisis.World.Packets
 
                 // buffs
                 packet.Write(0); // count
-                
+
                 player.Connection.Send(packet);
             }
-                                   
+
             // Taskbar
             using (var packet = new FFPacket())
             {
@@ -241,7 +240,7 @@ namespace Rhisis.World.Packets
                 packet.Write(entityToSpawn.Object.Position.Y);
                 packet.Write(entityToSpawn.Object.Position.Z);
                 packet.Write((short)(entityToSpawn.Object.Angle * 10f));
-                packet.Write(entityToSpawn.Id);
+                packet.Write((int)entityToSpawn.Id);
 
                 if (entityToSpawn.Type == WorldEntityType.Player)
                 {
@@ -250,8 +249,8 @@ namespace Rhisis.World.Packets
                     packet.Write<short>(0);
                     packet.Write<byte>(1); // is player?
                     packet.Write(playerEntity.Health.Hp); // HP
-                    packet.Write((int)player.Object.MovingFlags); // moving flags
-                    packet.Write((int)player.Object.MotionFlags); // motion flags
+                    packet.Write((int)playerEntity.Object.MovingFlags); // moving flags
+                    packet.Write((int)playerEntity.Object.MotionFlags); // motion flags
                     packet.Write<byte>(0);
                     packet.Write(-1); // baby buffer
 
@@ -342,7 +341,7 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)0);
                     packet.Write((byte)0);
                     packet.Write(0);
-                    packet.Write(monsterEntity.MovableComponent.SpeedFactor); // speed factor
+                    packet.Write(monsterEntity.Moves.SpeedFactor); // speed factor
                     packet.Write(0);
                 }
                 else if (entityToSpawn.Type == WorldEntityType.Npc)
@@ -369,7 +368,7 @@ namespace Rhisis.World.Packets
                 else if (entityToSpawn.Type == WorldEntityType.Drop)
                 {
                     var dropItemEntity = entityToSpawn as IItemEntity;
-                    
+
                     dropItemEntity.Drop.Item.Serialize(packet);
                 }
 

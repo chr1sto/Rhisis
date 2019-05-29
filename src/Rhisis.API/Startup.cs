@@ -39,9 +39,12 @@ namespace Rhisis.API
             var databaseConfiguration = this.Configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>();
 
             DependencyContainer.Instance.SetServiceCollection(services);
-            DatabaseFactory.Instance.Initialize(databaseConfiguration);
             BusinessLayer.Initialize();
-            services.AddSingleton(this.Configuration);
+            services.AddSingleton(Configuration);
+
+            services.RegisterDatabaseServices(databaseConfiguration);
+            
+            DependencyContainer.Instance.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

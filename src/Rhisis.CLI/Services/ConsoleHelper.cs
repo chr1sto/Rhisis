@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Text;
 
-namespace Rhisis.CLI.Helpers
+namespace Rhisis.CLI.Services
 {
     /// <summary>
     /// Extends the basic console with helper methods.
     /// </summary>
-    public static class ConsoleHelper
+    public class ConsoleHelper
     {
         /// <summary>
         /// Reads a string value from the console.
         /// </summary>
         /// <param name="defaultValue">Default value return if input is empty</param>
         /// <returns></returns>
-        public static string ReadStringOrDefault(string defaultValue = null)
+        public string ReadStringOrDefault(string defaultValue = null)
         {
             string value = Console.ReadLine();
 
@@ -25,7 +25,7 @@ namespace Rhisis.CLI.Helpers
         /// </summary>
         /// <param name="defaultValue">Default value</param>
         /// <returns></returns>
-        public static int ReadIntegerOrDefault(int defaultValue = 0)
+        public int ReadIntegerOrDefault(int defaultValue = 0)
         {
             string value = Console.ReadLine();
 
@@ -41,7 +41,7 @@ namespace Rhisis.CLI.Helpers
         /// Displays an enum as a numbered list.
         /// </summary>
         /// <typeparam name="TEnum"></typeparam>
-        public static void DisplayEnum<TEnum>() where TEnum : struct
+        public void DisplayEnum<TEnum>() where TEnum : struct
         {
             string[] providerNames = Enum.GetNames(typeof(TEnum));
 
@@ -54,7 +54,7 @@ namespace Rhisis.CLI.Helpers
         /// </summary>
         /// <typeparam name="TEnum"></typeparam>
         /// <returns></returns>
-        public static TEnum ReadEnum<TEnum>() where TEnum : struct
+        public TEnum ReadEnum<TEnum>() where TEnum : struct
         {
             var value = default(TEnum);
             string[] providerNames = Enum.GetNames(typeof(TEnum));
@@ -77,7 +77,7 @@ namespace Rhisis.CLI.Helpers
         /// </summary>
         /// <param name="passwordCharacter">Password character used to hide input characters</param>
         /// <returns></returns>
-        public static string ReadPassword(string passwordCharacter = "*")
+        public string ReadPassword(string passwordCharacter = "*")
         {
             var password = new StringBuilder();
 
@@ -113,7 +113,7 @@ namespace Rhisis.CLI.Helpers
         /// </summary>
         /// <param name="confirmationMessage">Confirmation message</param>
         /// <returns></returns>
-        public static bool AskConfirmation(string confirmationMessage)
+        public bool AskConfirmation(string confirmationMessage)
         {
             Console.Write($"{confirmationMessage} (y/n): ");
             string response = Console.ReadLine();

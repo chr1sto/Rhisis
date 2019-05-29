@@ -111,7 +111,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public bool IsInCircle(Vector3 otherPosition, float circleRadius)
         {
-            return Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2) < circleRadius * circleRadius;
+            return Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2) < Math.Pow(circleRadius, 2);
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace Rhisis.Core.Structures
             float power = RandomHelper.FloatRandom(0f, radius);
 
             newVector.X += (float)Math.Sin(angle) * power;
-            newVector.Z += (float)Math.Cos(angle) * power;
+            newVector.Z -= (float)Math.Cos(angle) * power;
 
             return newVector;
         }

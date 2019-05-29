@@ -1,32 +1,42 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using System;
+using McMaster.Extensions.CommandLineUtils;
+using Rhisis.Core.Helpers;
 using Rhisis.Database;
-using System;
 
 namespace Rhisis.CLI.Commands.Database
 {
     [Command("update", Description = "Updates the database structure")]
     public class DatabaseUpdateCommand
     {
-        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
+        private readonly IDatabase _database;
+
+        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration",
+            Description = "Specify the database configuration file path.")]
         public string DatabaseConfigurationFile { get; set; }
 
-        public void OnExecute(CommandLineApplication app, IConsole console)
+        public DatabaseUpdateCommand(DatabaseFactory databaseFactory)
         {
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
 
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+            _database = databaseFactory.GetDatabase(dbConfig);
+        }
+
+        public void OnExecute()
+        {
             try
             {
                 Console.WriteLine("Starting database structure update...");
-                DatabaseFactory.Instance.Initialize(DatabaseConfigurationFile);
-                
-                using (var rhisisDbContext = DatabaseFactory.Instance.CreateDbContext())
+                var rhisisDbContext = _database.DatabaseContext;
+                if (rhisisDbContext.DatabaseExists())
                 {
-                    if (rhisisDbContext.DatabaseExists())
-                    {
-                        rhisisDbContext.Migrate();
-                        Console.WriteLine("Database updated.");
-                    }
+                    rhisisDbContext.Migrate();
+                    Console.WriteLine("Database updated.");
+                }
+                else
+                {
+                    Console.WriteLine("Database does not exist yet!");
                 }
             }
             catch (Exception e)
