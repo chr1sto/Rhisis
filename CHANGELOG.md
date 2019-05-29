@@ -4,7 +4,13 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Unreleased]
 
-## 0.2.0 - 2019-05-31
+## 0.3.0 - 2019-06-30
+
+...
+
+## [Released]
+
+## [0.2.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.2) - 2019-05-31
 
 ### World Server
 
@@ -35,8 +41,6 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - `MailShippingCost` configuration is now inside the `MailConfiguration` structure.
 - Review of database assembly (PR [#208](https://github.com/Eastrall/Rhisis/pull/208))
 - CLI code refactoring (PR [#217](https://github.com/Eastrall/Rhisis/pull/217))
-
-## [Released]
 
 ## [0.1.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.1) - 2019-03-23
 
