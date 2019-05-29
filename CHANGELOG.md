@@ -10,7 +10,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Released]
 
-## [0.2.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.2) - 2019-05-31
+## [0.2.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.2) - 2019-05-29
 
 ### World Server
 
@@ -34,7 +34,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 #### Resources
 
-- Add Flarine dialogs (PR [#197](https://github.com/Eastrall/Rhisis/pull/197), [#199](https://github.com/Eastrall/Rhisis/pull/199), [#202](https://github.com/Eastrall/Rhisis/pull/202), [#209](https://github.com/Eastrall/Rhisis/pull/209))
+- Add Flarine dialogs (PR [#197](https://github.com/Eastrall/Rhisis/pull/197), [#199](https://github.com/Eastrall/Rhisis/pull/199), [#202](https://github.com/Eastrall/Rhisis/pull/202), [#209](https://github.com/Eastrall/Rhisis/pull/209), [#225](https://github.com/Eastrall/Rhisis/pull/225))
 
 #### Changes
 
