@@ -6,7 +6,11 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## 0.3.0 - 2019-06-30
 
-...
+### World Server
+
+#### Fixes
+
+- Fix `NullReferenceException` when a player attacks a monster without a weapon (PR [#231](https://github.com/Eastrall/Rhisis/pull/231))
 
 ## [Released]
 
