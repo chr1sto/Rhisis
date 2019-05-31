@@ -12,6 +12,10 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 - Fix `NullReferenceException` when a player attacks a monster without a weapon (PR [#231](https://github.com/Eastrall/Rhisis/pull/231))
 
+#### Changes
+
+- Remove SQL Server support (PR [#232](https://github.com/Eastrall/Rhisis/pull/232))
+
 ## [Released]
 
 ## [0.2.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.2) - 2019-05-29
