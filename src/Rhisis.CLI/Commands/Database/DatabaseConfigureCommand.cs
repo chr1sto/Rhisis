@@ -30,19 +30,11 @@ namespace Rhisis.CLI.Commands.Database
                 EncryptionKey = Convert.ToBase64String(AesProvider.GenerateKey(AesKeySize.AES256Bits).Key)
             };
 
-            Console.WriteLine("Select one of the available providers:");
-            _consoleHelper.DisplayEnum<DatabaseProvider>();
-            Console.Write("Database provider: ");
-            dbConfiguration.Provider = _consoleHelper.ReadEnum<DatabaseProvider>();
-
-            if (dbConfiguration.Provider == DatabaseProvider.MySql)
-            {
-                Console.Write("Port (3306): ");
-                dbConfiguration.Port = _consoleHelper.ReadIntegerOrDefault(3306);
-            }
-
             Console.Write("Host (localhost): ");
             dbConfiguration.Host = _consoleHelper.ReadStringOrDefault("localhost");
+
+            Console.Write("Port (3306): ");
+            dbConfiguration.Port = _consoleHelper.ReadIntegerOrDefault(3306);
 
             Console.Write("Username (root): ");
             dbConfiguration.Username = _consoleHelper.ReadStringOrDefault("root");
@@ -55,14 +47,10 @@ namespace Rhisis.CLI.Commands.Database
 
             Console.WriteLine("--------------------------------");
             Console.WriteLine("Configuration:");
-            Console.WriteLine($"Database Provider: {dbConfiguration.Provider.ToString()}");
             Console.WriteLine($"Host: {dbConfiguration.Host}");
             Console.WriteLine($"Username: {dbConfiguration.Username}");
             Console.WriteLine($"Database name: {dbConfiguration.Database}");
-
-            if (dbConfiguration.Provider == DatabaseProvider.MySql)
-                Console.WriteLine($"Port: {dbConfiguration.Port}");
-
+            Console.WriteLine($"Port: {dbConfiguration.Port}");
             Console.WriteLine("--------------------------------");
             
             bool response = _consoleHelper.AskConfirmation("Save this configuration?");
