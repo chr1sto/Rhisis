@@ -1,7 +1,4 @@
-﻿using Rhisis.Core.Resources;
-using Rhisis.Core.Structures.Game;
-using Rhisis.World.Game.Core.Systems;
-using System;
+﻿using Rhisis.World.Game.Core.Systems;
 
 namespace Rhisis.World.Systems.Inventory.EventArgs
 {

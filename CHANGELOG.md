@@ -12,6 +12,10 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 - Fix `NullReferenceException` when a player attacks a monster without a weapon (PR [#231](https://github.com/Eastrall/Rhisis/pull/231))
 
+#### Resources
+
+- Add Flarine dialogs (PR [#233](https://github.com/Eastrall/Rhisis/pull/233))
+
 #### Changes
 
 - Remove SQL Server support (PR [#232](https://github.com/Eastrall/Rhisis/pull/232))

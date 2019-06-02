@@ -35,5 +35,14 @@ namespace Rhisis.World.Handlers
 
             client.Player.NotifySystem<InventorySystem>(inventoryEvent);
         }
+
+        [PacketHandler(PacketType.DOUSEITEM)]
+        public static void OnUseItem(WorldClient client, INetPacketStream packet)
+        {
+            var useItemPacket = new DoUseItemPacket(packet);
+            var inventoryEvent = new InventoryUseItemEventArgs(useItemPacket.UniqueItemId, useItemPacket.Part);
+
+            client.Player.NotifySystem<InventorySystem>(inventoryEvent);
+        }
     }
 }
