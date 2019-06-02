@@ -287,9 +287,19 @@ namespace Rhisis.World.Game.Maps
 
                     while (lag >= FrameRatePerSeconds)
                     {
-                        this.Update();
-                        this.UpdateDeletedEntities();
-                        lag -= FrameRatePerSeconds;
+                        try
+                        {
+                            this.Update();
+                            this.UpdateDeletedEntities();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.LogError(e, $"An error occured in {this.Name}.");
+                        }
+                        finally
+                        {
+                            lag -= FrameRatePerSeconds;
+                        }
                     }
                 }
             }, this._cancellationToken);
