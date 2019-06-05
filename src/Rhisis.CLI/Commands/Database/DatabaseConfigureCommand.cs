@@ -1,64 +1,59 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using System;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.EntityFrameworkCore.DataEncryption.Providers;
-using Rhisis.CLI.Helpers;
+using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
-using System;
 
 namespace Rhisis.CLI.Commands.Database
 {
     [Command("configure", Description = "Configures the database access")]
     public class DatabaseConfigureCommand
-    {
+    {       
         [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
         public string DatabaseConfigurationFile { get; set; }
+        
+        private readonly ConsoleHelper _consoleHelper;
 
-        public void OnExecute(CommandLineApplication app, IConsole console)
+        public DatabaseConfigureCommand(ConsoleHelper consoleHelper)
+        {
+            _consoleHelper = consoleHelper;
+        }
+
+        public void OnExecute()
         {
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
-
+            
             var dbConfiguration = new DatabaseConfiguration()
             {
                 EncryptionKey = Convert.ToBase64String(AesProvider.GenerateKey(AesKeySize.AES256Bits).Key)
             };
 
-            Console.WriteLine("Select one of the available providers:");
-            ConsoleHelper.DisplayEnum<DatabaseProvider>();
-            Console.Write("Database provider: ");
-            dbConfiguration.Provider = ConsoleHelper.ReadEnum<DatabaseProvider>();
-
-            if (dbConfiguration.Provider == DatabaseProvider.MySql)
-            {
-                Console.Write("Port (3306): ");
-                dbConfiguration.Port = ConsoleHelper.ReadIntegerOrDefault(3306);
-            }
-
             Console.Write("Host (localhost): ");
-            dbConfiguration.Host = ConsoleHelper.ReadStringOrDefault("localhost");
+            dbConfiguration.Host = _consoleHelper.ReadStringOrDefault("localhost");
+
+            Console.Write("Port (3306): ");
+            dbConfiguration.Port = _consoleHelper.ReadIntegerOrDefault(3306);
 
             Console.Write("Username (root): ");
-            dbConfiguration.Username = ConsoleHelper.ReadStringOrDefault("root");
+            dbConfiguration.Username = _consoleHelper.ReadStringOrDefault("root");
 
             Console.Write("Password: ");
-            dbConfiguration.Password = ConsoleHelper.ReadPassword();
+            dbConfiguration.Password = _consoleHelper.ReadPassword();
 
             Console.Write("Database name (rhisis): ");
-            dbConfiguration.Database = ConsoleHelper.ReadStringOrDefault("rhisis");
+            dbConfiguration.Database = _consoleHelper.ReadStringOrDefault("rhisis");
 
             Console.WriteLine("--------------------------------");
             Console.WriteLine("Configuration:");
-            Console.WriteLine($"Database Provider: {dbConfiguration.Provider.ToString()}");
             Console.WriteLine($"Host: {dbConfiguration.Host}");
             Console.WriteLine($"Username: {dbConfiguration.Username}");
             Console.WriteLine($"Database name: {dbConfiguration.Database}");
-
-            if (dbConfiguration.Provider == DatabaseProvider.MySql)
-                Console.WriteLine($"Port: {dbConfiguration.Port}");
-
+            Console.WriteLine($"Port: {dbConfiguration.Port}");
             Console.WriteLine("--------------------------------");
             
-            bool response = ConsoleHelper.AskConfirmation("Save this configuration?");
+            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
             if (response)
             {

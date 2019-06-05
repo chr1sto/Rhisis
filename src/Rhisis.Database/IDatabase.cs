@@ -1,11 +1,16 @@
-﻿using Rhisis.Database.Repositories;
-using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Rhisis.Database.Context;
+using Rhisis.Database.Repositories;
 
 namespace Rhisis.Database
 {
-    public interface IDatabase : IDisposable
+    public interface IDatabase
     {
+        /// <summary>
+        /// Gets the database context used.
+        /// </summary>
+        DatabaseContext DatabaseContext { get; }
+
         /// <summary>
         /// Gets the users.
         /// </summary>

@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
 using Rhisis.Database.Context;
 using Rhisis.Database.Repositories;
 using Rhisis.Database.Repositories.Implementation;
-using System.Threading.Tasks;
 
 namespace Rhisis.Database
 {
@@ -24,22 +23,14 @@ namespace Rhisis.Database
         /// <inheritdoc />
         public IShortcutRepository TaskbarShortcuts { get; private set; }
 
+        public DatabaseContext DatabaseContext => _databaseContext;
+
         /// <summary>
         /// Creates a new <see cref="Database"/> object instance.
         /// </summary>
-        public Database()
+        public Database(DatabaseContext databaseContext)
         {
-            this._databaseContext = DatabaseFactory.Instance.CreateDbContext();
-            this.InitializeRepositories();
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="Database"/> with EF context options.
-        /// </summary>
-        /// <param name="options"></param>
-        public Database(DbContextOptions options)
-        {
-            this._databaseContext = DatabaseFactory.Instance.CreateDbContext(options);
+            this._databaseContext = databaseContext;
             this.InitializeRepositories();
         }
 
@@ -48,9 +39,6 @@ namespace Rhisis.Database
 
         /// <inheritdoc />
         public async Task CompleteAsync() => await this._databaseContext.SaveChangesAsync();
-
-        /// <inheritdoc />
-        public void Dispose() => this._databaseContext.Dispose();
 
         /// <summary>
         /// Initializes the repositories.

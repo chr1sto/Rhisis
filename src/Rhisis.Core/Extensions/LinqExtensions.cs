@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Rhisis.Core.Extensions
 {
@@ -17,6 +19,11 @@ namespace Rhisis.Core.Extensions
             return source.Zip(Enumerable.Range(0, source.Count()), (s, r) => new { Group = r / itemsPerGroup, Item = s })
                         .GroupBy(i => i.Group, g => g.Item)
                         .ToList();
+        }
+
+        public static bool HasDuplicates<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> expression)
+        {
+            return source.GroupBy(expression).Any(x => x.Count() > 1);
         }
     }
 }

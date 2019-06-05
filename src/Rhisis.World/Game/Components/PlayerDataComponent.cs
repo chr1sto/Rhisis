@@ -69,5 +69,10 @@ namespace Rhisis.World.Game.Components
         public int Version { get; set; } = StartVersion;
 
         public ModeType Mode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the player level when it dies.
+        /// </summary>
+        public int DeathLevel { get; set; }
     }
 }

@@ -49,29 +49,27 @@ namespace Rhisis.Cluster
                 return;
             }
 
-            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
+            var database = DependencyContainer.Instance.Resolve<IDatabase>();
+            DbUser dbUser = database.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
+
+            // Check if user exist.
+            if (dbUser == null)
             {
-                DbUser dbUser = database.Users.Get(x => x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase));
-
-                // Check if user exist.
-                if (dbUser == null)
-                {
-                    Logger.LogWarning($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: bad presented credentials compared to the database.");
-                    client.Disconnect();
-                    return;
-                }
-
-                Logger.LogDebug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
-
-                IEnumerable<DbCharacter> userCharacters = dbUser.Characters.Where(x => !x.IsDeleted);
-
-                ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, userCharacters);
-                ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
-
-                if (clusterConfiguration.EnableLoginProtect)
-                    ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
+                Logger.LogWarning($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: bad presented credentials compared to the database.");
+                client.Disconnect();
+                return;
             }
+
+            Logger.LogDebug($"Send character list to user '{pak.Username}' from {client.RemoteEndPoint}.");
+
+            IEnumerable<DbCharacter> userCharacters = dbUser.Characters.Where(x => !x.IsDeleted);
+
+            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, userCharacters);
+            ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
+
+            if (clusterConfiguration.EnableLoginProtect)
+                ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
         }
 
         [PacketHandler(PacketType.CREATE_PLAYER)]
@@ -81,79 +79,83 @@ namespace Rhisis.Cluster
             var clusterConfiguration = DependencyContainer.Instance.Resolve<ClusterConfiguration>();
             var jobs = DependencyContainer.Instance.Resolve<JobLoader>();
 
-            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
+            var database = DependencyContainer.Instance.Resolve<IDatabase>();
+
+            DbUser dbUser = database.Users.Get(x =>
+                x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
+                x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
+
+            // Check if user exist and with good password in database.
+            if (dbUser == null)
             {
-                DbUser dbUser = database.Users.Get(x =>
-                    x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
-                    x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
-
-                // Check if user exist and with good password in database.
-                if (dbUser == null)
-                {
-                    Logger.LogWarning($"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: bad presented credentials compared to the database.");
-                    client.Disconnect();
-                    return;
-                }
-
-                DbCharacter dbCharacter = database.Characters.Get(x => x.Name == pak.Name);
-
-                // Check if character name is not already used.
-                if (dbCharacter != null)
-                {
-                    Logger.LogWarning($"Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        $"Reason: character name '{pak.Name}' already exists.");
-                    ClusterPacketFactory.SendError(client, ErrorType.USER_EXISTS);
-                    return;
-                }
-
-                DefaultCharacter defaultCharacter = clusterConfiguration.DefaultCharacter;
-                DefaultStartItems defaultEquipment = pak.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
-                JobData jobData = jobs[pak.Job];
-
-                dbCharacter = new DbCharacter()
-                {
-                    UserId = dbUser.Id,
-                    Name = pak.Name,
-                    Slot = pak.Slot,
-                    SkinSetId = pak.SkinSet,
-                    HairColor = (int)pak.HairColor,
-                    FaceId = pak.HeadMesh,
-                    HairId = pak.HairMeshId,
-                    BankCode = pak.BankPassword,
-                    Gender = pak.Gender,
-                    ClassId = pak.Job,
-                    Hp = HealthFormulas.GetMaxOriginHp(defaultCharacter.Level, defaultCharacter.Stamina, jobData.MaxHpFactor),
-                    Mp = HealthFormulas.GetMaxOriginMp(defaultCharacter.Level, defaultCharacter.Intelligence, jobData.MaxMpFactor, true),
-                    Fp = HealthFormulas.GetMaxOriginFp(defaultCharacter.Level, defaultCharacter.Stamina, defaultCharacter.Dexterity, defaultCharacter.Strength, jobData.MaxFpFactor, true),
-                    Strength = defaultCharacter.Strength,
-                    Stamina = defaultCharacter.Stamina,
-                    Dexterity = defaultCharacter.Dexterity,
-                    Intelligence = defaultCharacter.Intelligence,
-                    MapId = defaultCharacter.MapId,
-                    PosX = defaultCharacter.PosX,
-                    PosY = defaultCharacter.PosY,
-                    PosZ = defaultCharacter.PosZ,
-                    Level = defaultCharacter.Level,
-                    Gold = defaultCharacter.Gold,
-                    StatPoints = 0, //TODO: create game constants.
-                    SkillPoints = 0, //TODO: create game constants.
-                    Experience = 0,
-                };
-
-                //TODO: create game constants for slot.
-                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartSuit, 44));
-                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartHand, 46));
-                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartShoes, 47));
-                dbCharacter.Items.Add(new DbItem(defaultEquipment.StartWeapon, 52));
-
-                database.Characters.Create(dbCharacter);
-                database.Complete();
-                Logger.LogInformation("Character '{0}' has been created successfully for user '{1}' from {2}.",
-                    dbCharacter.Name, pak.Username, client.RemoteEndPoint);
-
-                ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+                Logger.LogWarning(
+                    $"[SECURITY] Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: bad presented credentials compared to the database.");
+                client.Disconnect();
+                return;
             }
+
+            DbCharacter dbCharacter = database.Characters.Get(x => x.Name == pak.Name);
+
+            // Check if character name is not already used.
+            if (dbCharacter != null)
+            {
+                Logger.LogWarning(
+                    $"Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    $"Reason: character name '{pak.Name}' already exists.");
+                ClusterPacketFactory.SendError(client, ErrorType.USER_EXISTS);
+                return;
+            }
+
+            DefaultCharacter defaultCharacter = clusterConfiguration.DefaultCharacter;
+            DefaultStartItems defaultEquipment = pak.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
+            JobData jobData = jobs[pak.Job];
+
+            dbCharacter = new DbCharacter()
+            {
+                UserId = dbUser.Id,
+                Name = pak.Name,
+                Slot = pak.Slot,
+                SkinSetId = pak.SkinSet,
+                HairColor = (int) pak.HairColor,
+                FaceId = pak.HeadMesh,
+                HairId = pak.HairMeshId,
+                BankCode = pak.BankPassword,
+                Gender = pak.Gender,
+                ClassId = pak.Job,
+                Hp = HealthFormulas.GetMaxOriginHp(defaultCharacter.Level, defaultCharacter.Stamina,
+                    jobData.MaxHpFactor),
+                Mp = HealthFormulas.GetMaxOriginMp(defaultCharacter.Level, defaultCharacter.Intelligence,
+                    jobData.MaxMpFactor, true),
+                Fp = HealthFormulas.GetMaxOriginFp(defaultCharacter.Level, defaultCharacter.Stamina,
+                    defaultCharacter.Dexterity, defaultCharacter.Strength, jobData.MaxFpFactor, true),
+                Strength = defaultCharacter.Strength,
+                Stamina = defaultCharacter.Stamina,
+                Dexterity = defaultCharacter.Dexterity,
+                Intelligence = defaultCharacter.Intelligence,
+                MapId = defaultCharacter.MapId,
+                PosX = defaultCharacter.PosX,
+                PosY = defaultCharacter.PosY,
+                PosZ = defaultCharacter.PosZ,
+                Level = defaultCharacter.Level,
+                Gold = defaultCharacter.Gold,
+                StatPoints = 0, //TODO: create game constants.
+                SkillPoints = 0, //TODO: create game constants.
+                Experience = 0,
+            };
+
+            //TODO: create game constants for slot.
+            dbCharacter.Items.Add(new DbItem(defaultEquipment.StartSuit, 44));
+            dbCharacter.Items.Add(new DbItem(defaultEquipment.StartHand, 46));
+            dbCharacter.Items.Add(new DbItem(defaultEquipment.StartShoes, 47));
+            dbCharacter.Items.Add(new DbItem(defaultEquipment.StartWeapon, 52));
+
+            database.Characters.Create(dbCharacter);
+            database.Complete();
+            Logger.LogInformation("Character '{0}' has been created successfully for user '{1}' from {2}.",
+                dbCharacter.Name, pak.Username, client.RemoteEndPoint);
+
+            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
         }
 
         [PacketHandler(PacketType.DEL_PLAYER)]
@@ -161,55 +163,55 @@ namespace Rhisis.Cluster
         {
             var pak = new DeletePlayerPacket(packet);
 
-            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
+            var database = DependencyContainer.Instance.Resolve<IDatabase>();
+            
+            DbUser dbUser = database.Users.Get(x =>
+                x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
+                x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
+
+            // Check if user exist and with good password in database.
+            if (dbUser == null)
             {
-                DbUser dbUser = database.Users.Get(x =>
-                    x.Username.Equals(pak.Username, StringComparison.OrdinalIgnoreCase) &&
-                    x.Password.Equals(pak.Password, StringComparison.OrdinalIgnoreCase));
-
-                // Check if user exist and with good password in database.
-                if (dbUser == null)
-                {
-                    Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: bad presented credentials compared to the database.");
-                    client.Disconnect();
-                    return;
-                }
-
-                // Check if given password match confirmation password.
-                if (!string.Equals(pak.Password, pak.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
-                {
-                    Logger.LogWarning($"Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: passwords entered do not match.");
-                    ClusterPacketFactory.SendError(client, ErrorType.WRONG_PASSWORD);
-                    return;
-                }
-
-                DbCharacter dbCharacter = database.Characters.Get(pak.CharacterId);
-
-                // Check if character exist.
-                if (dbCharacter == null)
-                {
-                    Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                        "Reason: user doesn't have any character with this id.");
-                    client.Disconnect();
-                    return;
-                }
-
-                if (dbCharacter.IsDeleted)
-                {
-                    Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
-                           "Reason: character is already deleted.");
-                    return;
-                }
-
-                database.Characters.Delete(dbCharacter);
-                database.Complete();
-                Logger.LogInformation("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
-                    dbCharacter.Name, pak.Username, client.RemoteEndPoint);
-
-                ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+                Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: bad presented credentials compared to the database.");
+                client.Disconnect();
+                return;
             }
+
+            // Check if given password match confirmation password.
+            if (!string.Equals(pak.Password, pak.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
+            {
+                Logger.LogWarning($"Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: passwords entered do not match.");
+                ClusterPacketFactory.SendError(client, ErrorType.WRONG_PASSWORD);
+                return;
+            }
+
+            DbCharacter dbCharacter = database.Characters.Get(pak.CharacterId);
+
+            // Check if character exist.
+            if (dbCharacter == null)
+            {
+                Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                    "Reason: user doesn't have any character with this id.");
+                client.Disconnect();
+                return;
+            }
+
+            if (dbCharacter.IsDeleted)
+            {
+                Logger.LogWarning($"[SECURITY] Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
+                       "Reason: character is already deleted.");
+                return;
+            }
+
+            database.Characters.Delete(dbCharacter);
+            database.Complete();
+            Logger.LogInformation("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
+                dbCharacter.Name, pak.Username, client.RemoteEndPoint);
+
+            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+            
         }
 
         [PacketHandler(PacketType.PRE_JOIN)]
@@ -219,8 +221,8 @@ namespace Rhisis.Cluster
             var clusterConfiguration = DependencyContainer.Instance.Resolve<ClusterConfiguration>();
             DbCharacter dbCharacter = null;
 
-            using (var database = DependencyContainer.Instance.Resolve<IDatabase>())
-                dbCharacter = database.Characters.Get(pak.CharacterId);
+            var database = DependencyContainer.Instance.Resolve<IDatabase>();
+            dbCharacter = database.Characters.Get(pak.CharacterId);
 
             // Check if character exist.
             if (dbCharacter == null)

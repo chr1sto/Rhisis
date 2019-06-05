@@ -1,10 +1,7 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Inventory;
 using System;
 
 namespace Rhisis.World.Systems.Battle
@@ -94,8 +91,8 @@ namespace Rhisis.World.Systems.Battle
             delta.X = (float)(Math.Sin(angle) * dist);
             delta.Z = (float)(-Math.Cos(angle) * dist);
 
-            entity.MovableComponent.DestinationPosition.X += delta.X;
-            entity.MovableComponent.DestinationPosition.Z += delta.Z;
+            entity.Moves.DestinationPosition.X += delta.X;
+            entity.Moves.DestinationPosition.Z += delta.Z;
         }
     }
 }

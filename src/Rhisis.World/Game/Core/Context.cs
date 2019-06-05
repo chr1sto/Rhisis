@@ -1,18 +1,17 @@
 ﻿using Rhisis.Core.Exceptions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Core
 {
     public abstract class Context : IContext
     {
-        protected static readonly object SyncRoot = new object();
-
-        private readonly IDictionary<uint, IEntity> _entities;
+        protected readonly object SyncRoot = new object();
+        
+        protected readonly ConcurrentQueue<uint> _entitiesToDelete;
+        protected readonly IDictionary<uint, IEntity> _entities;
         private bool _disposedValue;
-
-        /// <inheritdoc />
-        public double GameTime { get; protected set; }
 
         /// <inheritdoc />
         public IEnumerable<IEntity> Entities => this._entities.Values;
@@ -23,6 +22,7 @@ namespace Rhisis.World.Game.Core
         public Context()
         {
             this._entities = new Dictionary<uint, IEntity>();
+            this._entitiesToDelete = new ConcurrentQueue<uint>();
         }
 
         /// <inheritdoc />
@@ -33,30 +33,29 @@ namespace Rhisis.World.Game.Core
             if (entity == null)
                 throw new RhisisException($"An error occured while creating an entity of type {typeof(TEntity)}");
 
-            lock (SyncRoot)
-            {
-                if (!this._entities.TryAdd(entity.Id, entity))
-                    throw new RhisisException($"An error occured while adding the entity to the context list.");
-            }
+            this.AddEntity(entity);
 
             return (TEntity)entity;
         }
 
         /// <inheritdoc />
-        public bool DeleteEntity(uint id)
+        public void AddEntity(IEntity entity)
         {
-            bool removed = false;
-
             lock (SyncRoot)
             {
-                removed = this._entities.Remove(id);
+                if (!this._entities.TryAdd(entity.Id, entity))
+                    throw new RhisisException($"An error occured while adding the entity to the context list.");
             }
-            
-            return removed;
         }
 
         /// <inheritdoc />
-        public bool DeleteEntity(IEntity entity) => this.DeleteEntity(entity.Id);
+        public void DeleteEntity(uint id)
+        {
+            this._entitiesToDelete.Enqueue(id);
+        }
+
+        /// <inheritdoc />
+        public void DeleteEntity(IEntity entity) => this.DeleteEntity(entity.Id);
 
         /// <inheritdoc />
         public virtual TEntity FindEntity<TEntity>(uint id) where TEntity : IEntity 
@@ -64,6 +63,9 @@ namespace Rhisis.World.Game.Core
 
         /// <inheritdoc />
         public abstract void Update();
+
+        /// <inheritdoc />
+        public abstract void UpdateDeletedEntities();
 
         /// <inheritdoc />
         public void Dispose()

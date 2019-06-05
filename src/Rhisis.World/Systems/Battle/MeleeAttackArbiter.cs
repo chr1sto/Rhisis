@@ -45,10 +45,7 @@ namespace Rhisis.World.Systems.Battle
             
             if (this._attacker is IPlayerEntity player)
             {
-                Item rightWeapon = player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot);
-
-                if (rightWeapon == null)
-                    rightWeapon = InventorySystem.Hand;
+                Item rightWeapon = player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot) ?? InventorySystem.Hand;
 
                 // TODO: GetDamagePropertyFactor()
                 int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
@@ -100,7 +97,7 @@ namespace Rhisis.World.Systems.Battle
         {
             // TODO: if attacker mode == ONEKILL_MODE, return AF_GENERIC
 
-            int hitRate = 0;
+            int hitRate;
             int hitRating = this.GetHitRating(this._attacker);
             int escapeRating = this.GetEspaceRating(this._defender);
 
@@ -110,7 +107,7 @@ namespace Rhisis.World.Systems.Battle
                 hitRate = (int)(((hitRating * 1.5f) / (hitRating + escapeRating)) * 2.0f *
                           (this._attacker.Object.Level * 0.5f / (this._attacker.Object.Level + this._defender.Object.Level * 0.3f)) * 100.0f);
             }
-            else 
+            else
             {
                 // Player VS Player or Player VS Monster
                 hitRate = (int)(((hitRating * 1.6f) / (hitRating + escapeRating)) * 1.5f *

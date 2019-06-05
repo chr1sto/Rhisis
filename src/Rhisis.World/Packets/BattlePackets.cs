@@ -19,9 +19,9 @@ namespace Rhisis.World.Packets
 
                 if (attackFlags.HasFlag(AttackFlags.AF_FLYING))
                 {
-                    packet.Write(defender.MovableComponent.DestinationPosition.X);
-                    packet.Write(defender.MovableComponent.DestinationPosition.Y);
-                    packet.Write(defender.MovableComponent.DestinationPosition.Z);
+                    packet.Write(defender.Moves.DestinationPosition.X);
+                    packet.Write(defender.Moves.DestinationPosition.Y);
+                    packet.Write(defender.Moves.DestinationPosition.Z);
                     packet.Write(defender.Object.Angle);
                 }
 

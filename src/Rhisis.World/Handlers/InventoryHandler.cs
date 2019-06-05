@@ -26,5 +26,14 @@ namespace Rhisis.World.Handlers
 
             client.Player.NotifySystem<InventorySystem>(inventoryEvent);
         }
+
+        [PacketHandler(PacketType.DROPITEM)]
+        public static void OnDropItem(WorldClient client, INetPacketStream packet)
+        {
+            var dropItemPacket = new DropItemPacket(packet);
+            var inventoryEvent = new InventoryDropItemEventArgs(dropItemPacket.ItemId, dropItemPacket.ItemQuantity);
+
+            client.Player.NotifySystem<InventorySystem>(inventoryEvent);
+        }
     }
 }

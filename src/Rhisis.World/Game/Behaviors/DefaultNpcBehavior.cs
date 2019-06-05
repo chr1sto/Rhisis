@@ -24,6 +24,12 @@ namespace Rhisis.World.Game.Behaviors
             this.UpdateOralText(entity);
         }
 
+        /// <inheritdoc />
+        public virtual void OnArrived(INpcEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Update NPC oral text.
         /// </summary>

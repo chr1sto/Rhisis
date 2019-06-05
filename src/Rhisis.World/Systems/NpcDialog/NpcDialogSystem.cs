@@ -5,6 +5,7 @@ using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.World.Systems.NpcDialog
@@ -42,7 +43,7 @@ namespace Rhisis.World.Systems.NpcDialog
         /// <param name="e"></param>
         private void OpenDialog(IPlayerEntity player, NpcDialogOpenEventArgs e)
         {
-            var npcEntity = player.Context.FindEntity<INpcEntity>(e.NpcObjectId);
+            var npcEntity = player.Object.CurrentMap?.FindEntity<INpcEntity>(e.NpcObjectId);
 
             if (npcEntity == null)
             {
@@ -56,7 +57,7 @@ namespace Rhisis.World.Systems.NpcDialog
                 return;
             }
 
-            string dialogText = npcEntity.Data.Dialog.IntroText;
+            IEnumerable<string> dialogTexts = npcEntity.Data.Dialog.IntroText;
 
             if (!string.IsNullOrEmpty(e.DialogKey))
             {
@@ -76,11 +77,11 @@ namespace Rhisis.World.Systems.NpcDialog
                         return;
                     }
 
-                    dialogText = dialogLink.Text;
+                    dialogTexts = dialogLink.Texts;
                 }
             }
 
-            WorldPacketFactory.SendDialog(player, dialogText, npcEntity.Data.Dialog.Links);
+            WorldPacketFactory.SendDialog(player, dialogTexts, npcEntity.Data.Dialog.Links);
         }
     }
 }
