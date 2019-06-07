@@ -24,5 +24,10 @@ namespace Rhisis.World.Game.Entities
         /// Gets or sets the statistics component.
         /// </summary>
         StatisticsComponent Statistics { get; set; }
+
+        /// <summary>
+        /// Gets or sets the attribute component.
+        /// </summary>
+        AttributeComponent Attributes { get; set; }
     }
 }

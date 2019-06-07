@@ -42,6 +42,9 @@ namespace Rhisis.World.Game.Entities
         public StatisticsComponent Statistics { get; set; }
 
         /// <inheritdoc />
+        public AttributeComponent Attributes { get; set; }
+
+        /// <inheritdoc />
         public MoverData Data { get; set; }
 
         /// <summary>
@@ -57,6 +60,7 @@ namespace Rhisis.World.Game.Entities
             this.Interaction = new InteractionComponent();
             this.Battle = new BattleComponent();
             this.Health = new HealthComponent();
+            this.Attributes = new AttributeComponent();
         }
     }
 }

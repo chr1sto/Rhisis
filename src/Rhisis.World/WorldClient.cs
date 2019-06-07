@@ -78,11 +78,14 @@ namespace Rhisis.World
                 packet.Read<uint>(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
                 packetHeaderNumber = packet.Read<uint>();
 
+#if DEBUG
                 if (Logger.IsTraceEnabled)
                     Logger.Trace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
+#endif
 
                 bool packetInvokSuccess = PacketHandler<WorldClient>.Invoke(this, packet as FFPacket, (PacketType)packetHeaderNumber);
 
+#if DEBUG
                 if (!packetInvokSuccess)
                 {
                     if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
@@ -90,6 +93,7 @@ namespace Rhisis.World
                     else
                         Logger.Warn("[SECURITY] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
                 }
+#endif
             }
             catch (RhisisPacketException packetException)
             {
