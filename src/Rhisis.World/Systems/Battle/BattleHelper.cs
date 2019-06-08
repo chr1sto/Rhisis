@@ -26,44 +26,44 @@ namespace Rhisis.World.Systems.Battle
             switch (weaponType)
             {
                 case WeaponType.MELEE_SWD:
-                    attribute = player.Statistics.Strength - 12;
+                    attribute = player.Attributes[DefineAttributes.STR] - 12;
                     levelFactor = player.Object.Level * 1.1f;
                     jobFactor = player.PlayerData.JobData.MeleeSword;
                     break;
                 case WeaponType.MELEE_AXE:
-                    attribute = player.Statistics.Strength - 12;
+                    attribute = player.Attributes[DefineAttributes.STR] - 12;
                     levelFactor = player.Object.Level * 1.2f;
                     jobFactor = player.PlayerData.JobData.MeleeAxe;
                     break;
                 case WeaponType.MELEE_STAFF:
-                    attribute = player.Statistics.Strength - 10;
+                    attribute = player.Attributes[DefineAttributes.STR] - 10;
                     levelFactor = player.Object.Level * 1.1f;
                     jobFactor = player.PlayerData.JobData.MeleeStaff;
                     break;
                 case WeaponType.MELEE_STICK:
-                    attribute = player.Statistics.Strength - 10;
+                    attribute = player.Attributes[DefineAttributes.STR] - 10;
                     levelFactor = player.Object.Level * 1.3f;
                     jobFactor = player.PlayerData.JobData.MeleeStick;
                     break;
                 case WeaponType.MELEE_KNUCKLE:
-                    attribute = player.Statistics.Strength - 10;
+                    attribute = player.Attributes[DefineAttributes.STR] - 10;
                     levelFactor = player.Object.Level * 1.2f;
                     jobFactor = player.PlayerData.JobData.MeleeKnuckle;
                     break;
                 case WeaponType.MAGIC_WAND:
-                    attribute = player.Statistics.Intelligence - 10;
+                    attribute = player.Attributes[DefineAttributes.INT] - 10;
                     levelFactor = player.Object.Level * 1.2f;
                     jobFactor = player.PlayerData.JobData.MagicWand;
                     break;
                 case WeaponType.MELEE_YOYO:
-                    attribute = player.Statistics.Strength - 10;
+                    attribute = player.Attributes[DefineAttributes.STR] - 10;
                     levelFactor = player.Object.Level * 1.1f;
                     jobFactor = player.PlayerData.JobData.MeleeYoyo;
                     break;
                 case WeaponType.RANGE_BOW:
-                    attribute = (player.Statistics.Dexterity - 14) * 4f;
+                    attribute = (player.Attributes[DefineAttributes.DEX] - 14) * 4f;
                     levelFactor = player.Object.Level * 1.3f;
-                    jobFactor = (player.Statistics.Strength * 0.2f) * 0.7f;
+                    jobFactor = (player.Attributes[DefineAttributes.STR] * 0.2f) * 0.7f;
                     break;
             }
 

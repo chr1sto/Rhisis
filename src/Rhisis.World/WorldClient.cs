@@ -2,6 +2,7 @@
 using Ether.Network.Packets;
 using NLog;
 using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Exceptions;
 using Rhisis.Core.Helpers;
@@ -134,10 +135,10 @@ namespace Rhisis.World
                 character.Gold = this.Player.PlayerData.Gold;
                 character.Experience = this.Player.PlayerData.Experience;
 
-                character.Strength = this.Player.Statistics.Strength;
-                character.Stamina = this.Player.Statistics.Stamina;
-                character.Dexterity = this.Player.Statistics.Dexterity;
-                character.Intelligence = this.Player.Statistics.Intelligence;
+                character.Strength = this.Player.Attributes[DefineAttributes.STR];
+                character.Stamina = this.Player.Attributes[DefineAttributes.STA];
+                character.Dexterity = this.Player.Attributes[DefineAttributes.DEX];
+                character.Intelligence = this.Player.Attributes[DefineAttributes.INT];
                 character.StatPoints = this.Player.Statistics.StatPoints;
                 character.SkillPoints = this.Player.Statistics.SkillPoints;
 

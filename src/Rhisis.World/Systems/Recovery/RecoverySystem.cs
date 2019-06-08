@@ -83,12 +83,17 @@ namespace Rhisis.World.Systems.Recovery
             if (player.Health.IsDead)
                 return;
 
-            int maxHp = HealthFormulas.GetMaxOriginHp(player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.MaxHpFactor);
-            int maxMp = HealthFormulas.GetMaxOriginMp(player.Object.Level, player.Statistics.Intelligence, player.PlayerData.JobData.MaxMpFactor, true);
-            int maxFp = HealthFormulas.GetMaxOriginFp(player.Object.Level, player.Statistics.Stamina, player.Statistics.Dexterity, player.Statistics.Strength, player.PlayerData.JobData.MaxFpFactor, true);
-            int recoveryHp = HealthFormulas.GetHpRecovery(maxHp, player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.HpRecoveryFactor);
-            int recoveryMp = HealthFormulas.GetMpRecovery(maxMp, player.Object.Level, player.Statistics.Intelligence, player.PlayerData.JobData.MpRecoveryFactor);
-            int recoveryFp = HealthFormulas.GetFpRecovery(maxFp, player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.FpRecoveryFactor);
+            int strength = player.Attributes[DefineAttributes.STR];
+            int stamina = player.Attributes[DefineAttributes.STA];
+            int dexterity = player.Attributes[DefineAttributes.DEX];
+            int intelligence = player.Attributes[DefineAttributes.INT];
+
+            int maxHp = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);
+            int maxMp = HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, player.PlayerData.JobData.MaxMpFactor, true);
+            int maxFp = HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, player.PlayerData.JobData.MaxFpFactor, true);
+            int recoveryHp = HealthFormulas.GetHpRecovery(maxHp, player.Object.Level, stamina, player.PlayerData.JobData.HpRecoveryFactor);
+            int recoveryMp = HealthFormulas.GetMpRecovery(maxMp, player.Object.Level, intelligence, player.PlayerData.JobData.MpRecoveryFactor);
+            int recoveryFp = HealthFormulas.GetFpRecovery(maxFp, player.Object.Level, stamina, player.PlayerData.JobData.FpRecoveryFactor);
 
             player.Health.Hp += recoveryHp;
             player.Health.Mp += recoveryMp;

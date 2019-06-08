@@ -1,4 +1,5 @@
 ﻿using NLog;
+using Rhisis.Core.Data;
 using Rhisis.Core.IO;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Core.Systems;
@@ -62,10 +63,10 @@ namespace Rhisis.World.Systems.Statistics
                 return;
             }
 
-            player.Statistics.Strength += e.Strenght;
-            player.Statistics.Stamina += e.Stamina;
-            player.Statistics.Dexterity += e.Dexterity;
-            player.Statistics.Intelligence += e.Intelligence;
+            player.Attributes.IncreaseAttribute(DefineAttributes.STR, e.Strenght);
+            player.Attributes.IncreaseAttribute(DefineAttributes.STA, e.Stamina);
+            player.Attributes.IncreaseAttribute(DefineAttributes.DEX, e.Dexterity);
+            player.Attributes.IncreaseAttribute(DefineAttributes.INT, e.Intelligence);
             player.Statistics.StatPoints -= (ushort) total;
         }
     }

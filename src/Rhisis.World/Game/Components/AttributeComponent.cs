@@ -1,7 +1,5 @@
 ﻿using Rhisis.Core.Data;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.World.Game.Components
 {
@@ -33,7 +31,7 @@ namespace Rhisis.World.Game.Components
 
         public int GetAttribute(DefineAttributes attribute)
         {
-            return this._attributes.TryGetValue(attribute, out int value) ? value : throw new KeyNotFoundException();
+            return this._attributes.TryGetValue(attribute, out int value) ? value : default;
         }
     }
 }
