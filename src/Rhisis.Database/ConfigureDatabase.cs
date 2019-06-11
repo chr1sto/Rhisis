@@ -32,7 +32,7 @@ namespace Rhisis.Database
         {
             return serviceCollection
                 .AddSingleton(configuration)
-                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(configuration))
+                .AddDbContext<DatabaseContext>(options => options.ConfigureCorrectDatabase(configuration), ServiceLifetime.Transient)
                 .AddTransient<IDatabase, Database>();
         }
     }

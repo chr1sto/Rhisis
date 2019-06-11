@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Context;
 using Rhisis.Database.Repositories;
 using Rhisis.Database.Repositories.Implementation;
@@ -7,8 +8,6 @@ namespace Rhisis.Database
 {
     public sealed class Database : IDatabase
     {
-        private readonly DatabaseContext _databaseContext;
-
         /// <inheritdoc />
         public IUserRepository Users { get; set; }
 
@@ -23,33 +22,36 @@ namespace Rhisis.Database
         /// <inheritdoc />
         public IShortcutRepository TaskbarShortcuts { get; private set; }
 
-        public DatabaseContext DatabaseContext => _databaseContext;
+        public DatabaseContext DatabaseContext { get; }
 
         /// <summary>
         /// Creates a new <see cref="Database"/> object instance.
         /// </summary>
         public Database(DatabaseContext databaseContext)
         {
-            this._databaseContext = databaseContext;
+            this.DatabaseContext = databaseContext;
             this.InitializeRepositories();
         }
 
         /// <inheritdoc />
-        public void Complete() => this._databaseContext.SaveChanges();
+        public void Complete() => this.DatabaseContext.SaveChanges();
 
         /// <inheritdoc />
-        public async Task CompleteAsync() => await this._databaseContext.SaveChangesAsync();
+        public async Task CompleteAsync() => await this.DatabaseContext.SaveChangesAsync();
+
+        /// <inheritdoc />
+        public void Dispose() => this.DatabaseContext.Dispose();
 
         /// <summary>
         /// Initializes the repositories.
         /// </summary>
         private void InitializeRepositories()
         {
-            this.Users = new UserRepository(this._databaseContext);
-            this.Characters = new CharacterRepository(this._databaseContext);
-            this.Items = new ItemRepository(this._databaseContext);
-            this.Mails = new MailRepository(this._databaseContext);
-            this.TaskbarShortcuts = new ShortcutRepository(this._databaseContext);
+            this.Users = new UserRepository(this.DatabaseContext);
+            this.Characters = new CharacterRepository(this.DatabaseContext);
+            this.Items = new ItemRepository(this.DatabaseContext);
+            this.Mails = new MailRepository(this.DatabaseContext);
+            this.TaskbarShortcuts = new ShortcutRepository(this.DatabaseContext);
         }
     }
 }
