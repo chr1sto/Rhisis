@@ -53,6 +53,9 @@ namespace Rhisis.World.Game.Entities
         public HealthComponent Health { get; set; }
 
         /// <inheritdoc />
+        public AttributeComponent Attributes { get; set; }
+
+        /// <inheritdoc />
         public IBehavior<IPlayerEntity> Behavior { get; set; }
 
         /// <summary>
@@ -72,6 +75,7 @@ namespace Rhisis.World.Game.Entities
             this.Battle = new BattleComponent();
             this.Health = new HealthComponent();
             this.Timers = new TimerComponent();
+            this.Attributes = new AttributeComponent();
         }
     }
 }

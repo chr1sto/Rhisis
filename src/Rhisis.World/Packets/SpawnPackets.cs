@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Resources;
+﻿using Rhisis.Core.Data;
+using Rhisis.Core.Resources;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core;
@@ -61,10 +62,10 @@ namespace Rhisis.World.Packets
                 packet.Write(player.PlayerData.Id);
                 packet.Write((byte)player.PlayerData.JobId); // Job
 
-                packet.Write((short)player.Statistics.Strength);
-                packet.Write((short)player.Statistics.Stamina);
-                packet.Write((short)player.Statistics.Dexterity);
-                packet.Write((short)player.Statistics.Intelligence);
+                packet.Write((short)player.Attributes[DefineAttributes.STR]);
+                packet.Write((short)player.Attributes[DefineAttributes.STA]);
+                packet.Write((short)player.Attributes[DefineAttributes.DEX]);
+                packet.Write((short)player.Attributes[DefineAttributes.INT]);
 
                 packet.Write((short)player.Object.Level); // Level
                 packet.Write(-1); // Fuel
@@ -262,10 +263,10 @@ namespace Rhisis.World.Packets
                     packet.Write((byte)playerEntity.VisualAppearance.FaceId);
                     packet.Write(playerEntity.PlayerData.Id);
                     packet.Write((byte)1);
-                    packet.Write((short)playerEntity.Statistics.Strength); // STR
-                    packet.Write((short)playerEntity.Statistics.Stamina); // STA
-                    packet.Write((short)playerEntity.Statistics.Dexterity); // DEX
-                    packet.Write((short)playerEntity.Statistics.Intelligence); // INT
+                    packet.Write((short)playerEntity.Attributes[DefineAttributes.STR]); // STR
+                    packet.Write((short)playerEntity.Attributes[DefineAttributes.STA]); // STA
+                    packet.Write((short)playerEntity.Attributes[DefineAttributes.DEX]); // DEX
+                    packet.Write((short)playerEntity.Attributes[DefineAttributes.INT]); // INT
                     packet.Write((short)playerEntity.Object.Level); // Level
 
                     packet.Write(-1);

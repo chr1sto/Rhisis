@@ -1,4 +1,5 @@
-﻿using Rhisis.Network;
+﻿using Rhisis.Core.Data;
+using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
 
@@ -12,10 +13,10 @@ namespace Rhisis.World.Packets
             {
                 packet.StartNewMergedPacket(player.Id, SnapshotType.SETSTATE);
 
-                packet.Write<uint>(player.Statistics.Strength);
-                packet.Write<uint>(player.Statistics.Stamina);
-                packet.Write<uint>(player.Statistics.Dexterity);
-                packet.Write<uint>(player.Statistics.Intelligence);
+                packet.Write(player.Attributes[DefineAttributes.STR]);
+                packet.Write(player.Attributes[DefineAttributes.STA]);
+                packet.Write(player.Attributes[DefineAttributes.DEX]);
+                packet.Write(player.Attributes[DefineAttributes.INT]);
                 packet.Write(0);
                 packet.Write<uint>(player.Statistics.StatPoints);
 

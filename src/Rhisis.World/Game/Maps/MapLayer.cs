@@ -170,13 +170,17 @@ namespace Rhisis.World.Game.Maps
                 Mp = moverData.AddMp,
                 Fp = 0
             };
-            monster.Statistics = new StatisticsComponent
-            {
-                Strength = (ushort)moverData.Strength,
-                Stamina = (ushort)moverData.Stamina,
-                Dexterity = (ushort)moverData.Dexterity,
-                Intelligence = (ushort)moverData.Intelligence
-            };
+            monster.Attributes.ResetAttribute(DefineAttributes.STR, moverData.Strength);
+            monster.Attributes.ResetAttribute(DefineAttributes.STA, moverData.Stamina);
+            monster.Attributes.ResetAttribute(DefineAttributes.DEX, moverData.Dexterity);
+            monster.Attributes.ResetAttribute(DefineAttributes.INT, moverData.Intelligence);
+            //monster.Statistics = new StatisticsComponent
+            //{
+            //    Strength = (ushort)moverData.Strength,
+            //    Stamina = (ushort)moverData.Stamina,
+            //    Dexterity = (ushort)moverData.Dexterity,
+            //    Intelligence = (ushort)moverData.Intelligence
+            //};
             monster.Behavior = behaviors.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawnRegion;
             monster.Data = moverData;

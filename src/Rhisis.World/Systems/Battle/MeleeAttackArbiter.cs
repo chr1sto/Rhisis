@@ -127,7 +127,7 @@ namespace Rhisis.World.Systems.Battle
         private int GetHitRating(ILivingEntity entity)
         {
             if (entity is IPlayerEntity player)
-                return player.Statistics.Dexterity; // TODO: add dex bonus
+                return player.Attributes[DefineAttributes.DEX]; // TODO: add dex bonus
             else if (entity is IMonsterEntity monster)
                 return monster.Data.HitRating;
 
@@ -142,7 +142,7 @@ namespace Rhisis.World.Systems.Battle
         public int GetEspaceRating(ILivingEntity entity)
         {
             if (entity is IPlayerEntity player)
-                return (int)(player.Statistics.Dexterity * 0.5f); // TODO: add dex bonus and DST_PARRY
+                return (int)(player.Attributes[DefineAttributes.DEX] * 0.5f); // TODO: add dex bonus and DST_PARRY
             else if (entity is IMonsterEntity monster)
                 return monster.Data.EscapeRating;
 
@@ -161,7 +161,7 @@ namespace Rhisis.World.Systems.Battle
                 return false;
 
             float criticalJobFactor = attacker is IPlayerEntity player ? player.PlayerData.JobData.Critical : 1f;
-            int criticalProbability = (int)((attacker.Statistics.Dexterity / 10) * criticalJobFactor);
+            int criticalProbability = (int)((attacker.Attributes[DefineAttributes.DEX] / 10) * criticalJobFactor);
             // TODO: add DST_CHR_CHANCECRITICAL to criticalProbability
 
             if (criticalProbability < 0)
@@ -258,7 +258,7 @@ namespace Rhisis.World.Systems.Battle
                 if (this._defender is IPlayerEntity player)
                     factor = player.PlayerData.JobData.DefenseFactor;
 
-                int stamina = this._defender.Statistics.Stamina;
+                int stamina = this._defender.Attributes[DefineAttributes.STA];
                 int level = this._defender.Object.Level;
                 int defense = (int)(((((level * 2) + (stamina / 2)) / 2.8f) - 4) + ((stamina - 14) * factor));
                 // TODO: add defense armor
@@ -296,10 +296,10 @@ namespace Rhisis.World.Systems.Battle
                     return 0.1f;
 
                 int defenderLevel = this._defender.Object.Level;
-                int defenderDexterity = this._defender.Statistics.Dexterity;
+                int defenderDexterity = this._defender.Attributes[DefineAttributes.DEX];
 
                 float blockProbabilityA = defenderLevel / ((defenderLevel + this._attacker.Object.Level) * 15.0f);
-                float blockProbabilityB = (defenderDexterity + this._attacker.Statistics.Dexterity + 2) * ((defenderDexterity - this._attacker.Statistics.Dexterity) / 800.0f);
+                float blockProbabilityB = (defenderDexterity + this._attacker.Attributes[DefineAttributes.DEX] + 2) * ((defenderDexterity - this._attacker.Attributes[DefineAttributes.DEX]) / 800.0f);
 
                 if (blockProbabilityB > 10.0f)
                     blockProbabilityB = 10.0f;

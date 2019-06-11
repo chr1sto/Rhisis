@@ -52,14 +52,14 @@ namespace Rhisis.World.Packets
         /// </summary>
         /// <param name="player"></param>
         /// <param name="textId"></param>
-        /// <param name="stringParameter"></param>
-        public static void SendDefinedText(IPlayerEntity player, DefineText textId, params string[] stringParameter)
+        /// <param name="parameters"></param>
+        public static void SendDefinedText(IPlayerEntity player, DefineText textId, params object[] parameters)
         {
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(player.Id, SnapshotType.DEFINEDTEXT);
                 packet.Write((int)textId);
-                packet.Write(string.Join(" ", stringParameter));
+                packet.Write(string.Join(" ", parameters));
                 player.Connection.Send(packet);
             }
         }

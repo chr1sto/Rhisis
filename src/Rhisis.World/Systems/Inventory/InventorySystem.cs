@@ -28,6 +28,7 @@ namespace Rhisis.World.Systems.Inventory
         public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
 
         private readonly ILogger Logger;
+        private readonly InventoryItemUsage _itemUsage;
 
         /// <inheritdoc />
         public WorldEntityType Type => WorldEntityType.Player;
@@ -38,6 +39,7 @@ namespace Rhisis.World.Systems.Inventory
         public InventorySystem()
         {
             this.Logger = DependencyContainer.Instance.Resolve<ILogger<InventorySystem>>();
+            this._itemUsage = new InventoryItemUsage();
         }
 
         /// <inheritdoc />
@@ -58,16 +60,19 @@ namespace Rhisis.World.Systems.Inventory
                     this.InitializeInventory(player, inventoryInitializeEvent);
                     break;
                 case InventoryMoveEventArgs inventoryMoveEvent:
-                    this.MoveItem(player, inventoryMoveEvent);
+                    this.ProcessMoveItem(player, inventoryMoveEvent);
                     break;
                 case InventoryEquipEventArgs inventoryEquipEvent:
-                    this.EquipItem(player, inventoryEquipEvent);
+                    this.ProcessEquipItem(player, inventoryEquipEvent);
                     break;
                 case InventoryCreateItemEventArgs inventoryCreateItemEvent:
-                    this.CreateItem(player, inventoryCreateItemEvent);
+                    this.ProcessCreateItem(player, inventoryCreateItemEvent);
                     break;
                 case InventoryDropItemEventArgs inventoryDropItemEvent:
-                    this.DropItem(player, inventoryDropItemEvent);
+                    this.ProcessDropItem(player, inventoryDropItemEvent);
+                    break;
+                case InventoryUseItemEventArgs inventoryUseItemEvent:
+                    this.ProcessUseItem(player, inventoryUseItemEvent);
                     break;
                 default:
                     Logger.LogWarning("Unknown inventory action type: {0} for player {1}", e.GetType(), entity.Object.Name);
@@ -109,7 +114,7 @@ namespace Rhisis.World.Systems.Inventory
         /// Move an item.
         /// </summary>
         /// <param name="player"></param>
-        private void MoveItem(IPlayerEntity player, InventoryMoveEventArgs e)
+        private void ProcessMoveItem(IPlayerEntity player, InventoryMoveEventArgs e)
         {
             var sourceSlot = e.SourceSlot;
             var destinationSlot = e.DestinationSlot;
@@ -123,8 +128,6 @@ namespace Rhisis.World.Systems.Inventory
             
             Item sourceItem = items[sourceSlot];
             Item destItem = items[destinationSlot];
-            
-            Logger.LogDebug("Moving item from {0} to {1}", sourceSlot, destinationSlot);
 
             if (sourceItem.Id == destItem.Id && sourceItem.Data.IsStackable)
             {
@@ -147,61 +150,48 @@ namespace Rhisis.World.Systems.Inventory
         /// </summary>
         /// <param name="player"></param>
         /// <param name="e"></param>
-        private void EquipItem(IPlayerEntity player, InventoryEquipEventArgs e)
+        private void ProcessEquipItem(IPlayerEntity player, InventoryEquipEventArgs e)
         {
-            var uniqueId = e.UniqueId;
-            var part = e.Part;
+            Item item = player.Inventory.GetItem(e.UniqueId);
 
-            Logger.LogDebug("UniqueId: {0} | Part: {1}", uniqueId, part);
-
-            Item item = player.Inventory.GetItem(uniqueId);
             if (item == null)
+            {
+                this.Logger.LogWarning($"Cannot find item with unique id: {e.UniqueId} for player {player.Object.Name}.");
                 return;
+            }
 
-            bool equip = part == -1;
-
-            Logger.LogDebug("Equip item: {0}", equip.ToString());
+            bool equip = e.Part == -1;
 
             if (equip)
-            {
-                Logger.LogDebug("Item: {0}", item.ToString());
-
-                // TODO: check if the player fits the item requirements
-                if (item.Data.ItemKind1 == ItemKind1.ARMOR && item.Data.ItemSex != player.VisualAppearance.Gender)
-                {
-                    Logger.LogDebug("Wrong sex for armor");
-                    // TODO: Send invalid sex error
-                    return;
-                }
-
-                if (player.Object.Level < item.Data.LimitLevel)
-                {
-                    Logger.LogDebug("Player level to low");
-                    // TODO: Send low level error
-                    return;
-                }
-
-                // TODO: SPECIAL: double weapon for blades...
-
-                int sourceSlot = item.Slot;
-                int equipedItemSlot = item.Data.Parts + EquipOffset;
-                Item equipedItem = player.Inventory[equipedItemSlot];
-                
-                if (equipedItem != null && equipedItem.Slot != -1)
-                {
-                    this.UnequipItem(player, equipedItem);
-                }
-
-                // Move item
-                item.Slot = equipedItemSlot;
-                player.Inventory.Items.Swap(sourceSlot, equipedItemSlot);
-
-                WorldPacketFactory.SendItemEquip(player, item, item.Data.Parts, true);
-            }
+                this.EquipItem(player, item);
             else
-            {
                 this.UnequipItem(player, item);
+        }
+
+        private void EquipItem(IPlayerEntity player, Item item)
+        {
+            this.Logger.LogTrace($"{player.Object.Name} want to equip {item.Data.Name}.");
+
+            if (!this._itemUsage.IsItemEquipable(player, item))
+            {
+                this.Logger.LogTrace($"{player.Object.Name} can not equip {item.Data.Name}.");
+                return;
             }
+
+            int sourceSlot = item.Slot;
+            int equipedItemSlot = item.Data.Parts + EquipOffset;
+            Item equipedItem = player.Inventory[equipedItemSlot];
+
+            if (equipedItem != null && equipedItem.Slot != -1)
+            {
+                this.UnequipItem(player, equipedItem);
+            }
+
+            // Move item
+            item.Slot = equipedItemSlot;
+            player.Inventory.Items.Swap(sourceSlot, equipedItemSlot);
+
+            WorldPacketFactory.SendItemEquip(player, item, item.Data.Parts, true);
         }
 
         /// <summary>
@@ -213,11 +203,10 @@ namespace Rhisis.World.Systems.Inventory
         {
             int sourceSlot = item.Slot;
             int availableSlot = player.Inventory.GetAvailableSlot();
-            Logger.LogDebug("Available slot: {0}", availableSlot);
+            Logger.LogDebug("Unequip: Available slot: {0}", availableSlot);
 
             if (availableSlot < 0)
             {
-                Logger.LogDebug("No available slots.");
                 WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
@@ -238,7 +227,7 @@ namespace Rhisis.World.Systems.Inventory
         /// </summary>
         /// <param name="player">Player entity</param>
         /// <param name="e"></param>
-        private void CreateItem(IPlayerEntity player, InventoryCreateItemEventArgs e)
+        private void ProcessCreateItem(IPlayerEntity player, InventoryCreateItemEventArgs e)
         {
             ItemData itemData = e.ItemData;
 
@@ -316,7 +305,7 @@ namespace Rhisis.World.Systems.Inventory
         /// </summary>
         /// <param name="player">Player entity.</param>
         /// <param name="e">Drop item event arguments.</param>
-        private void DropItem(IPlayerEntity player, InventoryDropItemEventArgs e)
+        private void ProcessDropItem(IPlayerEntity player, InventoryDropItemEventArgs e)
         {
             Item inventoryItem = player.Inventory.GetItem(e.UniqueItemId);
 
@@ -342,6 +331,38 @@ namespace Rhisis.World.Systems.Inventory
                 inventoryItem.Reset();
 
             WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
+        }
+
+        /// <summary>
+        /// Use an item from the player's inventory.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="e"></param>
+        private void ProcessUseItem(IPlayerEntity player, InventoryUseItemEventArgs e)
+        {
+            Item inventoryItem = player.Inventory.GetItem(e.UniqueItemId);
+
+            if (inventoryItem == null)
+            {
+                this.Logger.LogWarning($"Cannot find item with unique Id: {e.UniqueItemId}");
+                return;
+            }
+
+            if (e.Part >= MaxHumanParts)
+            {
+                this.Logger.LogWarning($"Parts cannot be grather than {MaxHumanParts}.");
+                return;
+            }
+
+            if (e.Part != int.MaxValue)
+            {
+                if (!player.Battle.IsFighting)
+                    this.EquipItem(player, inventoryItem);
+            }
+            else
+            {
+                this._itemUsage.UseItem(player, inventoryItem);
+            }
         }
     }
 }

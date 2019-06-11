@@ -132,10 +132,15 @@ namespace Rhisis.World.Systems.Leveling
                 player.Statistics.StatPoints += statPoints;
             }
 
+            int strength = player.Attributes[DefineAttributes.STR];
+            int stamina = player.Attributes[DefineAttributes.STA];
+            int dexterity = player.Attributes[DefineAttributes.DEX];
+            int intelligence = player.Attributes[DefineAttributes.INT];
+
             player.PlayerData.Experience = 0;
-            player.Health.Hp = HealthFormulas.GetMaxOriginHp(player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.MaxHpFactor);
-            player.Health.Mp = HealthFormulas.GetMaxOriginMp(player.Object.Level, player.Statistics.Intelligence, player.PlayerData.JobData.MaxMpFactor, true);
-            player.Health.Fp = HealthFormulas.GetMaxOriginFp(player.Object.Level, player.Statistics.Stamina, player.Statistics.Dexterity, player.Statistics.Strength, player.PlayerData.JobData.MaxFpFactor, true);
+            player.Health.Hp = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);
+            player.Health.Mp = HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, player.PlayerData.JobData.MaxMpFactor, true);
+            player.Health.Fp = HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, player.PlayerData.JobData.MaxFpFactor, true);
         }
     }
 }
