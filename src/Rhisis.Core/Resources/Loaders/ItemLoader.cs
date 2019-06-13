@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
 using System;
 using System.Collections.Generic;
@@ -56,8 +57,10 @@ namespace Rhisis.Core.Resources.Loaders
             {
                 var items = propItem.GetRecords<ItemData>();
 
-                foreach (var item in items)
+                foreach (ItemData item in items)
                 {
+                    this.TransformItem(item);
+
                     if (this._itemsData.ContainsKey(item.Id))
                     {
                         this._itemsData[item.Id] = item;
@@ -84,6 +87,30 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="predicate"></param>
         /// <returns></returns>
         public IEnumerable<ItemData> GetItems(Func<ItemData, bool> predicate) => this._itemsData.Values.Where(predicate);
+
+        /// <summary>
+        /// Applies custom transformation to an item.
+        /// </summary>
+        /// <param name="item">Item to transform.</param>
+        private void TransformItem(ItemData item)
+        {
+            var itemParams = new Dictionary<DefineAttributes, int>();
+
+            if (item.DestParam1 != "0")
+            {
+                itemParams.Add(item.DestParam1.Replace("DST_", string.Empty).ToEnum<DefineAttributes>(), item.AdjustParam1);
+            }
+            if (item.DestParam2 != "0")
+            {
+                itemParams.Add(item.DestParam2.Replace("DST_", string.Empty).ToEnum<DefineAttributes>(), item.AdjustParam2);
+            }
+            if (item.DestParam3 != "0")
+            {
+                itemParams.Add(item.DestParam3.Replace("DST_", string.Empty).ToEnum<DefineAttributes>(), item.AdjustParam3);
+            }
+
+            item.Params = itemParams;
+        }
 
         /// <inheritdoc />
         public void Dispose()

@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Data;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
@@ -60,7 +61,34 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwAttackSpeed")]
         public float AttackSpeed { get; set; }
 
+        [DataMember(Name = "dwDestParam1")]
+        public string DestParam1 { get; set; }
+
+        [DataMember(Name = "dwDestParam2")]
+        public string DestParam2 { get; set; }
+
+        [DataMember(Name = "dwDestParam3")]
+        public string DestParam3 { get; set; }
+
+        [DataMember(Name = "nAdjParamVal1")]
+        public int AdjustParam1 { get; set; }
+
+        [DataMember(Name = "nAdjParamVal2")]
+        public int AdjustParam2 { get; set; }
+
+        [DataMember(Name = "nAdjParamVal3")]
+        public int AdjustParam3 { get; set; }
+
+        [DataMember(Name = "dwCircleTime")]
+        public int CircleTime { get; set; }
+
+        [DataMember(Name = "dwUseable")]
+        public bool IsUseable { get; set; }
+
         [IgnoreDataMember]
-        public bool IsStackable => this.PackMax > 1;        
+        public bool IsStackable => this.PackMax > 1;
+
+        [IgnoreDataMember]
+        public IReadOnlyDictionary<DefineAttributes, int> Params { get; internal set; }
     }
 }
