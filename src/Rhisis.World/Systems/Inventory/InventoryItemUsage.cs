@@ -109,7 +109,7 @@ namespace Rhisis.World.Systems.Inventory
 
                     if (parameter.Value >= 0)
                     {
-                        if (currentPoints >= maxPoints)
+                        if (currentPoints >= itemMaxRecovery)
                         {
                             float limitedRecovery = parameter.Value * 0.3f;
 
