@@ -306,6 +306,7 @@ namespace Rhisis.World.Systems.Inventory
             }
         }
 
+
         /// <summary>
         /// Drops an item from the inventory to the ground.
         /// </summary>
@@ -367,7 +368,7 @@ namespace Rhisis.World.Systems.Inventory
             }
             else
             {
-                if (inventoryItem.Data.IsUseable)
+                if (inventoryItem.Data.IsUseable && inventoryItem.Quantity > 0)
                     this._itemUsage.UseItem(player, inventoryItem);
             }
         }

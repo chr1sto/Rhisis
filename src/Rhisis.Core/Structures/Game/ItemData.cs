@@ -85,6 +85,27 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwUseable")]
         public bool IsUseable { get; set; }
 
+        [DataMember(Name = "dwSfxObj")]
+        public int SfxObject { get; set; }
+
+        [DataMember(Name = "dwSfxObj2")]
+        public int SfxObject2 { get; set; }
+
+        [DataMember(Name = "dwSfxObj3")]
+        public int SfxObject3 { get; set; }
+
+        [DataMember(Name = "dwSfxObj4")]
+        public int SfxObject4 { get; set; }
+
+        [DataMember(Name = "dwSfxObj5")]
+        public int SfxObject5 { get; set; }
+
+        [DataMember(Name = "bPermanence")]
+        public bool IsPermanant { get; set; }
+
+        [DataMember(Name = "dwSkillReady")]
+        public int CoolTime { get; set; }
+
         [IgnoreDataMember]
         public bool IsStackable => this.PackMax > 1;
 

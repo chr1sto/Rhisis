@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
@@ -57,14 +56,40 @@ namespace Rhisis.World.Systems.Inventory
         {
             this._logger.LogTrace($"{player.Object.Name} want to use {itemToUse.Data.Name}.");
 
-            // TODO: check if item is ready to use.
+            bool itemHasCoolTime = player.Inventory.ItemHasCoolTime(itemToUse);
+
+            if (itemHasCoolTime && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
+            {
+                this._logger.LogDebug($"Player '{player.Object.Name}' cannot use item {itemToUse.Data.Name}: CoolTime.");
+                return;
+            }
 
             switch (itemToUse.Data.ItemKind2)
             {
+                case ItemKind2.REFRESHER:
+                case ItemKind2.POTION:
                 case ItemKind2.FOOD:
                     this.UseFoodItem(player, itemToUse);
                     break;
+                default:
+                    this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                    WorldPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                    break;
             }
+
+            var itemUpdateType = UpdateItemType.UI_NUM;
+
+            if (itemHasCoolTime)
+            {
+                itemUpdateType = UpdateItemType.UI_COOLTIME;
+                player.Inventory.SetCoolTime(itemToUse, itemToUse.Data.CoolTime);
+            }
+
+            if (!itemToUse.Data.IsPermanant)
+                itemToUse.Quantity--;
+
+            WorldPacketFactory.SendSpecialEffect(player, itemToUse.Data.SfxObject3);
+            WorldPacketFactory.SendItemUpdate(player, itemUpdateType, itemToUse.UniqueId, itemToUse.Quantity);
         }
 
         /// <summary>
@@ -116,6 +141,8 @@ namespace Rhisis.World.Systems.Inventory
                 else
                 {
                     // TODO: food triggers a skill.
+                    this._logger.LogWarning($"Activating a skill throught food.");
+                    WorldPacketFactory.SendFeatureNotImplemented(player, "skill with food");
                 }
             }
         }

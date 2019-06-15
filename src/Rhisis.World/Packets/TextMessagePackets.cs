@@ -63,5 +63,29 @@ namespace Rhisis.World.Packets
                 player.Connection.Send(packet);
             }
         }
+
+        /// <summary>
+        /// Sends a system message to the player.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="text">System message text.</param>
+        public static void SendSnoop(IPlayerEntity player, string text)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(0, SnapshotType.SNOOP);
+                packet.Write(text);
+
+                player.Connection.Send(packet);
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to the player telling that the feature is not implemented yet.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="feature">Feature name.</param>
+        public static void SendFeatureNotImplemented(IPlayerEntity player, string feature) 
+            => SendSnoop(player, $"Not implemented: {feature}");
     }
 }

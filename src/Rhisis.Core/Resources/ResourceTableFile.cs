@@ -129,6 +129,9 @@ namespace Rhisis.Core.Resources
                         if (property.PropertyType.BaseType == typeof(Enum))
                             value = Enum.ToObject(property.PropertyType, Convert.ToInt32(value));
 
+                        if (property.PropertyType == typeof(bool))
+                            value = Convert.ToBoolean(Convert.ToInt32(value));
+
                         property.SetValue(obj, Convert.ChangeType(value, property.PropertyType));
                     }
                 }
