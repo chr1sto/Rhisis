@@ -3,11 +3,16 @@ using Ether.Network.Packets;
 using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Core.Data;
+using Rhisis.Core.IO;
 
 namespace Rhisis.World.Game.Components
 {
     public class ItemContainerComponent
     {
+        private const int MaxItemCoolTimes = 3;
+        private readonly long[] _itemsCoolTimes = new long[MaxItemCoolTimes];
+
         /// <summary>
         /// Gets the <see cref="ItemContainerComponent"/> max capacity.
         /// </summary>
@@ -213,6 +218,58 @@ namespace Rhisis.World.Game.Components
 
             for (var i = 0; i < this.MaxCapacity; ++i)
                 packet.Write(this.Items[i].UniqueId);
+        }
+
+        /// <summary>
+        /// Gets the item cool time group.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        /// <returns>Returns the item cool time group.</returns>
+        public int? GetItemCoolTimeGroup(Item item)
+        {
+            if (item.Data.CoolTime <= 0)
+                return null;
+
+            switch (item.Data.ItemKind2)
+            {
+                case ItemKind2.FOOD:
+                    return item.Data.ItemKind3 == ItemKind3.PILL ? 1 : 0;
+                case ItemKind2.SKILL:
+                    return 2;
+                default: return null;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the item has a cooltime.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool ItemHasCoolTime(Item item) => this.GetItemCoolTimeGroup(item).HasValue;
+
+        /// <summary>
+        /// Check if the given item is a cooltime item and can be used.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        /// <returns>Returns true if the item with cooltime can be used; false otherwise.</returns>
+        public bool CanUseItemWithCoolTime(Item item)
+        {
+            int? group = this.GetItemCoolTimeGroup(item);
+
+            return group.HasValue && this._itemsCoolTimes[group.Value] < Time.GetElapsedTime();
+        }
+
+        /// <summary>
+        /// Sets item cool time.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        /// <param name="cooltime">Cooltime.</param>
+        public void SetCoolTime(Item item, int cooltime)
+        {
+            int? group = this.GetItemCoolTimeGroup(item);
+
+            if (group.HasValue)
+                this._itemsCoolTimes[group.Value] = Time.GetElapsedTime() + cooltime;
         }
     }
 }

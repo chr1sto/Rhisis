@@ -1,10 +1,18 @@
 ﻿using Rhisis.Core.Extensions;
+using System;
 using Xunit;
 
 namespace Rhisis.Core.Test.Extensions
 {
     public class StringExtensionsTest
     {
+        public enum TestEnum
+        {
+            Unknown = 0,
+            One = 1,
+            Two = 2
+        }
+
         [Theory]
         [InlineData("foo@bar.com", true)]
         [InlineData("shade@rhisis-project.com", true)]
@@ -13,6 +21,22 @@ namespace Rhisis.Core.Test.Extensions
         public void IsValidEmailTest(string email, bool valid)
         {
             Assert.Equal(valid, email.IsValidEmail());
+        }
+
+        [Theory]
+        [InlineData("One", TestEnum.One, false)]
+        [InlineData("tWo", TestEnum.Two, false)]
+        [InlineData("Three", TestEnum.Unknown, true)]
+        public void ToEnumTest(string enumAsText, TestEnum expected, bool shouldThrow)
+        {
+            if (shouldThrow)
+            {
+                Assert.Throws<ArgumentException>(() => enumAsText.ToEnum<TestEnum>());
+            }
+            else
+            {
+                Assert.Equal(expected, enumAsText.ToEnum<TestEnum>());
+            }
         }
     }
 }

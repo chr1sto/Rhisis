@@ -54,6 +54,12 @@ namespace Rhisis.World.Systems.Inventory
                 return;
             }
 
+            if (player.Health.IsDead)
+            {
+                this.Logger.LogWarning($"Cannot execute inventory action {e.GetType()}. Player '{player.Object.Name}' is dead.");
+                return;
+            }
+
             switch (e)
             {
                 case InventoryInitializeEventArgs inventoryInitializeEvent:
@@ -300,6 +306,7 @@ namespace Rhisis.World.Systems.Inventory
             }
         }
 
+
         /// <summary>
         /// Drops an item from the inventory to the ground.
         /// </summary>
@@ -354,14 +361,15 @@ namespace Rhisis.World.Systems.Inventory
                 return;
             }
 
-            if (e.Part != int.MaxValue)
+            if (e.Part != -1)
             {
                 if (!player.Battle.IsFighting)
                     this.EquipItem(player, inventoryItem);
             }
             else
             {
-                this._itemUsage.UseItem(player, inventoryItem);
+                if (inventoryItem.Data.IsUseable && inventoryItem.Quantity > 0)
+                    this._itemUsage.UseItem(player, inventoryItem);
             }
         }
     }

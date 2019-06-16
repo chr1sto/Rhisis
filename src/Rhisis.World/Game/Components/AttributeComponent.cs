@@ -7,28 +7,56 @@ namespace Rhisis.World.Game.Components
     {
         private readonly IDictionary<DefineAttributes, int> _attributes;
 
+        /// <summary>
+        /// Gets the attribute value matching the given key.
+        /// </summary>
+        /// <param name="attribute">Attribute key.</param>
+        /// <returns>Attribute value.</returns>
         public int this[DefineAttributes attribute] => this.GetAttribute(attribute);
 
+        /// <summary>
+        /// Creates a new <see cref="AttributeComponent"/> instance.
+        /// </summary>
         public AttributeComponent()
         {
             this._attributes = new Dictionary<DefineAttributes, int>();
         }
 
+        /// <summary>
+        /// Resets an attribute to a given value.
+        /// </summary>
+        /// <param name="attribute">Attribute to reset.</param>
+        /// <param name="value">Attribute value.</param>
         public void ResetAttribute(DefineAttributes attribute, int value)
         {
             this._attributes[attribute] = value;
         }
 
+        /// <summary>
+        /// Increases an attribute value.
+        /// </summary>
+        /// <param name="attribute">Attribute to increase.</param>
+        /// <param name="increaseValue">Increase value.</param>
         public void IncreaseAttribute(DefineAttributes attribute, int increaseValue)
         {
             this._attributes[attribute] += increaseValue;
         }
 
+        /// <summary>
+        /// Decrease an attribute value.
+        /// </summary>
+        /// <param name="attribute">Attribute to decrease.</param>
+        /// <param name="decreaseValue">Decrease value.</param>
         public void DecreaseAttribute(DefineAttributes attribute, int decreaseValue)
         {
             this._attributes[attribute] -= decreaseValue;
         }
 
+        /// <summary>
+        /// Gets the attribute value matching the attribute key.
+        /// </summary>
+        /// <param name="attribute">Attribute.</param>
+        /// <returns>Attribute value.</returns>
         public int GetAttribute(DefineAttributes attribute)
         {
             return this._attributes.TryGetValue(attribute, out int value) ? value : default;
