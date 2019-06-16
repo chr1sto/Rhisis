@@ -64,7 +64,7 @@ namespace Rhisis.World.Game.Behaviors
             }
             else
             {
-                var inventoryItemCreationEvent = new InventoryCreateItemEventArgs(droppedItem.Drop.Item.Id, droppedItem.Drop.Item.Quantity, -1);
+                var inventoryItemCreationEvent = new InventoryCreateItemEventArgs(droppedItem.Drop.Item.Id, droppedItem.Drop.Item.Quantity, -1, droppedItem.Drop.Item.Refine);
                 player.NotifySystem<InventorySystem>(inventoryItemCreationEvent);
                 WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPITEM, $"\"{droppedItem.Object.Name}\"");
             }
