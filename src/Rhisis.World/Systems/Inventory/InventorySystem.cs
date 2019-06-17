@@ -2,6 +2,7 @@
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core;
@@ -298,6 +299,7 @@ namespace Rhisis.World.Systems.Inventory
                     {
                         Slot = availableSlot,
                         UniqueId = player.Inventory.Items[availableSlot].UniqueId,
+                        Refine = (byte)Math.Max(e.Refine, 0)
                     };
 
                     player.Inventory.Items[availableSlot] = newItem;

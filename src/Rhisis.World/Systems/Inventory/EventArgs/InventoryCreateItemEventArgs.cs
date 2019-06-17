@@ -23,22 +23,39 @@ namespace Rhisis.World.Systems.Inventory.EventArgs
         public int CreatorId { get; }
 
         /// <summary>
+        /// Gets or sets the item refine.
+        /// </summary>
+        public int Refine { get; set; }
+
+        /// <summary>
         /// Gets the data of the item to create.
         /// </summary>
         public ItemData ItemData { get; private set; }
 
-        /// <inheritdoc />
         /// <summary>
-        /// Creates a new <see cref="T:Rhisis.World.Systems.Inventory.EventArgs.InventoryCreateItemEventArgs" /> instance.
+        /// Creates a new <see cref="InventoryCreateItemEventArgs" /> instance.
         /// </summary>
         /// <param name="itemId">Item id</param>
         /// <param name="quantity">Item quantity</param>
         /// <param name="creatorId">Item creator id</param>
         public InventoryCreateItemEventArgs(int itemId, int quantity, int creatorId)
+            : this(itemId, quantity, creatorId, 0)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="InventoryCreateItemEventArgs"/> instance.
+        /// </summary>
+        /// <param name="itemId">Item id</param>
+        /// <param name="quantity">Item quantity</param>
+        /// <param name="creatorId">Item creator id</param>
+        /// <param name="refine">Item refine.</param>
+        public InventoryCreateItemEventArgs(int itemId, int quantity, int creatorId, int refine)
         {
             this.ItemId = itemId;
             this.Quantity = quantity;
             this.CreatorId = creatorId;
+            this.Refine = refine;
         }
 
         /// <inheritdoc />
