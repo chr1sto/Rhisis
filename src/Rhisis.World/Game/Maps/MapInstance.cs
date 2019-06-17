@@ -2,7 +2,6 @@
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
 using Rhisis.Core.Structures;
@@ -20,7 +19,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Rhisis.World.Game.Maps
 {
@@ -29,12 +27,12 @@ namespace Rhisis.World.Game.Maps
     {
         private const int DefaultMapLayerId = 1;
         private const int MapLandSize = 128;
+        private const int UpdateRate = 15;
 
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
         private readonly List<IMapRegion> _regions;
-        private readonly CancellationToken _cancellationToken;
-        private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly System.Timers.Timer _updateTimer;
         private readonly ReaderWriterLockSlim _layerLock;
         private static readonly ILogger Logger = DependencyContainer.Instance.Resolve<ILogger<MapInstance>>();
 
@@ -75,9 +73,9 @@ namespace Rhisis.World.Game.Maps
             this._mapPath = mapPath;
             this._layers = new List<IMapLayer>();
             this._regions = new List<IMapRegion>();
-            this._cancellationTokenSource = new CancellationTokenSource();
-            this._cancellationToken = this._cancellationTokenSource.Token;
             this._layerLock = new ReaderWriterLockSlim();
+            this._updateTimer = new System.Timers.Timer(UpdateRate);
+            this._updateTimer.Elapsed += (sender, e) => this.UpdateGameLoop();
         }
 
         /// <summary>
@@ -268,35 +266,10 @@ namespace Rhisis.World.Game.Maps
         }
 
         /// <inheritdoc />
-        public void StartUpdateTask()
-        {
-            // TODO: Find a better way to handle the MapInstance game loop. Keeping things like this for now.
-            const float FrameRatePerSeconds = 15f;
-            double previousTime = Time.TimeInMilliseconds();
-            double lag = 0f;
-
-            Task.Run(() =>
-            {
-                while (!this._cancellationToken.IsCancellationRequested)
-                {
-                    double currentTime = Time.TimeInMilliseconds();
-                    double elaspedTime = currentTime - previousTime;
-
-                    previousTime = currentTime;
-                    lag += elaspedTime;
-
-                    while (lag >= FrameRatePerSeconds)
-                    {
-                        this.Update();
-                        this.UpdateDeletedEntities();
-                        lag -= FrameRatePerSeconds;
-                    }
-                }
-            }, this._cancellationToken);
-        }
+        public void StartUpdateTask() => this._updateTimer.Start();
 
         /// <inheritdoc />
-        public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
+        public void StopUpdateTask() => this._updateTimer.Stop();
 
         /// <inheritdoc />
         public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => this.GetNearRevivalRegion(position, false);
@@ -344,6 +317,22 @@ namespace Rhisis.World.Game.Maps
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Updates the Map instance game loop.
+        /// </summary>
+        private void UpdateGameLoop()
+        {
+            try
+            {
+                this.Update();
+                this.UpdateDeletedEntities();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, $"An error occured in map {this.Name}.");
+            }
         }
 
         /// <summary>

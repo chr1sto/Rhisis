@@ -43,7 +43,7 @@ namespace Rhisis.World.Systems
                 {
                     this.ResetDropOwnership(dropItem);
                     dropItem.Object.Spawned = false;
-                    // TODO: Add a flag to delete this entity before next update
+                    dropItem.Delete();
                 }
 
                 if (!dropItem.Drop.IsTemporary && !dropItem.Object.Spawned && dropItem.Drop.RespawnTime <= Time.TimeInSeconds())

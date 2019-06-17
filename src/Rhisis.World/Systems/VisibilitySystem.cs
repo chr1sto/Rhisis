@@ -23,6 +23,9 @@ namespace Rhisis.World.Systems
         /// <param name="entity">Current entity</param>
         public void Execute(IEntity entity, SystemEventArgs args)
         {
+            if (!entity.Object.Spawned)
+                return;
+
             var currentMapLayer = entity.Context as IMapLayer;
 
             if (currentMapLayer == null)
