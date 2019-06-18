@@ -13,6 +13,9 @@ namespace Rhisis.World.Systems
         /// <inheritdoc />
         public void Execute(IEntity entity, SystemEventArgs args)
         {
+            if (!entity.Object.Spawned)
+                return;
+
             switch (entity)
             {
                 case IMonsterEntity monster:

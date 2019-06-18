@@ -5,6 +5,7 @@ using Rhisis.Database.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using Rhisis.Core.IO;
+using Rhisis.Core.Structures.Game;
 
 namespace Rhisis.Cluster.Packets
 {
@@ -100,9 +101,12 @@ namespace Rhisis.Cluster.Packets
                     packet.Write(character.Dexterity);
                     packet.Write(character.Intelligence);
                     packet.Write(0); // Mode ??
-                    packet.Write(character.Items.Count(i => i.ItemSlot > 42));
 
-                    foreach (var item in character.Items.Where(i => i.ItemSlot > 42))
+                    IEnumerable<DbItem> equipedItems = character.Items.Where(x => x.ItemSlot > 42);
+
+                    packet.Write(equipedItems.Count());
+
+                    foreach (DbItem item in equipedItems)
                         packet.Write(item.ItemId);
                 }
 

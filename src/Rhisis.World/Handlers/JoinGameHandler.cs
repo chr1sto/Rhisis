@@ -123,6 +123,11 @@ namespace Rhisis.World.Handlers
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
+            client.Player.Attributes.ResetAttribute(DefineAttributes.STR, character.Strength);
+            client.Player.Attributes.ResetAttribute(DefineAttributes.STA, character.Stamina);
+            client.Player.Attributes.ResetAttribute(DefineAttributes.DEX, character.Dexterity);
+            client.Player.Attributes.ResetAttribute(DefineAttributes.INT, character.Intelligence);
+
             client.Player.Statistics = new StatisticsComponent(character);
             client.Player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
 

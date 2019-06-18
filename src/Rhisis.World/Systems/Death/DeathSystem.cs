@@ -45,11 +45,15 @@ namespace Rhisis.World.Systems.Death
 
             decimal recoveryRate = GameResources.Instance.Penalities.GetRevivalPenality(player.Object.Level) / 100;
             var jobData = player.PlayerData.JobData;
-            var playerStats = player.Statistics;
 
-            player.Health.Hp = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, playerStats.Stamina, jobData.MaxHpFactor) * recoveryRate);
-            player.Health.Mp = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, playerStats.Intelligence, jobData.MaxMpFactor, true) * recoveryRate);
-            player.Health.Fp = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, playerStats.Stamina, playerStats.Dexterity, playerStats.Strength, jobData.MaxFpFactor, true) * recoveryRate);
+            int strength = player.Attributes[DefineAttributes.STR];
+            int stamina = player.Attributes[DefineAttributes.STA];
+            int dexterity = player.Attributes[DefineAttributes.DEX];
+            int intelligence = player.Attributes[DefineAttributes.INT];
+
+            player.Health.Hp = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, jobData.MaxHpFactor) * recoveryRate);
+            player.Health.Mp = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, jobData.MaxMpFactor, true) * recoveryRate);
+            player.Health.Fp = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, jobData.MaxFpFactor, true) * recoveryRate);
 
             if (player.Object.MapId != revivalRegion.MapId)
             {

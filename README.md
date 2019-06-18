@@ -77,6 +77,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- Equip/Unequip items
 	- Save inventory
 	- Drop items on the ground
+	- Item usage (food, potion, refreshers)
 - Shop System
 	- Buy items
 	- Sell items
@@ -91,6 +92,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- Monster death
 	- Monster item/gold drop
 - Character customization system
+- Attribute System
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)

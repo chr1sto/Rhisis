@@ -8,6 +8,30 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ...
 
+## 0.2.1 - 2019-06-18
+
+### World Server
+
+#### Fixes
+
+- Fix `NullReferenceException` when a player attacks a monster without a weapon (PR [#231](https://github.com/Eastrall/Rhisis/pull/231))
+- Fix ClusterServer weapon display (PR [#239](https://github.com/Eastrall/Rhisis/pull/239))
+- Fix Respawn system (PR [#242](https://github.com/Eastrall/Rhisis/pull/242))
+- Fix dropped items bonuses (PR [#243](https://github.com/Eastrall/Rhisis/pull/243)
+
+#### Features
+
+- Attribute system (PR [#237](https://github.com/Eastrall/Rhisis/pull/237)
+- Food, potions and refreshers items usage (PR [#241](https://github.com/Eastrall/Rhisis/pull/241))
+
+#### Resources
+
+- Add Flarine dialogs (PR [#233](https://github.com/Eastrall/Rhisis/pull/233))
+
+#### Changes
+
+- Remove SQL Server support (PR [#232](https://github.com/Eastrall/Rhisis/pull/232))
+
 ## [Released]
 
 ## [0.2.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.2) - 2019-05-29

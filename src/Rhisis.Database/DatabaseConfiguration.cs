@@ -36,12 +36,6 @@ namespace Rhisis.Database
         public string Database { get; set; }
 
         /// <summary>
-        /// Gets or sets the database provider.
-        /// </summary>
-        [DataMember(Name = "provider")]
-        public DatabaseProvider Provider { get; set; }
-
-        /// <summary>
         /// Gets or sets the database encryption key.
         /// </summary>
         /// <remarks>
@@ -63,6 +57,6 @@ namespace Rhisis.Database
 
         /// <inheritdoc />
         public override string ToString() 
-            => $"Host: {Host}, Port: {Port}, Username: {Username}, Password: {Password}, Database: {Database}, Provider: {Provider}";
+            => $"Host: {Host}, Port: {Port}, Username: {Username}, Password: {Password}, Database: {Database}";
     }
 }

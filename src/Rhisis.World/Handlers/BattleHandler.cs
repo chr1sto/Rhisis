@@ -30,9 +30,9 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            Item weaponItem = client.Player.Inventory[InventorySystem.RightWeaponSlot];
+            Item weaponItem = client.Player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot) ?? InventorySystem.Hand;
 
-            if (weaponItem != null && weaponItem.Data.AttackSpeed != meleePacket.WeaponAttackSpeed)
+            if (weaponItem != null && weaponItem.Data?.AttackSpeed != meleePacket.WeaponAttackSpeed)
             {
                 Logger.LogCritical($"Player {client.Player.Object.Name} has changed his weapon speed.");
                 return;
