@@ -7,7 +7,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/500148ec8bdd4f2e954f11c682c39f3c)](https://www.codacy.com/app/Eastrall/Rhisis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Rhisis&amp;utm_campaign=Badge_Grade)
 [![discord](https://discordapp.com/api/guilds/294405146300121088/widget.png)](https://discord.gg/zAT6Az2)
 
-Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 2.0.
+Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 2.2.
 
 This project has been created for learning purposes about the network and game logic problematics on the server-side.
 We choose to use the [Ether.Network][ethernetwork] because it provides a clients management system and also a robust packet management system entirely customisable.
@@ -15,16 +15,16 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 ## Details
 
 - Language: `C#` 7
-- Framework: `.NET Core 2.0`
+- Framework: `.NET Core 2.2`
 - Application type: `Console`
-- Database type: `MsSQL Express` or `MySQL`
+- Database type: `MySQL`
 - Configuration files type: `JSON`
 - External libraries used:
 	- [Ether.Network][ethernetwork]
 	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 	- [NLog](https://github.com/NLog/NLog)
-- Environment: Visual Studio 2017
+- Environment: Visual Studio 2017/2019
 
 ## Features
 
@@ -35,7 +35,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 - Packet handler
 
 ### Database
-- Multi-DB support (MySQL, MsSQL)
+- MySQL database support
 
 ### Login
 - Inter-Server authentication process (ISC)
@@ -99,7 +99,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 
 1. Download or Clone the `develop` branch.
 2. Install the latest .NET Core SDK : https://dotnet.microsoft.com/download
-3. Install `MsSQL Express` or `MySQL Server`
+3. Install `MySQL Server`
 4. Go to your Rhisis folder, open a `cmd` or `PowerShell` and compile the solution with the command : `dotnet build`
 5. Go to the `bin/` folder, open a `cmd` or `PowerShell` and type: `./rhisis-cli.bat setup`
 > ℹ️ The `rhisis-cli setup` command will guide you through the rhisis configuration and will setup the database for you.
