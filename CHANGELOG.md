@@ -6,23 +6,25 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## 0.3.0 - 2019-06-30
 
-...
+#### Fixes
+
+- [World] Fix equipement bug for female gender (PR [#247](https://github.com/Eastrall/Rhisis/pull/247))
+- [World] Fix item drop and moving in inventory (PR [#248](https://github.com/Eastrall/Rhisis/pull/248))
+- [World] Fix player death bug (PR [#249](https://github.com/Eastrall/Rhisis/pull/249))
 
 ## 0.2.1 - 2019-06-18
 
-### World Server
-
 #### Fixes
 
-- Fix `NullReferenceException` when a player attacks a monster without a weapon (PR [#231](https://github.com/Eastrall/Rhisis/pull/231))
-- Fix ClusterServer weapon display (PR [#239](https://github.com/Eastrall/Rhisis/pull/239))
-- Fix Respawn system (PR [#242](https://github.com/Eastrall/Rhisis/pull/242))
-- Fix dropped items bonuses (PR [#243](https://github.com/Eastrall/Rhisis/pull/243)
+- [World] Fix `NullReferenceException` when a player attacks a monster without a weapon (PR [#231](https://github.com/Eastrall/Rhisis/pull/231))
+- [Cluster] Fix ClusterServer weapon display (PR [#239](https://github.com/Eastrall/Rhisis/pull/239))
+- [World] Fix Respawn system (PR [#242](https://github.com/Eastrall/Rhisis/pull/242))
+- [World] Fix dropped items bonuses (PR [#243](https://github.com/Eastrall/Rhisis/pull/243)
 
 #### Features
 
-- Attribute system (PR [#237](https://github.com/Eastrall/Rhisis/pull/237)
-- Food, potions and refreshers items usage (PR [#241](https://github.com/Eastrall/Rhisis/pull/241))
+- [World] Attribute system (PR [#237](https://github.com/Eastrall/Rhisis/pull/237)
+- [World] Food, potions and refreshers items usage (PR [#241](https://github.com/Eastrall/Rhisis/pull/241))
 
 #### Resources
 
