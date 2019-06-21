@@ -30,7 +30,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <returns>True if the player can equip the item; false otherwise.</returns>
         public bool IsItemEquipable(IPlayerEntity player, Item item)
         {
-            if (item.Data.ItemSex != player.VisualAppearance.Gender)
+            if (item.Data.ItemSex != int.MaxValue && item.Data.ItemSex != player.VisualAppearance.Gender)
             {
                 this._logger.LogDebug("Wrong sex for armor");
                 WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGSEX, item.Data.Name);

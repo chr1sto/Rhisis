@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Data;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
@@ -32,6 +33,7 @@ namespace Rhisis.Core.Structures.Game
         public ItemKind3 ItemKind3 { get; set; }
 
         [DataMember(Name = "dwItemSex")]
+        [DefaultValue(int.MaxValue)]
         public int ItemSex { get; set; }
 
         [DataMember(Name = "dwCost")]
