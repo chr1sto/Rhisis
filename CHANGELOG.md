@@ -11,6 +11,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - [World] Fix equipement bug for female gender (PR [#247](https://github.com/Eastrall/Rhisis/pull/247))
 - [World] Fix item drop and moving in inventory (PR [#248](https://github.com/Eastrall/Rhisis/pull/248))
 - [World] Fix player death bug (PR [#249](https://github.com/Eastrall/Rhisis/pull/249))
+- [CLI] Fix CLI `setup` and `database update` commands ([#250](https://github.com/Eastrall/Rhisis/pull/250))
 
 ## [Released]
 
