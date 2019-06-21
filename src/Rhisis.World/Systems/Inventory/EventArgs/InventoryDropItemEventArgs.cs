@@ -28,7 +28,7 @@ namespace Rhisis.World.Systems.Inventory.EventArgs
         /// <inheritdoc />
         public override bool CheckArguments()
         {
-            return (this.UniqueItemId >= 0 && this.UniqueItemId < InventorySystem.EquipOffset) && this.Quantity > 0;
+            return this.UniqueItemId >= 0 && this.Quantity > 0;
         }
     }
 }

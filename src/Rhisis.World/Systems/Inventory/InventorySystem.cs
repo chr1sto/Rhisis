@@ -109,12 +109,6 @@ namespace Rhisis.World.Systems.Inventory
                     };
                 }
             }
-
-            for (int i = EquipOffset; i < MaxItems; ++i)
-            {
-                if (inventory.Items[i].Id == -1)
-                    inventory.Items[i].UniqueId = -1;
-            }
         }
 
         /// <summary>
@@ -320,7 +314,13 @@ namespace Rhisis.World.Systems.Inventory
 
             if (inventoryItem == null)
             {
-                Logger.LogWarning($"Cannot find item with unique Id: {e.UniqueItemId}");
+                Logger.LogWarning($"{player.Object.Name}: Cannot find item with unique Id: {e.UniqueItemId}");
+                return;
+            }
+
+            if (inventoryItem.Slot >= EquipOffset)
+            {
+                Logger.LogWarning($"{player.Object.Name}: Cannot drop an equiped item.");
                 return;
             }
 
