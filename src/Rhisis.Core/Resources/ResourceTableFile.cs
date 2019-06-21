@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.IO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +14,7 @@ namespace Rhisis.Core.Resources
     /// </summary>
     public class ResourceTableFile : FileStream, IDisposable
     {
+        private const string UndefinedValue = "NULL";
         private static readonly char[] DefaultSeparator = new char[] { '\t' };
         private readonly IDictionary<string, int> _defines;
         private readonly IDictionary<string, string> _texts;
@@ -107,11 +109,12 @@ namespace Rhisis.Core.Resources
 
             foreach (var record in this._datas)
             {
-                T obj = (T)Activator.CreateInstance(typeof(T));
+                var obj = (T)Activator.CreateInstance(typeof(T));
 
                 foreach (var property in typeProperties)
                 {
-                    DataMemberAttribute attribute = this.GetDataMemberAttribute(property);
+                    DataMemberAttribute attribute = this.GetPropertyAttribute<DataMemberAttribute>(property);
+                    DefaultValueAttribute defaultValue = this.GetPropertyAttribute<DefaultValueAttribute>(property);
                     int index = -1;
                     
                     if (attribute != null)
@@ -126,11 +129,18 @@ namespace Rhisis.Core.Resources
                     {
                         object value = record.ElementAt(index);
 
-                        if (property.PropertyType.BaseType == typeof(Enum))
-                            value = Enum.ToObject(property.PropertyType, Convert.ToInt32(value));
+                        if (value.ToString() == UndefinedValue)
+                        {
+                            value = defaultValue != null ? defaultValue.Value : this.GetTypeDefaultValue(property.PropertyType);
+                        }
+                        else
+                        {
+                            if (property.PropertyType.BaseType == typeof(Enum))
+                                value = Enum.ToObject(property.PropertyType, Convert.ToInt32(value));
 
-                        if (property.PropertyType == typeof(bool))
-                            value = Convert.ToBoolean(Convert.ToInt32(value));
+                            if (property.PropertyType == typeof(bool))
+                                value = Convert.ToBoolean(Convert.ToInt32(value));
+                        }
 
                         property.SetValue(obj, Convert.ChangeType(value, property.PropertyType));
                     }
@@ -209,7 +219,7 @@ namespace Rhisis.Core.Resources
                 return this._texts[data];
 
             return data
-                .Replace("=", "0")
+                .Replace("=", UndefinedValue)
                 .Replace(",", ".")
                 .Replace("\"", string.Empty);
         }
@@ -227,12 +237,19 @@ namespace Rhisis.Core.Resources
         }
 
         /// <summary>
-        /// Gets the <see cref="DataMemberAttribute"/> name value from the given property.
+        /// Gets the generic attribute value from the given property.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        private DataMemberAttribute GetDataMemberAttribute(PropertyInfo property) 
-            => property.GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute;
+        private T GetPropertyAttribute<T>(PropertyInfo property) where T : Attribute 
+            => property.GetCustomAttribute(typeof(T)) as T;
+
+        /// <summary>
+        /// Gets the type default value.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private object GetTypeDefaultValue(Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
 
         /// <summary>
         /// Disposes the resources.
