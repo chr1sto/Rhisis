@@ -92,6 +92,14 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void ProcessMonsterFight(IMonsterEntity monster)
         {
+            if (monster.Battle.Target.Health.IsDead)
+            {
+                monster.Follow.Target = null;
+                monster.Battle.Target = null;
+                monster.Battle.Targets.Clear();
+                return;
+            }
+
             if (monster.Follow.IsFollowing)
             {
                 monster.Moves.DestinationPosition = monster.Follow.Target.Object.Position.Clone();
