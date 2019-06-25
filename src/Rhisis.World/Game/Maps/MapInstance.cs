@@ -27,7 +27,8 @@ namespace Rhisis.World.Game.Maps
     {
         private const int DefaultMapLayerId = 1;
         private const int MapLandSize = 128;
-        private const int UpdateRate = 15;
+        private const int FrameRate = 60;
+        private const double UpdateRate = 1000f / FrameRate;
 
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
