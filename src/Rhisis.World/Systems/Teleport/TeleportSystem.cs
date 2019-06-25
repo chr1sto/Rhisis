@@ -84,7 +84,8 @@ namespace Rhisis.World.Systems.Teleport
                 player.Object.LayerId = defaultMapLayer.Id;
 
                 // TODO: get map height at x/z position
-                player.Object.Position = new Vector3(e.PositionX, 100, e.PositionZ);
+                float positionY = e.PositionY ?? 100;
+                player.Object.Position = new Vector3(e.PositionX, positionY, e.PositionZ);
                 player.Moves.DestinationPosition = player.Object.Position.Clone();
 
                 WorldPacketFactory.SendReplaceObject(player);
@@ -100,7 +101,8 @@ namespace Rhisis.World.Systems.Teleport
                 }
 
                 // TODO: get map height at x/z position
-                player.Object.Position = new Vector3(e.PositionX, 100, e.PositionZ);
+                float positionY = e.PositionY ?? 100;
+                player.Object.Position = new Vector3(e.PositionX, positionY, e.PositionZ);
                 player.Moves.DestinationPosition = player.Object.Position.Clone();
             }
 

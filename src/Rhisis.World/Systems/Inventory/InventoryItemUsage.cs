@@ -3,8 +3,12 @@ using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Helpers;
+using Rhisis.World.Game.Loaders;
+using Rhisis.World.Game.Maps;
+using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Teleport;
 using System;
 using System.Collections.Generic;
 
@@ -13,6 +17,7 @@ namespace Rhisis.World.Systems.Inventory
     internal sealed class InventoryItemUsage
     {
         private readonly ILogger<InventoryItemUsage> _logger;
+        private readonly MapLoader _mapLoader;
 
         /// <summary>
         /// Creates a new <see cref="InventoryItemUsage"/> instance.
@@ -20,6 +25,7 @@ namespace Rhisis.World.Systems.Inventory
         public InventoryItemUsage()
         {
             this._logger = DependencyContainer.Instance.Resolve<ILogger<InventoryItemUsage>>();
+            this._mapLoader = DependencyContainer.Instance.Resolve<MapLoader>();
         }
 
         /// <summary>
@@ -70,6 +76,9 @@ namespace Rhisis.World.Systems.Inventory
                 case ItemKind2.POTION:
                 case ItemKind2.FOOD:
                     this.UseFoodItem(player, itemToUse);
+                    break;
+                case ItemKind2.BLINKWING:
+                    this.UseBlinkwingItem(player, itemToUse);
                     break;
                 default:
                     this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
@@ -145,6 +154,66 @@ namespace Rhisis.World.Systems.Inventory
                     WorldPacketFactory.SendFeatureNotImplemented(player, "skill with food");
                 }
             }
+        }
+
+        /// <summary>
+        /// Uses blinkwing items.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="blinkwing"></param>
+        private void UseBlinkwingItem(IPlayerEntity player, Item blinkwing)
+        {
+            if (player.Object.Level < blinkwing.Data.LimitLevel)
+            {
+                this._logger.LogError($"Player {player.Object.Name} cannot use {blinkwing.Data.Name}. Level too low.");
+                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_USINGNOTLEVEL);
+                return;
+            }
+
+            // TODO: Check if player is sit
+            // TODO: Check if player is on Kebaras island
+            // TODO: Check if player is in guild war map
+
+            TeleportEventArgs teleportEvent;
+
+            if (blinkwing.Data.ItemKind3 == ItemKind3.TOWNBLINKWING)
+            {
+                IMapRevivalRegion revivalRegion = player.Object.CurrentMap.GetNearRevivalRegion(player.Object.Position);
+
+                if (revivalRegion == null)
+                {
+                    this._logger.LogError($"Cannot find any revival region for map '{player.Object.CurrentMap.Name}'.");
+                    return;
+                }
+                if (player.Object.MapId != revivalRegion.MapId)
+                {
+                    IMapInstance revivalMap = this._mapLoader.GetMapById(revivalRegion.MapId);
+
+                    if (revivalMap == null)
+                    {
+                        this._logger.LogError($"Cannot find revival map with id '{revivalRegion.MapId}'.");
+                        player.Connection.Server.DisconnectClient(player.Connection.Id);
+                        return;
+                    }
+
+                    revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
+                }
+
+                teleportEvent = new TeleportEventArgs(revivalRegion.MapId, 
+                    revivalRegion.RevivalPosition.X, 
+                    revivalRegion.RevivalPosition.Z, 
+                    revivalRegion.RevivalPosition.Y);
+            }
+            else
+            {
+                teleportEvent = new TeleportEventArgs(blinkwing.Data.WeaponTypeId, // Map Id
+                    blinkwing.Data.ItemAtkOrder1, // X
+                    blinkwing.Data.ItemAtkOrder3, // Z
+                    blinkwing.Data.ItemAtkOrder2, // Y
+                    blinkwing.Data.ItemAtkOrder4); // Angle
+            }
+
+            player.NotifySystem<TeleportSystem>(teleportEvent);
         }
     }
 }
