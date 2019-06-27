@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Helpers;
 using Rhisis.World.Game.Loaders;
@@ -62,9 +63,7 @@ namespace Rhisis.World.Systems.Inventory
         {
             this._logger.LogTrace($"{player.Object.Name} want to use {itemToUse.Data.Name}.");
 
-            bool itemHasCoolTime = player.Inventory.ItemHasCoolTime(itemToUse);
-
-            if (itemHasCoolTime && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
+            if (player.Inventory.ItemHasCoolTime(itemToUse) && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
             {
                 this._logger.LogDebug($"Player '{player.Object.Name}' cannot use item {itemToUse.Data.Name}: CoolTime.");
                 return;
@@ -86,19 +85,7 @@ namespace Rhisis.World.Systems.Inventory
                     break;
             }
 
-            var itemUpdateType = UpdateItemType.UI_NUM;
-
-            if (itemHasCoolTime)
-            {
-                itemUpdateType = UpdateItemType.UI_COOLTIME;
-                player.Inventory.SetCoolTime(itemToUse, itemToUse.Data.CoolTime);
-            }
-
-            if (!itemToUse.Data.IsPermanant)
-                itemToUse.Quantity--;
-
-            WorldPacketFactory.SendSpecialEffect(player, itemToUse.Data.SfxObject3);
-            WorldPacketFactory.SendItemUpdate(player, itemUpdateType, itemToUse.UniqueId, itemToUse.Quantity);
+            this.DecreaseItem(player, itemToUse);
         }
 
         /// <summary>
@@ -213,7 +200,35 @@ namespace Rhisis.World.Systems.Inventory
                     blinkwing.Data.ItemAtkOrder4); // Angle
             }
 
-            player.NotifySystem<TeleportSystem>(teleportEvent);
+            player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(blinkwing.Data.SkillReadyType), () =>
+            {
+                player.NotifySystem<TeleportSystem>(teleportEvent);
+                this.DecreaseItem(player, blinkwing);
+            });
+
+            WorldPacketFactory.SendStateMode(player, StateMode.BASEMOTION_MODE, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
+        }
+
+        /// <summary>
+        /// Decreases an item from player's inventory.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="item">Item to decrease.</param>
+        private void DecreaseItem(IPlayerEntity player, Item item)
+        {
+            var itemUpdateType = UpdateItemType.UI_NUM;
+
+            if (player.Inventory.ItemHasCoolTime(item))
+            {
+                itemUpdateType = UpdateItemType.UI_COOLTIME;
+                player.Inventory.SetCoolTime(item, item.Data.CoolTime);
+            }
+
+            if (!item.Data.IsPermanant)
+                item.Quantity--;
+
+            WorldPacketFactory.SendSpecialEffect(player, item.Data.SfxObject3);
+            WorldPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
         }
     }
 }

@@ -121,6 +121,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwItemAtkOrder4")]
         public int ItemAtkOrder4 { get; set; }
 
+        [DataMember(Name = "dwSkillReadyType")]
+        public int SkillReadyType { get; set; }
+
         [IgnoreDataMember]
         public WeaponType WeaponType => (WeaponType)Enum.ToObject(typeof(WeaponType), this.WeaponTypeId);
 

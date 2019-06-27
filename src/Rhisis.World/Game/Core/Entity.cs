@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Helpers;
+using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core.Systems;
 using System;
@@ -26,6 +27,9 @@ namespace Rhisis.World.Game.Core
         /// <inheritdoc />
         public ObjectComponent Object { get; set; }
 
+        /// <inheritdoc />
+        public Delayer Delayer { get; }
+
         /// <summary>
         /// Creates a new <see cref="Entity"/> instance.
         /// </summary>
@@ -35,6 +39,7 @@ namespace Rhisis.World.Game.Core
             this.Id = RandomHelper.GenerateUniqueId();
             this.Context = context;
             this.Object = new ObjectComponent();
+            this.Delayer = new Delayer();
         }
 
         /// <inheritdoc />

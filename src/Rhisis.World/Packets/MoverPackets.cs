@@ -4,6 +4,7 @@ using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Packets
 {
@@ -119,6 +120,23 @@ namespace Rhisis.World.Packets
                 packet.Write(left);
 
                 SendToVisible(packet, entity);
+            }
+        }
+
+        public static void SendStateMode(IEntity entity, StateMode mode, StateModeBaseMotion flags, Item item = null)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.StartNewMergedPacket(entity.Id, SnapshotType.STATEMODE);
+                packet.Write((int)mode);
+                packet.Write((byte)flags);
+
+                if (flags == StateModeBaseMotion.BASEMOTION_ON && item != null)
+                {
+                    packet.Write(item.Id);
+                }
+
+                SendToVisible(packet, entity, sendToPlayer: true);
             }
         }
     }
