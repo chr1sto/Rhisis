@@ -22,6 +22,9 @@ namespace Rhisis.World.Systems.Recovery.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments() => true;
+        public override bool GetCheckArguments()
+        {
+            return true;
+        }
     }
 }

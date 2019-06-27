@@ -40,7 +40,7 @@ namespace Rhisis.World.Systems.Teleport
                 return;
             }
 
-            if (!args.CheckArguments())
+            if (!args.GetCheckArguments())
             {
                 this._logger.LogError($"Cannot execute {nameof(TeleportSystem)} action: {args.GetType()} due to invalid arguments.");
                 return;

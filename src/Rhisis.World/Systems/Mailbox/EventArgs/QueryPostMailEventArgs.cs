@@ -46,7 +46,7 @@ namespace Rhisis.World.Systems.Mailbox.EventArgs
             this.Text = text;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return this.ItemQuantity >= 0 && this.Gold >= 0;
         }

@@ -20,7 +20,10 @@ namespace Rhisis.World.Systems.Trade.EventArgs
             Count = count;
         }
 
-        public override bool CheckArguments() => Slot < TradeSystem.MaxTrade &&
-                                                 Count > 0;
+        public override bool GetCheckArguments()
+        {
+            return Slot < TradeSystem.MaxTrade &&
+               Count > 0;
+        }
     }
 }

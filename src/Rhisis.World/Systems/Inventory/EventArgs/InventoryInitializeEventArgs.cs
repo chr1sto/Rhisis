@@ -21,6 +21,9 @@ namespace Rhisis.World.Systems.Inventory.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments() => true;
+        public override bool GetCheckArguments()
+        {
+            return true;
+        }
     }
 }

@@ -77,7 +77,7 @@ namespace Rhisis.World.Systems.Party.EventArgs
         {
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return LeaderId > 0 && MemberId > 0 && LeaderId != MemberId;
         }

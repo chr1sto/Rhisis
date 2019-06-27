@@ -35,7 +35,7 @@ namespace Rhisis.World.Systems.Mailbox
             if (!(entity is IPlayerEntity playerEntity))
                 return;
 
-            if (!e.CheckArguments())
+            if (!e.GetCheckArguments())
             {
                 Logger.LogError($"Cannot execute mailbox action: {e.GetType()} due to invalid arguments.");
                 return;

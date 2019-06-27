@@ -70,7 +70,7 @@ namespace Rhisis.World.Systems.Teleport
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return this.MapId > 0 && this.PositionX > 0f && this.PositionZ > 0f;
         }

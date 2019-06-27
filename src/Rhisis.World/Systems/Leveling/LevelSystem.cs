@@ -32,7 +32,7 @@ namespace Rhisis.World.Systems.Leveling
                 return;
             }
 
-            if (!args.CheckArguments())
+            if (!args.GetCheckArguments())
             {
                 this._logger.LogError($"Cannot execute Level System action: {args.GetType()} due to invalid arguments.");
                 return;

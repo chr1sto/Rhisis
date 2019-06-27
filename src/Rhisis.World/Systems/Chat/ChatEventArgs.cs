@@ -20,6 +20,9 @@ namespace Rhisis.World.Systems.Chat
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments() => !string.IsNullOrEmpty(this.Message);
+        public override bool GetCheckArguments()
+        {
+            return !string.IsNullOrEmpty(this.Message);
+        }
     }
 }

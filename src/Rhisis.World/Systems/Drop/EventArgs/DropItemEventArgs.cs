@@ -22,6 +22,9 @@ namespace Rhisis.World.Systems.Drop.EventArgs
             this.Owner = owner;
         }
 
-        public override bool CheckArguments() => this.Item != null && this.Item.Id > 0;
+        public override bool GetCheckArguments()
+        {
+            return this.Item != null && this.Item.Id > 0;
+        }
     }
 }

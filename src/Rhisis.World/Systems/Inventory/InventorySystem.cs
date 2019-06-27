@@ -49,7 +49,7 @@ namespace Rhisis.World.Systems.Inventory
             if (!(entity is IPlayerEntity player))
                 return;
             
-            if (!e.CheckArguments())
+            if (!e.GetCheckArguments())
             {
                 Logger.LogError("Cannot execute inventory action: {0} due to invalid arguments.", e.GetType());
                 return;

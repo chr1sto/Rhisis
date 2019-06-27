@@ -123,18 +123,16 @@ namespace Rhisis.World.Packets
             }
         }
 
-        public static void SendStateMode(IEntity entity, StateMode mode, StateModeBaseMotion flags, Item item = null)
+        public static void SendStateMode(IEntity entity, StateModeBaseMotion flags, Item item = null)
         {
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.STATEMODE);
-                packet.Write((int)mode);
+                packet.Write((int)entity.Object.StateMode);
                 packet.Write((byte)flags);
 
                 if (flags == StateModeBaseMotion.BASEMOTION_ON && item != null)
-                {
                     packet.Write(item.Id);
-                }
 
                 SendToVisible(packet, entity, sendToPlayer: true);
             }

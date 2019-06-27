@@ -89,7 +89,7 @@ namespace Rhisis.World.Game.Core
             {
                 if (disposing)
                 {
-                    // Dispose resources
+                    this.Delayer.Dispose();
                 }
 
                 this._disposedValue = true;

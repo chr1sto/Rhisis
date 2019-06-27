@@ -2,6 +2,7 @@
 
 namespace Rhisis.Core.Data
 {
+    [Flags]
     public enum StateMode : int
     {
         PK_MODE = 0x00000001,
@@ -10,7 +11,6 @@ namespace Rhisis.Core.Data
         BASEMOTION = 0x0000000c,
     }
 
-    [Flags]
     public enum StateModeBaseMotion : byte
     {
         BASEMOTION_ON = 0x00,

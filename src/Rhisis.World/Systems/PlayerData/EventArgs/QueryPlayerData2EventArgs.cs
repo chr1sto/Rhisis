@@ -21,7 +21,7 @@ namespace Rhisis.World.Systems.PlayerData.EventArgs
             this.PlayerDictionary = playerDictionary;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return Size <= 1024 && Size > 0;
         }

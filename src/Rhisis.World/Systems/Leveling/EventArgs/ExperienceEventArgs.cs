@@ -22,7 +22,7 @@ namespace Rhisis.World.Systems.Leveling.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return this.Experience > 0;
         }

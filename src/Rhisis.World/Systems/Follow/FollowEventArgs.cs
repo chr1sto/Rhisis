@@ -14,6 +14,9 @@ namespace Rhisis.World.Systems.Follow
             this.Distance = distance;
         }
 
-        public override bool CheckArguments() => this.TargetId > 0;
+        public override bool GetCheckArguments()
+        {
+            return this.TargetId > 0;
+        }
     }
 }

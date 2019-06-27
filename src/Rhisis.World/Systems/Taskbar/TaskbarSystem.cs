@@ -27,7 +27,7 @@ namespace Rhisis.World.Systems.Taskbar
             if (!(entity is IPlayerEntity player))
                 return;
 
-            if (!args.CheckArguments())
+            if (!args.GetCheckArguments())
             {
                 Logger.LogWarning("Invalid arguments received.");
                 return;

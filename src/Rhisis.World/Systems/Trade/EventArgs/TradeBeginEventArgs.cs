@@ -11,6 +11,9 @@ namespace Rhisis.World.Systems.Trade.EventArgs
             TargetId = targetId;
         }
 
-        public override bool CheckArguments() => TargetId > 0;
+        public override bool GetCheckArguments()
+        {
+            return TargetId > 0;
+        }
     }
 }

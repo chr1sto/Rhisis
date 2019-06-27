@@ -16,6 +16,9 @@ namespace Rhisis.World.Systems.Drop.EventArgs
             this.Owner = owner;
         }
 
-        public override bool CheckArguments() => this.GoldAmount > 0;
+        public override bool GetCheckArguments()
+        {
+            return this.GoldAmount > 0;
+        }
     }
 }

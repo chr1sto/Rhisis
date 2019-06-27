@@ -11,7 +11,7 @@ namespace Rhisis.World.Systems.Taskbar.EventArgs
             SlotIndex = slotIndex;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return SlotIndex >= 0 && SlotIndex < TaskbarSystem.MaxTaskbarApplets;
         }

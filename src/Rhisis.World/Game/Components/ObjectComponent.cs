@@ -89,6 +89,11 @@ namespace Rhisis.World.Game.Components
         public StateFlags MotionFlags { get; set; }
 
         /// <summary>
+        /// Gets or sets the object state mode.
+        /// </summary>
+        public StateMode StateMode { get; set; }
+
+        /// <summary>
         /// Creates and initializes a new <see cref="ObjectComponent"/>.
         /// </summary>
         public ObjectComponent()
