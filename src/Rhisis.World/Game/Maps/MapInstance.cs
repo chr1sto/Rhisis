@@ -137,8 +137,6 @@ namespace Rhisis.World.Game.Maps
                     }
                 }
 
-                var test = this._regions.Where(x => x is IMapTriggerRegion r && r.IsWrapzone);
-
                 if (!this._regions.Any(x => x is IMapRevivalRegion))
                 {
                     // Loads the default revival region if no revival region is loaded.
