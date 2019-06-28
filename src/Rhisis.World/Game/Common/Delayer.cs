@@ -15,7 +15,7 @@ namespace Rhisis.World.Game.Common
         /// <summary>
         /// Represents a delayed action.
         /// </summary>
-        private class DelayedAction
+        private class DelayedAction : IDisposable
         {
             private readonly CancellationTokenSource _cancellationTokenSource;
 
@@ -57,6 +57,11 @@ namespace Rhisis.World.Game.Common
             /// Cancels the current action.
             /// </summary>
             public void Cancel() => this._cancellationTokenSource.Cancel(false);
+
+            /// <summary>
+            /// Dispose the delayer action.
+            /// </summary>
+            public void Dispose() => this.Cancel();
         }
 
         /// <summary>
