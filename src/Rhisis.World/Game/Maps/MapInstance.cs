@@ -131,8 +131,13 @@ namespace Rhisis.World.Game.Maps
                             var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
                             this._regions.Add(newRevivalRegion);
                             break;
+                        case RegionInfo.RI_TRIGGER:
+                            this._regions.Add(MapTriggerRegion.FromRgnElement(region));
+                            break;
                     }
                 }
+
+                var test = this._regions.Where(x => x is IMapTriggerRegion r && r.IsWrapzone);
 
                 if (!this._regions.Any(x => x is IMapRevivalRegion))
                 {
