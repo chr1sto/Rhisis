@@ -52,7 +52,7 @@ namespace Rhisis.World.Systems.Recovery
                 return;
             }
 
-            if (!args.CheckArguments())
+            if (!args.GetCheckArguments())
             {
                 this._logger.LogError($"Cannot execute Recovery System action: {args.GetType()} due to invalid arguments.");
                 return;

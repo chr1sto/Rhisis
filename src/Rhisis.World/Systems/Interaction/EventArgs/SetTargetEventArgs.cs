@@ -26,7 +26,7 @@ namespace Rhisis.World.Systems.Interaction.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return true;
         }

@@ -23,7 +23,7 @@ namespace Rhisis.World.Systems.Customization.EventArgs
             UseCoupon = bUseCoupon;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return true;
         }

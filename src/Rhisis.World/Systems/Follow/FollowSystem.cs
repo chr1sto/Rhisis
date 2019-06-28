@@ -19,7 +19,7 @@ namespace Rhisis.World.Systems.Follow
         /// <inheritdoc />
         public void Execute(IEntity entity, SystemEventArgs e)
         {
-            if (!(entity is IMovableEntity movableEntity) || !e.CheckArguments())
+            if (!(entity is IMovableEntity movableEntity) || !e.GetCheckArguments())
             {
                 Logger.Error("FollowSystem: Invalid arguments");
                 return;

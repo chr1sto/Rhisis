@@ -25,7 +25,7 @@ namespace Rhisis.World.Systems.NpcShop
         public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity player) ||
-                !e.CheckArguments())
+                !e.GetCheckArguments())
             {
                 Logger.Error("NpcShopSystem: Invalid event arguments.");
                 return;

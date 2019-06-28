@@ -5,6 +5,9 @@ namespace Rhisis.World.Systems.NpcShop.EventArgs
     internal sealed class NpcShopCloseEventArgs : SystemEventArgs
     {
         /// <inheritdoc />
-        public override bool CheckArguments() => true;
+        public override bool GetCheckArguments()
+        {
+            return true;
+        }
     }
 }

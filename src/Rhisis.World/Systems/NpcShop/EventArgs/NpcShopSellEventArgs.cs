@@ -26,6 +26,9 @@ namespace Rhisis.World.Systems.NpcShop.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments() => this.Quantity > 0;
+        public override bool GetCheckArguments()
+        {
+            return this.Quantity > 0;
+        }
     }
 }

@@ -11,6 +11,9 @@ namespace Rhisis.World.Systems.Trade.EventArgs
             Gold = gold;
         }
 
-        public override bool CheckArguments() => Gold > 0;
+        public override bool GetCheckArguments()
+        {
+            return Gold > 0;
+        }
     }
 }

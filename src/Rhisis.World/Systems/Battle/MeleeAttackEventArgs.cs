@@ -28,7 +28,7 @@ namespace Rhisis.World.Systems.Battle
             this.UnknownParameter = unknownParameter;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return this.Target != null; // TODO: check if target is alive
         }

@@ -11,6 +11,9 @@ namespace Rhisis.World.Systems.Trade.EventArgs
             Mode = mode;
         }
 
-        public override bool CheckArguments() => true;
+        public override bool GetCheckArguments()
+        {
+            return true;
+        }
     }
 }

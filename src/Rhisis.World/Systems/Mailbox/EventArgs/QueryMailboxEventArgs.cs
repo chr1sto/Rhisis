@@ -4,7 +4,7 @@ namespace Rhisis.World.Systems.Mailbox.EventArgs
 {
     public class QueryMailboxEventArgs : SystemEventArgs
     {
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return true;
         }

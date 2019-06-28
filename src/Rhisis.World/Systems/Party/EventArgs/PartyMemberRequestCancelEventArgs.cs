@@ -34,7 +34,7 @@ namespace Rhisis.World.Systems.Party.EventArgs
             Mode = (PartyRequestCancelMode)packet.Mode;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return LeaderId > 0 && MemberId > 0 && LeaderId != MemberId;
         }

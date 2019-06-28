@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Helpers;
 using Rhisis.World.Game.Loaders;
@@ -8,6 +9,8 @@ using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.SpecialEffect;
+using Rhisis.World.Systems.SpecialEffect.EventArgs;
 using Rhisis.World.Systems.Teleport;
 using System;
 using System.Collections.Generic;
@@ -62,9 +65,7 @@ namespace Rhisis.World.Systems.Inventory
         {
             this._logger.LogTrace($"{player.Object.Name} want to use {itemToUse.Data.Name}.");
 
-            bool itemHasCoolTime = player.Inventory.ItemHasCoolTime(itemToUse);
-
-            if (itemHasCoolTime && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
+            if (player.Inventory.ItemHasCoolTime(itemToUse) && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
             {
                 this._logger.LogDebug($"Player '{player.Object.Name}' cannot use item {itemToUse.Data.Name}: CoolTime.");
                 return;
@@ -85,20 +86,6 @@ namespace Rhisis.World.Systems.Inventory
                     WorldPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                     break;
             }
-
-            var itemUpdateType = UpdateItemType.UI_NUM;
-
-            if (itemHasCoolTime)
-            {
-                itemUpdateType = UpdateItemType.UI_COOLTIME;
-                player.Inventory.SetCoolTime(itemToUse, itemToUse.Data.CoolTime);
-            }
-
-            if (!itemToUse.Data.IsPermanant)
-                itemToUse.Quantity--;
-
-            WorldPacketFactory.SendSpecialEffect(player, itemToUse.Data.SfxObject3);
-            WorldPacketFactory.SendItemUpdate(player, itemUpdateType, itemToUse.UniqueId, itemToUse.Quantity);
         }
 
         /// <summary>
@@ -154,6 +141,8 @@ namespace Rhisis.World.Systems.Inventory
                     WorldPacketFactory.SendFeatureNotImplemented(player, "skill with food");
                 }
             }
+
+            this.DecreaseItem(player, foodItemToUse);
         }
 
         /// <summary>
@@ -199,9 +188,9 @@ namespace Rhisis.World.Systems.Inventory
                     revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
                 }
 
-                teleportEvent = new TeleportEventArgs(revivalRegion.MapId, 
-                    revivalRegion.RevivalPosition.X, 
-                    revivalRegion.RevivalPosition.Z, 
+                teleportEvent = new TeleportEventArgs(revivalRegion.MapId,
+                    revivalRegion.RevivalPosition.X,
+                    revivalRegion.RevivalPosition.Z,
                     revivalRegion.RevivalPosition.Y);
             }
             else
@@ -213,7 +202,39 @@ namespace Rhisis.World.Systems.Inventory
                     blinkwing.Data.ItemAtkOrder4); // Angle
             }
 
-            player.NotifySystem<TeleportSystem>(teleportEvent);
+            player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(blinkwing.Data.SkillReadyType), () =>
+            {
+                player.NotifySystem<TeleportSystem>(teleportEvent);
+                player.NotifySystem<SpecialEffectSystem>(new SpecialEffectBaseMotionEventArgs(StateModeBaseMotion.BASEMOTION_OFF));
+                player.Inventory.ItemInUseActionId = Guid.Empty;
+                this.DecreaseItem(player, blinkwing);
+            });
+
+            player.NotifySystem<SpecialEffectSystem>(new SpecialEffectBaseMotionEventArgs(StateModeBaseMotion.BASEMOTION_ON, blinkwing));
+        }
+
+        /// <summary>
+        /// Decreases an item from player's inventory.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="item">Item to decrease.</param>
+        private void DecreaseItem(IPlayerEntity player, Item item)
+        {
+            var itemUpdateType = UpdateItemType.UI_NUM;
+
+            if (player.Inventory.ItemHasCoolTime(item))
+            {
+                itemUpdateType = UpdateItemType.UI_COOLTIME;
+                player.Inventory.SetCoolTime(item, item.Data.CoolTime);
+            }
+
+            if (!item.Data.IsPermanant)
+                item.Quantity--;
+
+            WorldPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
+
+            if (item.Data.SfxObject3 != 0)
+                player.NotifySystem<SpecialEffectSystem>(new SpecialEffectEventArgs(item.Data.SfxObject3));
         }
     }
 }

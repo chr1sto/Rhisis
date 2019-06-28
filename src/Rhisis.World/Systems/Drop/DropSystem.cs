@@ -37,7 +37,7 @@ namespace Rhisis.World.Systems.Drop
                 return;
             }
 
-            if (!args.CheckArguments())
+            if (!args.GetCheckArguments())
             {
                 Logger.LogError($"Cannot execute {nameof(DropSystem)} action: {args.GetType()} due to invalid arguments.");
                 return;

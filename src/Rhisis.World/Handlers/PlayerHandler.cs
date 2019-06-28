@@ -12,6 +12,9 @@ using Rhisis.World.Systems.Death;
 using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.PlayerData.EventArgs;
+using Rhisis.World.Systems.SpecialEffect;
+using Rhisis.World.Systems.SpecialEffect.EventArgs;
+using System;
 
 namespace Rhisis.World.Handlers
 {
@@ -25,6 +28,11 @@ namespace Rhisis.World.Handlers
             var targetObjectId = packet.Read<uint>();
             var distance = packet.Read<float>();
             var followEvent = new FollowEventArgs(targetObjectId, distance);
+
+            // Cancel current item usage action and SFX
+            client.Player.NotifySystem<SpecialEffectSystem>(new SpecialEffectBaseMotionEventArgs(StateModeBaseMotion.BASEMOTION_OFF));
+            client.Player.Delayer.CancelAction(client.Player.Inventory.ItemInUseActionId);
+            client.Player.Inventory.ItemInUseActionId = Guid.Empty;
 
             client.Player.NotifySystem<FollowSystem>(followEvent);
         }
@@ -55,6 +63,11 @@ namespace Rhisis.World.Handlers
                 Logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
                 return;
             }
+
+            // Cancel current item usage action and SFX
+            client.Player.NotifySystem<SpecialEffectSystem>(new SpecialEffectBaseMotionEventArgs(StateModeBaseMotion.BASEMOTION_OFF));
+            client.Player.Delayer.CancelAction(client.Player.Inventory.ItemInUseActionId);
+            client.Player.Inventory.ItemInUseActionId = Guid.Empty;
 
             // TODO: Check if player is flying
 

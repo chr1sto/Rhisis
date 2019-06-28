@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Components;
+﻿using Rhisis.World.Game.Common;
+using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Core.Systems;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,11 @@ namespace Rhisis.World.Game.Core
         /// Gets the object component of this entity.
         /// </summary>
         ObjectComponent Object { get; set; }
+
+        /// <summary>
+        /// Gets the entity action delayer.
+        /// </summary>
+        Delayer Delayer { get; }
 
         /// <summary>
         /// Notifies and executes a system.

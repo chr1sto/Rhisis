@@ -15,7 +15,7 @@ namespace Rhisis.World.Systems.Mailbox.EventArgs
             this.MailId = mailId;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return true;
         }

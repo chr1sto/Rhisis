@@ -20,7 +20,7 @@ namespace Rhisis.World.Systems.Customization
 
         public void Execute(IEntity entity, SystemEventArgs args)
         {
-            if (!(entity is IPlayerEntity playerEntity) || !args.CheckArguments())
+            if (!(entity is IPlayerEntity playerEntity) || !args.GetCheckArguments())
             {
                 Logger.LogError("CustomizationSystem: Invalid arguments.");
                 return;

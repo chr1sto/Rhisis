@@ -8,6 +8,6 @@ namespace Rhisis.World.Game.Core.Systems
         /// Checks the event arguments.
         /// </summary>
         /// <returns></returns>
-        public abstract bool CheckArguments();
+        public abstract bool GetCheckArguments();
     }
 }
