@@ -177,7 +177,8 @@ namespace Rhisis.CLI.Commands.Setup
 
             worldConfiguration.Maps = new List<string>
             {
-                "WI_WORLD_MADRIGAL"
+                "WI_WORLD_MADRIGAL",
+                "WI_DUNGEON_FL_MAS"
             };
             worldConfiguration.Language = "en";
             worldConfiguration.Drops.OwnershipTime = 7;

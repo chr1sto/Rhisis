@@ -131,6 +131,11 @@ namespace Rhisis.World.Game.Maps
                             var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
                             this._regions.Add(newRevivalRegion);
                             break;
+                        case RegionInfo.RI_TRIGGER:
+                            this._regions.Add(MapTriggerRegion.FromRgnElement(region));
+                            break;
+                        
+                        // TODO: load collector regions
                     }
                 }
 
@@ -140,9 +145,6 @@ namespace Rhisis.World.Game.Maps
                     this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0,
                         this._worldInformations.RevivalMapId, this._worldInformations.RevivalKey, null, false, false);
                 }
-
-                // TODO: load wrapzones
-                // TODO: load collector regions
             }
         }
 

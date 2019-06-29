@@ -1,6 +1,5 @@
 ﻿using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
-using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;

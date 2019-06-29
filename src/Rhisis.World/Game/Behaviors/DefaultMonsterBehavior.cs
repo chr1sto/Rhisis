@@ -31,7 +31,7 @@ namespace Rhisis.World.Game.Behaviors
             else
                 this.ProcessMonsterMovements(entity);
             
-            entity.Timers.LastAICheck = Time.GetElapsedTime() + (long)(entity.Data.Speed * 100f);
+            entity.Timers.LastAICheck = Time.GetElapsedTime() + (long)(entity.Moves.Speed * 100f);
         }
 
         /// <inheritdoc />

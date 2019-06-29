@@ -49,7 +49,7 @@ namespace Rhisis.World.Game.Maps.Regions
         /// <param name="revivalMapId">Revival map id.</param>
         /// <returns>New <see cref="MapRevivalRegion"/> instance.</returns>
         public static IMapRevivalRegion FromRgnElement(RgnRegion3 region, int revivalMapId)
-            => new MapRevivalRegion(region.Left, region.Top, region.Right, region.Bottom,
+            => new MapRevivalRegion(region.Left, region.Top, region.Right - region.Left, region.Bottom - region.Top,
                                     revivalMapId, region.Key, region.Position.Clone(), region.ChaoKey, region.TargetKey);
     }
 }

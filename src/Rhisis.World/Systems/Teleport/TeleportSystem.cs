@@ -68,6 +68,7 @@ namespace Rhisis.World.Systems.Teleport
                 if (destinationMap == null)
                 {
                     this._logger.LogError($"Cannot find map with id '{e.MapId}'.");
+                    WorldPacketFactory.SendSnoop(player, $"Cannot find map with id '{e.MapId}'.");
                     return;
                 }
 
