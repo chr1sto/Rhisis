@@ -62,6 +62,8 @@ namespace Rhisis.World.Game.Maps
 
                     this._regions.Add(respawnerRegion);
                 }
+                else
+                    this._regions.Add(region);
             }
         }
 
@@ -174,13 +176,6 @@ namespace Rhisis.World.Game.Maps
             monster.Attributes.ResetAttribute(DefineAttributes.STA, moverData.Stamina);
             monster.Attributes.ResetAttribute(DefineAttributes.DEX, moverData.Dexterity);
             monster.Attributes.ResetAttribute(DefineAttributes.INT, moverData.Intelligence);
-            //monster.Statistics = new StatisticsComponent
-            //{
-            //    Strength = (ushort)moverData.Strength,
-            //    Stamina = (ushort)moverData.Stamina,
-            //    Dexterity = (ushort)moverData.Dexterity,
-            //    Intelligence = (ushort)moverData.Intelligence
-            //};
             monster.Behavior = behaviors.MonsterBehaviors.GetBehavior(monster.Object.ModelId);
             monster.Region = respawnRegion;
             monster.Data = moverData;

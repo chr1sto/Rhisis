@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Core.Systems;
+﻿using Rhisis.Core.Structures;
+using Rhisis.World.Game.Core.Systems;
 
 namespace Rhisis.World.Systems.Teleport
 {
@@ -28,6 +29,16 @@ namespace Rhisis.World.Systems.Teleport
         /// Gets the target angle.
         /// </summary>
         public float Angle { get; }
+
+        /// <summary>
+        /// Creates a new <see cref="TeleportEventArgs"/> instance.
+        /// </summary>
+        /// <param name="mapId">Target Map Id.</param>
+        /// <param name="position">Teleport position.</param>
+        public TeleportEventArgs(int mapId, Vector3 position)
+            : this(mapId, position.X, position.Z, position.Y)
+        {
+        }
 
         /// <summary>
         /// Creates a new <see cref="TeleportEventArgs"/> instance.

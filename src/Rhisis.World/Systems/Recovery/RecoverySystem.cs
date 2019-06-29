@@ -8,9 +8,6 @@ using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Recovery.EventArgs;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.World.Systems.Recovery
 {
@@ -48,13 +45,13 @@ namespace Rhisis.World.Systems.Recovery
         {
             if (!(entity is IPlayerEntity player))
             {
-                this._logger.LogError($"Cannot execute Recovery System. {entity.Object.Name} is not a player.");
+                this._logger.LogError($"Cannot execute {nameof(RecoverySystem)}. {entity.Object.Name} is not a player.");
                 return;
             }
 
             if (!args.GetCheckArguments())
             {
-                this._logger.LogError($"Cannot execute Recovery System action: {args.GetType()} due to invalid arguments.");
+                this._logger.LogError($"Cannot execute {nameof(RecoverySystem)} action: {args.GetType()} due to invalid arguments.");
                 return;
             }
 

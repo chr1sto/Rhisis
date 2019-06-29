@@ -39,7 +39,7 @@ namespace Rhisis.World.Game.Maps.Regions
         /// <param name="region"><see cref="RgnRegion3"/> element.</param>
         /// <returns>New <see cref="MapTriggerRegion"/> instance.</returns>
         public static IMapTriggerRegion FromRgnElement(RgnRegion3 region)
-            => new MapTriggerRegion(region.Left, region.Top, region.Right, region.Bottom, 
+            => new MapTriggerRegion(region.Left, region.Top, region.Right - region.Left, region.Bottom - region.Top,
                 region.TeleportWorldId, region.TeleportPosition);
     }
 }
