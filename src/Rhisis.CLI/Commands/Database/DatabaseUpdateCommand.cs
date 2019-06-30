@@ -2,13 +2,14 @@
 using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Core.Helpers;
 using Rhisis.Database;
+using Rhisis.Database.Context;
 
 namespace Rhisis.CLI.Commands.Database
 {
     [Command("update", Description = "Updates the database structure")]
     public class DatabaseUpdateCommand
     {
-        private readonly IDatabase _database;
+        private readonly DatabaseFactory _databaseFactory;
 
         [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration",
             Description = "Specify the database configuration file path.")]
@@ -16,27 +17,32 @@ namespace Rhisis.CLI.Commands.Database
 
         public DatabaseUpdateCommand(DatabaseFactory databaseFactory)
         {
-            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
-                DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
-
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
-            _database = databaseFactory.GetDatabase(dbConfig);
+            this._databaseFactory = databaseFactory;
         }
 
         public void OnExecute()
         {
             try
             {
-                Console.WriteLine("Starting database structure update...");
-                var rhisisDbContext = _database.DatabaseContext;
-                if (rhisisDbContext.DatabaseExists())
+                if (string.IsNullOrEmpty(this.DatabaseConfigurationFile))
+                    this.DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
+
+                DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+
+                using (IDatabase database = this._databaseFactory.GetDatabase(dbConfig))
                 {
-                    rhisisDbContext.Migrate();
-                    Console.WriteLine("Database updated.");
-                }
-                else
-                {
-                    Console.WriteLine("Database does not exist yet!");
+                    Console.WriteLine("Starting database structure update...");
+                    DatabaseContext rhisisDbContext = database.DatabaseContext;
+
+                    if (rhisisDbContext.DatabaseExists())
+                    {
+                        rhisisDbContext.Migrate();
+                        Console.WriteLine("Database updated.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Database does not exist yet!");
+                    }
                 }
             }
             catch (Exception e)

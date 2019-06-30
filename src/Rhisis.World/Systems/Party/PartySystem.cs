@@ -23,7 +23,7 @@ namespace Rhisis.World.Systems.Party
             if (!(entity is IPlayerEntity player))
                 return;
 
-            if(!args.CheckArguments())
+            if(!args.GetCheckArguments())
             {
                 Logger.LogError("PartySystem: Invalid event action arguments.");
                 return;

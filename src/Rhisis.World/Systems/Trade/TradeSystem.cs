@@ -28,7 +28,7 @@ namespace Rhisis.World.Systems.Trade
         /// <inheritdoc />
         public void Execute(IEntity entity, SystemEventArgs e)
         {
-            if (!e.CheckArguments() || !(entity is IPlayerEntity playerEntity))
+            if (!e.GetCheckArguments() || !(entity is IPlayerEntity playerEntity))
                 return;
 
             switch (e)

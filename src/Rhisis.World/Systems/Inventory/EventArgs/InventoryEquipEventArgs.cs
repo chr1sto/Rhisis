@@ -15,6 +15,9 @@ namespace Rhisis.World.Systems.Inventory.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments() => Part < InventorySystem.MaxHumanParts;
+        public override bool GetCheckArguments()
+        {
+            return Part < InventorySystem.MaxHumanParts;
+        }
     }
 }

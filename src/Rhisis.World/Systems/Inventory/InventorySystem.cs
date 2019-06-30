@@ -49,7 +49,7 @@ namespace Rhisis.World.Systems.Inventory
             if (!(entity is IPlayerEntity player))
                 return;
             
-            if (!e.CheckArguments())
+            if (!e.GetCheckArguments())
             {
                 Logger.LogError("Cannot execute inventory action: {0} due to invalid arguments.", e.GetType());
                 return;
@@ -108,12 +108,6 @@ namespace Rhisis.World.Systems.Inventory
                         UniqueId = uniqueId,
                     };
                 }
-            }
-
-            for (int i = EquipOffset; i < MaxItems; ++i)
-            {
-                if (inventory.Items[i].Id == -1)
-                    inventory.Items[i].UniqueId = -1;
             }
         }
 
@@ -320,7 +314,13 @@ namespace Rhisis.World.Systems.Inventory
 
             if (inventoryItem == null)
             {
-                Logger.LogWarning($"Cannot find item with unique Id: {e.UniqueItemId}");
+                Logger.LogWarning($"{player.Object.Name}: Cannot find item with unique Id: {e.UniqueItemId}");
+                return;
+            }
+
+            if (inventoryItem.Slot >= EquipOffset)
+            {
+                Logger.LogWarning($"{player.Object.Name}: Cannot drop an equiped item.");
                 return;
             }
 

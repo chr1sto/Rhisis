@@ -30,6 +30,8 @@ namespace Rhisis.CLI.Commands.Database
                 EncryptionKey = Convert.ToBase64String(AesProvider.GenerateKey(AesKeySize.AES256Bits).Key)
             };
 
+            Console.WriteLine("### Database configuration ###");
+
             Console.Write("Host (localhost): ");
             dbConfiguration.Host = _consoleHelper.ReadStringOrDefault("localhost");
 

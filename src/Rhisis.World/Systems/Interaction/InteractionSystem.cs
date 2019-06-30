@@ -34,7 +34,7 @@ namespace Rhisis.World.Systems.Interaction
             if (!(entity is IPlayerEntity playerEntity))
                 return;
 
-            if (!e.CheckArguments())
+            if (!e.GetCheckArguments())
             {
                 Logger.LogError("Cannot execute interaction action: {0} due to invalid arguments.", e.GetType());
                 return;

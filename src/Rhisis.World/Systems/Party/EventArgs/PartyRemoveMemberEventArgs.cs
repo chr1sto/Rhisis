@@ -18,7 +18,7 @@ namespace Rhisis.World.Systems.Party.EventArgs
             MemberId = packet.MemberId;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return true;
         }

@@ -31,7 +31,7 @@ namespace Rhisis.World.Game.Behaviors
             else
                 this.ProcessMonsterMovements(entity);
             
-            entity.Timers.LastAICheck = Time.GetElapsedTime() + (long)(entity.Data.Speed * 100f);
+            entity.Timers.LastAICheck = Time.GetElapsedTime() + (long)(entity.Moves.Speed * 100f);
         }
 
         /// <inheritdoc />
@@ -92,6 +92,14 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void ProcessMonsterFight(IMonsterEntity monster)
         {
+            if (monster.Battle.Target.Health.IsDead)
+            {
+                monster.Follow.Target = null;
+                monster.Battle.Target = null;
+                monster.Battle.Targets.Clear();
+                return;
+            }
+
             if (monster.Follow.IsFollowing)
             {
                 monster.Moves.DestinationPosition = monster.Follow.Target.Object.Position.Clone();

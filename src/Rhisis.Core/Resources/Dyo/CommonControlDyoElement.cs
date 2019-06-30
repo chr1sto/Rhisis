@@ -32,7 +32,7 @@ namespace Rhisis.Core.Resources.Dyo
 
         public uint SetGender { get; private set; }
 
-        public bool[] SetJob { get; private set; } = new bool[(int)DefineJob.MAX_JOB];
+        public bool[] SetJob { get; private set; } = new bool[(int)DefineJob.JobMax.MAX_JOB];
 
         public uint SetEndu { get; private set; }
 

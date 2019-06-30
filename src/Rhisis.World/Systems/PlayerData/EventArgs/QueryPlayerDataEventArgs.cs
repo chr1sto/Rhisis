@@ -20,7 +20,7 @@ namespace Rhisis.World.Systems.PlayerData.EventArgs
             this.Version = version;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return true;
         }

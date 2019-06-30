@@ -4,35 +4,45 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Unreleased]
 
-## 0.3.0 - 2019-06-30
-
-...
-
-## 0.2.1 - 2019-06-18
-
-### World Server
-
-#### Fixes
-
-- Fix `NullReferenceException` when a player attacks a monster without a weapon (PR [#231](https://github.com/Eastrall/Rhisis/pull/231))
-- Fix ClusterServer weapon display (PR [#239](https://github.com/Eastrall/Rhisis/pull/239))
-- Fix Respawn system (PR [#242](https://github.com/Eastrall/Rhisis/pull/242))
-- Fix dropped items bonuses (PR [#243](https://github.com/Eastrall/Rhisis/pull/243)
-
-#### Features
-
-- Attribute system (PR [#237](https://github.com/Eastrall/Rhisis/pull/237)
-- Food, potions and refreshers items usage (PR [#241](https://github.com/Eastrall/Rhisis/pull/241))
-
-#### Resources
-
-- Add Flarine dialogs (PR [#233](https://github.com/Eastrall/Rhisis/pull/233))
-
-#### Changes
-
-- Remove SQL Server support (PR [#232](https://github.com/Eastrall/Rhisis/pull/232))
-
 ## [Released]
+
+## [0.3.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.3) - 2019-06-30
+
+### Fixes
+
+- ![world] Fix equipement bug for female gender ([#247](https://github.com/Eastrall/Rhisis/pull/247))
+- ![world] Fix item drop and moving in inventory ([#248](https://github.com/Eastrall/Rhisis/pull/248))
+- ![world] Fix player death bug ([#249](https://github.com/Eastrall/Rhisis/pull/249))
+- ![tools] Fix CLI `setup` and `database update` commands ([#250](https://github.com/Eastrall/Rhisis/pull/250))
+
+### Features
+
+- ![world] Blinkwing item usage ([#251](https://github.com/Eastrall/Rhisis/pull/251), [#253](https://github.com/Eastrall/Rhisis/pull/253))
+- ![world] Delayer system: Delay actions with a given amount of time. ([#253](https://github.com/Eastrall/Rhisis/pull/253))
+- ![world] Wrapzone system ([#254](https://github.com/Eastrall/Rhisis/pull/254))
+
+## [0.2.1](https://github.com/Eastrall/Rhisis/releases/tag/v0.2.1) - 2019-06-18
+
+### Fixes
+
+- ![world] Fix `NullReferenceException` when a player attacks a monster without a weapon ([#231](https://github.com/Eastrall/Rhisis/pull/231))
+- ![cluster] Fix ClusterServer weapon display ([#239](https://github.com/Eastrall/Rhisis/pull/239))
+- ![world] Fix Respawn system ([#242](https://github.com/Eastrall/Rhisis/pull/242))
+- ![world] Fix dropped items bonuses ([#243](https://github.com/Eastrall/Rhisis/pull/243)
+
+### Features
+
+- ![world] Attribute system ([#237](https://github.com/Eastrall/Rhisis/pull/237)
+- ![world] Food, potions and refreshers items usage ([#241](https://github.com/Eastrall/Rhisis/pull/241))
+
+### Resources
+
+- Add Flarine dialogs ([#233](https://github.com/Eastrall/Rhisis/pull/233))
+
+### Changes
+
+- Remove SQL Server support ([#232](https://github.com/Eastrall/Rhisis/pull/232))
+
 
 ## [0.2.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.2) - 2019-05-29
 
@@ -40,31 +50,31 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 #### Fixes
 
-- Fix real-time position calculation (PR [#200](https://github.com/Eastrall/Rhisis/pull/200))
-- Prevent dialogs from having duplicate links id. (PR [#213](https://github.com/Eastrall/Rhisis/pull/213))
-- Fix NPC loading (PR [#220](https://github.com/Eastrall/Rhisis/pull/220))
+- Fix real-time position calculation ([#200](https://github.com/Eastrall/Rhisis/pull/200))
+- Prevent dialogs from having duplicate links id. ([#213](https://github.com/Eastrall/Rhisis/pull/213))
+- Fix NPC loading ([#220](https://github.com/Eastrall/Rhisis/pull/220))
 
 #### Features
 
-- Pick-up drop items (PR [#203](https://github.com/Eastrall/Rhisis/pull/203))
-- Drop items from inventory (PR [#203](https://github.com/Eastrall/Rhisis/pull/203))
-- WSAD movements and Jump behavior (PR [#204](https://github.com/Eastrall/Rhisis/pull/204))
-- Add multiple dialog texts on DialogLinks. Allow next button on game (PR [#207](https://github.com/Eastrall/Rhisis/pull/207))
-- Add multiple dialog texts on introduction text. (PR [#215](https://github.com/Eastrall/Rhisis/pull/215))
-- Death System and resurection (PR [#206](https://github.com/Eastrall/Rhisis/pull/206))
-- Experience and Level up (PR [#214](https://github.com/Eastrall/Rhisis/pull/214), [#218](https://github.com/Eastrall/Rhisis/pull/218))
-- Experience loss on death (PR [#216](https://github.com/Eastrall/Rhisis/pull/216))
-- Teleport system (PR [#222](https://github.com/Eastrall/Rhisis/pull/222))
+- Pick-up drop items ([#203](https://github.com/Eastrall/Rhisis/pull/203))
+- Drop items from inventory ([#203](https://github.com/Eastrall/Rhisis/pull/203))
+- WSAD movements and Jump behavior ([#204](https://github.com/Eastrall/Rhisis/pull/204))
+- Add multiple dialog texts on DialogLinks. Allow next button on game ([#207](https://github.com/Eastrall/Rhisis/pull/207))
+- Add multiple dialog texts on introduction text. ([#215](https://github.com/Eastrall/Rhisis/pull/215))
+- Death System and resurection ([#206](https://github.com/Eastrall/Rhisis/pull/206))
+- Experience and Level up ([#214](https://github.com/Eastrall/Rhisis/pull/214), [#218](https://github.com/Eastrall/Rhisis/pull/218))
+- Experience loss on death ([#216](https://github.com/Eastrall/Rhisis/pull/216))
+- Teleport system ([#222](https://github.com/Eastrall/Rhisis/pull/222))
 
 #### Resources
 
-- Add Flarine dialogs (PR [#197](https://github.com/Eastrall/Rhisis/pull/197), [#199](https://github.com/Eastrall/Rhisis/pull/199), [#202](https://github.com/Eastrall/Rhisis/pull/202), [#209](https://github.com/Eastrall/Rhisis/pull/209), [#225](https://github.com/Eastrall/Rhisis/pull/225))
+- Add Flarine dialogs ([#197](https://github.com/Eastrall/Rhisis/pull/197), [#199](https://github.com/Eastrall/Rhisis/pull/199), [#202](https://github.com/Eastrall/Rhisis/pull/202), [#209](https://github.com/Eastrall/Rhisis/pull/209), [#225](https://github.com/Eastrall/Rhisis/pull/225))
 
 #### Changes
 
 - `MailShippingCost` configuration is now inside the `MailConfiguration` structure.
-- Review of database assembly (PR [#208](https://github.com/Eastrall/Rhisis/pull/208))
-- CLI code refactoring (PR [#217](https://github.com/Eastrall/Rhisis/pull/217))
+- Review of database assembly ([#208](https://github.com/Eastrall/Rhisis/pull/208))
+- CLI code refactoring ([#217](https://github.com/Eastrall/Rhisis/pull/217))
 
 ## [0.1.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.1) - 2019-03-23
 
@@ -128,3 +138,8 @@ This is the changelog of the Rhisis project. All notable changes to this project
 	- Monster death
 	- Monster item/gold drop
 - Character customization system
+
+[world]: https://img.shields.io/badge/-world-brightgreen.svg "world-component"
+[cluster]: https://img.shields.io/badge/-cluster-brightgreen.svg "cluster-component"
+[login]: https://img.shields.io/badge/-login-brightgreen.svg "login-component"
+[tools]: https://img.shields.io/badge/-tools-brightgreen.svg "tools-component"

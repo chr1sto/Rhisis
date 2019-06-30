@@ -29,6 +29,11 @@ namespace Rhisis.World.Game.Components
         public List<Item> Items { get; }
 
         /// <summary>
+        /// Gets or sets the delayed action id of the current item behing used.
+        /// </summary>
+        public Guid ItemInUseActionId { get; set; }
+
+        /// <summary>
         /// Creates a new <see cref="ItemContainerComponent"/> instance.
         /// </summary>
         public ItemContainerComponent(int maxCapacity) :

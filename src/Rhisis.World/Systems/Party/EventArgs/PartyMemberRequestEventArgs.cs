@@ -32,7 +32,7 @@ namespace Rhisis.World.Systems.Party.EventArgs
             Troup = packet.Troup;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return PlayerId > 0 && MemberId > 0 && PlayerId != MemberId;
         }

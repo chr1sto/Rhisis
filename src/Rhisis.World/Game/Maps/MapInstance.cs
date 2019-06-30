@@ -27,7 +27,8 @@ namespace Rhisis.World.Game.Maps
     {
         private const int DefaultMapLayerId = 1;
         private const int MapLandSize = 128;
-        private const int UpdateRate = 15;
+        private const int FrameRate = 60;
+        private const double UpdateRate = 1000f / FrameRate;
 
         private readonly string _mapPath;
         private readonly List<IMapLayer> _layers;
@@ -130,6 +131,11 @@ namespace Rhisis.World.Game.Maps
                             var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
                             this._regions.Add(newRevivalRegion);
                             break;
+                        case RegionInfo.RI_TRIGGER:
+                            this._regions.Add(MapTriggerRegion.FromRgnElement(region));
+                            break;
+                        
+                        // TODO: load collector regions
                     }
                 }
 
@@ -139,9 +145,6 @@ namespace Rhisis.World.Game.Maps
                     this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0,
                         this._worldInformations.RevivalMapId, this._worldInformations.RevivalKey, null, false, false);
                 }
-
-                // TODO: load wrapzones
-                // TODO: load collector regions
             }
         }
 

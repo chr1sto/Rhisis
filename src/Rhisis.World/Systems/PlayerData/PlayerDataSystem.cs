@@ -23,7 +23,7 @@ namespace Rhisis.World.Systems.PlayerData
             if (!(entity is IPlayerEntity playerEntity))
                 return;
 
-            if (!e.CheckArguments())
+            if (!e.GetCheckArguments())
             {
                 Logger.LogError($"Cannot execute player data action {e.GetType()} due to invalid arguments.");
                 return;

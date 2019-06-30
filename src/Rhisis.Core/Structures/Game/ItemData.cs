@@ -1,5 +1,7 @@
 ﻿using Rhisis.Core.Data;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
@@ -32,6 +34,7 @@ namespace Rhisis.Core.Structures.Game
         public ItemKind3 ItemKind3 { get; set; }
 
         [DataMember(Name = "dwItemSex")]
+        [DefaultValue(int.MaxValue)]
         public int ItemSex { get; set; }
 
         [DataMember(Name = "dwCost")]
@@ -42,9 +45,6 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwParts")]
         public int Parts { get; set; }
-
-        [DataMember(Name = "dwWeaponType")]
-        public WeaponType WeaponType { get; set; }
 
         [DataMember(Name = "dwAbilityMin")]
         public int AbilityMin { get; set; }
@@ -105,6 +105,27 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Name = "dwSkillReady")]
         public int CoolTime { get; set; }
+
+        [DataMember(Name = "dwWeaponType")]
+        public int WeaponTypeId { get; set; }
+
+        [DataMember(Name = "dwItemAtkOrder1")]
+        public int ItemAtkOrder1 { get; set; }
+
+        [DataMember(Name = "dwItemAtkOrder2")]
+        public int ItemAtkOrder2 { get; set; }
+
+        [DataMember(Name = "dwItemAtkOrder3")]
+        public int ItemAtkOrder3 { get; set; }
+
+        [DataMember(Name = "dwItemAtkOrder4")]
+        public int ItemAtkOrder4 { get; set; }
+
+        [DataMember(Name = "dwSkillReadyType")]
+        public int SkillReadyType { get; set; }
+
+        [IgnoreDataMember]
+        public WeaponType WeaponType => (WeaponType)Enum.ToObject(typeof(WeaponType), this.WeaponTypeId);
 
         [IgnoreDataMember]
         public bool IsStackable => this.PackMax > 1;

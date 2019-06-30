@@ -53,7 +53,7 @@ namespace Rhisis.World.Systems.Chat
         {
             if (!(e is ChatEventArgs chatEvent) || !(entity is IPlayerEntity player))
                 return;
-            if (!chatEvent.CheckArguments())
+            if (!chatEvent.GetCheckArguments())
                 return;
 
             if (chatEvent.Message.StartsWith("/") || chatEvent.Message.StartsWith("."))

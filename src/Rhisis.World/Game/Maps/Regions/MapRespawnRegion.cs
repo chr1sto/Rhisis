@@ -37,10 +37,10 @@ namespace Rhisis.World.Game.Maps.Regions
             return region;
         }
 
-        public static IMapRespawnRegion FromRgnElement(RgnRespawn7 rgnRespawn)
+        public static IMapRespawnRegion FromRgnElement(RgnRespawn7 region)
         {
-            return new MapRespawnRegion(rgnRespawn.Left, rgnRespawn.Top, rgnRespawn.Width, rgnRespawn.Length, 
-                rgnRespawn.Time, (WorldObjectType)rgnRespawn.Type, rgnRespawn.Model, rgnRespawn.Count);
+            return new MapRespawnRegion(region.Left, region.Top, region.Right - region.Left, region.Bottom - region.Top, 
+                region.Time, (WorldObjectType)region.Type, region.Model, region.Count);
         }
     }
 }

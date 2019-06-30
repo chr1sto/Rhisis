@@ -96,15 +96,15 @@ namespace Rhisis.Core.Resources.Loaders
         {
             var itemParams = new Dictionary<DefineAttributes, int>();
 
-            if (item.DestParam1 != "0")
+            if (item.DestParam1 != null && item.DestParam1 != "0")
             {
                 itemParams.Add(item.DestParam1.Replace("DST_", string.Empty).ToEnum<DefineAttributes>(), item.AdjustParam1);
             }
-            if (item.DestParam2 != "0")
+            if (item.DestParam2 != null && item.DestParam2 != "0")
             {
                 itemParams.Add(item.DestParam2.Replace("DST_", string.Empty).ToEnum<DefineAttributes>(), item.AdjustParam2);
             }
-            if (item.DestParam3 != "0")
+            if (item.DestParam3 != null && item.DestParam3 != "0")
             {
                 itemParams.Add(item.DestParam3.Replace("DST_", string.Empty).ToEnum<DefineAttributes>(), item.AdjustParam3);
             }

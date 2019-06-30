@@ -26,6 +26,9 @@ namespace Rhisis.World.Systems.Inventory.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments() => this.UniqueItemId >= 0 && this.UniqueItemId < InventorySystem.MaxItems;
+        public override bool GetCheckArguments()
+        {
+            return this.UniqueItemId >= 0 && this.UniqueItemId < InventorySystem.MaxItems;
+        }
     }
 }

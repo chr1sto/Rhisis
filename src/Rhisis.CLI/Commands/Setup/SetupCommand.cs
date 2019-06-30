@@ -43,7 +43,7 @@ namespace Rhisis.CLI.Commands.Setup
         {
             var loginConfiguration = new LoginConfiguration();
 
-            Console.WriteLine("#### Configuring Login Server ####");
+            Console.WriteLine("### Configuring Login Server ###");
 
             Console.Write("Host (127.0.0.1): ");
             loginConfiguration.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
@@ -95,7 +95,7 @@ namespace Rhisis.CLI.Commands.Setup
         {
             var clusterConfiguration = new ClusterConfiguration();
 
-            Console.WriteLine("#### Configuring Cluster Server ####");
+            Console.WriteLine("### Configuring Cluster Server ###");
             Console.Write("Host (127.0.0.1): ");
             clusterConfiguration.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
@@ -140,7 +140,7 @@ namespace Rhisis.CLI.Commands.Setup
         {
             var worldConfiguration = new WorldConfiguration();
 
-            Console.WriteLine("#### Configuring World Server ####");
+            Console.WriteLine("### Configuring World Server ###");
             Console.Write("Host (127.0.0.1): ");
             worldConfiguration.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
 
@@ -177,7 +177,8 @@ namespace Rhisis.CLI.Commands.Setup
 
             worldConfiguration.Maps = new List<string>
             {
-                "WI_WORLD_MADRIGAL"
+                "WI_WORLD_MADRIGAL",
+                "WI_DUNGEON_FL_MAS"
             };
             worldConfiguration.Language = "en";
             worldConfiguration.Drops.OwnershipTime = 7;

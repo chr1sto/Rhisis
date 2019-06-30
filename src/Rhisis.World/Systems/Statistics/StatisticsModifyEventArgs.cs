@@ -20,6 +20,9 @@ namespace Rhisis.World.Systems.Statistics
             Intelligence = intelligence;
         }
 
-        public override bool CheckArguments() => true;
+        public override bool GetCheckArguments()
+        {
+            return true;
+        }
     }
 }

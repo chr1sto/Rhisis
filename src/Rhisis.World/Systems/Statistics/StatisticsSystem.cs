@@ -20,7 +20,7 @@ namespace Rhisis.World.Systems.Statistics
         public void Execute(IEntity entity, SystemEventArgs e)
         {
             if (!(entity is IPlayerEntity playerEntity) ||
-                !e.CheckArguments())
+                !e.GetCheckArguments())
             {
                 Logger.Error("StatisticsSystem: Invalid event action arguments.");
                 return;

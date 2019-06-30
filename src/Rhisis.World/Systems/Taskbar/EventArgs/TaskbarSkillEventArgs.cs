@@ -14,7 +14,7 @@ namespace Rhisis.World.Systems.Taskbar.EventArgs
             Skills = skills;
         }
 
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
             return Skills != null && !Skills.Any(x => x.SlotIndex >= TaskbarSystem.MaxTaskbarQueue);
         }

@@ -42,9 +42,9 @@ namespace Rhisis.World.Systems.NpcShop.EventArgs
         }
 
         /// <inheritdoc />
-        public override bool CheckArguments()
+        public override bool GetCheckArguments()
         {
-            this.ItemData = GameResources.Instance.Items[this.ItemId] ?? 
+            this.ItemData = GameResources.Instance.Items[this.ItemId] ??
                 throw new ArgumentException($"Cannot find item with Id: {this.ItemId}.");
 
             return this.ItemId > 0

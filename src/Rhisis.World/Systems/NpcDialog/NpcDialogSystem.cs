@@ -27,7 +27,7 @@ namespace Rhisis.World.Systems.NpcDialog
                 return;
             }
 
-            if (!dialogEvent.CheckArguments())
+            if (!dialogEvent.GetCheckArguments())
             {
                 Logger.Error("DialogSystem: Invalid event action arguments.");
                 return;

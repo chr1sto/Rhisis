@@ -31,7 +31,7 @@ namespace Rhisis.World.Systems.Battle
         /// <inheritdoc />
         public void Execute(IEntity entity, SystemEventArgs args)
         {
-            if (!args.CheckArguments())
+            if (!args.GetCheckArguments())
             {
                 Logger.LogError("Cannot execute battle action: {0} due to invalid arguments.", args.GetType());
                 return;
