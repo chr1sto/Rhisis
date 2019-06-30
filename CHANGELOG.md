@@ -4,7 +4,9 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Unreleased]
 
-## 0.3.0 - 2019-06-30
+## [Released]
+
+## [0.3.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.3) - 2019-06-30
 
 ### Fixes
 
@@ -19,9 +21,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - ![world] Delayer system: Delay actions with a given amount of time. ([#253](https://github.com/Eastrall/Rhisis/pull/253))
 - ![world] Wrapzone system ([#254](https://github.com/Eastrall/Rhisis/pull/254))
 
-## [Released]
-
-## 0.2.1 - 2019-06-18
+## [0.2.1](https://github.com/Eastrall/Rhisis/releases/tag/v0.2.1) - 2019-06-18
 
 ### Fixes
 
