@@ -17,6 +17,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 - ![world] Blinkwing item usage ([#251](https://github.com/Eastrall/Rhisis/pull/251), [#253](https://github.com/Eastrall/Rhisis/pull/253))
 - ![world] Delayer system: Delay actions with a given amount of time. ([#253](https://github.com/Eastrall/Rhisis/pull/253))
+- ![world] Wrapzone system ([#254](https://github.com/Eastrall/Rhisis/pull/254))
 
 ## [Released]
 
