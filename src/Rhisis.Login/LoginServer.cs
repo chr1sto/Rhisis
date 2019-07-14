@@ -1,6 +1,8 @@
 ﻿using Ether.Network.Packets;
 using Ether.Network.Server;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Login.ISC;
 using Rhisis.Network;
@@ -16,6 +18,8 @@ namespace Rhisis.Login
     {
         private readonly ILogger<LoginServer> _logger;
         private readonly LoginConfiguration _loginConfiguration;
+        private readonly ISCConfiguration _iscConfiguration;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
         /// Gets the ISC server.
@@ -34,16 +38,21 @@ namespace Rhisis.Login
         /// Creates a new <see cref="LoginServer"/> instance.
         /// </summary>
         /// <param name="logger">Logger</param>
-        /// <param name="loginConfiguration">Login server configuration</param>
-        public LoginServer(ILogger<LoginServer> logger, LoginConfiguration loginConfiguration)
+        /// <param name="loginConfiguration">Login server configuration.</param>
+        /// <param name="iscConfiguration">ISC configuration.</param>
+        /// <param name="serviceProvider">Service provider.</param>
+        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, IOptions<ISCConfiguration> iscConfiguration, IServiceProvider serviceProvider)
         {
             this._logger = logger;
-            this._loginConfiguration = loginConfiguration;
-            this.Configuration.Host = loginConfiguration.Host;
-            this.Configuration.Port = loginConfiguration.Port;
+            this._loginConfiguration = loginConfiguration.Value;
+            this._iscConfiguration = iscConfiguration.Value;
+            this._serviceProvider = serviceProvider;
+            this.Configuration.Host = this._loginConfiguration.Host;
+            this.Configuration.Port = this._loginConfiguration.Port;
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
+            this.Configuration.Blocking = false;
 
             this._logger.LogTrace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
                 this.Configuration.Host,
@@ -57,7 +66,7 @@ namespace Rhisis.Login
         protected override void Initialize()
         {
             this._logger.LogInformation("Starting ISC server...");
-            InterServer = new ISCServer(this._loginConfiguration.ISC);
+            InterServer = new ISCServer(this._iscConfiguration);
             InterServer.Start();
 
             //TODO: Implement this log inside OnStarted method when will be available.
@@ -69,7 +78,7 @@ namespace Rhisis.Login
         {
             this._logger.LogInformation($"New client connected from {client.RemoteEndPoint}.");
 
-            CommonPacketFactory.SendWelcome(client, client.SessionId);
+            client.Initialize(this, this._serviceProvider.GetRequiredService<ILogger<LoginClient>>());
         }
 
         /// <inheritdoc />

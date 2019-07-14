@@ -5,16 +5,14 @@ using Rhisis.Core.Helpers;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using System;
-using System.Collections.Generic;
-using Rhisis.Core.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Rhisis.Login
 {
     public sealed class LoginClient : NetUser
     {
-        private readonly ILogger<LoginClient> _logger;
-        private readonly ILoginServer _loginServer;
+        private ILogger<LoginClient> _logger;
+        private ILoginServer _loginServer;
 
         /// <summary>
         /// Gets the ID assigned to this session.
@@ -42,8 +40,14 @@ namespace Rhisis.Login
         public LoginClient()
         {
             this.SessionId = RandomHelper.GenerateSessionKey();
-            this._logger = DependencyContainer.Instance.Resolve<ILogger<LoginClient>>();
-            this._loginServer = DependencyContainer.Instance.Resolve<ILoginServer>();
+        }
+
+        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger)
+        {
+            this._loginServer = loginServer;
+            this._logger = logger;
+
+            CommonPacketFactory.SendWelcome(this, this.SessionId);
         }
 
         /// <summary>

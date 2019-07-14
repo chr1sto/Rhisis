@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Handlers.Attributes;
 using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
@@ -14,9 +15,32 @@ using System;
 
 namespace Rhisis.Login
 {
+    [Handler]
     public class LoginHandler
     {
-        private static readonly ILogger<LoginHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<LoginHandler>>();
+        private readonly ILogger<LoginHandler> _logger;
+
+        public LoginHandler(ILogger<LoginHandler> logger)
+        {
+            this._logger = logger;
+        }
+
+        [HandlerAction(PacketType.PING)]
+        public void OnPing(LoginClient client, INetPacketStream packet)
+        {
+            this._logger.LogInformation("Received PING");
+        }
+
+        [HandlerAction(PacketType.CERTIFY)]
+        public void OnCertify(LoginClient client, INetPacketStream packet)
+        {
+            this._logger.LogInformation("Received CERTIFY");
+        }
+    }
+
+    public class OldLoginHandler
+    {
+        private static readonly ILogger<OldLoginHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<OldLoginHandler>>();
 
         [PacketHandler(PacketType.PING)]
         public static void OnPing(LoginClient client, INetPacketStream packet)
