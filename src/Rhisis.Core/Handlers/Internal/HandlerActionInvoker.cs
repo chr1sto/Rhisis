@@ -78,12 +78,16 @@ namespace Rhisis.Core.Handlers.Internal
                 ParameterInfo methodParameterInfo = executor.MethodParameters.ElementAt(i);
 
                 if (i < originalParameters.Length)
-                    if (originalParameters[i] != null && originalParameters[i].GetType() != methodParameterInfo.ParameterType)
+                {
+                    if (originalParameters[i] != null && !methodParameterInfo.ParameterType.IsAssignableFrom(originalParameters[i].GetType()))
                         parameters[i] = executor.GetDefaultValueForParameter(i);
                     else
                         parameters[i] = originalParameters[i];
+                }
                 else
+                {
                     parameters[i] = executor.GetDefaultValueForParameter(i);
+                }
             }
 
             return parameters;

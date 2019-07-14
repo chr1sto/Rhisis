@@ -1,8 +1,8 @@
 ﻿using Ether.Network.Packets;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
-using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Handlers.Attributes;
 using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
@@ -19,31 +19,22 @@ namespace Rhisis.Login
     public class LoginHandler
     {
         private readonly ILogger<LoginHandler> _logger;
+        private readonly LoginConfiguration _loginConfiguration;
+        private readonly ILoginServer _loginServer;
+        private readonly IDatabase _database;
+        private readonly IAuthenticationService _authenticationService;
 
-        public LoginHandler(ILogger<LoginHandler> logger)
+        public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, IAuthenticationService authenticationService)
         {
             this._logger = logger;
+            this._loginConfiguration = loginConfiguration.Value;
+            this._loginServer = loginServer;
+            this._database = database;
+            this._authenticationService = authenticationService;
         }
 
         [HandlerAction(PacketType.PING)]
         public void OnPing(LoginClient client, INetPacketStream packet)
-        {
-            this._logger.LogInformation("Received PING");
-        }
-
-        [HandlerAction(PacketType.CERTIFY)]
-        public void OnCertify(LoginClient client, INetPacketStream packet)
-        {
-            this._logger.LogInformation("Received CERTIFY");
-        }
-    }
-
-    public class OldLoginHandler
-    {
-        private static readonly ILogger<OldLoginHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<OldLoginHandler>>();
-
-        [PacketHandler(PacketType.PING)]
-        public static void OnPing(LoginClient client, INetPacketStream packet)
         {
             var pak = new PingPacket(packet);
 
@@ -51,23 +42,21 @@ namespace Rhisis.Login
                 CommonPacketFactory.SendPong(client, pak.Time);
         }
 
-        [PacketHandler(PacketType.CERTIFY)]
-        public static void OnLogin(LoginClient client, INetPacketStream packet)
+        [HandlerAction(PacketType.CERTIFY)]
+        public void OnCertify(LoginClient client, INetPacketStream packet)
         {
-            var loginServer = DependencyContainer.Instance.Resolve<ILoginServer>();
-            var configuration = DependencyContainer.Instance.Resolve<LoginConfiguration>();
-            var certifyPacket = new CertifyPacket(packet, configuration.PasswordEncryption);
+            var certifyPacket = new CertifyPacket(packet, this._loginConfiguration.PasswordEncryption);
             string password = null;
 
-            if (certifyPacket.BuildVersion != configuration.BuildVersion)
+            if (certifyPacket.BuildVersion != this._loginConfiguration.BuildVersion)
             {
                 AuthenticationFailed(client, ErrorType.CERT_GENERAL, "bad client build version");
                 return;
             }
 
-            if (configuration.PasswordEncryption)
+            if (this._loginConfiguration.PasswordEncryption)
             {
-                byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(configuration.EncryptionKey, 16);
+                byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(this._loginConfiguration.EncryptionKey, 16);
 
                 password = Aes.DecryptByteArray(certifyPacket.EncryptedPassword, encryptionKey);
             }
@@ -76,8 +65,7 @@ namespace Rhisis.Login
                 password = packet.Read<string>();
             }
 
-            var authenticationService = DependencyContainer.Instance.Resolve<IAuthenticationService>();
-            var authenticationResult = authenticationService.Authenticate(certifyPacket.Username, password);
+            var authenticationResult = this._authenticationService.Authenticate(certifyPacket.Username, password);
 
             switch (authenticationResult)
             {
@@ -97,29 +85,28 @@ namespace Rhisis.Login
                     AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "logged in with deleted account");
                     break;
                 case AuthenticationResult.Success:
-                    if (loginServer.IsClientConnected(certifyPacket.Username))
+                    if (this._loginServer.IsClientConnected(certifyPacket.Username))
                     {
                         AuthenticationFailed(client, ErrorType.DUPLICATE_ACCOUNT, "client already connected", disconnectClient: false);
                         return;
                     }
 
-                    var database = DependencyContainer.Instance.Resolve<IDatabase>();
-                    var user = database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
+                    var user = this._database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
 
                     if (user == null)
                     {
                         AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "Cannot find user in database");
-                        Logger.LogCritical($"Cannot find user '{certifyPacket.Username}' in database to update last connection time.");
+                        this._logger.LogCritical($"Cannot find user '{certifyPacket.Username}' in database to update last connection time.");
                         return;
                     }
 
                     user.LastConnectionTime = DateTime.UtcNow;
-                    database.Users.Update(user);
-                    database.Complete();
+                    this._database.Users.Update(user);
+                    this._database.Complete();
 
-                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, loginServer.GetConnectedClusters());
+                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, this._loginServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);
-                    Logger.LogInformation($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
+                    this._logger.LogInformation($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
                     break;
                 default:
                     break;
@@ -127,24 +114,23 @@ namespace Rhisis.Login
         }
 
         [PacketHandler(PacketType.CLOSE_EXISTING_CONNECTION)]
-        public static void OnCloseExistingConnection(LoginClient client, INetPacketStream packet)
+        public void OnCloseExistingConnection(LoginClient client, INetPacketStream packet)
         {
-            var loginServer = DependencyContainer.Instance.Resolve<ILoginServer>();
             var closeConnectionPacket = new CloseConnectionPacket(packet);
-            var otherConnectedClient = loginServer.GetClientByUsername(closeConnectionPacket.Username);
+            var otherConnectedClient = this._loginServer.GetClientByUsername(closeConnectionPacket.Username);
 
             if (otherConnectedClient == null)
             {
-                Logger.LogWarning($"Cannot find user with username '{closeConnectionPacket.Username}'.");
+                this._logger.LogWarning($"Cannot find user with username '{closeConnectionPacket.Username}'.");
                 return;
             }
 
             // TODO: disconnect client from server and ISC.
         }
 
-        private static void AuthenticationFailed(LoginClient client, ErrorType error, string reason, bool disconnectClient = true)
+        private void AuthenticationFailed(LoginClient client, ErrorType error, string reason, bool disconnectClient = true)
         {
-            Logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
+            this._logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
             LoginPacketFactory.SendLoginError(client, error);
 
             if (disconnectClient)

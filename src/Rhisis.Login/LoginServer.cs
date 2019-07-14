@@ -3,6 +3,7 @@ using Ether.Network.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Login.ISC;
 using Rhisis.Network;
@@ -78,7 +79,9 @@ namespace Rhisis.Login
         {
             this._logger.LogInformation($"New client connected from {client.RemoteEndPoint}.");
 
-            client.Initialize(this, this._serviceProvider.GetRequiredService<ILogger<LoginClient>>());
+            client.Initialize(this, 
+                this._serviceProvider.GetRequiredService<ILogger<LoginClient>>(), 
+                this._serviceProvider.GetRequiredService<IHandlerInvoker>());
         }
 
         /// <inheritdoc />

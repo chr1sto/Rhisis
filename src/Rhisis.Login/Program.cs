@@ -3,10 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Business;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Rhisis.Login
@@ -15,6 +18,14 @@ namespace Rhisis.Login
     {
         private static async Task Main()
         {
+            const string culture = "en-US";
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            CultureInfo.CurrentCulture = new CultureInfo(culture);
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(culture);
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(culture);
+
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
@@ -32,6 +43,7 @@ namespace Rhisis.Login
                     services.AddHandlers();
                     services.AddSingleton<ILoginServer, LoginServer>();
                     services.AddSingleton<IHostedService, LoginServerService>(); // LoginServer service starting the server
+                    BusinessLayer.Initialize(services); // Temporary
                 })
                 .ConfigureLogging(builder =>
                 {

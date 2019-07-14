@@ -6,6 +6,7 @@ using Rhisis.Network;
 using Rhisis.Network.Packets;
 using System;
 using Microsoft.Extensions.Logging;
+using Rhisis.Core.Handlers;
 
 namespace Rhisis.Login
 {
@@ -13,6 +14,7 @@ namespace Rhisis.Login
     {
         private ILogger<LoginClient> _logger;
         private ILoginServer _loginServer;
+        private IHandlerInvoker _handlerInvoker;
 
         /// <summary>
         /// Gets the ID assigned to this session.
@@ -42,10 +44,11 @@ namespace Rhisis.Login
             this.SessionId = RandomHelper.GenerateSessionKey();
         }
 
-        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger)
+        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker)
         {
             this._loginServer = loginServer;
             this._logger = logger;
+            this._handlerInvoker = handlerInvoker;
 
             CommonPacketFactory.SendWelcome(this, this.SessionId);
         }
@@ -94,21 +97,28 @@ namespace Rhisis.Login
                 packetHeaderNumber = packet.Read<uint>();
 
                 this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
-
-                bool packetInvokSuccess = PacketHandler<LoginClient>.Invoke(this, packet, (PacketType)packetHeaderNumber);
-
-                if (!packetInvokSuccess)
-                {
-                    if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                        this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
-                    else
-                        this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
-                }
+                this._handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
             }
             catch (RhisisPacketException packetException)
             {
                 this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, packetException);
                 this._logger.LogDebug(packetException.InnerException?.StackTrace);
+            }
+            catch (ArgumentException)
+            {
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
+                {
+                    this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.",
+                        Enum.GetName(typeof(PacketType), packetHeaderNumber),
+                        packetHeaderNumber.ToString("X2"),
+                        this.RemoteEndPoint);
+                }
+                else
+                {
+                    this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", 
+                        packetHeaderNumber.ToString("X2"), 
+                        this.RemoteEndPoint);
+                }
             }
         }
     }
