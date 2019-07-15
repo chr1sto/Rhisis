@@ -4,14 +4,18 @@ using Rhisis.Core.Helpers;
 using System;
 using System.Linq;
 
-namespace Rhisis.Business
+namespace Rhisis.Business.Extensions
 {
-    public class BusinessLayer
+    /// <summary>
+    /// Provides extensions for the <see cref="IServiceCollection"/> object.
+    /// </summary>
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Initializes the Business Layer and loads services into the dependency container.
+        /// Adds Rhisis business services.
         /// </summary>
-        public static void Initialize()
+        /// <param name="serviceCollection">Service collection.</param>
+        public static void AddRhisisServices(this IServiceCollection serviceCollection)
         {
             var services = ReflectionHelper.GetClassesWithCustomAttribute<InjectableAttribute>();
 
@@ -26,12 +30,12 @@ namespace Rhisis.Business
                 {
                     foreach (var serviceInterface in serviceInterfaces)
                     {
-                        DependencyContainer.Instance.Register(serviceInterface, serviceType, serviceLifeTime);
+                        serviceCollection.Add(new ServiceDescriptor(serviceInterface, serviceType, serviceLifeTime));
                     }
                 }
                 else
                 {
-                    DependencyContainer.Instance.Register(serviceType, serviceLifeTime);
+                    serviceCollection.Add(new ServiceDescriptor(serviceType, x => Activator.CreateInstance(serviceType), serviceLifeTime));
                 }
             }
         }

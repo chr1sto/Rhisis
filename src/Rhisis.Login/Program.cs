@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using Rhisis.Business;
+using Rhisis.Business.Extensions;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
@@ -41,9 +41,9 @@ namespace Rhisis.Login
                     services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
                     services.AddHandlers();
+                    services.AddRhisisServices();
                     services.AddSingleton<ILoginServer, LoginServer>();
                     services.AddSingleton<IHostedService, LoginServerService>(); // LoginServer service starting the server
-                    BusinessLayer.Initialize(services); // Temporary
                 })
                 .ConfigureLogging(builder =>
                 {
