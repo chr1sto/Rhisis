@@ -14,7 +14,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 
 ## Details
 
-- Language: `C#` 7
+- Language: `C#` 7.3 (latest)
 - Framework: `.NET Core 2.2`
 - Application type: `Console`
 - Database type: `MySQL`
@@ -24,7 +24,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 	- [NLog](https://github.com/NLog/NLog)
-- Environment: Visual Studio 2017/2019
+- Environment: Visual Studio 2019
 
 ## Features
 
@@ -93,6 +93,7 @@ We choose to use the [Ether.Network][ethernetwork] because it provides a clients
 	- Monster item/gold drop
 - Character customization system
 - Attribute System
+- Job change
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
