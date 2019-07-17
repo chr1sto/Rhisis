@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rhisis.Core.Handlers.Internal.Transformers;
+using Rhisis.Core.Handlers.Models;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,14 +13,17 @@ namespace Rhisis.Core.Handlers.Internal
     internal sealed class HandlerActionInvoker : IHandlerInvoker
     {
         private readonly HandlerActionInvokerCache _invokerCache;
+        private readonly IParameterTransformer _parameterTransformer;
 
         /// <summary>
         /// Creates a new <see cref="HandlerActionInvoker"/> instance.
         /// </summary>
         /// <param name="invokerCache">Handler action invoker cache.</param>
-        public HandlerActionInvoker(HandlerActionInvokerCache invokerCache)
+        /// <param name="parameterTransformer">Parameter transformer.</param>
+        public HandlerActionInvoker(HandlerActionInvokerCache invokerCache, IParameterTransformer parameterTransformer)
         {
             this._invokerCache = invokerCache;
+            this._parameterTransformer = parameterTransformer;
         }
 
         /// <inheritdoc />
@@ -27,12 +32,16 @@ namespace Rhisis.Core.Handlers.Internal
             HandlerActionInvokerCacheEntry handlerActionInvoker = this._invokerCache.GetCachedHandlerAction(handlerAction);
 
             if (handlerActionInvoker == null)
+            {
                 throw new ArgumentNullException(nameof(handlerActionInvoker));
+            }
 
             var targetHandler = handlerActionInvoker.HandlerFactory(handlerActionInvoker.HandlerType);
 
             if (targetHandler == null)
+            {
                 throw new ArgumentNullException(nameof(targetHandler));
+            }
 
             object handlerResult = null;
 
@@ -79,10 +88,18 @@ namespace Rhisis.Core.Handlers.Internal
 
                 if (i < originalParameters.Length)
                 {
-                    if (originalParameters[i] != null && !methodParameterInfo.ParameterType.IsAssignableFrom(originalParameters[i].GetType()))
-                        parameters[i] = executor.GetDefaultValueForParameter(i);
+                    Type originalObjectType = originalParameters[i]?.GetType();
+
+                    if (!methodParameterInfo.ParameterType.IsAssignableFrom(originalObjectType))
+                    {
+                        object transformedParameter = this._parameterTransformer.Transform(originalParameters[i], methodParameterInfo.ParameterType.GetTypeInfo());
+                        
+                        parameters[i] = transformedParameter ?? executor.GetDefaultValueForParameter(i);
+                    }
                     else
+                    {
                         parameters[i] = originalParameters[i];
+                    }
                 }
                 else
                 {

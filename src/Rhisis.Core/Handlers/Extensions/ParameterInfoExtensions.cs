@@ -16,13 +16,19 @@ namespace Rhisis.Core.Handlers.Extensions
         public static object GetParameterDefaultValue(this ParameterInfo parameter)
         {
             if (parameter == null)
+            {
                 throw new ArgumentNullException();
+            }
 
             if (parameter.HasDefaultValue)
+            {
                 return parameter.DefaultValue;
+            }
 
             if (parameter.ParameterType.IsValueType)
+            {
                 return Activator.CreateInstance(parameter.ParameterType);
+            }
 
             return null;
         }

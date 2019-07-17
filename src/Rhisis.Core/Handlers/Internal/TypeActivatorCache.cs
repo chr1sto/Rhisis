@@ -43,10 +43,14 @@ namespace Rhisis.Core.Handlers.Internal
         public TInstance Create<TInstance>(IServiceProvider serviceProvider, Type implementationType) where TInstance : class
         {
             if (serviceProvider == null)
+            {
                 throw new ArgumentNullException(nameof(serviceProvider));
+            }
 
             if (implementationType == null)
+            {
                 throw new ArgumentNullException(nameof(implementationType));
+            }
 
             ObjectFactory factory = this._typeActivatorCache.GetOrAdd(implementationType, this._createFactory);
 

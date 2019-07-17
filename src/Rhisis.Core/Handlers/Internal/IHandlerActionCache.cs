@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Handlers.Models;
+using System;
 
 namespace Rhisis.Core.Handlers.Internal
 {

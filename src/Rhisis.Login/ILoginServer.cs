@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Rhisis.Login
 {
+    /// <summary>
+    /// Provides an interface for the Login Server instance.
+    /// </summary>
     public interface ILoginServer : INetServer
     {
         /// <summary>

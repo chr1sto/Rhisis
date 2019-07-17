@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Rhisis.Core.Handlers.Attributes;
 using Rhisis.Core.Handlers.Internal;
+using Rhisis.Core.Handlers.Internal.Transformers;
 using Rhisis.Core.Handlers.Models;
 using System;
 using System.Collections.Generic;
@@ -20,10 +22,35 @@ namespace Rhisis.Core.Handlers
         {
             services.TryAddSingleton<IHandlerActionCache>(s => HandlerCacheFactory());
             services.TryAddSingleton<HandlerActionInvokerCache>();
-            services.TryAddSingleton<IHandlerInvoker, HandlerActionInvoker>();
             services.TryAddSingleton<IHandlerFactory, HandlerFactory>();
+            services.TryAddSingleton<IHandlerInvoker, HandlerActionInvoker>();
+
+            services.TryAddSingleton<ParameterTransformerCache>();
+            services.TryAddSingleton<IParameterFactory, ParameterFactory>();
+            services.TryAddSingleton<IParameterTransformer, ParameterTransformer>();
 
             services.TryAddSingleton<ITypeActivatorCache, TypeActivatorCache>();
+        }
+
+        /// <summary>
+        /// Adds a new handler parameter transformer.
+        /// </summary>
+        /// <typeparam name="TSource">Source type.</typeparam>
+        /// <typeparam name="TDest">Destination type.</typeparam>
+        /// <param name="host">Current program host.</param>
+        /// <param name="transformer">Transformer method.</param>
+        /// <returns>Current host.</returns>
+        public static IHost AddHandlerParameterTransformer<TSource, TDest>(this IHost host, Func<TSource, TDest, TDest> transformer)
+        {
+            var transformerModel = new TransformerModel(
+                typeof(TSource).GetTypeInfo(),
+                typeof(TDest).GetTypeInfo(),
+                (source, dest) => transformer((TSource)source, (TDest)dest));
+            var transformersCache = host.Services.GetRequiredService<ParameterTransformerCache>();
+
+            transformersCache.AddTransformer(transformerModel);
+
+            return host;
         }
 
         /// <summary>
@@ -46,8 +73,12 @@ namespace Rhisis.Core.Handlers
                                                                  select new HandlerActionModel(attribute.Action, x, handlerTypeInfo);
 
                 foreach (HandlerActionModel handlerAction in handlerActions)
+                {
                     if (!handlerCacheEntries.ContainsKey(handlerAction.ActionType))
+                    {
                         handlerCacheEntries.Add(handlerAction.ActionType, handlerAction);
+                    }
+                }
             }
 
             return new HandlerActionCache(handlerCacheEntries);

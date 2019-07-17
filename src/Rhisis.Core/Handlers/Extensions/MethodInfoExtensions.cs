@@ -16,13 +16,17 @@ namespace Rhisis.Core.Handlers.Extensions
         public static object[] GetMethodParametersDefaultValues(this MethodInfo methodInfo)
         {
             if (methodInfo == null)
+            {
                 throw new ArgumentNullException();
+            }
 
             ParameterInfo[] methodParameters = methodInfo.GetParameters();
             var methodParametersValues = new object[methodParameters.Length];
 
-            for (var i = 0; i < methodParametersValues.Length; i++)
+            for (int i = 0; i < methodParametersValues.Length; i++)
+            {
                 methodParametersValues[i] = methodParameters[i]?.GetParameterDefaultValue();
+            }
 
             return methodParametersValues;
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Ether.Network.Packets;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using Rhisis.Business.Extensions;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using Rhisis.Network.Packets;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -57,7 +59,18 @@ namespace Rhisis.Login
                 })
                 .Build();
 
-            await host.RunAsync();
+            await host
+                .AddHandlerParameterTransformer<INetPacketStream, IPacketDeserializer>((source, dest) =>
+                {
+                    if (dest is IPacketDeserializer packetDeserializer)
+                    {
+                        packetDeserializer.Deserialize(source);
+                        return dest;
+                    }
+
+                    return null;
+                })
+                .RunAsync();
         }
     }
 }

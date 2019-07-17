@@ -12,7 +12,6 @@ namespace Rhisis.CLI.Commands.Setup
 {
     public class SetupCommand
     {
-        private const string LoginServerConfigurationPath = "config/login.json";
         private const string ClusterServerConfigurationPath = "config/cluster.json";
         private const string WorldServerConfigurationPath = "config/world.json";
         private readonly DatabaseInitializationCommand _databaseInitializationCommand;
@@ -41,54 +40,7 @@ namespace Rhisis.CLI.Commands.Setup
 
         private void ConfigureLoginServer()
         {
-            var loginConfiguration = new LoginConfiguration();
-
-            Console.WriteLine("### Configuring Login Server ###");
-
-            Console.Write("Host (127.0.0.1): ");
-            loginConfiguration.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
-
-            Console.Write("Port (23000): ");
-            loginConfiguration.Port = _consoleHelper.ReadIntegerOrDefault(23000);
-
-            Console.Write("Client Build Version (20100412): ");
-            loginConfiguration.BuildVersion = _consoleHelper.ReadStringOrDefault("20100412");
-
-            loginConfiguration.AccountVerification = _consoleHelper.AskConfirmation("Use account verification?");
-            loginConfiguration.PasswordEncryption = _consoleHelper.AskConfirmation("Use password encryption?");
-
-            if (loginConfiguration.PasswordEncryption)
-            {
-                Console.Write("Encryption key: (dldhsvmflvm): ");
-                loginConfiguration.EncryptionKey = _consoleHelper.ReadStringOrDefault("dldhsvmflvm");
-            }
-
-            Console.Write("ISC Host (127.0.0.1): ");
-            loginConfiguration.ISC.Host = _consoleHelper.ReadStringOrDefault("127.0.0.1");
-
-            Console.Write("ISC Port (15000): ");
-            loginConfiguration.ISC.Port = _consoleHelper.ReadIntegerOrDefault(15000);
-
-            Console.Write("ISC Password: ");
-            loginConfiguration.ISC.Password = _consoleHelper.ReadPassword();
-
-            Console.WriteLine("--------------------------------");
-            Console.WriteLine("Login Server Configuration:");
-            Console.WriteLine($"Host: {loginConfiguration.Host}");
-            Console.WriteLine($"Port: {loginConfiguration.Port}");
-            Console.WriteLine($"Client build version: {loginConfiguration.BuildVersion}");
-            Console.WriteLine($"Use account verification: {loginConfiguration.AccountVerification}");
-            Console.WriteLine($"Use password encryption: {loginConfiguration.PasswordEncryption}");
-            Console.WriteLine($"ISC Host: {loginConfiguration.ISC.Host}");
-            Console.WriteLine($"ISC Port: {loginConfiguration.ISC.Port}");
-
-            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
-
-            if (response)
-            {
-                ConfigurationHelper.Save(LoginServerConfigurationPath, loginConfiguration);
-                Console.WriteLine($"Login Server configuration saved in {LoginServerConfigurationPath}!");
-            }
+            
         }
 
         private void ConfigureClusterServer()

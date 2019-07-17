@@ -26,10 +26,10 @@ namespace Rhisis.Cluster
         [PacketHandler(PacketType.PING)]
         public static void OnPing(ClusterClient client, INetPacketStream packet)
         {
-            var pak = new PingPacket(packet);
+            //var pak = new PingPacket(packet);
 
-            if (!pak.IsTimeOut)
-                CommonPacketFactory.SendPong(client, pak.Time);
+            //if (!pak.IsTimeOut)
+            //    CommonPacketFactory.SendPong(client, pak.Time);
         }
 
         [PacketHandler(PacketType.GETPLAYERLIST)]

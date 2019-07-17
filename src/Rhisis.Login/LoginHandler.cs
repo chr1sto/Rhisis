@@ -1,14 +1,11 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
-using Rhisis.Core.Cryptography;
 using Rhisis.Core.Handlers.Attributes;
 using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Login.Packets;
-using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
 using System;
@@ -24,6 +21,14 @@ namespace Rhisis.Login
         private readonly IDatabase _database;
         private readonly IAuthenticationService _authenticationService;
 
+        /// <summary>
+        /// Creates a new <see cref="LoginHandler"/> instance.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
+        /// <param name="loginConfiguration">Login server configuration.</param>
+        /// <param name="loginServer">Login server instance.</param>
+        /// <param name="database">Database service.</param>
+        /// <param name="authenticationService">Authentication service.</param>
         public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, IAuthenticationService authenticationService)
         {
             this._logger = logger;
@@ -33,39 +38,35 @@ namespace Rhisis.Login
             this._authenticationService = authenticationService;
         }
 
+        /// <summary>
+        /// Handles the PING packet.
+        /// </summary>
+        /// <param name="client">Client.</param>
+        /// <param name="pingPacket">Ping packet.</param>
         [HandlerAction(PacketType.PING)]
-        public void OnPing(LoginClient client, INetPacketStream packet)
+        public void OnPing(LoginClient client, PingPacket pingPacket)
         {
-            var pak = new PingPacket(packet);
-
-            if (!pak.IsTimeOut)
-                CommonPacketFactory.SendPong(client, pak.Time);
+            if (!pingPacket.IsTimeOut)
+            {
+                CommonPacketFactory.SendPong(client, pingPacket.Time);
+            }
         }
 
+        /// <summary>
+        /// Certifies and authenticates a user.
+        /// </summary>
+        /// <param name="client">Client.</param>
+        /// <param name="certifyPacket">Certify packet.</param>
         [HandlerAction(PacketType.CERTIFY)]
-        public void OnCertify(LoginClient client, INetPacketStream packet)
+        public void OnCertify(LoginClient client, CertifyPacket certifyPacket)
         {
-            var certifyPacket = new CertifyPacket(packet, this._loginConfiguration.PasswordEncryption);
-            string password = null;
-
             if (certifyPacket.BuildVersion != this._loginConfiguration.BuildVersion)
             {
                 AuthenticationFailed(client, ErrorType.CERT_GENERAL, "bad client build version");
                 return;
             }
 
-            if (this._loginConfiguration.PasswordEncryption)
-            {
-                byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(this._loginConfiguration.EncryptionKey, 16);
-
-                password = Aes.DecryptByteArray(certifyPacket.EncryptedPassword, encryptionKey);
-            }
-            else
-            {
-                password = packet.Read<string>();
-            }
-
-            var authenticationResult = this._authenticationService.Authenticate(certifyPacket.Username, password);
+            AuthenticationResult authenticationResult = this._authenticationService.Authenticate(certifyPacket.Username, certifyPacket.Password);
 
             switch (authenticationResult)
             {
@@ -113,10 +114,14 @@ namespace Rhisis.Login
             }
         }
 
-        [PacketHandler(PacketType.CLOSE_EXISTING_CONNECTION)]
-        public void OnCloseExistingConnection(LoginClient client, INetPacketStream packet)
+        /// <summary>
+        /// Closes an existing connection.
+        /// </summary>
+        /// <param name="client">Client.</param>
+        /// <param name="closeConnectionPacket">Close connection packet.</param>
+        [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
+        public void OnCloseExistingConnection(LoginClient client, CloseConnectionPacket closeConnectionPacket)
         {
-            var closeConnectionPacket = new CloseConnectionPacket(packet);
             var otherConnectedClient = this._loginServer.GetClientByUsername(closeConnectionPacket.Username);
 
             if (otherConnectedClient == null)
@@ -128,6 +133,13 @@ namespace Rhisis.Login
             // TODO: disconnect client from server and ISC.
         }
 
+        /// <summary>
+        /// Sends an authentication failed packet to the client.
+        /// </summary>
+        /// <param name="client">Client.</param>
+        /// <param name="error">Authentication error type.</param>
+        /// <param name="reason">Authentication error reason.</param>
+        /// <param name="disconnectClient">A boolean value that indicates if we disconnect the client or not.</param>
         private void AuthenticationFailed(LoginClient client, ErrorType error, string reason, bool disconnectClient = true)
         {
             this._logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");

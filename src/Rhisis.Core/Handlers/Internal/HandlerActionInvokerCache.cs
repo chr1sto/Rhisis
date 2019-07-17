@@ -44,9 +44,11 @@ namespace Rhisis.Core.Handlers.Internal
                 HandlerActionModel handlerActionModel = this._handlerCache.GetHandlerAction(handlerAction);
 
                 if (handlerActionModel == null)
+                {
                     throw new ArgumentNullException(nameof(handlerActionModel));
+                }
 
-                var defaultHandlerActionParameters = handlerActionModel.Method.GetMethodParametersDefaultValues();
+                object[] defaultHandlerActionParameters = handlerActionModel.Method.GetMethodParametersDefaultValues();
 
                 cacheEntry = new HandlerActionInvokerCacheEntry(
                     handlerActionModel.HandlerTypeInfo.AsType(),

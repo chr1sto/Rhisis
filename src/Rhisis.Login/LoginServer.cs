@@ -8,7 +8,6 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Login.ISC;
 using Rhisis.Network;
 using Rhisis.Network.ISC.Structures;
-using Rhisis.Network.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;

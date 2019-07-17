@@ -1,12 +1,11 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Exceptions;
+using Rhisis.Core.Handlers;
 using Rhisis.Core.Helpers;
-using Rhisis.Network;
 using Rhisis.Network.Packets;
 using System;
-using Microsoft.Extensions.Logging;
-using Rhisis.Core.Handlers;
 
 namespace Rhisis.Login
 {
