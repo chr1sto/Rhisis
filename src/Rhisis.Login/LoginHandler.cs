@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
 using Rhisis.Core.Handlers.Attributes;
-using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using Rhisis.Database.Entities;
 using Rhisis.Login.Core;
 using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
@@ -20,8 +20,8 @@ namespace Rhisis.Login
         private readonly LoginConfiguration _loginConfiguration;
         private readonly ILoginServer _loginServer;
         private readonly IDatabase _database;
-        private readonly IAuthenticationService _authenticationService;
         private readonly ICoreServer _coreServer;
+        private readonly ILoginPacketFactory _loginPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="LoginHandler"/> instance.
@@ -30,16 +30,16 @@ namespace Rhisis.Login
         /// <param name="loginConfiguration">Login server configuration.</param>
         /// <param name="loginServer">Login server instance.</param>
         /// <param name="database">Database service.</param>
-        /// <param name="authenticationService">Authentication service.</param>
         /// <param name="coreServer">Core server.</param>
-        public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, IAuthenticationService authenticationService, ICoreServer coreServer)
+        /// <param name="loginPacketFactory">Login server packet factory.</param>
+        public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, ICoreServer coreServer, ILoginPacketFactory loginPacketFactory)
         {
             this._logger = logger;
             this._loginConfiguration = loginConfiguration.Value;
             this._loginServer = loginServer;
             this._database = database;
-            this._authenticationService = authenticationService;
             this._coreServer = coreServer;
+            this._loginPacketFactory = loginPacketFactory;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Rhisis.Login
         {
             if (!pingPacket.IsTimeOut)
             {
-                CommonPacketFactory.SendPong(client, pingPacket.Time);
+                this._loginPacketFactory.SendPong(client, pingPacket.Time);
             }
         }
 
@@ -66,11 +66,12 @@ namespace Rhisis.Login
         {
             if (certifyPacket.BuildVersion != this._loginConfiguration.BuildVersion)
             {
-                AuthenticationFailed(client, ErrorType.CERT_GENERAL, "bad client build version");
+                AuthenticationFailed(client, ErrorType.ILLEGAL_VER, "bad client build version");
                 return;
             }
 
-            AuthenticationResult authenticationResult = this._authenticationService.Authenticate(certifyPacket.Username, certifyPacket.Password);
+            DbUser user = this._database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
+            AuthenticationResult authenticationResult = this.Authenticate(user, certifyPacket.Password);
 
             switch (authenticationResult)
             {
@@ -96,20 +97,11 @@ namespace Rhisis.Login
                         return;
                     }
 
-                    var user = this._database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
-
-                    if (user == null)
-                    {
-                        AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "Cannot find user in database");
-                        this._logger.LogCritical($"Cannot find user '{certifyPacket.Username}' in database to update last connection time.");
-                        return;
-                    }
-
                     user.LastConnectionTime = DateTime.UtcNow;
                     this._database.Users.Update(user);
                     this._database.Complete();
 
-                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, this._coreServer.GetConnectedClusters());
+                    this._loginPacketFactory.SendServerList(client, certifyPacket.Username, this._coreServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);
                     this._logger.LogInformation($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
                     break;
@@ -147,10 +139,36 @@ namespace Rhisis.Login
         private void AuthenticationFailed(LoginClient client, ErrorType error, string reason, bool disconnectClient = true)
         {
             this._logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
-            LoginPacketFactory.SendLoginError(client, error);
+            this._loginPacketFactory.SendLoginError(client, error);
 
             if (disconnectClient)
                 client.Disconnect();
+        }
+
+        /// <summary>
+        /// Authenticates a user.
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
+        /// <returns>Authentication result</returns>
+        private AuthenticationResult Authenticate(DbUser user, string password)
+        {
+            if (user == null)
+            {
+                return AuthenticationResult.BadUsername;
+            }
+
+            if (user.IsDeleted)
+            {
+                return AuthenticationResult.AccountDeleted;
+            }
+
+            if (!user.Password.Equals(password, StringComparison.OrdinalIgnoreCase))
+            {
+                return AuthenticationResult.BadPassword;
+            }
+
+            return AuthenticationResult.Success;
         }
     }
 }

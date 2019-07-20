@@ -10,13 +10,11 @@ namespace Rhisis.Network.Packets.Login
     {
         private readonly LoginConfiguration _configuration;
 
-        public string BuildVersion { get; private set; }
+        public virtual string BuildVersion { get; private set; }
 
-        public string Username { get; private set; }
+        public virtual string Username { get; private set; }
 
-        public string Password { get; private set; }
-
-        public byte[] EncryptedPassword { get; private set; }
+        public virtual string Password { get; private set; }
 
         public CertifyPacket(IOptions<LoginConfiguration> loginConfiguration)
         {
@@ -35,14 +33,13 @@ namespace Rhisis.Network.Packets.Login
             this.BuildVersion = packet.Read<string>();
             this.Username = packet.Read<string>();
             this.Password = null;
-            this.EncryptedPassword = null;
 
             if (this._configuration.PasswordEncryption)
             {
-                this.EncryptedPassword = packet.ReadArray<byte>(16 * 42);
+                byte[] encryptedPassword = packet.ReadArray<byte>(16 * 42);
                 byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(this._configuration.EncryptionKey, 16);
 
-                this.Password = Aes.DecryptByteArray(this.EncryptedPassword, encryptionKey);
+                this.Password = Aes.DecryptByteArray(encryptedPassword, encryptionKey);
             }
             else
             {

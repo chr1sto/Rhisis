@@ -5,9 +5,9 @@ namespace Rhisis.Network.Packets
 {
     public class PingPacket : IEquatable<PingPacket>, IPacketDeserializer
     {
-        public int Time { get; private set; }
+        public virtual int Time { get; private set; }
 
-        public bool IsTimeOut { get; private set; }
+        public virtual bool IsTimeOut { get; private set; }
 
         public bool Equals(PingPacket other) => this.Time == other.Time && this.IsTimeOut == other.IsTimeOut;
 

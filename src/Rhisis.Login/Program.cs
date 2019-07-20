@@ -4,12 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using Rhisis.Business.Extensions;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Login.Core;
 using Rhisis.Login.Core.Packets;
+using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using System.Globalization;
 using System.IO;
@@ -45,11 +45,15 @@ namespace Rhisis.Login
                     services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
                     services.AddHandlers();
-                    services.AddRhisisServices();
+
+                    // Login Server
                     services.AddSingleton<ILoginServer, LoginServer>();
+                    services.AddSingleton<ILoginPacketFactory, LoginPacketFactory>();
+                    services.AddSingleton<IHostedService, LoginServerService>(); // LoginServer service starting the server
+
+                    // Core Server
                     services.AddSingleton<ICoreServer, CoreServer>();
                     services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
-                    services.AddSingleton<IHostedService, LoginServerService>(); // LoginServer service starting the server
                     services.AddSingleton<IHostedService, CoreServerService>(); // CoreServer service starting the core server
                 })
                 .ConfigureLogging(builder =>
@@ -67,13 +71,8 @@ namespace Rhisis.Login
             await host
                 .AddHandlerParameterTransformer<INetPacketStream, IPacketDeserializer>((source, dest) =>
                 {
-                    if (dest != null)
-                    {
-                        dest.Deserialize(source);
-                        return dest;
-                    }
-
-                    return null;
+                    dest?.Deserialize(source);
+                    return dest;
                 })
                 .RunAsync();
         }

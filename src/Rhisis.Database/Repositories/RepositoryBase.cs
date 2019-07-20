@@ -3,6 +3,7 @@ using Rhisis.Database.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Rhisis.Database.Repositories
@@ -61,22 +62,22 @@ namespace Rhisis.Database.Repositories
         public T Get(int id) => this.Get(x => x.Id == id);
 
         /// <inheritdoc />
-        public T Get(Func<T, bool> func) => this.GetQueryable(this._context).FirstOrDefault(func);
+        public T Get(Expression<Func<T, bool>> func) => this.GetQueryable(this._context).FirstOrDefault(func);
 
         /// <inheritdoc />
         public IEnumerable<T> GetAll() => this.GetQueryable(this._context).AsEnumerable();
 
         /// <inheritdoc />
-        public IEnumerable<T> GetAll(Func<T, bool> func) => this.GetQueryable(this._context).Where(func).AsEnumerable();
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>> func) => this.GetQueryable(this._context).Where(func).AsEnumerable();
 
         /// <inheritdoc />
         public int Count() => this._context.Set<T>().AsNoTracking().Count();
 
         /// <inheritdoc />
-        public int Count(Func<T, bool> func) => this._context.Set<T>().AsNoTracking().Count(func);
+        public int Count(Expression<Func<T, bool>> func) => this._context.Set<T>().AsNoTracking().Count(func);
 
         /// <inheritdoc />
-        public bool HasAny(Func<T, bool> predicate) => this._context.Set<T>().AsNoTracking().Any(predicate);
+        public bool HasAny(Expression<Func<T, bool>> predicate) => this._context.Set<T>().AsNoTracking().Any(predicate);
 
         /// <inheritdoc />
         protected virtual IQueryable<T> GetQueryable(DbContext context) => context.Set<T>().AsQueryable();

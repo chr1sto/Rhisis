@@ -1,6 +1,7 @@
 ﻿using Rhisis.Database.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Rhisis.Database.Repositories
@@ -51,7 +52,7 @@ namespace Rhisis.Database.Repositories
         /// </summary>
         /// <param name="func"></param>
         /// <returns></returns>
-        T Get(Func<T, bool> func);
+        T Get(Expression<Func<T, bool>> func);
         
         /// <summary>
         /// Get all records from the repository.
@@ -64,7 +65,7 @@ namespace Rhisis.Database.Repositories
         /// </summary>
         /// <param name="func"></param>
         /// <returns></returns>
-        IEnumerable<T> GetAll(Func<T, bool> func);
+        IEnumerable<T> GetAll(Expression<Func<T, bool>> func);
 
         /// <summary>
         /// Get the total amount of records from the repository.
@@ -77,13 +78,13 @@ namespace Rhisis.Database.Repositories
         /// </summary>
         /// <param name="func"></param>
         /// <returns></returns>
-        int Count(Func<T, bool> func);
+        int Count(Expression<Func<T, bool>> func);
 
         /// <summary>
         /// Check if there is entities that matches the predicate.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        bool HasAny(Func<T, bool> predicate);
+        bool HasAny(Expression<Func<T, bool>> predicate);
     }
 }

@@ -28,6 +28,6 @@ jobs:
 
       - stage: "Tests"
         script: 
-        - dotnet test test/Rhisis.Core.Test/
-        - dotnet test test/Rhisis.Business.Tests/
+        - dotnet test test/Rhisis.Core.Tests/
+        - dotnet test test/Rhisis.Login.Tests/
         name: "Rhisis Tests"
