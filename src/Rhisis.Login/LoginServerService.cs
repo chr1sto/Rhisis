@@ -8,7 +8,7 @@ namespace Rhisis.Login
     /// <summary>
     /// Service that manages the Login Server instance.
     /// </summary>
-    public sealed class LoginServerService : IHostedService
+    internal sealed class LoginServerService : IHostedService
     {
         private readonly ILogger<LoginServerService> _logger;
         private readonly ILoginServer _loginServer;
@@ -32,7 +32,6 @@ namespace Rhisis.Login
         public Task StartAsync(CancellationToken cancellationToken)
         {
             this._logger.LogInformation("Starting LoginServer");
-
             this._loginServer.Start();
 
             return Task.CompletedTask;

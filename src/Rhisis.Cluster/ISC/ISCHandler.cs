@@ -17,7 +17,8 @@ namespace Rhisis.Cluster.ISC
             ISCPacketFactory.SendAuthentication(client, 
                 client.ClusterConfiguration.Id, 
                 client.ClusterConfiguration.Host, 
-                client.ClusterConfiguration.Name);
+                client.ClusterConfiguration.Name,
+                client.ClusterConfiguration.Port);
         }
 
         [PacketHandler(ISCPacketType.AUTHENT_RESULT)]

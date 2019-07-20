@@ -5,6 +5,7 @@ using Rhisis.Core.Handlers.Attributes;
 using Rhisis.Core.Services;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using Rhisis.Login.Core;
 using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
@@ -20,6 +21,7 @@ namespace Rhisis.Login
         private readonly ILoginServer _loginServer;
         private readonly IDatabase _database;
         private readonly IAuthenticationService _authenticationService;
+        private readonly ICoreServer _coreServer;
 
         /// <summary>
         /// Creates a new <see cref="LoginHandler"/> instance.
@@ -29,13 +31,15 @@ namespace Rhisis.Login
         /// <param name="loginServer">Login server instance.</param>
         /// <param name="database">Database service.</param>
         /// <param name="authenticationService">Authentication service.</param>
-        public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, IAuthenticationService authenticationService)
+        /// <param name="coreServer">Core server.</param>
+        public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, IAuthenticationService authenticationService, ICoreServer coreServer)
         {
             this._logger = logger;
             this._loginConfiguration = loginConfiguration.Value;
             this._loginServer = loginServer;
             this._database = database;
             this._authenticationService = authenticationService;
+            this._coreServer = coreServer;
         }
 
         /// <summary>
@@ -105,7 +109,7 @@ namespace Rhisis.Login
                     this._database.Users.Update(user);
                     this._database.Complete();
 
-                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, this._loginServer.GetConnectedClusters());
+                    LoginPacketFactory.SendServerList(client, certifyPacket.Username, this._coreServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);
                     this._logger.LogInformation($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
                     break;

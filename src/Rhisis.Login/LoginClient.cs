@@ -1,7 +1,6 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Exceptions;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Helpers;
 using Rhisis.Network.Packets;
@@ -9,7 +8,7 @@ using System;
 
 namespace Rhisis.Login
 {
-    public sealed class LoginClient : NetUser
+    public sealed class LoginClient : NetUser, ILoginClient
     {
         private ILogger<LoginClient> _logger;
         private ILoginServer _loginServer;
@@ -43,6 +42,12 @@ namespace Rhisis.Login
             this.SessionId = RandomHelper.GenerateSessionKey();
         }
 
+        /// <summary>
+        /// Initializes the current <see cref="LoginClient"/> instance.
+        /// </summary>
+        /// <param name="loginServer"></param>
+        /// <param name="logger"></param>
+        /// <param name="handlerInvoker"></param>
         public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker)
         {
             this._loginServer = loginServer;
@@ -52,19 +57,14 @@ namespace Rhisis.Login
             CommonPacketFactory.SendWelcome(this, this.SessionId);
         }
 
-        /// <summary>
-        /// Disconnects the current client.
-        /// </summary>
+        /// <inheritdoc />
         public void Disconnect()
         {
             this._loginServer.DisconnectClient(this.Id);
             this.Dispose();
         }
 
-        /// <summary>
-        /// Sets the client's username.
-        /// </summary>
-        /// <param name="username"></param>
+        /// <inheritdoc />
         public void SetClientUsername(string username)
         {
             if (!string.IsNullOrEmpty(this.Username))
@@ -98,11 +98,6 @@ namespace Rhisis.Login
                 this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
                 this._handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
             }
-            catch (RhisisPacketException packetException)
-            {
-                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, packetException);
-                this._logger.LogDebug(packetException.InnerException?.StackTrace);
-            }
             catch (ArgumentException)
             {
                 if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
@@ -118,6 +113,11 @@ namespace Rhisis.Login
                         packetHeaderNumber.ToString("X2"), 
                         this.RemoteEndPoint);
                 }
+            }
+            catch (Exception exception)
+            {
+                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, exception);
+                this._logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
     }

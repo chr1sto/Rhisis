@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Login.ISC;
 using Rhisis.Network;
 using Rhisis.Network.ISC.Structures;
 using System;
@@ -18,18 +17,7 @@ namespace Rhisis.Login
     {
         private readonly ILogger<LoginServer> _logger;
         private readonly LoginConfiguration _loginConfiguration;
-        private readonly ISCConfiguration _iscConfiguration;
         private readonly IServiceProvider _serviceProvider;
-
-        /// <summary>
-        /// Gets the ISC server.
-        /// </summary>
-        public static ISCServer InterServer { get; private set; }
-
-        /// <summary>
-        /// Gets the list of the connected clusters.
-        /// </summary>
-        public IEnumerable<ClusterServerInfo> ClustersConnected => InterServer?.ClusterServers;
 
         /// <inheritdoc />
         protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
@@ -41,11 +29,10 @@ namespace Rhisis.Login
         /// <param name="loginConfiguration">Login server configuration.</param>
         /// <param name="iscConfiguration">ISC configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, IOptions<ISCConfiguration> iscConfiguration, IServiceProvider serviceProvider)
+        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, IServiceProvider serviceProvider)
         {
             this._logger = logger;
             this._loginConfiguration = loginConfiguration.Value;
-            this._iscConfiguration = iscConfiguration.Value;
             this._serviceProvider = serviceProvider;
             this.Configuration.Host = this._loginConfiguration.Host;
             this.Configuration.Port = this._loginConfiguration.Port;
@@ -65,10 +52,6 @@ namespace Rhisis.Login
         /// <inheritdoc />
         protected override void Initialize()
         {
-            this._logger.LogInformation("Starting ISC server...");
-            InterServer = new ISCServer(this._iscConfiguration);
-            InterServer.Start();
-
             //TODO: Implement this log inside OnStarted method when will be available.
             this._logger.LogInformation("Login server is started and listen on {0}:{1}.", this.Configuration.Host, this.Configuration.Port);
         }
@@ -97,21 +80,6 @@ namespace Rhisis.Login
         {
             this._logger.LogInformation($"Socket error: {exception.Message}");
         }
-        
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (InterServer != null)
-            {
-                InterServer.Stop();
-                InterServer.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<ClusterServerInfo> GetConnectedClusters() => InterServer?.ClusterServers;
 
         /// <inheritdoc />
         public LoginClient GetClientByUsername(string username)

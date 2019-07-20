@@ -8,6 +8,8 @@ using Rhisis.Business.Extensions;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using Rhisis.Login.Core;
+using Rhisis.Login.Core.Packets;
 using Rhisis.Network.Packets;
 using System.Globalization;
 using System.IO;
@@ -45,7 +47,10 @@ namespace Rhisis.Login
                     services.AddHandlers();
                     services.AddRhisisServices();
                     services.AddSingleton<ILoginServer, LoginServer>();
+                    services.AddSingleton<ICoreServer, CoreServer>();
+                    services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
                     services.AddSingleton<IHostedService, LoginServerService>(); // LoginServer service starting the server
+                    services.AddSingleton<IHostedService, CoreServerService>(); // CoreServer service starting the core server
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -62,9 +67,9 @@ namespace Rhisis.Login
             await host
                 .AddHandlerParameterTransformer<INetPacketStream, IPacketDeserializer>((source, dest) =>
                 {
-                    if (dest is IPacketDeserializer packetDeserializer)
+                    if (dest != null)
                     {
-                        packetDeserializer.Deserialize(source);
+                        dest.Deserialize(source);
                         return dest;
                     }
 

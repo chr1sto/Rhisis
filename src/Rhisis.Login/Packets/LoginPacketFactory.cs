@@ -1,6 +1,6 @@
 ﻿using Ether.Network.Common;
-using Rhisis.Network.ISC.Structures;
 using Rhisis.Network;
+using Rhisis.Network.Core;
 using Rhisis.Network.Packets;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +39,7 @@ namespace Rhisis.Login.Packets
                 packet.Write(0);
                 packet.Write<byte>(1);
                 packet.Write(username);
-                packet.Write(clusters.Sum(x => x.WorldServers.Count) + clusters.Count());
+                packet.Write(clusters.Sum(x => x.Worlds.Count) + clusters.Count());
 
                 foreach (ClusterServerInfo cluster in clusters)
                 {
@@ -52,7 +52,7 @@ namespace Rhisis.Login.Packets
                     packet.Write(1);
                     packet.Write(0);
 
-                    foreach (WorldServerInfo world in cluster.WorldServers)
+                    foreach (WorldServerInfo world in cluster.Worlds)
                     {
                         packet.Write(cluster.Id);
                         packet.Write(world.Id);
