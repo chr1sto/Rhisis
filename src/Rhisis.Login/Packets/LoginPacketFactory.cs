@@ -1,20 +1,39 @@
-﻿using Ether.Network.Common;
-using Rhisis.Network.ISC.Structures;
-using Rhisis.Network;
+﻿using Rhisis.Network;
+using Rhisis.Network.Core;
 using Rhisis.Network.Packets;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.Login.Packets
 {
-    public static class LoginPacketFactory
+    public class LoginPacketFactory : ILoginPacketFactory
     {
-        /// <summary>
-        /// Sends a login error.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="error"></param>
-        public static void SendLoginError(INetUser client, ErrorType error)
+        /// <inheritdoc />
+        public void SendWelcome(ILoginClient client, uint sessionId)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.WELCOME);
+                packet.Write(sessionId);
+
+                client.Send(packet);
+            }
+        }
+
+        /// <inheritdoc />
+        public void SendPong(ILoginClient client, int time)
+        {
+            using (var packet = new FFPacket())
+            {
+                packet.WriteHeader(PacketType.PING);
+                packet.Write(time);
+
+                client.Send(packet);
+            }
+        }
+
+        /// <inheritdoc />
+        public void SendLoginError(ILoginClient client, ErrorType error)
         {
             using (var packet = new FFPacket())
             {
@@ -25,13 +44,8 @@ namespace Rhisis.Login.Packets
             }
         }
 
-        /// <summary>
-        /// Sends the available server list.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="username"></param>
-        /// <param name="clusters"></param>
-        public static void SendServerList(INetUser client, string username, IEnumerable<ClusterServerInfo> clusters)
+        /// <inheritdoc />
+        public void SendServerList(ILoginClient client, string username, IEnumerable<ClusterServerInfo> clusters)
         {
             using (var packet = new FFPacket())
             {
@@ -39,7 +53,7 @@ namespace Rhisis.Login.Packets
                 packet.Write(0);
                 packet.Write<byte>(1);
                 packet.Write(username);
-                packet.Write(clusters.Sum(x => x.WorldServers.Count) + clusters.Count());
+                packet.Write(clusters.Sum(x => x.Worlds.Count) + clusters.Count());
 
                 foreach (ClusterServerInfo cluster in clusters)
                 {
@@ -52,7 +66,7 @@ namespace Rhisis.Login.Packets
                     packet.Write(1);
                     packet.Write(0);
 
-                    foreach (WorldServerInfo world in cluster.WorldServers)
+                    foreach (WorldServerInfo world in cluster.Worlds)
                     {
                         packet.Write(cluster.Id);
                         packet.Write(world.Id);

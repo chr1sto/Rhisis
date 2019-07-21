@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
+using System;
 using System.Linq;
 
 namespace Rhisis.Business

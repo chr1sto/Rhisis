@@ -3,13 +3,15 @@ using System;
 
 namespace Rhisis.Network.Packets
 {
-    public struct PingPacket : IEquatable<PingPacket>
+    public class PingPacket : IEquatable<PingPacket>, IPacketDeserializer
     {
-        public int Time { get; }
+        public virtual int Time { get; private set; }
 
-        public bool IsTimeOut { get; }
+        public virtual bool IsTimeOut { get; private set; }
 
-        public PingPacket(INetPacketStream packet)
+        public bool Equals(PingPacket other) => this.Time == other.Time && this.IsTimeOut == other.IsTimeOut;
+
+        public void Deserialize(INetPacketStream packet)
         {
             try
             {
@@ -22,7 +24,5 @@ namespace Rhisis.Network.Packets
                 this.IsTimeOut = true;
             }
         }
-
-        public bool Equals(PingPacket other) => this.Time == other.Time && this.IsTimeOut == other.IsTimeOut;
     }
 }

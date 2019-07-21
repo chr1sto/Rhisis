@@ -14,14 +14,15 @@ namespace Rhisis.Cluster.ISC
         /// <param name="id">Server Id</param>
         /// <param name="host">Server Host</param>
         /// <param name="name">Server name</param>
-        public static void SendAuthentication(INetUser client, int id, string host, string name)
+        public static void SendAuthentication(INetUser client, int id, string host, string name, int port)
         {
             using (var packet = new NetPacket())
             {
                 packet.Write((uint)ISCPacketType.AUTHENT);
                 packet.Write(id);
-                packet.Write(host);
                 packet.Write(name);
+                packet.Write(host);
+                packet.Write(port);
                 packet.Write((byte)ISCServerType.Cluster);
 
                 client.Send(packet);

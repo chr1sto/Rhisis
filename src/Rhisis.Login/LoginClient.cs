@@ -1,20 +1,18 @@
 ﻿using Ether.Network.Common;
 using Ether.Network.Packets;
-using Rhisis.Core.Exceptions;
+using Microsoft.Extensions.Logging;
+using Rhisis.Core.Handlers;
 using Rhisis.Core.Helpers;
-using Rhisis.Network;
 using Rhisis.Network.Packets;
 using System;
-using System.Collections.Generic;
-using Rhisis.Core.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Rhisis.Login
 {
-    public sealed class LoginClient : NetUser
+    public sealed class LoginClient : NetUser, ILoginClient
     {
-        private readonly ILogger<LoginClient> _logger;
-        private readonly ILoginServer _loginServer;
+        private ILogger<LoginClient> _logger;
+        private ILoginServer _loginServer;
+        private IHandlerInvoker _handlerInvoker;
 
         /// <summary>
         /// Gets the ID assigned to this session.
@@ -42,23 +40,31 @@ namespace Rhisis.Login
         public LoginClient()
         {
             this.SessionId = RandomHelper.GenerateSessionKey();
-            this._logger = DependencyContainer.Instance.Resolve<ILogger<LoginClient>>();
-            this._loginServer = DependencyContainer.Instance.Resolve<ILoginServer>();
         }
 
         /// <summary>
-        /// Disconnects the current client.
+        /// Initializes the current <see cref="LoginClient"/> instance.
         /// </summary>
+        /// <param name="loginServer"></param>
+        /// <param name="logger"></param>
+        /// <param name="handlerInvoker"></param>
+        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker)
+        {
+            this._loginServer = loginServer;
+            this._logger = logger;
+            this._handlerInvoker = handlerInvoker;
+
+            CommonPacketFactory.SendWelcome(this, this.SessionId);
+        }
+
+        /// <inheritdoc />
         public void Disconnect()
         {
             this._loginServer.DisconnectClient(this.Id);
             this.Dispose();
         }
 
-        /// <summary>
-        /// Sets the client's username.
-        /// </summary>
-        /// <param name="username"></param>
+        /// <inheritdoc />
         public void SetClientUsername(string username)
         {
             if (!string.IsNullOrEmpty(this.Username))
@@ -90,21 +96,28 @@ namespace Rhisis.Login
                 packetHeaderNumber = packet.Read<uint>();
 
                 this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
-
-                bool packetInvokSuccess = PacketHandler<LoginClient>.Invoke(this, packet, (PacketType)packetHeaderNumber);
-
-                if (!packetInvokSuccess)
+                this._handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
+            }
+            catch (ArgumentException)
+            {
+                if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
                 {
-                    if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                        this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
-                    else
-                        this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", packetHeaderNumber.ToString("X2"), this.RemoteEndPoint);
+                    this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.",
+                        Enum.GetName(typeof(PacketType), packetHeaderNumber),
+                        packetHeaderNumber.ToString("X2"),
+                        this.RemoteEndPoint);
+                }
+                else
+                {
+                    this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", 
+                        packetHeaderNumber.ToString("X2"), 
+                        this.RemoteEndPoint);
                 }
             }
-            catch (RhisisPacketException packetException)
+            catch (Exception exception)
             {
-                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, packetException);
-                this._logger.LogDebug(packetException.InnerException?.StackTrace);
+                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, exception);
+                this._logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
     }
