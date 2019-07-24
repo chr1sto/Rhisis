@@ -70,7 +70,7 @@ namespace Rhisis.Login
                 return;
             }
 
-            DbUser user = this._database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
+            DbUser user = this._database.Users.GetUserByUsername(certifyPacket.Username);
             AuthenticationResult authenticationResult = this.Authenticate(user, certifyPacket.Password);
 
             switch (authenticationResult)

@@ -3,6 +3,7 @@ using Ether.Network.Packets;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Helpers;
+using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using System;
 
@@ -45,16 +46,17 @@ namespace Rhisis.Login
         /// <summary>
         /// Initializes the current <see cref="LoginClient"/> instance.
         /// </summary>
-        /// <param name="loginServer"></param>
-        /// <param name="logger"></param>
-        /// <param name="handlerInvoker"></param>
-        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker)
+        /// <param name="loginServer">Parent login server.</param>
+        /// <param name="logger">Logger.</param>
+        /// <param name="handlerInvoker">Handler invoker.</param>
+        /// <param name="loginPacketFactory">Login packet factory.</param>
+        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker, ILoginPacketFactory loginPacketFactory)
         {
             this._loginServer = loginServer;
             this._logger = logger;
             this._handlerInvoker = handlerInvoker;
 
-            CommonPacketFactory.SendWelcome(this, this.SessionId);
+            loginPacketFactory.SendWelcome(this, this.SessionId);
         }
 
         /// <inheritdoc />

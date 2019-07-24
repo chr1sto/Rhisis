@@ -66,6 +66,7 @@ namespace Rhisis.Login
                         CaptureMessageProperties = true
                     });
                 })
+                .UseConsoleLifetime()
                 .Build();
 
             await host

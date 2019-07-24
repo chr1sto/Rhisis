@@ -3,18 +3,15 @@ using System;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public struct QueryTickCountPacket : IEquatable<QueryTickCountPacket>
+    public class QueryTickCountPacket : IEquatable<QueryTickCountPacket>, IPacketDeserializer
     {
-        public uint Time { get; }
+        public uint Time { get; private set; }
 
-        public QueryTickCountPacket(INetPacketStream packet)
+        public bool Equals(QueryTickCountPacket other) => this.Time == other.Time;
+
+        public void Deserialize(INetPacketStream packet)
         {
             this.Time = packet.Read<uint>();
-        }
-
-        public bool Equals(QueryTickCountPacket other)
-        {
-            return this.Time == other.Time;
         }
     }
 }

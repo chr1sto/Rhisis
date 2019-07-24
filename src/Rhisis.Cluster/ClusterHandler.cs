@@ -1,5 +1,6 @@
 ﻿using Ether.Network.Packets;
 using Microsoft.Extensions.Logging;
+using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.DependencyInjection;
@@ -19,18 +20,9 @@ using System.Linq;
 
 namespace Rhisis.Cluster
 {
-    public class ClusterHandler
+    public class OldClusterHandler
     {
-        private static readonly ILogger<ClusterHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<ClusterHandler>>();
-
-        [PacketHandler(PacketType.PING)]
-        public static void OnPing(ClusterClient client, INetPacketStream packet)
-        {
-            //var pak = new PingPacket(packet);
-
-            //if (!pak.IsTimeOut)
-            //    CommonPacketFactory.SendPong(client, pak.Time);
-        }
+        private static readonly ILogger<OldClusterHandler> Logger = DependencyContainer.Instance.Resolve<ILogger<OldClusterHandler>>();
 
         [PacketHandler(PacketType.GETPLAYERLIST)]
         public static void OnGetPlayerList(ClusterClient client, INetPacketStream packet)
@@ -69,11 +61,11 @@ namespace Rhisis.Cluster
 
             IEnumerable<DbCharacter> userCharacters = dbUser.Characters.Where(x => !x.IsDeleted);
 
-            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, userCharacters);
-            ClusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
+            ClusterPacketFactoryStatic.SendPlayerList(client, pak.AuthenticationKey, userCharacters);
+            ClusterPacketFactoryStatic.SendWorldAddress(client, selectedWorldServer.Host);
 
             if (clusterConfiguration.EnableLoginProtect)
-                ClusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
+                ClusterPacketFactoryStatic.SendLoginNumPad(client, client.LoginProtectValue);
         }
 
         [PacketHandler(PacketType.CREATE_PLAYER)]
@@ -109,7 +101,7 @@ namespace Rhisis.Cluster
                     Logger.LogWarning(
                         $"Unable to create new character for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         $"Reason: character name '{pak.Name}' already exists.");
-                    ClusterPacketFactory.SendError(client, ErrorType.USER_EXISTS);
+                    ClusterPacketFactoryStatic.SendError(client, ErrorType.USER_EXISTS);
                     return;
                 }
 
@@ -163,7 +155,7 @@ namespace Rhisis.Cluster
             Logger.LogInformation("Character '{0}' has been created successfully for user '{1}' from {2}.",
                 dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
-            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+            ClusterPacketFactoryStatic.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
         }
 
         [PacketHandler(PacketType.DEL_PLAYER)]
@@ -193,7 +185,7 @@ namespace Rhisis.Cluster
                 {
                     Logger.LogWarning($"Unable to delete character id '{pak.CharacterId}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                         "Reason: passwords entered do not match.");
-                    ClusterPacketFactory.SendError(client, ErrorType.WRONG_PASSWORD);
+                    ClusterPacketFactoryStatic.SendError(client, ErrorType.WRONG_PASSWORD);
                     return;
                 }
 
@@ -222,7 +214,7 @@ namespace Rhisis.Cluster
             Logger.LogInformation("Character '{0}' has been deleted successfully for user '{1}' from {2}.",
                 dbCharacter.Name, pak.Username, client.RemoteEndPoint);
 
-            ClusterPacketFactory.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
+            ClusterPacketFactoryStatic.SendPlayerList(client, pak.AuthenticationKey, dbUser.Characters);
 
         }
 
@@ -269,21 +261,14 @@ namespace Rhisis.Cluster
                 Logger.LogWarning($"Unable to prejoin character '{dbCharacter.Name}' for user '{pak.Username}' from {client.RemoteEndPoint}. " +
                     "Reason: bad bank code.");
                 client.LoginProtectValue = new Random().Next(0, 1000);
-                ClusterPacketFactory.SendLoginProtect(client, client.LoginProtectValue);
+                ClusterPacketFactoryStatic.SendLoginProtect(client, client.LoginProtectValue);
                 return;
             }
 
             // Finally, we connect the player.
-            ClusterPacketFactory.SendJoinWorld(client);
+            ClusterPacketFactoryStatic.SendJoinWorld(client);
             Logger.LogInformation("Character '{0}' has prejoin successfully the game for user '{1}' from {2}.",
                 dbCharacter.Name, pak.Username, client.RemoteEndPoint);
-        }
-
-        [PacketHandler(PacketType.QUERYTICKCOUNT)]
-        public static void OnQueryTickCount(ClusterClient client, INetPacketStream packet)
-        {
-            var pak = new QueryTickCountPacket(packet);
-            ClusterPacketFactory.SendQueryTickCount(client, pak.Time);
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
 using Rhisis.Business;
+using Rhisis.Cluster.Client;
 using Rhisis.Cluster.ISC;
 using Rhisis.Core;
 using Rhisis.Core.DependencyInjection;
@@ -35,32 +36,6 @@ namespace Rhisis.Cluster
         /// <inheritdoc />
         public void Configure()
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            PacketHandler<ISCClient>.Initialize();
-            PacketHandler<ClusterClient>.Initialize();
-            
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigFile);
-            DependencyContainer.Instance
-                .GetServiceCollection()
-                .RegisterDatabaseServices(dbConfig);
-            
-            BusinessLayer.Initialize();
-            DependencyContainer.Instance.Register<IClusterServer, ClusterServer>(ServiceLifetime.Singleton);
-            DependencyContainer.Instance.Configure(services => services.AddLogging(builder =>
-            {
-                builder.AddFilter("Microsoft", LogLevel.Warning);
-                builder.SetMinimumLevel(LogLevel.Trace);
-                builder.AddNLog(new NLogProviderOptions
-                {
-                    CaptureMessageTemplates = true,
-                    CaptureMessageProperties = true
-                });
-            }));
-            DependencyContainer.Instance.Configure(services =>
-            {
-                var worldConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(ClusterConfigFile, true);
-                services.AddSingleton(worldConfiguration);
-            });
             GameResources.Instance.Initialize(this._loaders);
             DependencyContainer.Instance.BuildServiceProvider();
         }
@@ -68,23 +43,9 @@ namespace Rhisis.Cluster
         /// <inheritdoc />
         public void Run()
         {
-            var logger = DependencyContainer.Instance.Resolve<ILogger<ClusterServerStartup>>();
-            this._server = DependencyContainer.Instance.Resolve<IClusterServer>();
 
-            try
-            {
-                logger.LogInformation("Starting ClusterServer...");
+            GameResources.Instance.Load();
 
-                GameResources.Instance.Load();
-                this._server.Start();
-            }
-            catch (Exception e)
-            {
-                logger.LogCritical(e, $"An unexpected error occured in ClusterServer.");
-#if DEBUG
-                Console.ReadLine();
-#endif
-            }
         }
 
         /// <inheritdoc />
