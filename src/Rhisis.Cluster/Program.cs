@@ -40,6 +40,7 @@ namespace Rhisis.Cluster
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
+                    services.AddMemoryCache();
                     services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection("clusterServer"));
                     services.Configure<ISCConfiguration>(hostContext.Configuration.GetSection("isc"));
                     services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
