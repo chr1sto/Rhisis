@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Structures.Game;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,67 +10,51 @@ namespace Rhisis.Core.Resources.Loaders
     public sealed class JobLoader : IGameResourceLoader
     {
         private readonly ILogger<JobLoader> _logger;
-        private readonly IDictionary<int, JobData> _jobsData;
-        private readonly DefineLoader _defines;
-
-        /// <summary>
-        /// Gets job by his id.
-        /// </summary>
-        /// <param name="jobId">Job Id</param>
-        /// <returns></returns>
-        public JobData this[int jobId] => this.GetJob(jobId);
+        private readonly IMemoryCache _cache;
+        private readonly IDictionary<string, int> _defines;
 
         /// <summary>
         /// Creates a new <see cref="JobLoader"/> instance.
         /// </summary>
-        /// <param name="logger">Logger</param>
-        /// <param name="defines">Defines</param>
-        public JobLoader(ILogger<JobLoader> logger, DefineLoader defines)
+        /// <param name="logger">Logger.</param>
+        /// <param name="cache">Application memory cache.</param>
+        public JobLoader(ILogger<JobLoader> logger, IMemoryCache cache)
         {
             this._logger = logger;
-            this._jobsData = new Dictionary<int, JobData>();
-            this._defines = defines;
+            this._cache = cache;
+            this._defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
         }
 
         /// <inheritdoc />
         public void Load()
         {
-            if (!File.Exists(GameResources.JobPropPath))
+            string propJobFile = GameResourcesConstants.Paths.JobPropPath;
+
+            if (!File.Exists(propJobFile))
             {
-                this._logger.LogWarning($"Unable to load job properties. Reason: cannot find '{GameResources.JobPropPath}' file.");
+                this._logger.LogWarning($"Unable to load job properties. Reason: cannot find '{propJobFile}' file.");
                 return;
             }
 
-            using (var propJob = new ResourceTableFile(GameResources.JobPropPath, -1, new [] { '\t', ' ', '\r' }, this._defines.Defines, null))
+            var jobData = new ConcurrentDictionary<int, JobData>();
+            using (var propJob = new ResourceTableFile(propJobFile, -1, new [] { '\t', ' ', '\r' }, this._defines, null))
             {
                 var jobs = propJob.GetRecords<JobData>();
 
                 foreach (var job in jobs)
                 {
-                    if (this._jobsData.ContainsKey(job.Id))
+                    if (jobData.ContainsKey(job.Id))
                     {
-                        this._jobsData[job.Id] = job;
-                        this._logger.LogWarning(GameResources.ObjectOverridedMessage, "JobData", job.Id, "already delcared");
+                        jobData[job.Id] = job;
+                        this._logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "JobData", job.Id, "already delcared");
                     }
                     else
-                        this._jobsData.Add(job.Id, job);
+                        jobData.TryAdd(job.Id, job);
                 }
             }
 
-            this._logger.LogInformation($"-> {this._jobsData.Count} jobs data loaded.");
-        }
-
-        /// <summary>
-        /// Gets job by his id.
-        /// </summary>
-        /// <param name="jobId">Job Id</param>
-        /// <returns></returns>
-        public JobData GetJob(int jobId) => this._jobsData.TryGetValue(jobId, out JobData value) ? value : null;
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            this._jobsData.Clear();
+            this._cache.Set(GameResourcesConstants.Jobs, jobData);
+            this._logger.LogInformation($"-> {jobData.Count} jobs data loaded.");
         }
     }
 }

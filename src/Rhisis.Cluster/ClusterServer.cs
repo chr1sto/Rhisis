@@ -6,6 +6,8 @@ using Microsoft.Extensions.Options;
 using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Handlers;
+using Rhisis.Core.Resources;
+using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network;
 using Rhisis.Network.ISC.Structures;
@@ -17,6 +19,7 @@ namespace Rhisis.Cluster
     {
         private readonly ILogger<ClusterServer> _logger;
         private readonly ClusterConfiguration _clusterConfiguration;
+        private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
 
         /// <inheritdoc />
@@ -27,11 +30,13 @@ namespace Rhisis.Cluster
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="clusterConfiguration">Cluster Server configuration.</param>
+        /// <param name="gameResources">Game resources.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IServiceProvider serviceProvider)
+        public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IGameResources gameResources, IServiceProvider serviceProvider)
         {
             this._logger = logger;
             this._clusterConfiguration = clusterConfiguration.Value;
+            this._gameResources = gameResources;
             this._serviceProvider = serviceProvider;
             this.Configuration.Host = this._clusterConfiguration.Host;
             this.Configuration.Port = this._clusterConfiguration.Port;
@@ -51,6 +56,8 @@ namespace Rhisis.Cluster
         /// <inheritdoc />
         protected override void Initialize()
         {
+            this._gameResources.Load(typeof(DefineLoader), typeof(JobLoader));
+
             //TODO: Implement this log inside OnStarted method when will be available.
             this._logger.LogInformation("'{0}' cluster server is started and listen on {1}:{2}.", 
                 this._clusterConfiguration.Name, this.Configuration.Host, this.Configuration.Port);

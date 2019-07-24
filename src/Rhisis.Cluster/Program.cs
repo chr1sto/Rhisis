@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Handlers;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Network.Packets;
@@ -46,7 +47,7 @@ namespace Rhisis.Cluster
                     services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
                     services.AddHandlers();
-
+                    services.AddGameResources();
                     services.AddSingleton<IClusterServer, ClusterServer>();
                     services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
                     services.AddSingleton<IHostedService, ClusterServerService>();

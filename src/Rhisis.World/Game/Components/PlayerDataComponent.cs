@@ -52,7 +52,7 @@ namespace Rhisis.World.Game.Components
             set
             {
                 this._jobId = value;
-                this.JobData = DependencyContainer.Instance.Resolve<JobLoader>().GetJob(this._jobId);
+                this.JobData = null;//DependencyContainer.Instance.Resolve<JobLoader>().GetJob(this._jobId);
             }
         }
         private int _jobId;

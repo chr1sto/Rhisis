@@ -101,16 +101,5 @@ namespace Rhisis.Core.Resources
 
             this._logger.LogInformation("Resources loaded in {0}ms.", Profiler.Stop("LoadResources").ElapsedMilliseconds);
         }
-
-        /// <summary>
-        /// Dispose a loader.
-        /// </summary>
-        /// <typeparam name="TLoader"></typeparam>
-        public void DisposeLoader<TLoader>() where TLoader : class, IGameResourceLoader
-        {
-            var loader = DependencyContainer.Instance.Resolve<TLoader>();
-
-            loader?.Dispose();
-        }
     }
 }

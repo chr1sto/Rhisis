@@ -107,7 +107,7 @@ namespace Rhisis.Cluster
 
                 DefaultCharacter defaultCharacter = clusterConfiguration.DefaultCharacter;
                 DefaultStartItems defaultEquipment = pak.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
-                JobData jobData = jobs[pak.Job];
+                JobData jobData = null;// jobs[pak.Job];
 
                 dbCharacter = new DbCharacter()
                 {
