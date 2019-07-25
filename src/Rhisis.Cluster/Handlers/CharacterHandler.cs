@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.Client;
 using Rhisis.Core.Handlers.Attributes;
+using Rhisis.Core.Resources;
 using Rhisis.Database;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Cluster;
@@ -13,12 +14,14 @@ namespace Rhisis.Cluster.Handlers
         private readonly ILogger<CharacterHandler> _logger;
         private readonly IDatabase _database;
         private readonly IClusterServer _clusterServer;
+        private readonly IGameResources _gameResources;
 
-        public CharacterHandler(ILogger<CharacterHandler> logger, IDatabase database, IClusterServer clusterServer)
+        public CharacterHandler(ILogger<CharacterHandler> logger, IDatabase database, IClusterServer clusterServer, IGameResources gameResources)
         {
             this._logger = logger;
             this._database = database;
             this._clusterServer = clusterServer;
+            this._gameResources = gameResources;
         }
 
         [HandlerAction(PacketType.GETPLAYERLIST)]

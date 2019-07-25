@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Cluster.CoreClient;
+using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Resources;
@@ -48,6 +50,12 @@ namespace Rhisis.Cluster
 
                     services.AddHandlers();
                     services.AddGameResources();
+
+                    // Core client configuration
+                    services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
+                    services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
+
+                    // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();
                     services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
                     services.AddSingleton<IHostedService, ClusterServerService>();
