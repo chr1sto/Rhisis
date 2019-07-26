@@ -10,17 +10,27 @@ using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network;
-using Rhisis.Network.ISC.Structures;
+using Rhisis.Network.Core;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Cluster
 {
+    /// <summary>
+    /// Cluster server.
+    /// </summary>
     public class ClusterServer : NetServer<ClusterClient>, IClusterServer
     {
         private readonly ILogger<ClusterServer> _logger;
-        private readonly ClusterConfiguration _clusterConfiguration;
         private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
+
+        /// <inheritdoc />
+        public ClusterConfiguration ClusterConfiguration { get; }
+
+        /// <inheritdoc />
+        public IList<WorldServerInfo> WorldServers { get; } = new List<WorldServerInfo>();
 
         /// <inheritdoc />
         protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
@@ -35,11 +45,11 @@ namespace Rhisis.Cluster
         public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IGameResources gameResources, IServiceProvider serviceProvider)
         {
             this._logger = logger;
-            this._clusterConfiguration = clusterConfiguration.Value;
+            this.ClusterConfiguration = clusterConfiguration.Value;
             this._gameResources = gameResources;
             this._serviceProvider = serviceProvider;
-            this.Configuration.Host = this._clusterConfiguration.Host;
-            this.Configuration.Port = this._clusterConfiguration.Port;
+            this.Configuration.Host = this.ClusterConfiguration.Host;
+            this.Configuration.Port = this.ClusterConfiguration.Port;
             this.Configuration.MaximumNumberOfConnections = 1000;
             this.Configuration.Backlog = 100;
             this.Configuration.BufferSize = 4096;
@@ -60,7 +70,7 @@ namespace Rhisis.Cluster
 
             //TODO: Implement this log inside OnStarted method when will be available.
             this._logger.LogInformation("'{0}' cluster server is started and listen on {1}:{2}.", 
-                this._clusterConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
+                this.ClusterConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
         }
 
         /// <inheritdoc />
@@ -84,6 +94,6 @@ namespace Rhisis.Cluster
         protected override void OnError(Exception exception) => this._logger.LogInformation($"Socket error: {exception.Message}");
 
         /// <inheritdoc />
-        public WorldServerInfo GetWorldServerById(int id) => null;
+        public WorldServerInfo GetWorldServerById(int id) => this.WorldServers.FirstOrDefault(x => x.Id == id);
     }
 }

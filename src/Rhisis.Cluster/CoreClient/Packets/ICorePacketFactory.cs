@@ -1,32 +1,17 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Network.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Rhisis.Core.Structures.Configuration;
 
 namespace Rhisis.Cluster.CoreClient.Packets
 {
+    /// <summary>
+    /// Provdes factory methods to send packets to the core server.
+    /// </summary>
     public interface ICorePacketFactory
     {
-        void SendAuthentication(IClusterCoreClient client);
-    }
-
-    public class CorePacketFactory : ICorePacketFactory
-    {
-        /// <inheritdoc />
-        public void SendAuthentication(IClusterCoreClient client)
-        {
-            using (var packet = new NetPacket())
-            {
-                packet.Write((uint)CorePacketType.Authenticate);
-                packet.Write(client.ClusterConfiguration.Id);
-                packet.Write(client.ClusterConfiguration.Name);
-                packet.Write(client.ClusterConfiguration.Host);
-                packet.Write(client.ClusterConfiguration.Port);
-                packet.Write((byte)ServerType.Cluster);
-
-                client.Send(packet);
-            }
-        }
+        /// <summary>
+        /// Sends the authentication request to the core server.
+        /// </summary>
+        /// <param name="client">Client.</param>
+        /// <param name="clusterConfiguration">Cluster server configuration.</param>
+        void SendAuthentication(IClusterCoreClient client, ClusterConfiguration clusterConfiguration);
     }
 }

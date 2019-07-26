@@ -18,15 +18,10 @@ namespace Rhisis.Cluster.Client
         /// <inheritdoc />
         public uint SessionId { get; }
 
-        /// <summary>
-        /// Gets or sets the Login protect value. 
-        /// This value is random and valid only for this session in order to secure num pad disposition.
-        /// </summary>
+        /// <inheritdoc />
         public int LoginProtectValue { get; set; }
 
-        /// <summary>
-        /// Gets the remote end point (IP and port) for this client.
-        /// </summary>
+        /// <inheritdoc />
         public string RemoteEndPoint => this.Socket.RemoteEndPoint.ToString();
 
         /// <summary>
@@ -54,9 +49,7 @@ namespace Rhisis.Cluster.Client
             clusterPacketFactory.SendWelcome(this);
         }
 
-        /// <summary>
-        /// Disconnects the current <see cref="ClusterClient"/>.
-        /// </summary>
+        /// <inheritdoc />
         public void Disconnect()
         {
             this.Dispose();

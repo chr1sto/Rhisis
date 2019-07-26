@@ -29,7 +29,7 @@ namespace Rhisis.Cluster.Handlers
         /// <param name="client">Client.</param>
         /// <param name="pingPacket">Ping packet data.</param>
         [HandlerAction(PacketType.PING)]
-        public void OnPing(ClusterClient client, PingPacket pingPacket)
+        public void OnPing(IClusterClient client, PingPacket pingPacket)
         {
             if (!pingPacket.IsTimeOut)
                 this._clusterPacketFactory.SendPong(client, pingPacket.Time);
@@ -41,7 +41,7 @@ namespace Rhisis.Cluster.Handlers
         /// <param name="client">Client.</param>
         /// <param name="packet">Query tick count packet data.</param>
         [HandlerAction(PacketType.QUERYTICKCOUNT)]
-        public void OnQueryTickCount(ClusterClient client, QueryTickCountPacket packet)
+        public void OnQueryTickCount(IClusterClient client, QueryTickCountPacket packet)
         {
             this._clusterPacketFactory.SendQueryTickCount(client, packet.Time);
         }

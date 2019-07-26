@@ -3,23 +3,15 @@ using System;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public struct PreJoinPacket : IEquatable<PreJoinPacket>
+    public class PreJoinPacket : IEquatable<PreJoinPacket>, IPacketDeserializer
     {
-        public string Username { get; }
+        public string Username { get; private set; }
 
-        public int CharacterId { get; }
+        public int CharacterId { get; private set; }
 
-        public string CharacterName { get; }
+        public string CharacterName { get; private set; }
 
-        public int BankCode { get; }
-
-        public PreJoinPacket(INetPacketStream packet)
-        {
-            this.Username = packet.Read<string>();
-            this.CharacterId = packet.Read<int>();
-            this.CharacterName = packet.Read<string>();
-            this.BankCode = packet.Read<int>();
-        }
+        public int BankCode { get; private set; }
 
         public bool Equals(PreJoinPacket other)
         {
@@ -27,6 +19,14 @@ namespace Rhisis.Network.Packets.Cluster
                 this.CharacterId == other.CharacterId &&
                 this.CharacterName.Equals(other.CharacterName) &&
                 this.BankCode == other.BankCode;
+        }
+
+        public void Deserialize(INetPacketStream packet)
+        {
+            this.Username = packet.Read<string>();
+            this.CharacterId = packet.Read<int>();
+            this.CharacterName = packet.Read<string>();
+            this.BankCode = packet.Read<int>();
         }
     }
 }

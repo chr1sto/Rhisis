@@ -7,7 +7,7 @@ using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using System;
 
-namespace Rhisis.Login
+namespace Rhisis.Login.Client
 {
     public sealed class LoginClient : NetUser, ILoginClient
     {
@@ -15,24 +15,16 @@ namespace Rhisis.Login
         private ILoginServer _loginServer;
         private IHandlerInvoker _handlerInvoker;
 
-        /// <summary>
-        /// Gets the ID assigned to this session.
-        /// </summary>
+        /// <inheritdoc />
         public uint SessionId { get; }
-        
-        /// <summary>
-        /// Gets the client's logged username.
-        /// </summary>
+
+        /// <inheritdoc />
         public string Username { get; private set; }
 
-        /// <summary>
-        /// Gets the remote end point (IP and port) for this client.
-        /// </summary>
+        /// <inheritdoc />
         public string RemoteEndPoint => this.Socket?.RemoteEndPoint?.ToString();
 
-        /// <summary>
-        /// Check if the client is connected.
-        /// </summary>
+        /// <inheritdoc />
         public bool IsConnected => !string.IsNullOrEmpty(this.Username);
 
         /// <summary>

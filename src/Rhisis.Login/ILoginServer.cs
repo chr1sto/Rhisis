@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Server;
+using Rhisis.Login.Client;
 
 namespace Rhisis.Login
 {
@@ -12,7 +13,7 @@ namespace Rhisis.Login
         /// </summary>
         /// <param name="username">Client username</param>
         /// <returns></returns>
-        LoginClient GetClientByUsername(string username);
+        ILoginClient GetClientByUsername(string username);
 
         /// <summary>
         /// Verify if a client is connected to the login server.

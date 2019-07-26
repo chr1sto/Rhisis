@@ -9,6 +9,14 @@ namespace Rhisis.Database.Repositories
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        DbUser GetUserByUsername(string username);
+        DbUser GetUser(string username);
+
+        /// <summary>
+        /// Gets a user by it's username and password.
+        /// </summary>
+        /// <param name="username">User name.</param>
+        /// <param name="password">User password.</param>
+        /// <returns></returns>
+        DbUser GetUser(string username, string password);
     }
 }

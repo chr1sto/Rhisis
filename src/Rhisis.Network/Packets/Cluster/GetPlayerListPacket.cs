@@ -3,26 +3,17 @@ using System;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public struct GetPlayerListPacket : IEquatable<GetPlayerListPacket>
+    public class GetPlayerListPacket : IEquatable<GetPlayerListPacket>, IPacketDeserializer
     {
-        public string BuildVersion { get; }
+        public string BuildVersion { get; private set; }
 
-        public int AuthenticationKey { get; }
+        public int AuthenticationKey { get; private set; }
         
-        public string Username { get; }
+        public string Username { get; private set; }
 
-        public string Password { get; }
+        public string Password { get; private set; }
 
-        public int ServerId { get; }
-
-        public GetPlayerListPacket(INetPacketStream packet)
-        {
-            this.BuildVersion = packet.Read<string>();
-            this.AuthenticationKey = packet.Read<int>();
-            this.Username = packet.Read<string>();
-            this.Password = packet.Read<string>();
-            this.ServerId = packet.Read<int>();
-        }
+        public int ServerId { get; private set; }
 
         public bool Equals(GetPlayerListPacket other)
         {
@@ -31,6 +22,15 @@ namespace Rhisis.Network.Packets.Cluster
                 && this.Username == other.Username
                 && this.Password == other.Password
                 && this.ServerId == other.ServerId;
+        }
+
+        public void Deserialize(INetPacketStream packet)
+        {
+            this.BuildVersion = packet.Read<string>();
+            this.AuthenticationKey = packet.Read<int>();
+            this.Username = packet.Read<string>();
+            this.Password = packet.Read<string>();
+            this.ServerId = packet.Read<int>();
         }
     }
 }

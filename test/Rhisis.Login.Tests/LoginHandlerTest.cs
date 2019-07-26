@@ -7,6 +7,7 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Database.Repositories;
+using Rhisis.Login.Client;
 using Rhisis.Login.Core;
 using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
@@ -51,7 +52,7 @@ namespace Rhisis.Login.Tests
             this._loginConfigurationMock.Setup(x => x.Value).Returns(this._loginConfiguration);
 
             this._databaseUserRepository = new Mock<IUserRepository>();
-            this._databaseUserRepository.Setup(x => x.GetUserByUsername(It.IsAny<string>()))
+            this._databaseUserRepository.Setup(x => x.GetUser(It.IsAny<string>()))
                 .Returns<string>(x => this._users.AsQueryable().FirstOrDefault(y => y.Username == x));
 
             this._database = new Mock<IDatabase>();

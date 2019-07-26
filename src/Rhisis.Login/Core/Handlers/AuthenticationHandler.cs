@@ -81,6 +81,7 @@ namespace Rhisis.Login.Core.Handlers
 
                 cluster.Worlds.Add(worldInfo);
                 client.ServerInfo = worldInfo;
+                this._corePacketFactory.SendUpdateWorldList(parentClusterServer, cluster.Worlds);
                 this._logger.LogInformation($"World server '{name}' join cluster '{cluster.Name}' and is connected to ISC server from {client.RemoteEndPoint}.");
             }
             else

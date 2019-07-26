@@ -19,8 +19,12 @@ namespace Rhisis.Database.Repositories.Implementation
         }
 
         /// <inheritdoc />
-        public DbUser GetUserByUsername(string username) 
-            => this._context.Set<DbUser>().AsQueryable().FirstOrDefault(x => x.Username == username);
+        public DbUser GetUser(string username) 
+            => this._context.Set<DbUser>().AsQueryable().AsNoTracking().FirstOrDefault(x => x.Username == username);
+
+        /// <inheritdoc />
+        public DbUser GetUser(string username, string password) 
+            => this._context.Set<DbUser>().AsQueryable().AsNoTracking().FirstOrDefault(x => x.Username == username && x.Password == password);
 
         /// <inheritdoc />
         protected override IQueryable<DbUser> GetQueryable(DbContext context)

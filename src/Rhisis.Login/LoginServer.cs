@@ -5,11 +5,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Login.Client;
 using Rhisis.Login.Packets;
 using Rhisis.Network;
-using Rhisis.Network.ISC.Structures;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.Login
@@ -84,7 +83,7 @@ namespace Rhisis.Login
         }
 
         /// <inheritdoc />
-        public LoginClient GetClientByUsername(string username)
+        public ILoginClient GetClientByUsername(string username)
             => this.Clients.FirstOrDefault(x =>
                 x.IsConnected &&
                 x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));

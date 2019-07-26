@@ -1,4 +1,5 @@
-﻿using Rhisis.Network;
+﻿using Rhisis.Login.Client;
+using Rhisis.Network;
 using Rhisis.Network.Core;
 using Rhisis.Network.Packets;
 using System.Collections.Generic;

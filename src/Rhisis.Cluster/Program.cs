@@ -54,6 +54,7 @@ namespace Rhisis.Cluster
                     // Core client configuration
                     services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
                     services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
+                    services.AddSingleton<IHostedService, ClusterCoreClientService>();
 
                     // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();

@@ -7,6 +7,7 @@
     {
         Welcome,
         Authenticate,
-        AuthenticationResult
+        AuthenticationResult,
+        UpdateClusterWorldsList,
     }
 }
