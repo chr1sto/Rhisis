@@ -22,6 +22,9 @@ namespace Rhisis.Cluster
     /// </summary>
     public class ClusterServer : NetServer<ClusterClient>, IClusterServer
     {
+        private const int MaxConnections = 500;
+        private const int ClientBufferSize = 128;
+        private const int ClientBacklog = 50;
         private readonly ILogger<ClusterServer> _logger;
         private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
@@ -50,33 +53,23 @@ namespace Rhisis.Cluster
             this._serviceProvider = serviceProvider;
             this.Configuration.Host = this.ClusterConfiguration.Host;
             this.Configuration.Port = this.ClusterConfiguration.Port;
-            this.Configuration.MaximumNumberOfConnections = 1000;
-            this.Configuration.Backlog = 100;
-            this.Configuration.BufferSize = 4096;
+            this.Configuration.MaximumNumberOfConnections = MaxConnections;
+            this.Configuration.Backlog = ClientBacklog;
+            this.Configuration.BufferSize = ClientBufferSize;
             this.Configuration.Blocking = false;
-
-            this._logger.LogTrace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
-                this.Configuration.Host,
-                this.Configuration.Port,
-                this.Configuration.MaximumNumberOfConnections,
-                this.Configuration.Backlog,
-                this.Configuration.BufferSize);
         }
 
         /// <inheritdoc />
         protected override void Initialize()
         {
             this._gameResources.Load(typeof(DefineLoader), typeof(JobLoader));
-
-            //TODO: Implement this log inside OnStarted method when will be available.
-            this._logger.LogInformation("'{0}' cluster server is started and listen on {1}:{2}.", 
-                this.ClusterConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
+            this._logger.LogInformation($"'{this.ClusterConfiguration.Name}' cluster server is started and listen on {this.Configuration.Host}:{this.Configuration.Port}."); 
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(ClusterClient client)
         {
-            this._logger.LogInformation("New client connected from {0}.", client.RemoteEndPoint);
+            this._logger.LogInformation($"New client connected to {nameof(ClusterServer)} from {client.RemoteEndPoint}.");
 
             client.Initialize(this,
                 this._serviceProvider.GetRequiredService<ILogger<ClusterClient>>(),
@@ -85,13 +78,12 @@ namespace Rhisis.Cluster
         }
 
         /// <inheritdoc />
-        protected override void OnClientDisconnected(ClusterClient client)
-        {
-            this._logger.LogInformation("Client disconnected from {0}.", client.RemoteEndPoint);
-        }
+        protected override void OnClientDisconnected(ClusterClient client) 
+            => this._logger.LogInformation($"Client disconnected from {client.RemoteEndPoint}.");
 
         /// <inheritdoc />
-        protected override void OnError(Exception exception) => this._logger.LogInformation($"Socket error: {exception.Message}");
+        protected override void OnError(Exception exception) 
+            => this._logger.LogInformation($"{nameof(ClusterServer)} socket error: {exception.Message}");
 
         /// <inheritdoc />
         public WorldServerInfo GetWorldServerById(int id) => this.WorldServers.FirstOrDefault(x => x.Id == id);

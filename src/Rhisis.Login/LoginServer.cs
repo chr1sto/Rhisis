@@ -15,6 +15,9 @@ namespace Rhisis.Login
 {
     public sealed class LoginServer : NetServer<LoginClient>, ILoginServer
     {
+        private const int MaxConnections = 500;
+        private const int ClientBufferSize = 128;
+        private const int ClientBacklog = 50;
         private readonly ILogger<LoginServer> _logger;
         private readonly LoginConfiguration _loginConfiguration;
         private readonly IServiceProvider _serviceProvider;
@@ -36,30 +39,23 @@ namespace Rhisis.Login
             this._serviceProvider = serviceProvider;
             this.Configuration.Host = this._loginConfiguration.Host;
             this.Configuration.Port = this._loginConfiguration.Port;
-            this.Configuration.MaximumNumberOfConnections = 1000;
-            this.Configuration.Backlog = 100;
-            this.Configuration.BufferSize = 4096;
+            this.Configuration.MaximumNumberOfConnections = MaxConnections;
+            this.Configuration.Backlog = ClientBacklog;
+            this.Configuration.BufferSize = ClientBufferSize;
             this.Configuration.Blocking = false;
-
-            this._logger.LogTrace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
-                this.Configuration.Host,
-                this.Configuration.Port,
-                this.Configuration.MaximumNumberOfConnections,
-                this.Configuration.Backlog,
-                this.Configuration.BufferSize);
         }
 
         /// <inheritdoc />
         protected override void Initialize()
         {
             //TODO: Implement this log inside OnStarted method when will be available.
-            this._logger.LogInformation("Login server is started and listen on {0}:{1}.", this.Configuration.Host, this.Configuration.Port);
+            this._logger.LogInformation($"{nameof(LoginServer)} is started and listen on {this.Configuration.Host}:{this.Configuration.Port}.");
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(LoginClient client)
         {
-            this._logger.LogInformation($"New client connected from {client.RemoteEndPoint}.");
+            this._logger.LogInformation($"New client connected to {nameof(LoginServer)} from {client.RemoteEndPoint}.");
 
             client.Initialize(this, 
                 this._serviceProvider.GetRequiredService<ILogger<LoginClient>>(), 
@@ -79,7 +75,7 @@ namespace Rhisis.Login
         /// <inheritdoc />
         protected override void OnError(Exception exception)
         {
-            this._logger.LogInformation($"Socket error: {exception.Message}");
+            this._logger.LogInformation($"{nameof(LoginServer)} socket error: {exception.Message}");
         }
 
         /// <inheritdoc />

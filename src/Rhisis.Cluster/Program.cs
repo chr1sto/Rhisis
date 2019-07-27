@@ -7,14 +7,13 @@ using NLog.Extensions.Logging;
 using Rhisis.Cluster.CoreClient;
 using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Cluster.Packets;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Network.Packets;
-using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Rhisis.Cluster
@@ -26,12 +25,6 @@ namespace Rhisis.Cluster
             const string culture = "en-US";
             const string clusterConfigurationPath = "config/cluster.json";
             const string databaseConfigurationPath = "config/database.json";
-
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            CultureInfo.CurrentCulture = new CultureInfo(culture);
-            CultureInfo.CurrentUICulture = new CultureInfo(culture);
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(culture);
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(culture);
 
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
@@ -71,6 +64,7 @@ namespace Rhisis.Cluster
                         CaptureMessageProperties = true
                     });
                 })
+                .SetConsoleCulture(culture)
                 .UseConsoleLifetime()
                 .Build();
 
