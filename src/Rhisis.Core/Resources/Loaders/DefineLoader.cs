@@ -49,7 +49,7 @@ namespace Rhisis.Core.Resources.Loaders
                         else
                         {
                             this._logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Define", define.Key,
-                                isIntValue ? "already declared" : $"'{define.Value}' is not a integer value"); ;
+                                isIntValue ? "already declared" : $"'{define.Value}' is not a integer value");
                         }
                     }
                 }

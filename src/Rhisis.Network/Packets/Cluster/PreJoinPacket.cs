@@ -1,9 +1,8 @@
 ﻿using Ether.Network.Packets;
-using System;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public class PreJoinPacket : IEquatable<PreJoinPacket>, IPacketDeserializer
+    public class PreJoinPacket : IPacketDeserializer
     {
         public string Username { get; private set; }
 
@@ -12,14 +11,6 @@ namespace Rhisis.Network.Packets.Cluster
         public string CharacterName { get; private set; }
 
         public int BankCode { get; private set; }
-
-        public bool Equals(PreJoinPacket other)
-        {
-            return this.Username.Equals(other.Username) &&
-                this.CharacterId == other.CharacterId &&
-                this.CharacterName.Equals(other.CharacterName) &&
-                this.BankCode == other.BankCode;
-        }
 
         public void Deserialize(INetPacketStream packet)
         {

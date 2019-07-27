@@ -1,9 +1,8 @@
 ﻿using Ether.Network.Packets;
-using System;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public class GetPlayerListPacket : IEquatable<GetPlayerListPacket>, IPacketDeserializer
+    public class GetPlayerListPacket : IPacketDeserializer
     {
         public string BuildVersion { get; private set; }
 
@@ -14,15 +13,6 @@ namespace Rhisis.Network.Packets.Cluster
         public string Password { get; private set; }
 
         public int ServerId { get; private set; }
-
-        public bool Equals(GetPlayerListPacket other)
-        {
-            return this.BuildVersion == other.BuildVersion
-                && this.AuthenticationKey == other.AuthenticationKey
-                && this.Username == other.Username
-                && this.Password == other.Password
-                && this.ServerId == other.ServerId;
-        }
 
         public void Deserialize(INetPacketStream packet)
         {

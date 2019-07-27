@@ -1,9 +1,8 @@
 ﻿using Ether.Network.Packets;
-using System;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public class DeletePlayerPacket : IEquatable<DeletePlayerPacket>, IPacketDeserializer
+    public class DeletePlayerPacket : IPacketDeserializer
     {
         public string Username { get; private set; }
 
@@ -14,15 +13,6 @@ namespace Rhisis.Network.Packets.Cluster
         public int CharacterId { get; private set; }
 
         public int AuthenticationKey { get; private set; }
-
-        public bool Equals(DeletePlayerPacket other)
-        {
-            return this.Username == other.Username &&
-                this.Password == other.Password &&
-                this.PasswordConfirmation == other.PasswordConfirmation &&
-                this.CharacterId == other.CharacterId &&
-                this.AuthenticationKey == other.AuthenticationKey;
-        }
 
         public void Deserialize(INetPacketStream packet)
         {

@@ -1,9 +1,8 @@
 ﻿using Ether.Network.Packets;
-using System;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public class CreatePlayerPacket : IEquatable<CreatePlayerPacket>, IPacketDeserializer
+    public class CreatePlayerPacket : IPacketDeserializer
     {
         public string Username { get; private set; }
 
@@ -32,23 +31,6 @@ namespace Rhisis.Network.Packets.Cluster
         public int BankPassword { get; private set; }
 
         public int AuthenticationKey { get; private set; }
-
-        public bool Equals(CreatePlayerPacket other)
-        {
-            return this.Username == other.Username &&
-                this.Password == other.Password &&
-                this.Slot == other.Slot &&
-                this.Name == other.Name &&
-                this.FaceId == other.FaceId &&
-                this.CostumeId == other.CostumeId &&
-                this.SkinSet == other.SkinSet &&
-                this.HairMeshId == other.HairMeshId &&
-                this.HairColor == other.HairColor &&
-                this.Gender == other.Gender &&
-                this.HeadMesh == other.HeadMesh &&
-                this.BankPassword == other.BankPassword &&
-                this.AuthenticationKey == other.AuthenticationKey;
-        }
 
         public void Deserialize(INetPacketStream packet)
         {
