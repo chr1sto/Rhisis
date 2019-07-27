@@ -7,14 +7,13 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Database.Repositories;
+using Rhisis.Login.Client;
 using Rhisis.Login.Core;
 using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Rhisis.Login.Tests
@@ -53,8 +52,8 @@ namespace Rhisis.Login.Tests
             this._loginConfigurationMock.Setup(x => x.Value).Returns(this._loginConfiguration);
 
             this._databaseUserRepository = new Mock<IUserRepository>();
-            this._databaseUserRepository.Setup(x => x.Get(It.IsAny<Expression<Func<DbUser, bool>>>()))
-                .Returns<Expression<Func<DbUser, bool>>>(x => this._users.AsQueryable().FirstOrDefault(x));
+            this._databaseUserRepository.Setup(x => x.GetUser(It.IsAny<string>()))
+                .Returns<string>(x => this._users.AsQueryable().FirstOrDefault(y => y.Username == x));
 
             this._database = new Mock<IDatabase>();
             this._database.SetupGet(x => x.Users).Returns(this._databaseUserRepository.Object);
@@ -69,7 +68,8 @@ namespace Rhisis.Login.Tests
 
             this._loginClient.Initialize(this._loginServerMock.Object,
                 new Mock<ILogger<LoginClient>>().Object,
-                new Mock<IHandlerInvoker>().Object);
+                new Mock<IHandlerInvoker>().Object,
+                this._loginPacketFactoryMock.Object);
         }
 
         [Fact]

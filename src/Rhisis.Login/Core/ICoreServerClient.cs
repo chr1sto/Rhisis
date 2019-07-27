@@ -1,4 +1,5 @@
 ﻿using Ether.Network.Common;
+using Rhisis.Network.Core;
 
 namespace Rhisis.Login.Core
 {
@@ -7,5 +8,9 @@ namespace Rhisis.Login.Core
     /// </summary>
     public interface ICoreServerClient : INetUser
     {
+        /// <summary>
+        /// Gets or sets the server informations.
+        /// </summary>
+        ServerInfo ServerInfo { get; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Entities;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.Database.Repositories.Implementation
@@ -16,6 +17,27 @@ namespace Rhisis.Database.Repositories.Implementation
         public CharacterRepository(DbContext context) 
             : base(context)
         {
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<DbCharacter> GetCharacters(int userId, bool includeDeletedCharacters = false)
+        {
+            IQueryable<DbCharacter> query = this._context.Set<DbCharacter>().Include(x => x.Items).AsNoTracking();
+
+            query = query.Where(x => x.UserId == userId);
+
+            if (!includeDeletedCharacters)
+                query = query.Where(x => !x.IsDeleted);
+
+            return query;
+        }
+
+        /// <inheritdoc />
+        public DbCharacter GetCharacter(int characterId)
+        {
+            IQueryable<DbCharacter> query = this._context.Set<DbCharacter>().AsNoTracking();
+
+            return query.FirstOrDefault(x => x.Id == characterId);
         }
 
         /// <inheritdoc />

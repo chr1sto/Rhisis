@@ -15,7 +15,7 @@ namespace Rhisis.Database.Repositories
     public abstract class RepositoryBase<T> : IRepository<T>
         where T : DbEntity
     {
-        private readonly DbContext _context;
+        protected readonly DbContext _context;
 
         /// <summary>
         /// Initializes the repository <see cref="DbContext"/>.

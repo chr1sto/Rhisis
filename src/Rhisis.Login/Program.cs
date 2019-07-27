@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
@@ -11,9 +12,7 @@ using Rhisis.Login.Core;
 using Rhisis.Login.Core.Packets;
 using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
-using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Rhisis.Login
@@ -23,19 +22,15 @@ namespace Rhisis.Login
         private static async Task Main()
         {
             const string culture = "en-US";
-
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            CultureInfo.CurrentCulture = new CultureInfo(culture);
-            CultureInfo.CurrentUICulture = new CultureInfo(culture);
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(culture);
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(culture);
+            const string loginConfigurationPath = "config/login.json";
+            const string databaseConfigurationPath = "config/database.json";
 
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
                     configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile("config/login.json", optional: false);
-                    configApp.AddJsonFile("config/database.json", optional: false);
+                    configApp.AddJsonFile(loginConfigurationPath, optional: false);
+                    configApp.AddJsonFile(databaseConfigurationPath, optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -66,6 +61,8 @@ namespace Rhisis.Login
                         CaptureMessageProperties = true
                     });
                 })
+                .UseConsoleLifetime()
+                .SetConsoleCulture(culture)
                 .Build();
 
             await host

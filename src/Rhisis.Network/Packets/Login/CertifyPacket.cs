@@ -2,11 +2,10 @@
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Structures.Configuration;
-using System;
 
 namespace Rhisis.Network.Packets.Login
 {
-    public class CertifyPacket : IEquatable<CertifyPacket>, IPacketDeserializer
+    public class CertifyPacket : IPacketDeserializer
     {
         private readonly LoginConfiguration _configuration;
 
@@ -19,13 +18,6 @@ namespace Rhisis.Network.Packets.Login
         public CertifyPacket(IOptions<LoginConfiguration> loginConfiguration)
         {
             this._configuration = loginConfiguration.Value;
-        }
-
-        public bool Equals(CertifyPacket other)
-        {
-            return this.BuildVersion == other.BuildVersion &&
-                this.Username == other.Username &&
-                this.Password == other.Password;
         }
 
         public void Deserialize(INetPacketStream packet)

@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Game;
 
@@ -52,7 +53,7 @@ namespace Rhisis.World.Game.Components
             set
             {
                 this._jobId = value;
-                this.JobData = DependencyContainer.Instance.Resolve<JobLoader>().GetJob(this._jobId);
+                this.JobData = DependencyContainer.Instance.Resolve<IGameResources>().Jobs[this._jobId];
             }
         }
         private int _jobId;

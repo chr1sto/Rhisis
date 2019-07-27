@@ -14,8 +14,9 @@ namespace Rhisis.World.ISC
             {
                 packet.Write((uint)ISCPacketType.AUTHENT);
                 packet.Write(worldConfiguration.Id);
-                packet.Write(worldConfiguration.Host);
                 packet.Write(worldConfiguration.Name);
+                packet.Write(worldConfiguration.Host);
+                packet.Write(worldConfiguration.Port);
                 packet.Write((byte)ISCServerType.World);
                 packet.Write(worldConfiguration.ClusterId);
 

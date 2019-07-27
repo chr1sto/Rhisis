@@ -3,10 +3,11 @@ using Ether.Network.Packets;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Handlers;
 using Rhisis.Core.Helpers;
+using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using System;
 
-namespace Rhisis.Login
+namespace Rhisis.Login.Client
 {
     public sealed class LoginClient : NetUser, ILoginClient
     {
@@ -14,24 +15,16 @@ namespace Rhisis.Login
         private ILoginServer _loginServer;
         private IHandlerInvoker _handlerInvoker;
 
-        /// <summary>
-        /// Gets the ID assigned to this session.
-        /// </summary>
+        /// <inheritdoc />
         public uint SessionId { get; }
-        
-        /// <summary>
-        /// Gets the client's logged username.
-        /// </summary>
+
+        /// <inheritdoc />
         public string Username { get; private set; }
 
-        /// <summary>
-        /// Gets the remote end point (IP and port) for this client.
-        /// </summary>
+        /// <inheritdoc />
         public string RemoteEndPoint => this.Socket?.RemoteEndPoint?.ToString();
 
-        /// <summary>
-        /// Check if the client is connected.
-        /// </summary>
+        /// <inheritdoc />
         public bool IsConnected => !string.IsNullOrEmpty(this.Username);
 
         /// <summary>
@@ -45,16 +38,17 @@ namespace Rhisis.Login
         /// <summary>
         /// Initializes the current <see cref="LoginClient"/> instance.
         /// </summary>
-        /// <param name="loginServer"></param>
-        /// <param name="logger"></param>
-        /// <param name="handlerInvoker"></param>
-        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker)
+        /// <param name="loginServer">Parent login server.</param>
+        /// <param name="logger">Logger.</param>
+        /// <param name="handlerInvoker">Handler invoker.</param>
+        /// <param name="loginPacketFactory">Login packet factory.</param>
+        public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker, ILoginPacketFactory loginPacketFactory)
         {
             this._loginServer = loginServer;
             this._logger = logger;
             this._handlerInvoker = handlerInvoker;
 
-            CommonPacketFactory.SendWelcome(this, this.SessionId);
+            loginPacketFactory.SendWelcome(this, this.SessionId);
         }
 
         /// <inheritdoc />
@@ -87,7 +81,7 @@ namespace Rhisis.Login
 
             if (Socket == null)
             {
-                this._logger.LogTrace("Skip to handle packet. Reason: client is no more connected.");
+                this._logger.LogTrace("Skip to handle login packet. Reason: client is not connected.");
                 return;
             }
 
@@ -116,7 +110,7 @@ namespace Rhisis.Login
             }
             catch (Exception exception)
             {
-                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, exception);
+                this._logger.LogError(exception, $"An error occured while handling a login packet.");
                 this._logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }

@@ -5,6 +5,7 @@ using Rhisis.Core.Handlers.Attributes;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Login.Client;
 using Rhisis.Login.Core;
 using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
@@ -48,7 +49,7 @@ namespace Rhisis.Login
         /// <param name="client">Client.</param>
         /// <param name="pingPacket">Ping packet.</param>
         [HandlerAction(PacketType.PING)]
-        public void OnPing(LoginClient client, PingPacket pingPacket)
+        public void OnPing(ILoginClient client, PingPacket pingPacket)
         {
             if (!pingPacket.IsTimeOut)
             {
@@ -62,7 +63,7 @@ namespace Rhisis.Login
         /// <param name="client">Client.</param>
         /// <param name="certifyPacket">Certify packet.</param>
         [HandlerAction(PacketType.CERTIFY)]
-        public void OnCertify(LoginClient client, CertifyPacket certifyPacket)
+        public void OnCertify(ILoginClient client, CertifyPacket certifyPacket)
         {
             if (certifyPacket.BuildVersion != this._loginConfiguration.BuildVersion)
             {
@@ -70,7 +71,7 @@ namespace Rhisis.Login
                 return;
             }
 
-            DbUser user = this._database.Users.Get(x => x.Username.Equals(certifyPacket.Username, StringComparison.OrdinalIgnoreCase));
+            DbUser user = this._database.Users.GetUser(certifyPacket.Username);
             AuthenticationResult authenticationResult = this.Authenticate(user, certifyPacket.Password);
 
             switch (authenticationResult)
@@ -116,7 +117,7 @@ namespace Rhisis.Login
         /// <param name="client">Client.</param>
         /// <param name="closeConnectionPacket">Close connection packet.</param>
         [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
-        public void OnCloseExistingConnection(LoginClient client, CloseConnectionPacket closeConnectionPacket)
+        public void OnCloseExistingConnection(ILoginClient client, CloseConnectionPacket closeConnectionPacket)
         {
             var otherConnectedClient = this._loginServer.GetClientByUsername(closeConnectionPacket.Username);
 
@@ -136,7 +137,7 @@ namespace Rhisis.Login
         /// <param name="error">Authentication error type.</param>
         /// <param name="reason">Authentication error reason.</param>
         /// <param name="disconnectClient">A boolean value that indicates if we disconnect the client or not.</param>
-        private void AuthenticationFailed(LoginClient client, ErrorType error, string reason, bool disconnectClient = true)
+        private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason, bool disconnectClient = true)
         {
             this._logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
             this._loginPacketFactory.SendLoginError(client, error);

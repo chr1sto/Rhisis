@@ -4,6 +4,17 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Unreleased]
 
+## [0.4.0]() - 2019-07-31
+
+### Fixes
+
+- ![login] Optimize authentication SQL request ([#259](https://github.com/Eastrall/Rhisis/pull/259))
+
+### Changes
+
+- ![login] Refactoring of the `LoginServer` with a [`HostBuilder`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.hostbuilder?view=aspnetcore-2.2) and add `HandlerInvoker` system. ([#258](https://github.com/Eastrall/Rhisis/pull/258))
+- ![cluster] Refactoring of the `ClusterServer` with a [`HostBuilder`]() ([#259](https://github.com/Eastrall/Rhisis/pull/259))
+
 ## [Released]
 
 ## [0.3.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.3) - 2019-06-30
