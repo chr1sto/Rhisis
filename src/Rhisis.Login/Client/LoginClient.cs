@@ -81,7 +81,7 @@ namespace Rhisis.Login.Client
 
             if (Socket == null)
             {
-                this._logger.LogTrace("Skip to handle packet. Reason: client is no more connected.");
+                this._logger.LogTrace("Skip to handle login packet. Reason: client is not connected.");
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace Rhisis.Login.Client
             }
             catch (Exception exception)
             {
-                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, exception);
+                this._logger.LogError(exception, $"An error occured while handling a login packet.");
                 this._logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }

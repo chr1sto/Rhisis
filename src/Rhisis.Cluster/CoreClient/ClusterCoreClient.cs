@@ -74,7 +74,7 @@ namespace Rhisis.Cluster.CoreClient
 
             if (this.Socket == null)
             {
-                this._logger.LogError("Skip to handle packet from server. Reason: socket is no more connected.");
+                this._logger.LogError("Skip to handle core packet from server. Reason: socket is not connected.");
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace Rhisis.Cluster.CoreClient
             }
             catch (Exception exception)
             {
-                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, exception);
+                this._logger.LogError(exception, $"An error occured while handling a core packet.");
                 this._logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }

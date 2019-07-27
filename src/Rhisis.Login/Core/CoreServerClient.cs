@@ -41,7 +41,7 @@ namespace Rhisis.Login.Core
 
             if (this.Socket == null)
             {
-                this._logger.LogTrace("Skip to handle packet from {0}. Reason: socket is no more connected.", this.RemoteEndPoint);
+                this._logger.LogTrace("Skip to handle core packet from {0}. Reason: socket is not connected.", this.RemoteEndPoint);
                 return;
             }
 
@@ -61,14 +61,12 @@ namespace Rhisis.Login.Core
                 }
                 else
                 {
-                    this._logger.LogWarning("Received an unknown Core packet 0x{0} from {1}.",
-                        packetHeaderNumber.ToString("X2"),
-                        this.RemoteEndPoint);
+                    this._logger.LogWarning($"Received an unknown Core packet 0x{packetHeaderNumber.ToString("X2")} from {this.RemoteEndPoint}.");
                 }
             }
             catch (Exception exception)
             {
-                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, exception);
+                this._logger.LogError(exception, $"An error occured while handling a CoreServer packet.");
                 this._logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }

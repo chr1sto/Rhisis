@@ -77,9 +77,9 @@ namespace Rhisis.Cluster.Client
         {
             uint packetHeaderNumber = 0;
 
-            if (Socket == null)
+            if (this.Socket == null)
             {
-                this._logger.LogTrace("Skip to handle packet from {0}. Reason: client is no more connected.", this.RemoteEndPoint);
+                this._logger.LogTrace("Skip to handle cluster packet from {0}. Reason: client is not connected.", this.RemoteEndPoint);
                 return;
             }
 
@@ -100,7 +100,7 @@ namespace Rhisis.Cluster.Client
             }
             catch (Exception exception)
             {
-                this._logger.LogError("Packet handle error from {0}. {1}", this.RemoteEndPoint, exception);
+                this._logger.LogError(exception, $"An error occured while handling a cluster packet.");
                 this._logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
