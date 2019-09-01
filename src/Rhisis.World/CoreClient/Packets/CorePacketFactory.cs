@@ -1,7 +1,7 @@
 ﻿using Ether.Network.Packets;
 using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
 
 namespace Rhisis.World.CoreClient.Packets

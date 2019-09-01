@@ -113,9 +113,13 @@ namespace Rhisis.CLI.Services
         /// </summary>
         /// <param name="confirmationMessage">Confirmation message</param>
         /// <returns></returns>
-        public bool AskConfirmation(string confirmationMessage)
+        public bool AskConfirmation(string confirmationMessage = null)
         {
-            Console.Write($"{confirmationMessage} (y/n): ");
+            if (!string.IsNullOrEmpty(confirmationMessage))
+            {
+                Console.Write($"{confirmationMessage} (y/n): ");
+            }
+
             string response = Console.ReadLine();
 
             return response.Equals("y", StringComparison.OrdinalIgnoreCase)

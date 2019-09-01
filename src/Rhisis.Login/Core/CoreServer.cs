@@ -18,7 +18,7 @@ namespace Rhisis.Login.Core
     internal class CoreServer : NetServer<CoreServerClient>, ICoreServer
     {
         private readonly ILogger<CoreServer> _logger;
-        private readonly ISCConfiguration _configuration;
+        private readonly CoreConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHandlerInvoker _handlerInvoker;
 
@@ -28,7 +28,7 @@ namespace Rhisis.Login.Core
         /// <param name="logger">Logger.</param>
         /// <param name="configuration">Core server configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public CoreServer(ILogger<CoreServer> logger, IOptions<ISCConfiguration> configuration, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker)
+        public CoreServer(ILogger<CoreServer> logger, IOptions<CoreConfiguration> configuration, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker)
         {
             this._logger = logger;
             this._configuration = configuration.Value;

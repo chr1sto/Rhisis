@@ -6,6 +6,7 @@ using Rhisis.CLI.Commands.Database;
 using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
 
 namespace Rhisis.CLI.Commands.Setup
@@ -29,8 +30,7 @@ namespace Rhisis.CLI.Commands.Setup
             Console.WriteLine("Welcome to Rhisis!");
             Console.WriteLine($"-------------------------------{Environment.NewLine}");
             Console.WriteLine($"This command will help you configure your Rhisis server instance.{Environment.NewLine}");
-            
-            this.ConfigureLoginServer();
+
             this.ConfigureClusterServer();
             this.ConfigureWorldServer();
 
@@ -38,10 +38,6 @@ namespace Rhisis.CLI.Commands.Setup
             this._databaseInitializationCommand.OnExecute();
         }
 
-        private void ConfigureLoginServer()
-        {
-            
-        }
 
         private void ConfigureClusterServer()
         {

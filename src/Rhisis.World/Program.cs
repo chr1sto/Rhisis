@@ -8,6 +8,7 @@ using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
 using Rhisis.Network.Packets;
 using Rhisis.World.CoreClient;
@@ -22,22 +23,21 @@ namespace Rhisis.World
         private static async Task Main()
         {
             const string culture = "en-US";
-            const string worldConfigurationPath = "config/world.json";
             const string databaseConfigurationPath = "config/database.json";
 
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
                     configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(worldConfigurationPath, optional: false);
+                    configApp.AddJsonFile(ConfigurationConstants.WorldServerPath, optional: false);
                     configApp.AddJsonFile(databaseConfigurationPath, optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
                     services.AddMemoryCache();
-                    services.Configure<WorldConfiguration>(hostContext.Configuration.GetSection("worldServer"));
-                    services.Configure<ISCConfiguration>(hostContext.Configuration.GetSection("isc"));
+                    services.Configure<WorldConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.WorldServer));
+                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
                     services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
                     services.AddHandlers();

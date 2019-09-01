@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Loaders;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Client;

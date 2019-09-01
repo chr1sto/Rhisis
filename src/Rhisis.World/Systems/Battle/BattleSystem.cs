@@ -5,7 +5,7 @@ using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;

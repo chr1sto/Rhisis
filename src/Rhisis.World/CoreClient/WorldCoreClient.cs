@@ -3,6 +3,7 @@ using Ether.Network.Packets;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
 using System;
@@ -19,7 +20,7 @@ namespace Rhisis.World.CoreClient
         public WorldConfiguration WorldServerConfiguration { get; }
 
         /// <inheritdoc />
-        public ISCConfiguration CoreClientConfiguration { get; }
+        public CoreConfiguration CoreClientConfiguration { get; }
 
         /// <inheritdoc />
         public string RemoteEndPoint => this.Socket.RemoteEndPoint.ToString();
@@ -31,7 +32,7 @@ namespace Rhisis.World.CoreClient
         /// <param name="worldConfiguration">World server configuration.</param>
         /// <param name="coreConfiguration">Core server configuration.</param>
         /// <param name="handlerInvoker">Handler invoker.</param>
-        public WorldCoreClient(ILogger<WorldCoreClient> logger, IOptions<WorldConfiguration> worldConfiguration, IOptions<ISCConfiguration> coreConfiguration, IHandlerInvoker handlerInvoker)
+        public WorldCoreClient(ILogger<WorldCoreClient> logger, IOptions<WorldConfiguration> worldConfiguration, IOptions<CoreConfiguration> coreConfiguration, IHandlerInvoker handlerInvoker)
         {
             this._logger = logger;
             this.WorldServerConfiguration = worldConfiguration.Value;

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.World.Game.Factories;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

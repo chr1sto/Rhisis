@@ -7,9 +7,9 @@ using Rhisis.CLI.Commands.User;
 namespace Rhisis.CLI
 {
     [Command(ThrowOnUnexpectedArgument = false, Description = Description)]
-    [Subcommand(typeof(DatabaseCommand))]
-    [Subcommand(typeof(SetupCommand))]
-    [Subcommand(typeof(UserCommand))]
+    //[Subcommand(typeof(DatabaseCommand))]
+    //[Subcommand(typeof(SetupCommand))]
+    //[Subcommand(typeof(UserCommand))]
     [Subcommand(typeof(ConfigureCommand))]
     public class Application
     {

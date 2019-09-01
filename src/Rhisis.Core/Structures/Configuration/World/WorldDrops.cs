@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Rhisis.Core.Structures.Configuration
+namespace Rhisis.Core.Structures.Configuration.World
 {
     [DataContract]
     public class WorldDrops
