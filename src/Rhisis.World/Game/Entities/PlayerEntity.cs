@@ -1,12 +1,15 @@
 ﻿using Ether.Network.Common;
+using Rhisis.Core.Common;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core;
+using Rhisis.World.Systems.PlayerData;
 
 namespace Rhisis.World.Game.Entities
 {
-    public class PlayerEntity : Entity, IPlayerEntity
+    public class PlayerEntity : WorldEntity, IPlayerEntity
     {
+        private readonly IPlayerDataSystem _playerDataSystem;
+
         /// <inheritdoc />
         public override WorldEntityType Type => WorldEntityType.Player;
 
@@ -32,13 +35,10 @@ namespace Rhisis.World.Game.Entities
         public TradeComponent Trade { get; set; }
 
         /// <inheritdoc />
-        public PartyComponent Party { get; set; }
-
-        /// <inheritdoc />
         public TaskbarComponent Taskbar { get; set; }
 
         /// <inheritdoc />
-        public NetUser Connection { get; set; }
+        public INetUser Connection { get; set; }
 
         /// <inheritdoc />
         public FollowComponent Follow { get; set; }
@@ -56,19 +56,16 @@ namespace Rhisis.World.Game.Entities
         public AttributeComponent Attributes { get; set; }
 
         /// <inheritdoc />
-        public IBehavior<IPlayerEntity> Behavior { get; set; }
+        public IBehavior Behavior { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="PlayerEntity"/> instance.
         /// </summary>
         /// <param name="context"></param>
-        public PlayerEntity(IContext context)
-            : base(context)
+        public PlayerEntity(IPlayerDataSystem playerDataSystem)
         {
             this.Moves = new MovableComponent();
             this.PlayerData = new PlayerDataComponent();
-            this.Trade = new TradeComponent();
-            this.Party = new PartyComponent();
             this.Taskbar = new TaskbarComponent();
             this.Follow = new FollowComponent();
             this.Interaction = new InteractionComponent();
@@ -76,6 +73,19 @@ namespace Rhisis.World.Game.Entities
             this.Health = new HealthComponent();
             this.Timers = new TimerComponent();
             this.Attributes = new AttributeComponent();
+            this._playerDataSystem = playerDataSystem;
         }
+
+        /// <summary>
+        /// Dispose the <see cref="PlayerEntity"/> resources.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
+        {
+            this._playerDataSystem.SavePlayer(this);
+            base.Dispose(disposing);
+        }
+
+        public override string ToString() => this.Object.Name;
     }
 }

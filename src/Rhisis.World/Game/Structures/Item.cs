@@ -9,7 +9,7 @@ namespace Rhisis.World.Game.Structures
     /// <summary>
     /// FlyFF item structure.
     /// </summary>
-    public class Item : ItemBase
+    public class Item : ItemDescriptor
     {
         /// <summary>
         /// Flyff item refine table.
@@ -52,14 +52,6 @@ namespace Rhisis.World.Game.Structures
         {
         }
 
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id.
-        /// </summary>
-        /// <param name="id">Item Id</param>
-        public Item(int id)
-            : this(id, 1, -1, -1, -1)
-        {
-        }
 
         /// <summary>
         /// Create an <see cref="Item"/> with an id and a quantity.
@@ -175,7 +167,6 @@ namespace Rhisis.World.Game.Structures
             this.Refine = refine;
             this.Element = element;
             this.ElementRefine = elementRefine;
-            this.Data = GameResources.Instance.Items[this.Id];
             this.ExtraUsed = extraUsed;
         }
 
@@ -188,6 +179,17 @@ namespace Rhisis.World.Game.Structures
                 dbItem.Element, dbItem.ElementRefine, 0)
         {
             this.DbId = dbItem.Id;
+        }
+
+        public Item(int id, byte refine, byte element, byte elementRefine, ItemData itemData, int creatorId)
+        {
+            this.Id = id;
+            this.Quantity = 1;
+            this.Refine = refine;
+            this.Element = element;
+            this.ElementRefine = elementRefine;
+            this.Data = itemData;
+            this.CreatorId = creatorId;
         }
 
         /// <summary>
@@ -232,8 +234,13 @@ namespace Rhisis.World.Game.Structures
         /// <returns></returns>
         public Item Clone()
         {
-            return new Item(this.Id, this.Quantity, this.CreatorId, this.Slot, this.UniqueId, this.Refine, this.Element,
-                this.ElementRefine, this.ExtraUsed);
+            return new Item(this.Id, this.Refine, this.Element, this.ElementRefine, this.Data, this.CreatorId)
+            {
+                ExtraUsed = this.ExtraUsed,
+                Slot = this.Slot,
+                UniqueId = this.UniqueId,
+                Quantity = this.Quantity
+            };
         }
 
         public bool IsEquipped() => this.Slot > InventorySystem.EquipOffset;
@@ -252,15 +259,13 @@ namespace Rhisis.World.Game.Structures
             this.ElementRefine = 0;
             this.ExtraUsed = 0;
             this.Slot = -1;
+            this.Data = null;
         }
 
         /// <summary>
         /// Returns the current <see cref="Item"/> on string format
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return $"{this.Data?.Name}";
-        }
+        public override string ToString() => $"{this.Data?.Name}";
     }
 }

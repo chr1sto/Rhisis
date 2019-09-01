@@ -1,98 +1,44 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Helpers;
-using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.SpecialEffect;
-using Rhisis.World.Systems.SpecialEffect.EventArgs;
 using Rhisis.World.Systems.Teleport;
 using System;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Systems.Inventory
 {
-    internal sealed class InventoryItemUsage
+    [Injectable]
+    public sealed class InventoryItemUsage : IInventoryItemUsage
     {
         private readonly ILogger<InventoryItemUsage> _logger;
-        private readonly MapLoader _mapLoader;
+        private readonly IInventoryPacketFactory _inventoryPacketFactory;
+        private readonly IMapManager _mapManager;
+        private readonly ISpecialEffectSystem _specialEffectSystem;
+        private readonly ITeleportSystem _teleportSystem;
+        private readonly IMoverPacketFactory _moverPacketFactory;
+        private readonly ITextPacketFactory _textPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="InventoryItemUsage"/> instance.
         /// </summary>
-        public InventoryItemUsage()
+        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
         {
-            this._logger = DependencyContainer.Instance.Resolve<ILogger<InventoryItemUsage>>();
-            this._mapLoader = DependencyContainer.Instance.Resolve<MapLoader>();
+            this._logger = logger;
+            this._inventoryPacketFactory = inventoryPacketFactory;
+            this._mapManager = mapManager;
+            this._specialEffectSystem = specialEffectSystem;
+            this._teleportSystem = teleportSystem;
+            this._moverPacketFactory = moverPacketFactory;
+            this._textPacketFactory = textPacketFactory;
         }
 
-        /// <summary>
-        /// Check if the given item is equipable by a player.
-        /// </summary>
-        /// <param name="player">Player trying to equip an item.</param>
-        /// <param name="item">Item to equip.</param>
-        /// <returns>True if the player can equip the item; false otherwise.</returns>
-        public bool IsItemEquipable(IPlayerEntity player, Item item)
-        {
-            if (item.Data.ItemSex != int.MaxValue && item.Data.ItemSex != player.VisualAppearance.Gender)
-            {
-                this._logger.LogDebug("Wrong sex for armor");
-                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGSEX, item.Data.Name);
-                return false;
-            }
-
-            if (player.Object.Level < item.Data.LimitLevel)
-            {
-                this._logger.LogDebug("Player level to low");
-                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQLEVEL, item.Data.LimitLevel.ToString());
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Uses an item from the player's inventory.
-        /// </summary>
-        /// <param name="player">Player using an item.</param>
-        /// <param name="itemToUse">Item to use.</param>
-        public void UseItem(IPlayerEntity player, Item itemToUse)
-        {
-            this._logger.LogTrace($"{player.Object.Name} want to use {itemToUse.Data.Name}.");
-
-            if (player.Inventory.ItemHasCoolTime(itemToUse) && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
-            {
-                this._logger.LogDebug($"Player '{player.Object.Name}' cannot use item {itemToUse.Data.Name}: CoolTime.");
-                return;
-            }
-
-            switch (itemToUse.Data.ItemKind2)
-            {
-                case ItemKind2.REFRESHER:
-                case ItemKind2.POTION:
-                case ItemKind2.FOOD:
-                    this.UseFoodItem(player, itemToUse);
-                    break;
-                case ItemKind2.BLINKWING:
-                    this.UseBlinkwingItem(player, itemToUse);
-                    break;
-                default:
-                    this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                    WorldPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Use food item.
-        /// </summary>
-        /// <param name="player">Player using the item.</param>
-        /// <param name="foodItemToUse">Food item to use.</param>
         public void UseFoodItem(IPlayerEntity player, Item foodItemToUse)
         {
             foreach (KeyValuePair<DefineAttributes, int> parameter in foodItemToUse.Data.Params)
@@ -117,9 +63,9 @@ namespace Rhisis.World.Systems.Inventory
                             {
                                 switch (parameter.Key)
                                 {
-                                    case DefineAttributes.HP: WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITHP); break;
-                                    case DefineAttributes.MP: WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITMP); break;
-                                    case DefineAttributes.FP: WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITFP); break;
+                                    case DefineAttributes.HP: this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITHP); break;
+                                    case DefineAttributes.MP: this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITMP); break;
+                                    case DefineAttributes.FP: this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITFP); break;
                                 }
 
                                 currentPoints += (int)limitedRecovery;
@@ -132,30 +78,25 @@ namespace Rhisis.World.Systems.Inventory
                     }
 
                     PlayerHelper.SetPoints(player, parameter.Key, currentPoints);
-                    WorldPacketFactory.SendUpdateAttributes(player, parameter.Key, PlayerHelper.GetPoints(player, parameter.Key));
+                    this._moverPacketFactory.SendUpdateAttributes(player, parameter.Key, PlayerHelper.GetPoints(player, parameter.Key));
                 }
                 else
                 {
                     // TODO: food triggers a skill.
                     this._logger.LogWarning($"Activating a skill throught food.");
-                    WorldPacketFactory.SendFeatureNotImplemented(player, "skill with food");
+                    this._textPacketFactory.SendFeatureNotImplemented(player, "skill with food");
                 }
             }
 
             this.DecreaseItem(player, foodItemToUse);
         }
 
-        /// <summary>
-        /// Uses blinkwing items.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="blinkwing"></param>
-        private void UseBlinkwingItem(IPlayerEntity player, Item blinkwing)
+        public void UseBlinkwingItem(IPlayerEntity player, Item blinkwing)
         {
             if (player.Object.Level < blinkwing.Data.LimitLevel)
             {
                 this._logger.LogError($"Player {player.Object.Name} cannot use {blinkwing.Data.Name}. Level too low.");
-                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_USINGNOTLEVEL);
+                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_USINGNOTLEVEL);
                 return;
             }
 
@@ -176,7 +117,7 @@ namespace Rhisis.World.Systems.Inventory
                 }
                 if (player.Object.MapId != revivalRegion.MapId)
                 {
-                    IMapInstance revivalMap = this._mapLoader.GetMapById(revivalRegion.MapId);
+                    IMapInstance revivalMap = this._mapManager.GetMap(revivalRegion.MapId);
 
                     if (revivalMap == null)
                     {
@@ -204,13 +145,13 @@ namespace Rhisis.World.Systems.Inventory
 
             player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(blinkwing.Data.SkillReadyType), () =>
             {
-                player.NotifySystem<TeleportSystem>(teleportEvent);
-                player.NotifySystem<SpecialEffectSystem>(new SpecialEffectBaseMotionEventArgs(StateModeBaseMotion.BASEMOTION_OFF));
+                this._teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ, teleportEvent.Angle);
+                this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
                 this.DecreaseItem(player, blinkwing);
             });
 
-            player.NotifySystem<SpecialEffectSystem>(new SpecialEffectBaseMotionEventArgs(StateModeBaseMotion.BASEMOTION_ON, blinkwing));
+            this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
         }
 
         /// <summary>
@@ -231,10 +172,13 @@ namespace Rhisis.World.Systems.Inventory
             if (!item.Data.IsPermanant)
                 item.Quantity--;
 
-            WorldPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
+            this._inventoryPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
+
+            if (item.Quantity <= 0)
+                item.Reset();
 
             if (item.Data.SfxObject3 != 0)
-                player.NotifySystem<SpecialEffectSystem>(new SpecialEffectEventArgs(item.Data.SfxObject3));
+                this._specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3);
         }
     }
 }

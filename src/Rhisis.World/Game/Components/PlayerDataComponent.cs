@@ -1,9 +1,7 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
-using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Resources;
-using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Game;
+using System;
 
 namespace Rhisis.World.Game.Components
 {
@@ -18,6 +16,11 @@ namespace Rhisis.World.Game.Components
         /// Gets or sets the player's id.
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time the player has logged in.
+        /// </summary>
+        public DateTime LoggedInAt { get; set; }
 
         /// <summary>
         /// Gets or sets the player's slot.
@@ -47,21 +50,12 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets or sets the Job Id.
         /// </summary>
-        public int JobId
-        {
-            get => this._jobId;
-            set
-            {
-                this._jobId = value;
-                this.JobData = DependencyContainer.Instance.Resolve<IGameResources>().Jobs[this._jobId];
-            }
-        }
-        private int _jobId;
+        public int JobId => this.JobData.Id;
 
         /// <summary>
         /// Gets the job's data.
         /// </summary>
-        public JobData JobData { get; private set; }
+        public JobData JobData { get; set; }
 
         /// <summary>
         /// Gets the current version of the player data.

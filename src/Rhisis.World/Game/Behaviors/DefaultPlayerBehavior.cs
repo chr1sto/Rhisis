@@ -1,75 +1,109 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.IO;
-using Rhisis.World.Game.Core;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems;
 using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.Inventory.EventArgs;
+using Rhisis.World.Systems.Mobility;
+using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.Recovery;
-using Rhisis.World.Systems.Recovery.EventArgs;
-using System;
 
 namespace Rhisis.World.Game.Behaviors
 {
     [Behavior(BehaviorType.Player, IsDefault: true)]
-    public sealed class DefaultPlayerBehavior : IBehavior<IPlayerEntity>
+    public sealed class DefaultPlayerBehavior : IBehavior
     {
-        /// <inheritdoc />
-        public void Update(IPlayerEntity player)
+        private readonly IPlayerEntity _player;
+        private readonly IMobilitySystem _mobilitySystem;
+        private readonly IInventorySystem _inventorySystem;
+        private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly IRecoverySystem _recoverySystem;
+        private readonly IRegionTriggerSystem _regionTriggerSystem;
+        private readonly IMoverPacketFactory _moverPacketFactory;
+        private readonly ITextPacketFactory _textPacketFactory;
+
+        /// <summary>
+        /// Creates a new <see cref="DefaultPlayerBehavior"/> instance.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="mobilitySystem">Mobility system.</param>
+        /// <param name="inventorySystem">Inventory system.</param>
+        /// <param name="playerDataSystem">Player data system.</param>
+        /// <param name="recoverySystem">Recovery system.</param>
+        /// <param name="regionTriggerSystem">Region trigger system.</param>
+        /// <param name="moverPacketFactory">Mover packet factory.</param>
+        /// <param name="textPacketFactory">Text packet factory.</param>
+        public DefaultPlayerBehavior(IPlayerEntity player, 
+            IMobilitySystem mobilitySystem, 
+            IInventorySystem inventorySystem, 
+            IPlayerDataSystem playerDataSystem, 
+            IRecoverySystem recoverySystem, 
+            IRegionTriggerSystem regionTriggerSystem, 
+            IMoverPacketFactory moverPacketFactory, 
+            ITextPacketFactory textPacketFactory)
         {
-            this.ProcessIdleHeal(player);
+            this._player = player;
+            this._mobilitySystem = mobilitySystem;
+            this._inventorySystem = inventorySystem;
+            this._playerDataSystem = playerDataSystem;
+            this._recoverySystem = recoverySystem;
+            this._regionTriggerSystem = regionTriggerSystem;
+            this._moverPacketFactory = moverPacketFactory;
+            this._textPacketFactory = textPacketFactory;
         }
 
         /// <inheritdoc />
-        public void OnArrived(IPlayerEntity player)
+        public void Update()
         {
-            if (player.Follow.IsFollowing && player.Follow.Target.Type == WorldEntityType.Drop)
+            if (!this._player.Object.Spawned || this._player.Health.IsDead)
+                return;
+
+            this._mobilitySystem.CalculatePosition(this._player);
+            this._regionTriggerSystem.CheckWrapzones(this._player);
+            this.ProcessIdleHeal();
+        }
+
+        /// <inheritdoc />
+        public void OnArrived()
+        {
+            if (this._player.Follow.IsFollowing && this._player.Follow.Target.Type == WorldEntityType.Drop)
             {
-                this.PickUpDroppedItem(player, player.Follow.Target as IItemEntity);
-                player.Follow.Reset();
+                this.PickUpDroppedItem(this._player.Follow.Target as IItemEntity);
+                this._player.Follow.Reset();
             }
         }
 
         /// <summary>
         /// Verify all conditions to pickup a dropped item.
         /// </summary>
-        /// <param name="player">The player trying to pick-up the dropped item.</param>
         /// <param name="droppedItem">The dropped item.</param>
-        private void PickUpDroppedItem(IPlayerEntity player, IItemEntity droppedItem)
+        private void PickUpDroppedItem(IItemEntity droppedItem)
         {
             // TODO: check if drop belongs to a party.
 
-            if (droppedItem.Drop.HasOwner && droppedItem.Drop.Owner != player)
+            if (droppedItem.Drop.HasOwner && droppedItem.Drop.Owner != this._player)
             {
-                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{droppedItem.Object.Name}\"");
+                this._textPacketFactory.SendDefinedText(this._player, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{droppedItem.Object.Name}\"");
                 return;
             }
 
             if (droppedItem.Drop.IsGold)
             {
                 int droppedGoldAmount = droppedItem.Drop.Item.Quantity;
-                long gold = player.PlayerData.Gold + droppedGoldAmount;
 
-                if (gold > int.MaxValue || gold < 0) // Check gold overflow
+                if (this._playerDataSystem.IncreaseGold(this._player, droppedGoldAmount))
                 {
-                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_TOOMANYMONEY_USE_PERIN);
-                    return;
-                }
-                else
-                {
-                    player.PlayerData.Gold = (int)gold;
-                    WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, droppedGoldAmount.ToString("###,###,###,###"), gold.ToString("###,###,###,###"));
+                    this._textPacketFactory.SendDefinedText(this._player, DefineText.TID_GAME_REAPMONEY, droppedGoldAmount.ToString("###,###,###,###"), this._player.PlayerData.Gold.ToString("###,###,###,###"));
                 }
             }
             else
             {
-                var inventoryItemCreationEvent = new InventoryCreateItemEventArgs(droppedItem.Drop.Item.Id, droppedItem.Drop.Item.Quantity, -1, droppedItem.Drop.Item.Refine);
-                player.NotifySystem<InventorySystem>(inventoryItemCreationEvent);
-                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPITEM, $"\"{droppedItem.Object.Name}\"");
+                this._inventorySystem.CreateItem(this._player, droppedItem.Drop.Item, droppedItem.Drop.Item.Quantity);
+                this._textPacketFactory.SendDefinedText(this._player, DefineText.TID_GAME_REAPITEM, $"\"{droppedItem.Object.Name}\"");
             }
 
-            WorldPacketFactory.SendMotion(player, ObjectMessageType.OBJMSG_PICKUP);
+            this._moverPacketFactory.SendMotion(this._player, ObjectMessageType.OBJMSG_PICKUP);
             droppedItem.Delete();
         }
 
@@ -77,13 +111,13 @@ namespace Rhisis.World.Game.Behaviors
         /// Process Idle heal logic when player is not fighting.
         /// </summary>
         /// <param name="player"></param>
-        private void ProcessIdleHeal(IPlayerEntity player)
+        private void ProcessIdleHeal()
         {
-            if (player.Timers.NextHealTime <= Time.TimeInSeconds())
+            if (this._player.Timers.NextHealTime <= Time.TimeInSeconds())
             {
-                if (!player.Battle.IsFighting)
+                if (!this._player.Battle.IsFighting)
                 {
-                    player.NotifySystem<RecoverySystem>(new IdleRecoveryEventArgs(isSitted: false));
+                    this._recoverySystem.IdleRecevory(this._player, isSitted: false);
                 }
             }
         }

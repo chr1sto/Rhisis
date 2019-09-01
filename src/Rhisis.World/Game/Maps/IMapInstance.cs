@@ -1,6 +1,7 @@
-﻿using Rhisis.Core.Structures;
-using Rhisis.World.Game.Core;
+﻿using Rhisis.Core.Resources;
+using Rhisis.Core.Structures;
 using Rhisis.World.Game.Maps.Regions;
+using System;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Maps
@@ -8,17 +9,17 @@ namespace Rhisis.World.Game.Maps
     /// <summary>
     /// Describes the behavior of a Map instance.
     /// </summary>
-    public interface IMapInstance : IContext
+    public interface IMapInstance : IMapContext, IDisposable
     {
-        /// <summary>
-        /// Gets the map id.
-        /// </summary>
-        int Id { get; }
-
         /// <summary>
         /// Gets the map name.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the current map instance informations.
+        /// </summary>
+        WldFileInformations MapInformation { get; }
 
         /// <summary>
         /// Gets the map instance width.
@@ -34,6 +35,11 @@ namespace Rhisis.World.Game.Maps
         /// Gets the map default revival region.
         /// </summary>
         IMapRevivalRegion DefaultRevivalRegion { get; }
+
+        /// <summary>
+        /// Gets the default map layer.
+        /// </summary>
+        IMapLayer DefaultMapLayer { get; }
 
         /// <summary>
         /// Gets the map layers.
@@ -64,12 +70,6 @@ namespace Rhisis.World.Game.Maps
         /// <param name="id"></param>
         /// <returns></returns>
         IMapLayer GetMapLayer(int id);
-
-        /// <summary>
-        /// Gets the default map layer.
-        /// </summary>
-        /// <returns></returns>
-        IMapLayer GetDefaultMapLayer();
 
         /// <summary>
         /// Deletes a map layer by his id.

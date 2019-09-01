@@ -4,8 +4,8 @@ using Rhisis.Core.Helpers;
 using Rhisis.Network.Packets;
 using System;
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Handlers;
 using Rhisis.Cluster.Packets;
+using Sylver.HandlerInvoker;
 
 namespace Rhisis.Cluster.Client
 {
@@ -88,7 +88,9 @@ namespace Rhisis.Cluster.Client
                 packet.Read<uint>(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
                 packetHeaderNumber = packet.Read<uint>();
 
+#if DEBUG
                 this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
+#endif
                 this._handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentNullException)

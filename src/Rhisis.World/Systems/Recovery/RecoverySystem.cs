@@ -3,19 +3,16 @@ using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Recovery.EventArgs;
 
 namespace Rhisis.World.Systems.Recovery
 {
     /// <summary>
     /// Game system that manages all recoveries. HP, MP, FP, etc...
     /// </summary>
-    [System(SystemType.Notifiable)]
-    public sealed class RecoverySystem : ISystem
+    [Injectable]
+    public sealed class RecoverySystem : IRecoverySystem
     {
         /// <summary>
         /// Gets the number of seconds for next idle heal when the player is sitted.
@@ -28,52 +25,23 @@ namespace Rhisis.World.Systems.Recovery
         public const int NextIdleHealStand = 3;
 
         private readonly ILogger<RecoverySystem> _logger;
+        private readonly IMoverPacketFactory _moverPacketFactory;
 
-        /// <inheritdoc />
-        public WorldEntityType Type => WorldEntityType.Player;
-        
         /// <summary>
         /// Creates a new <see cref="RecoverySystem"/> instance.
         /// </summary>
-        public RecoverySystem()
+        /// <param name="logger">Logger.</param>
+        /// <param name="moverPacketFactory">Mover packet factory.</param>
+        public RecoverySystem(ILogger<RecoverySystem> logger, IMoverPacketFactory moverPacketFactory)
         {
-            this._logger = DependencyContainer.Instance.Resolve<ILogger<RecoverySystem>>();
+            this._logger = logger;
+            this._moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
-        public void Execute(IEntity entity, SystemEventArgs args)
+        public void IdleRecevory(IPlayerEntity player, bool isSitted = false)
         {
-            if (!(entity is IPlayerEntity player))
-            {
-                this._logger.LogError($"Cannot execute {nameof(RecoverySystem)}. {entity.Object.Name} is not a player.");
-                return;
-            }
-
-            if (!args.GetCheckArguments())
-            {
-                this._logger.LogError($"Cannot execute {nameof(RecoverySystem)} action: {args.GetType()} due to invalid arguments.");
-                return;
-            }
-
-            switch (args)
-            {
-                case IdleRecoveryEventArgs e:
-                    this.IdleHeal(player, e);
-                    break;
-                default:
-                    this._logger.LogWarning($"Unknown recovery system action type: {args.GetType()} for player {entity.Object.Name}");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Process the idle heal.
-        /// </summary>
-        /// <param name="player">Player entity.</param>
-        /// <param name="e">Idle recovery event args.</param>
-        private void IdleHeal(IPlayerEntity player, IdleRecoveryEventArgs e)
-        {
-            int nextHealDelay = e.IsSitted ? NextIdleHealSit : NextIdleHealStand;
+            int nextHealDelay = isSitted ? NextIdleHealSit : NextIdleHealStand;
 
             player.Timers.NextHealTime = Time.TimeInSeconds() + nextHealDelay;
 
@@ -103,9 +71,9 @@ namespace Rhisis.World.Systems.Recovery
             if (player.Health.Fp > maxFp)
                 player.Health.Fp = maxFp;
 
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+            this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
+            this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
+            this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
         }
     }
 }

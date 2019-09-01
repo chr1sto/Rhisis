@@ -1,11 +1,9 @@
 ﻿using Ether.Network.Common;
-using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core;
 
 namespace Rhisis.World.Game.Entities
 {
-    public interface IPlayerEntity : IEntity, IMovableEntity, ILivingEntity
+    public interface IPlayerEntity : IWorldEntity, IMovableEntity, ILivingEntity
     {
         /// <summary>
         /// Gets or sets the player's visual appearance component.
@@ -28,11 +26,6 @@ namespace Rhisis.World.Game.Entities
         TradeComponent Trade { get; set; }
 
         /// <summary>
-        /// Gets or sets the player's party component.
-        /// </summary>
-        PartyComponent Party { get; set; }
-
-        /// <summary>
         /// Gets or sets the player's taskbar component.
         /// </summary>
         TaskbarComponent Taskbar { get; set; }
@@ -45,8 +38,6 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets or sets the player's connection.
         /// </summary>
-        NetUser Connection { get; set; }
-
-        IBehavior<IPlayerEntity> Behavior { get; set; }
+        INetUser Connection { get; set; }
     }
 }

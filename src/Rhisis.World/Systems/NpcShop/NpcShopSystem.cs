@@ -1,249 +1,155 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
+using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Loaders;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.NpcShop.EventArgs;
+using Rhisis.World.Systems.PlayerData;
 using System;
+using System.Linq;
 
 namespace Rhisis.World.Systems.NpcShop
 {
-    [System(SystemType.Notifiable)]
-    public class NpcShopSystem : ISystem
+    [Injectable]
+    public sealed class NpcShopSystem : INpcShopSystem
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-
-        /// <inheritdoc />
-        public WorldEntityType Type => WorldEntityType.Player;
-
-        /// <inheritdoc />
-        public void Execute(IEntity entity, SystemEventArgs e)
-        {
-            if (!(entity is IPlayerEntity player) ||
-                !e.GetCheckArguments())
-            {
-                Logger.Error("NpcShopSystem: Invalid event arguments.");
-                return;
-            }
-
-            switch (e)
-            {
-                case NpcShopOpenEventArgs npcShopEventArgs:
-                    this.OpenShop(player, npcShopEventArgs);
-                    break;
-                case NpcShopCloseEventArgs npcShopEventArgs:
-                    this.CloseShop(player);
-                    break;
-                case NpcShopBuyEventArgs npcShopEventArgs:
-                    this.BuyItem(player, npcShopEventArgs);
-                    break;
-                case NpcShopSellEventArgs npcShopEventArgs:
-                    this.SellItem(player, npcShopEventArgs);
-                    break;
-                default:
-                    Logger.Warn("Unknown NpcShop action type: {0} for player {1}", e.GetType(), entity.Object.Name);
-                    break;
-            }
-        }
+        private readonly ILogger<NpcShopSystem> _logger;
+        private readonly IInventorySystem _inventorySystem;
+        private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly INpcShopPacketFactory _npcShopPacketFactory;
+        private readonly ITextPacketFactory _textPacketFactory;
 
         /// <summary>
-        /// Opens the NPC Shop.
+        /// Creates a new <see cref="NpcShopSystem"/> instance.
         /// </summary>
-        /// <param name="player">Player entity</param>
-        /// <param name="e"></param>
-        private void OpenShop(IPlayerEntity player, NpcShopOpenEventArgs e)
+        /// <param name="logger">Logger.</param>
+        /// <param name="inventorySystem">Inventory System.</param>
+        /// <param name="playerDataSystem">Player data system.</param>
+        /// <param name="npcShopPacketFactory">Npc shop packet factory.</param>
+        /// <param name="textPacketFactory">Text packet factory.</param>
+        public NpcShopSystem(ILogger<NpcShopSystem> logger, IInventorySystem inventorySystem, IPlayerDataSystem playerDataSystem, INpcShopPacketFactory npcShopPacketFactory, ITextPacketFactory textPacketFactory)
         {
-            var npc = player.Object.CurrentMap.FindEntity<INpcEntity>(e.NpcObjectId);
+            this._logger = logger;
+            this._inventorySystem = inventorySystem;
+            this._playerDataSystem = playerDataSystem;
+            this._npcShopPacketFactory = npcShopPacketFactory;
+            this._textPacketFactory = textPacketFactory;
+        }
+
+        /// <inheritdoc />
+        public void OpenShop(IPlayerEntity player, uint npcObjectId)
+        {
+            var npc = player.FindEntity<INpcEntity>(npcObjectId);
+
             if (npc == null)
             {
-                Logger.Error("ShopSystem: Cannot find NPC with object id : {0}", e.NpcObjectId);
+                this._logger.LogError($"ShopSystem: Cannot find NPC with object id : {npcObjectId}");
                 return;
             }
 
             if (npc.Shop == null)
             {
-                Logger.Error("ShopSystem: NPC '{0}' doesn't have a shop.", npc.Object.Name);
+                this._logger.LogError($"ShopSystem: NPC '{npc.Object.Name}' doesn't have a shop.");
                 return;
             }
-            
+
             player.PlayerData.CurrentShopName = npc.Object.Name;
 
-            WorldPacketFactory.SendNpcShop(player, npc);
+            this._npcShopPacketFactory.SendOpenNpcShop(player, npc);
         }
 
-        /// <summary>
-        /// Closes the current shop.
-        /// </summary>
-        /// <param name="player">Player entity</param>
-        private void CloseShop(IPlayerEntity player)
+        /// <inheritdoc />
+        public void CloseShop(IPlayerEntity player)
         {
             player.PlayerData.CurrentShopName = null;
         }
 
-        /// <summary>
-        /// Buys an item from the current shop.
-        /// </summary>
-        /// <param name="player">Player entity</param>
-        /// <param name="e"></param>
-        private void BuyItem(IPlayerEntity player, NpcShopBuyEventArgs e)
+        /// <inheritdoc />
+        public void BuyItem(IPlayerEntity player, NpcShopItemInfo shopItemInfo, int quantity)
         {
-            var npcLoader = DependencyContainer.Instance.Resolve<NpcLoader>();
-            var npcData = npcLoader.GetNpcData(player.PlayerData.CurrentShopName);
+            var npc = player.FindEntity<INpcEntity>(x => x.Object.Name == player.PlayerData.CurrentShopName);
 
-            if (npcData == null)
+            if (npc == null)
             {
-                Logger.Error($"ShopSystem: Cannot find NPC: {player.PlayerData.CurrentShopName}");
+                this._logger.LogError($"ShopSystem: Cannot find NPC: {player.PlayerData.CurrentShopName}");
                 return;
             }
 
-            if (!npcData.HasShop)
+            if (!npc.Data.HasShop)
             {
-                Logger.Error($"ShopSystem: NPC {npcData.Name} doesn't have a shop.");
+                this._logger.LogError($"ShopSystem: NPC {npc.Object.Name} doesn't have a shop.");
                 return;
             }
 
-            var currentTab = npcData.Shop.Items[e.Tab];
-
-            if (e.Slot < 0 || e.Slot > currentTab.Count - 1)
+            if (shopItemInfo.Tab < 0 || shopItemInfo.Tab >= ShopData.DefaultTabCount)
             {
-                Logger.Error($"ShopSystem: Item slot index was out of tab bounds. Slot: {e.Slot}");
+                this._logger.LogError($"Attempt to buy an item from {npc.Object.Name} shop tab that is out of range.");
                 return;
             }
 
-            var shopItem = currentTab[e.Slot];
+            ItemContainerComponent shopTab = npc.Shop.ElementAt(shopItemInfo.Tab);
 
-            if (shopItem.Id != e.ItemId)
+            if (shopItemInfo.Slot < 0 || shopItemInfo.Slot > shopTab.Items.Count - 1)
             {
-                Logger.Error($"ShopSystem: Shop item id doens't match the item id that {player.Object.Name} is trying to buy.");
+                this._logger.LogError($"ShopSystem: Item slot index was out of tab bounds. Slot: {shopItemInfo.Slot}");
                 return;
             }
 
-            if (player.PlayerData.Gold < e.ItemData.Cost)
+            Item shopItem = shopTab[shopItemInfo.Slot];
+
+            if (shopItem.Id != shopItemInfo.ItemId)
             {
-                Logger.Info($"ShopSystem: {player.Object.Name} doens't have enough gold to buy item {e.ItemData.Name} at {e.ItemData.Cost}.");
-                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
+                this._logger.LogError($"ShopSystem: Shop item id doens't match the item id that {player.Object.Name} is trying to buy.");
                 return;
             }
 
-            int quantity = e.Quantity;
-            int cost = e.ItemData.Cost;
-
-            if (e.ItemData.IsStackable)
+            if (player.PlayerData.Gold < shopItem.Data.Cost)
             {
-                for (var i = 0; i < InventorySystem.EquipOffset; i++)
-                {
-                    Item inventoryItem = player.Inventory.Items[i];
-
-                    if (inventoryItem.Id == e.ItemId)
-                    {
-                        if (inventoryItem.Quantity + quantity > e.ItemData.PackMax)
-                        {
-                            int boughtQuantity = inventoryItem.Data.PackMax - inventoryItem.Quantity;
-
-                            quantity -= boughtQuantity;
-                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
-                            player.PlayerData.Gold -= cost * boughtQuantity;
-                        }
-                        else
-                        {
-                            inventoryItem.Quantity += quantity;
-                            player.PlayerData.Gold -= cost * quantity;
-                            quantity = 0;
-                        }
-
-                        WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-                        WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
-                    }
-                }
-
-                if (quantity > 0)
-                {
-                    if (!player.Inventory.HasAvailableSlots())
-                    {
-                        WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                    }
-                    else
-                    {
-                        var item = new Item(e.ItemId, quantity, -1);
-
-                        if (player.Inventory.CreateItem(item))
-                        {
-                            player.PlayerData.Gold -= cost;
-                            WorldPacketFactory.SendItemCreation(player, item);
-                            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-                        }
-                        else
-                        {
-                            Logger.Error("ShopSystem: Failed to create item.");
-                        }
-                    }
-                }
+                this._logger.LogTrace($"ShopSystem: {player.Object.Name} doens't have enough gold to buy item {shopItem.Data.Name} at {shopItem.Data.Cost}.");
+                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
+                return;
             }
-            else
+
+            int itemsCreatedCount = this._inventorySystem.CreateItem(player, shopItem, quantity);
+
+            if (itemsCreatedCount > 0)
             {
-                while (quantity > 0)
-                {
-                    if (!player.Inventory.HasAvailableSlots())
-                    {
-                        WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                        break;   
-                    }
-
-                    var item = new Item(e.ItemId, 1, -1);
-
-                    if (player.Inventory.CreateItem(item))
-                    {
-                        player.PlayerData.Gold -= cost;
-                        WorldPacketFactory.SendItemCreation(player, item);
-                        WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-                    }
-                    else
-                    {
-                        Logger.Error("ShopSystem: Failed to create item.");
-                    }
-
-                    quantity--;   
-                }
+                this._playerDataSystem.DecreaseGold(player, shopItem.Data.Cost * itemsCreatedCount);
             }
         }
 
-        /// <summary>
-        /// Sells an item to a NPC shop.
-        /// </summary>
-        /// <param name="player">Player entity</param>
-        /// <param name="e"></param>
-        private void SellItem(IPlayerEntity player, NpcShopSellEventArgs e)
+        /// <inheritdoc />
+        public void SellItem(IPlayerEntity player, int playerItemUniqueId, int quantity)
         {
-            Item itemToSell = player.Inventory.GetItem(e.ItemUniqueId);
+            Item itemToSell = player.Inventory.GetItem(playerItemUniqueId);
 
-            if (itemToSell?.Data == null)
-                throw new InvalidOperationException($"ShopSystem: Cannot find item with unique id: {e.ItemUniqueId}");
+            if (itemToSell == null)
+                throw new ArgumentNullException(nameof(itemToSell), $"Cannot find item with unique id: '{playerItemUniqueId}' in '{player.Object.Name}''s inventory.");
 
-            if (e.Quantity > itemToSell.Data.PackMax)
-                throw new InvalidOperationException($"ShopSystem: Cannot sell more items than the pack max value. {e.Quantity} > {itemToSell.Data.PackMax}");
+            if (itemToSell.Data == null)
+                throw new ArgumentNullException($"Cannot find item data for item '{itemToSell.Id}'.");
+
+            if (quantity > itemToSell.Data.PackMax)
+                throw new InvalidOperationException($"Cannot sell more items than the pack max value. {quantity} > {itemToSell.Data.PackMax}");
 
             // TODO: make more checks:
             // is a quest item
             // is sealed to character
             // ect...
 
-            int sellPrice = itemToSell.Data.Cost / 4;
+            int sellPrice = itemToSell.Data.Cost / 4; // TODO: make this configurable
 
-            Logger.Debug("Selling item: '{0}' for {1}", itemToSell.Data.Name, sellPrice);
+            this._logger.LogDebug("Selling item: '{0}' for {1}", itemToSell.Data.Name, sellPrice);
 
-            player.PlayerData.Gold += sellPrice * e.Quantity;
-            itemToSell.Quantity -= e.Quantity;
+            int deletedQuantity = this._inventorySystem.DeleteItem(player, playerItemUniqueId, quantity);
 
-            WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToSell.UniqueId, itemToSell.Quantity);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-
-            if (itemToSell.Quantity <= 0)
-                itemToSell.Reset();
+            if (deletedQuantity > 0)
+            {
+                this._playerDataSystem.IncreaseGold(player, sellPrice * deletedQuantity);
+            }
         }
     }
 }

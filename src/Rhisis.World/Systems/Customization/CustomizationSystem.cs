@@ -1,71 +1,98 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Customization.EventArgs;
+using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.PlayerData;
 using System.Drawing;
 
 namespace Rhisis.World.Systems.Customization
 {
-    [System(SystemType.Notifiable)]
-    public class CustomizationSystem : ISystem
+    [Injectable]
+    public sealed class CustomizationSystem : ICustomizationSystem
     {
-        private static readonly ILogger Logger = DependencyContainer.Instance.Resolve<ILogger>();
+        private readonly IInventorySystem _inventorySystem;
+        private readonly ICustomizationPacketFactory _customizationPacketFactory;
+        private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly ITextPacketFactory _textPacketFactory;
+        private readonly WorldConfiguration _worldServerConfiguration;
 
-        public WorldEntityType Type => WorldEntityType.Player;
-
-        public void Execute(IEntity entity, SystemEventArgs args)
+        /// <summary>
+        /// Creates a new <see cref="CustomizationSystem"/> instance.
+        /// </summary>
+        /// <param name="inventorySystem">Inventory system.</param>
+        /// <param name="customizationPacketFactory">Customization packet factory.</param>
+        /// <param name="worldServerConfiguration">World server configuration.</param>
+        /// <param name="playerDataSystem">Player data system.</param>
+        /// <param name="textPacketFactory">Text packet factory.</param>
+        public CustomizationSystem(IInventorySystem inventorySystem, ICustomizationPacketFactory customizationPacketFactory, IOptions<WorldConfiguration> worldServerConfiguration, IPlayerDataSystem playerDataSystem, ITextPacketFactory textPacketFactory)
         {
-            if (!(entity is IPlayerEntity playerEntity) || !args.GetCheckArguments())
-            {
-                Logger.LogError("CustomizationSystem: Invalid arguments.");
-                return;
-            }
-
-            switch(args)
-            {
-                case ChangeFaceEventArgs e:
-                    OnChangeFace(playerEntity, e);
-                    break;
-                case SetHairEventArgs e:
-                    OnSetHair(playerEntity, e);
-                    break;
-                default:
-                    Logger.LogWarning("Unknown Customization action type: {0} for player {1}", args.GetType(), entity.Object.Name);
-                    break;
-            }
+            this._inventorySystem = inventorySystem;
+            this._customizationPacketFactory = customizationPacketFactory;
+            this._playerDataSystem = playerDataSystem;
+            this._textPacketFactory = textPacketFactory;
+            this._worldServerConfiguration = worldServerConfiguration.Value;
         }
 
-        private void OnSetHair(IPlayerEntity player, SetHairEventArgs e)
+        /// <inheritdoc />
+        public void ChangeFace(IPlayerEntity player, uint objectId, uint faceId, bool useCoupon)
         {
-            var worldConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
-
-            if (!e.UseCoupon)
+            if (!useCoupon)
             {
-                int costs = 0;
-                var color = Color.FromArgb(e.R, e.G, e.B).ToArgb();
-
-                if (player.VisualAppearance.HairId != e.HairId)
-                    costs += (int)worldConfiguration.Customization.ChangeHairCost;
-                if (player.VisualAppearance.HairColor != color)
-                    costs += (int)worldConfiguration.Customization.ChangeHairColorCost;
-
-                if (player.PlayerData.Gold < costs)
+                if (player.PlayerData.Gold < this._worldServerConfiguration.Customization.ChangeFaceCost)
                 {
-                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
+                    this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
                 }
                 else
                 {
-                    player.PlayerData.Gold -= costs;
-                    player.VisualAppearance.HairId = e.HairId;
+                    player.VisualAppearance.FaceId = (int)faceId;
+                    this._playerDataSystem.DecreaseGold(player, (int)this._worldServerConfiguration.Customization.ChangeFaceCost);
+                    this._customizationPacketFactory.SendChangeFace(player, faceId);
+                }
+            }
+            else
+            {
+                Item couponItem = player.Inventory.GetItemById(DefineItem.II_SYS_SYS_SCR_FACEOFFFREE);
+
+                if (couponItem == null)
+                {
+                    this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
+                    return;
+                }
+
+                this._inventorySystem.DeleteItem(player, couponItem, 1);
+
+                this._customizationPacketFactory.SendChangeFace(player, faceId);
+            }
+        }
+
+        /// <inheritdoc />
+        public void ChangeHair(IPlayerEntity player, byte hairId, byte r, byte g, byte b, bool useCoupon)
+        {
+            if (!useCoupon)
+            {
+                int costs = 0;
+                var color = Color.FromArgb(r, g, b).ToArgb();
+
+                if (player.VisualAppearance.HairId != hairId)
+                    costs += (int)this._worldServerConfiguration.Customization.ChangeHairCost;
+                if (player.VisualAppearance.HairColor != color)
+                    costs += (int)this._worldServerConfiguration.Customization.ChangeHairColorCost;
+
+                if (player.PlayerData.Gold < costs)
+                {
+                    this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
+                }
+                else
+                {
+                    player.VisualAppearance.HairId = hairId;
                     player.VisualAppearance.HairColor = color;
 
-                    WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-                    WorldPacketFactory.SendSetHair(player, e.HairId, e.R, e.G, e.B);
+                    this._playerDataSystem.DecreaseGold(player, costs);
+                    this._customizationPacketFactory.SendSetHair(player, hairId, r, g, b);
                 }
             }
             else
@@ -73,47 +100,12 @@ namespace Rhisis.World.Systems.Customization
                 var couponItem = player.Inventory.GetItemById(DefineItem.II_SYS_SYS_SCR_HAIRCHANGE);
                 if (couponItem == null)
                 {
-                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
+                    this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
                     return;
                 }
 
-                player.Inventory.RemoveItems(couponItem.Data.Id);
-                WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, couponItem.UniqueId, couponItem.Quantity);
-                WorldPacketFactory.SendSetHair(player, e.HairId, e.R, e.G, e.B);
-            }
-        }
-
-        private void OnChangeFace(IPlayerEntity player, ChangeFaceEventArgs e)
-        {
-            var worldConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
-
-            if(!e.UseCoupon)
-            {
-                if (player.PlayerData.Gold < worldConfiguration.Customization.ChangeFaceCost)
-                {
-                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKMONEY);
-                }
-                else
-                {
-                    player.PlayerData.Gold -= (int)worldConfiguration.Customization.ChangeFaceCost;
-                    player.VisualAppearance.FaceId = (int)e.FaceId;
-
-                    WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-                    WorldPacketFactory.SendChangeFace(player, e.FaceId);
-                }
-            }
-            else
-            {
-                var couponItem = player.Inventory.GetItemById(DefineItem.II_SYS_SYS_SCR_FACEOFFFREE);
-                if (couponItem == null)
-                {
-                    WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);
-                    return;
-                }
-
-                player.Inventory.RemoveItems(couponItem.Data.Id);
-                WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, couponItem.UniqueId, couponItem.Quantity);
-                WorldPacketFactory.SendChangeFace(player, e.FaceId);
+                this._inventorySystem.DeleteItem(player, couponItem, 1);
+                this._customizationPacketFactory.SendSetHair(player, hairId, r, g, b);
             }
         }
     }
