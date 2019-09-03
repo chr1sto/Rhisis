@@ -7,10 +7,21 @@ using System.Collections.Generic;
 
 namespace Rhisis.CLI.Commands.Configure
 {
-    [Command("login", Description = "Configures the database access")]
+    [Command("login", Description = "Configures the Login Server")]
     public class LoginServerConfigurationCommand
     {
         private readonly ConsoleHelper _consoleHelper;
+
+        /// <summary>
+        /// Gets or sets the login configuration file to use.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the login server configuration file path.")]
+        public string LoginConfigurationFile { get; set; }
+
+        /// <summary>
+        /// Gets the real configuration file.
+        /// </summary>
+        private string ConfigurationFile => !string.IsNullOrEmpty(this.LoginConfigurationFile) ? this.LoginConfigurationFile : ConfigurationConstants.LoginServerPath;
 
         /// <summary>
         /// Creates a new <see cref="LoginServerConfigurationCommand"/> instance.
@@ -26,8 +37,10 @@ namespace Rhisis.CLI.Commands.Configure
         /// </summary>
         public void OnExecute()
         {
-            var loginConfiguration = new ObjectConfigurationFiller<LoginConfiguration>();
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>();
+            var loginServerConfiguration = ConfigurationHelper.Load<LoginConfiguration>(this.ConfigurationFile, ConfigurationConstants.LoginServer);
+            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
+            var loginConfiguration = new ObjectConfigurationFiller<LoginConfiguration>(loginServerConfiguration);
+            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
 
             Console.WriteLine("----- Login Server -----");
             loginConfiguration.Fill();
@@ -42,14 +55,14 @@ namespace Rhisis.CLI.Commands.Configure
 
             if (response)
             {
-                var loginServerConfiguration = new Dictionary<string, object>
+                var configuration = new Dictionary<string, object>
                 {
                     { ConfigurationConstants.LoginServer, loginConfiguration.Value },
                     { ConfigurationConstants.CoreServer, coreConfiguration.Value }
                 };
 
-                ConfigurationHelper.Save(ConfigurationConstants.LoginServerPath, loginServerConfiguration);
-                Console.WriteLine($"Login Server configuration saved in {ConfigurationConstants.LoginServerPath}!");
+                ConfigurationHelper.Save(this.ConfigurationFile, configuration);
+                Console.WriteLine($"Login Server configuration saved in {this.ConfigurationFile}!");
             }
         }
     }
