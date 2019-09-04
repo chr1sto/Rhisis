@@ -14,7 +14,7 @@ namespace Rhisis.Cluster.CoreClient
     public sealed class ClusterCoreClient : NetClient, IClusterCoreClient
     {
         private readonly ILogger<ClusterCoreClient> _logger;
-        private readonly ISCConfiguration _coreConfiguration;
+        private readonly CoreConfiguration _coreConfiguration;
         private readonly IHandlerInvoker _handlerInvoker;
 
         /// <inheritdoc />
@@ -35,7 +35,7 @@ namespace Rhisis.Cluster.CoreClient
         /// <param name="clusterConfiguration">Cluster server configuration.</param>
         /// <param name="coreConfiguration">Core server configuration.</param>
         /// <param name="handlerInvoker">Handler invoker.</param>
-        public ClusterCoreClient(ILogger<ClusterCoreClient> logger, IOptions<ClusterConfiguration> clusterConfiguration, IOptions<ISCConfiguration> coreConfiguration, IHandlerInvoker handlerInvoker)
+        public ClusterCoreClient(ILogger<ClusterCoreClient> logger, IOptions<ClusterConfiguration> clusterConfiguration, IOptions<CoreConfiguration> coreConfiguration, IHandlerInvoker handlerInvoker)
         {
             this._logger = logger;
             this._coreConfiguration = coreConfiguration.Value;

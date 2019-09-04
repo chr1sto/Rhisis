@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
 
 namespace Rhisis.World.CoreClient
@@ -13,7 +14,7 @@ namespace Rhisis.World.CoreClient
         /// <summary>
         /// Gets the core client configuration.
         /// </summary>
-        ISCConfiguration CoreClientConfiguration { get; }
+        CoreConfiguration CoreClientConfiguration { get; }
 
         /// <summary>
         /// Gets the remote end point (IP and port) for this client.

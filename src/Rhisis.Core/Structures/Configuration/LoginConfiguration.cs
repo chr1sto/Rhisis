@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Configuration
@@ -7,8 +8,24 @@ namespace Rhisis.Core.Structures.Configuration
     /// Reprensents the Login server configuration structure.
     /// </summary>
     [DataContract]
-    public class LoginConfiguration : BaseConfiguration
+    public class LoginConfiguration
     {
+        /// <summary>
+        /// Gets or sets the host.
+        /// </summary>
+        [DataMember(Name = "host")]
+        [DefaultValue("127.0.0.1")]
+        [Display(Name = "Login host address", Order = 0)]
+        public string Host { get; set; }
+
+        /// <summary>
+        /// Gets or sets the port.
+        /// </summary>
+        [DataMember(Name = "port")]
+        [DefaultValue(23000)]
+        [Display(Name = "Login listening port", Order = 1)]
+        public int Port { get; set; }
+
         /// <summary>
         /// Gets or sets the client build version.
         /// </summary>
@@ -17,6 +34,8 @@ namespace Rhisis.Core.Structures.Configuration
         /// you will not be allowed to connect to the Login Server.
         /// </remarks>
         [DataMember(Name = "buildVersion")]
+        [DefaultValue("20100412")]
+        [Display(Name = "Client build version", Order = 2)]
         public string BuildVersion { get; set; }
 
         /// <summary>
@@ -24,6 +43,7 @@ namespace Rhisis.Core.Structures.Configuration
         /// </summary>
         [DataMember(Name = "accountVerification")]
         [DefaultValue(true)]
+        [Display(Name = "Use account verification", Order = 3)]
         public bool AccountVerification { get; set; }
 
         /// <summary>
@@ -31,26 +51,15 @@ namespace Rhisis.Core.Structures.Configuration
         /// </summary>
         [DataMember(Name = "passwordEncryption")]
         [DefaultValue(true)]
+        [Display(Name = "Use password encryption", Order = 4)]
         public bool PasswordEncryption { get; set; }
 
         /// <summary>
         /// Gets or sets the password encryption key.
         /// </summary>
         [DataMember(Name = "encryptionKey")]
+        [DefaultValue("dldhsvmflvm")]
+        [Display(Name = "Encryption key", Order = 5)]
         public string EncryptionKey { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Inter-Server configuration.
-        /// </summary>
-        [DataMember(Name = "isc")]
-        public ISCConfiguration ISC { get; set; }
-
-        /// <summary>
-        /// Creates a new <see cref="LoginConfiguration"/> instance.
-        /// </summary>
-        public LoginConfiguration()
-        {
-            this.ISC = new ISCConfiguration();
-        }
     }
 }

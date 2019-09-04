@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Structures.Configuration;
+﻿using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
 
 namespace Rhisis.World.CoreClient.Packets

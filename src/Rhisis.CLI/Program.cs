@@ -1,5 +1,8 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using System.Threading.Tasks;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Rhisis.CLI.Services;
 using Rhisis.Database;
 
@@ -11,22 +14,20 @@ namespace Rhisis.CLI
         /// Program entry point.
         /// </summary>
         /// <param name="args"></param>
-        public static int Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            var services = new ServiceCollection()
-                .RegisterDatabaseFactory()
-                .AddSingleton<ConsoleHelper>()
-                .AddSingleton(PhysicalConsole.Singleton);
-            
-            using (var diContext = services.BuildServiceProvider())
-            {
-                var application = new CommandLineApplication<Application>();
-                application.Conventions
-                    .UseDefaultConventions()
-                    .UseConstructorInjection(diContext);
-                
-                return application.Execute(args);    
-            }
+            return await new HostBuilder()
+                .ConfigureLogging((context, builder) =>
+                {
+                    builder.AddConsole();
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services.RegisterDatabaseFactory();
+                    services.AddSingleton(PhysicalConsole.Singleton);
+                    services.AddSingleton<ConsoleHelper>();
+                })
+                .RunCommandLineApplicationAsync<Application>(args);
         }
     }
 }

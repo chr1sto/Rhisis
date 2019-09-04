@@ -1,16 +1,35 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace Rhisis.Core.Structures.Configuration
+namespace Rhisis.Core.Structures.Configuration.World
 {
     /// <summary>
     /// Represents the World Server configuration structure.
     /// </summary>
     [DataContract]
-    public class WorldConfiguration : BaseConfiguration
+    public class WorldConfiguration
     {
         public const string DefaultLanguage = "en";
-        
+
+        /// <summary>
+        /// Gets or sets the host.
+        /// </summary>
+        [DataMember(Name = "host")]
+        [DefaultValue("127.0.0.1")]
+        [Display(Name = "World server host address", Order = 0)]
+        public string Host { get; set; }
+
+        /// <summary>
+        /// Gets or sets the port.
+        /// </summary>
+        [DataMember(Name = "port")]
+        [DefaultValue(23000)]
+        [Display(Name = "World server listening port", Order = 1)]
+        public int Port { get; set; }
+
         /// <summary>
         /// Gets or sets the world's id.
         /// </summary>
@@ -63,7 +82,7 @@ namespace Rhisis.Core.Structures.Configuration
         /// Gets or sets the IPC configuration.
         /// </summary>
         [DataMember(Name = "isc")]
-        public ISCConfiguration ISC { get; set; } = new ISCConfiguration();
+        public CoreConfiguration ISC { get; set; } = new CoreConfiguration();
 
         /// <summary>
         /// Gets or sets the mails configuration.

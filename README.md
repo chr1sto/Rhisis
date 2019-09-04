@@ -12,9 +12,9 @@ Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 2
 This project has been created for learning purposes about the network and game logic problematics on the server-side.
 We choose to use the [Ether.Network][ethernetwork] to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.
 
-> This project is not affiliated with **Gala Lab**.
+> :warning: This project is not affiliated with **Gala Lab**.
 
-## Details
+## Technical environment and details
 
 - Language: `C#` 7.3 (latest)
 - Framework: `.NET Core 2.2`
@@ -23,6 +23,7 @@ We choose to use the [Ether.Network][ethernetwork] to manage our server connecit
 - Configuration files type: `JSON`
 - External libraries used:
 	- [Ether.Network][ethernetwork]
+	- [Sylver.HandlerInvoker](https://github.com/Eastrall/Sylver.HandlerInvoker)
 	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 	- [NLog](https://github.com/NLog/NLog)
@@ -40,12 +41,12 @@ We choose to use the [Ether.Network][ethernetwork] to manage our server connecit
 - MySQL database support
 
 ### Login
-- Inter-Server authentication process (ISC)
+- Inter-Server authentication process (CoreServer)
 - Client authentication process
 - Send server list to connected client
 
 ### Cluster
-- Inter-Server authentication (ISC)
+- Inter-Server authentication (CoreClient)
 - Character list
 - Create character
 - Delete character
@@ -53,7 +54,7 @@ We choose to use the [Ether.Network][ethernetwork] to manage our server connecit
 - Pre join
 
 ### World
-- Inter-Server authentication (ISC)
+- Inter-Server authentication (CoreClient)
 - Entity Component System architecture
 - Connect to the world
 - Load resources
@@ -99,11 +100,17 @@ We choose to use the [Ether.Network][ethernetwork] to manage our server connecit
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
 
 1. Download or Clone the `develop` branch.
-2. Install the latest .NET Core SDK : https://dotnet.microsoft.com/download
-3. Install `MySQL Server`
+2. Install the latest [.NET Core SDK](https://dotnet.microsoft.com/download)
+3. Install [`MySQL Server`](https://dev.mysql.com/downloads/installer/)
 4. Go to your Rhisis folder, open a `cmd` or `PowerShell` and compile the solution with the command : `dotnet build`
-5. Go to the `bin/` folder, open a `cmd` or `PowerShell` and type: `./rhisis-cli.bat setup`
-> ℹ️ The `rhisis-cli setup` command will guide you through the rhisis configuration and will setup the database for you.
+5. Go to the `bin/` folder, open a `cmd` or `PowerShell` and type the following commands: 
+```
+$ ./rhisis-cli.bat database initialize
+$ ./rhisis-cli.bat configure login
+$ ./rhisis-cli.bat configure cluster
+$ ./rhisis-cli.bat configure world
+```
+> ℹ️ The `rhisis-cli database initialize` command will guide you through the rhisis database configuration and will setup the database for you.
 6. Create an account using the `./rhisis-cli user create` command
 8. Start the emulator
 - Start `1.login.bat`

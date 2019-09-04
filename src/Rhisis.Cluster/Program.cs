@@ -23,22 +23,21 @@ namespace Rhisis.Cluster
         private static async Task Main()
         {
             const string culture = "en-US";
-            const string clusterConfigurationPath = "config/cluster.json";
             const string databaseConfigurationPath = "config/database.json";
 
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
                     configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(clusterConfigurationPath, optional: false);
+                    configApp.AddJsonFile(ConfigurationConstants.ClusterServerPath, optional: false);
                     configApp.AddJsonFile(databaseConfigurationPath, optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
                     services.AddMemoryCache();
-                    services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection("clusterServer"));
-                    services.Configure<ISCConfiguration>(hostContext.Configuration.GetSection("isc"));
+                    services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.ClusterServer));
+                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
                     services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
                     services.AddHandlers();

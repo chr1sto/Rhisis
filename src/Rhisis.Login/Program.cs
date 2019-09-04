@@ -22,21 +22,20 @@ namespace Rhisis.Login
         private static async Task Main()
         {
             const string culture = "en-US";
-            const string loginConfigurationPath = "config/login.json";
             const string databaseConfigurationPath = "config/database.json";
 
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
                     configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(loginConfigurationPath, optional: false);
+                    configApp.AddJsonFile(ConfigurationConstants.LoginServerPath, optional: false);
                     configApp.AddJsonFile(databaseConfigurationPath, optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
-                    services.Configure<LoginConfiguration>(hostContext.Configuration.GetSection("loginServer"));
-                    services.Configure<ISCConfiguration>(hostContext.Configuration.GetSection("isc"));
+                    services.Configure<LoginConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.LoginServer));
+                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
                     services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
                     services.AddHandlers();
