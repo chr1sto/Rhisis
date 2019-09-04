@@ -1,4 +1,5 @@
-﻿namespace Rhisis.CLI.Commands.Configure
+﻿// ReSharper disable InconsistentNaming
+namespace Rhisis.CLI.Core
 {
     internal enum ObjectPropertyType
     {

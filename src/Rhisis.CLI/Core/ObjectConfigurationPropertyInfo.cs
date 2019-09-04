@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Rhisis.CLI.Commands.Configure
+namespace Rhisis.CLI.Core
 {
     /// <summary>
     /// Represents an object configuration property.

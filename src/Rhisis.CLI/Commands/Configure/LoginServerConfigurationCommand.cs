@@ -4,6 +4,9 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using System;
 using System.Collections.Generic;
+using Rhisis.CLI.Core;
+using Rhisis.Core.Structures.Configuration.Models;
+
 
 namespace Rhisis.CLI.Commands.Configure
 {
@@ -38,9 +41,9 @@ namespace Rhisis.CLI.Commands.Configure
         public void OnExecute()
         {
             var loginServerConfiguration = ConfigurationHelper.Load<LoginConfiguration>(this.ConfigurationFile, ConfigurationConstants.LoginServer);
-            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
+            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
             var loginConfiguration = new ObjectConfigurationFiller<LoginConfiguration>(loginServerConfiguration);
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
+            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
 
             Console.WriteLine("----- Login Server -----");
             loginConfiguration.Fill();
@@ -53,17 +56,15 @@ namespace Rhisis.CLI.Commands.Configure
 
             bool response = this._consoleHelper.AskConfirmation("Save this configuration?");
 
-            if (response)
-            {
-                var configuration = new Dictionary<string, object>
-                {
-                    { ConfigurationConstants.LoginServer, loginConfiguration.Value },
-                    { ConfigurationConstants.CoreServer, coreConfiguration.Value }
-                };
+            if (!response) 
+                return;
 
-                ConfigurationHelper.Save(this.ConfigurationFile, configuration);
-                Console.WriteLine($"Login Server configuration saved in {this.ConfigurationFile}!");
-            }
+            ConfigurationHelper.Save(this.ConfigurationFile, new LoginServerConfigurationModel
+            {
+                CoreConfiguration = coreConfiguration.Value,
+                LoginConfiguration = loginConfiguration.Value
+            });
+            Console.WriteLine($"Login Server configuration saved in {this.ConfigurationFile}!");
         }
     }
 }
