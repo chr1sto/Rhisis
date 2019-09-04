@@ -3,7 +3,6 @@ using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using System;
-using System.Collections.Generic;
 using Rhisis.CLI.Core;
 using Rhisis.Core.Structures.Configuration.Models;
 

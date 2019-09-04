@@ -1,11 +1,11 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.CLI.Core;
 using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
 using System;
-using Rhisis.CLI.Core;
-using Rhisis.Core.Structures.Configuration.Models;
+using System.Collections.Generic;
 
 namespace Rhisis.CLI.Commands.Configure
 {
@@ -41,9 +41,9 @@ namespace Rhisis.CLI.Commands.Configure
         public void OnExecute()
         {
             var worldServerConfiguration = ConfigurationHelper.Load<WorldConfiguration>(this.ConfigurationFile, ConfigurationConstants.WorldServer);
-            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
+            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
             var worldConfiguration = new ObjectConfigurationFiller<WorldConfiguration>(worldServerConfiguration);
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
+            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
 
             Console.WriteLine("----- World Server -----");
             worldConfiguration.Fill();
@@ -56,13 +56,17 @@ namespace Rhisis.CLI.Commands.Configure
 
             bool response = this._consoleHelper.AskConfirmation("Save this configuration?");
 
-            if (!response) return;
-            ConfigurationHelper.Save(ConfigurationConstants.WorldServerPath, new WorldServerConfigurationModel()
+            if (response)
             {
-                CoreConfiguration = coreConfiguration.Value,
-                WorldConfiguration = worldConfiguration.Value
-            });
-            Console.WriteLine($"World Server configuration saved in {ConfigurationConstants.WorldServerPath}!");
+                var configuration = new Dictionary<string, object>
+                {
+                    { ConfigurationConstants.WorldServer, worldConfiguration.Value },
+                    { ConfigurationConstants.CoreServer, coreConfiguration.Value }
+                };
+
+                ConfigurationHelper.Save(this.ConfigurationFile, configuration);
+                Console.WriteLine($"World Server configuration saved in {this.ConfigurationFile}!");
+            }
         }
     }
 }

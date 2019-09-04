@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using Rhisis.CLI.Commands.Configure;
@@ -98,6 +99,9 @@ namespace Rhisis.CLI.Core
 
             foreach (PropertyInfo property in objectProperties)
             {
+                if (property.GetCustomAttribute<NotMappedAttribute>() != null)
+                    continue;
+
                 string propertyDisplayName = property.Name;
                 string propertyDisplayDescription = string.Empty;
                 int propertyDisplayOrder = 0;

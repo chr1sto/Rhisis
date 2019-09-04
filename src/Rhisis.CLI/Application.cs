@@ -11,7 +11,6 @@ namespace Rhisis.CLI
     [Subcommand(typeof(ConfigureCommand))]
     public class Application
     {
-        public const string DefaultDatabaseConfigurationFile = "config/database.json";
         public const string Description = "This tool is a command line interface allowing " +
                                           "administrators to manage their own servers easily.";
         

@@ -41,6 +41,11 @@
         public const string WorldServerPath = "config/world.json";
 
         /// <summary>
+        /// Gets the Database configuration file path.
+        /// </summary>
+        public const string DatabasePath = "config/database.json";
+
+        /// <summary>
         /// Prevents from creating a <see cref="ConfigurationConstants"/> instance from outside.
         /// </summary>
         private ConfigurationConstants()

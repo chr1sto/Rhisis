@@ -38,7 +38,7 @@ namespace Rhisis.CLI.Core
 
                 builder.Append(this.DisplayName);
 
-                if (this.Value != null && this.Type != ObjectPropertyType.YesNo)
+                if (this.Value != null && this.Type != ObjectPropertyType.YesNo && !this.IsPassword)
                 {
                     builder.Append($" ({this.Value})");
                 }

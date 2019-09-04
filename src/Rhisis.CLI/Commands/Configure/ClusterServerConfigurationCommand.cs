@@ -1,10 +1,10 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.CLI.Core;
 using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using System;
-using Rhisis.CLI.Core;
-using Rhisis.Core.Structures.Configuration.Models;
+using System.Collections.Generic;
 
 namespace Rhisis.CLI.Commands.Configure
 {
@@ -39,9 +39,9 @@ namespace Rhisis.CLI.Commands.Configure
         public void OnExecute()
         {
             var clusterServerConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(this.ConfigurationFile, ConfigurationConstants.ClusterServer);
-            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
+            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
             var clusterConfiguration = new ObjectConfigurationFiller<ClusterConfiguration>(clusterServerConfiguration);
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
+            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
 
             Console.WriteLine("----- Cluster Server -----");
             clusterConfiguration.Fill();
@@ -54,14 +54,17 @@ namespace Rhisis.CLI.Commands.Configure
 
             bool response = this._consoleHelper.AskConfirmation("Save this configuration?");
 
-            if (!response) 
-                return;
-            ConfigurationHelper.Save(ConfigurationConstants.ClusterServerPath, new ClusterServerConfigurationModel
+            if (response)
             {
-                CoreConfiguration = coreConfiguration.Value,
-                ClusterServerConfiguration = clusterConfiguration.Value
-            });
-            Console.WriteLine($"Cluster Server configuration saved in {ConfigurationConstants.ClusterServerPath}!");
+                var configuration = new Dictionary<string, object>
+                {
+                    { ConfigurationConstants.ClusterServer, clusterConfiguration.Value },
+                    { ConfigurationConstants.CoreServer, coreConfiguration.Value }
+                };
+
+                ConfigurationHelper.Save(this.ConfigurationFile, configuration);
+                Console.WriteLine($"Cluster Server configuration saved in {this.ConfigurationFile}!");
+            }
         }
     }
 }
