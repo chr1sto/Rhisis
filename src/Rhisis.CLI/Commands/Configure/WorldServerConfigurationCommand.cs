@@ -1,6 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Core;
 using Rhisis.CLI.Services;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
@@ -47,8 +48,15 @@ namespace Rhisis.CLI.Commands.Configure
 
             Console.WriteLine("----- World Server -----");
             worldConfiguration.Fill();
+            worldConfiguration.Value.Maps = new List<string>
+            {
+                "WI_WORLD_MADRIGAL",
+                "WI_DUNGEON_FL_MAS"
+            };
+
             Console.WriteLine("----- Core Server -----");
             coreConfiguration.Fill();
+            coreConfiguration.Value.Password = MD5.GetMD5Hash(coreConfiguration.Value.Password);
 
             Console.WriteLine("##### Configuration review #####");
             worldConfiguration.Show("World Server configuration");

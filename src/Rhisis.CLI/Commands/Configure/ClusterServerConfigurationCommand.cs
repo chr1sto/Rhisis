@@ -1,6 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Core;
 using Rhisis.CLI.Services;
+using Rhisis.Core.Cryptography;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using System;
@@ -47,6 +48,7 @@ namespace Rhisis.CLI.Commands.Configure
             clusterConfiguration.Fill();
             Console.WriteLine("----- Core Server -----");
             coreConfiguration.Fill();
+            coreConfiguration.Value.Password = MD5.GetMD5Hash(coreConfiguration.Value.Password);
 
             Console.WriteLine("##### Configuration review #####");
             clusterConfiguration.Show("Cluster Server configuration");

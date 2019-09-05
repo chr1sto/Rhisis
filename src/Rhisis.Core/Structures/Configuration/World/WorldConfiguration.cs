@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
@@ -12,8 +11,6 @@ namespace Rhisis.Core.Structures.Configuration.World
     [DataContract]
     public class WorldConfiguration
     {
-        public const string DefaultLanguage = "en";
-
         /// <summary>
         /// Gets or sets the host.
         /// </summary>
@@ -34,18 +31,23 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// Gets or sets the world's id.
         /// </summary>
         [DataMember(Name = "id")]
+        [Required]
+        [Display(Name = "World server unique ID", Order = 2)]
         public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the parent cluster server id.
         /// </summary>
         [DataMember(Name = "clusterId")]
+        [Required]
+        [Display(Name = "World server parent cluster ID", Order = 3)]
         public int ClusterId { get; set; }
 
         /// <summary>
         /// Gets or sets the world's name.
         /// </summary>
         [DataMember(Name = "name")]
+        [Display(Name = "World server name (Channel name)", Order = 4)]
         public string Name { get; set; }
 
         /// <summary>
@@ -64,6 +66,8 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// Gets or sets the world server's language.
         /// </summary>
         [DataMember(Name = "language")]
+        [DefaultValue("en")]
+        [Display(Name = "World server language", Order = 5)]
         public string Language { get; set; }
 
         /// <summary>
@@ -77,12 +81,6 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         [DataMember(Name = "drops")]
         public WorldDrops Drops { get; set; } = new WorldDrops();
-
-        /// <summary>
-        /// Gets or sets the IPC configuration.
-        /// </summary>
-        [DataMember(Name = "isc")]
-        public CoreConfiguration ISC { get; set; } = new CoreConfiguration();
 
         /// <summary>
         /// Gets or sets the mails configuration.
@@ -113,7 +111,6 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         public WorldConfiguration()
         {
-            this.Language = DefaultLanguage;
             this.Systems = new Dictionary<string, bool>();
         }
     }

@@ -5,7 +5,7 @@ using Rhisis.Core.Structures.Configuration;
 using System;
 using Rhisis.CLI.Core;
 using Rhisis.Core.Structures.Configuration.Models;
-
+using Rhisis.Core.Cryptography;
 
 namespace Rhisis.CLI.Commands.Configure
 {
@@ -48,6 +48,7 @@ namespace Rhisis.CLI.Commands.Configure
             loginConfiguration.Fill();
             Console.WriteLine("----- Core Server -----");
             coreConfiguration.Fill();
+            coreConfiguration.Value.Password = MD5.GetMD5Hash(coreConfiguration.Value.Password);
 
             Console.WriteLine("##### Configuration review #####");
             loginConfiguration.Show("Login Server configuration");
