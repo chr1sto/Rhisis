@@ -47,6 +47,12 @@ namespace Rhisis.CLI.Commands.Configure
 
             Console.WriteLine("----- World Server -----");
             worldConfiguration.Fill();
+            worldConfiguration.Value.Maps = new List<string>
+            {
+                "WI_WORLD_MADRIGAL",
+                "WI_DUNGEON_FL_MAS"
+            };
+
             Console.WriteLine("----- Core Server -----");
             coreConfiguration.Fill();
 
