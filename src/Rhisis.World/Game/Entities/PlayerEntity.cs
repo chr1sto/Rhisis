@@ -58,6 +58,9 @@ namespace Rhisis.World.Game.Entities
         /// <inheritdoc />
         public IBehavior Behavior { get; set; }
 
+        /// <inheritdoc />
+        public QuestDiaryComponent QuestDiary { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="PlayerEntity"/> instance.
         /// </summary>
@@ -73,6 +76,7 @@ namespace Rhisis.World.Game.Entities
             this.Health = new HealthComponent();
             this.Timers = new TimerComponent();
             this.Attributes = new AttributeComponent();
+            this.QuestDiary = new QuestDiaryComponent();
             this._playerDataSystem = playerDataSystem;
         }
 

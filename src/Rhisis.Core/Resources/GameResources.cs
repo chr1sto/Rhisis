@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
+using Rhisis.Core.Structures.Game.Quests;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace Rhisis.Core.Resources
         private ConcurrentDictionary<string, ShopData> _shops;
         private ConcurrentDictionary<int, JobData> _jobs;
         private ConcurrentDictionary<string, NpcData> _npcs;
+        private ConcurrentDictionary<int, IQuestScript> _quests;
         private ExpTableData _expTableData;
         private DeathPenalityData _penalities;
 
@@ -41,6 +43,9 @@ namespace Rhisis.Core.Resources
 
         /// <inheritdoc />
         public IReadOnlyDictionary<string, NpcData> Npcs => this.GetCacheValue(GameResourcesConstants.Npcs, ref this._npcs);
+
+        /// <inheritdoc />
+        public IReadOnlyDictionary<int, IQuestScript> Quests => this.GetCacheValue(GameResourcesConstants.Quests, ref this._quests);
 
         /// <inheritdoc />
         public ExpTableData ExpTables => this.GetCacheValue(GameResourcesConstants.ExpTables, ref this._expTableData);

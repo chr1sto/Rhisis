@@ -34,7 +34,7 @@ namespace Rhisis.World.Handlers
                 throw new ArgumentException("Invalid object id.");
             }
 
-            this._dialogSystem.OpenNpcDialog(client.Player, packet.ObjectId, packet.Key);
+            this._dialogSystem.OpenNpcDialog(client.Player, packet.ObjectId, packet.Key, packet.QuestId);
         }
     }
 }

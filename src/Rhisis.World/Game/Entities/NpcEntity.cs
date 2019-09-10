@@ -1,7 +1,9 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Structures.Game;
+using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities
 {
@@ -15,6 +17,9 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public NpcData Data { get; set; }
+
+        /// <inheritdoc />
+        public IEnumerable<IQuestScript> Quests { get; set; }
 
         /// <inheritdoc />
         public IBehavior Behavior { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
+using Rhisis.Core.Structures.Game.Quests;
 using System;
 using System.Collections.Generic;
 
@@ -39,6 +40,11 @@ namespace Rhisis.Core.Resources
         /// Gets the npcs data.
         /// </summary>
         IReadOnlyDictionary<string, NpcData> Npcs { get; }
+
+        /// <summary>
+        /// Gets the quests data.
+        /// </summary>
+        IReadOnlyDictionary<int, IQuestScript> Quests { get; }
 
         /// <summary>
         /// Gets the experience tables data.

@@ -6,6 +6,7 @@ using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
+using Rhisis.Scripting.Quests;
 using Rhisis.World.Client;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Chat;
@@ -59,7 +60,8 @@ namespace Rhisis.World
                 typeof(JobLoader),
                 typeof(ExpTableLoader),
                 typeof(PenalityLoader),
-                typeof(NpcLoader));
+                typeof(NpcLoader),
+                typeof(QuestLoader));
 
             this._chatCommandManager.Load();
             this._behaviorManager.Load();

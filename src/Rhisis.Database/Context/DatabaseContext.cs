@@ -41,6 +41,16 @@ namespace Rhisis.Database.Context
         public DbSet<DbShortcut> TaskbarShortcuts { get; set; }
 
         /// <summary>
+        /// Gets or sets the quests.
+        /// </summary>
+        public DbSet<DbQuest> Quests { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quest actions.
+        /// </summary>
+        public DbSet<DbQuestAction> QuestActions { get; set; }
+
+        /// <summary>
         /// Create a new <see cref="DatabaseContext"/> instance.
         /// </summary>
         /// <param name="options"></param>

@@ -11,6 +11,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Quest;
 using Rhisis.World.Systems.Recovery;
 using Rhisis.World.Systems.Taskbar;
 using Rhisis.World.Systems.Trade;
@@ -28,6 +29,7 @@ namespace Rhisis.World.Game.Factories.Internal
         private readonly IInventorySystem _inventorySystem;
         private readonly ITaskbarSystem _taskbarSystem;
         private readonly ITradeSystem _tradeSystem;
+        private readonly IQuestSystem _questSystem;
         private readonly ObjectFactory _playerFactory;
 
         /// <summary>
@@ -40,7 +42,8 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <param name="inventorySystem">Inventory system.</param>
         /// <param name="taskbarSystem">Taskbar system.</param>
         /// <param name="tradeSystem">Trade system.</param>
-        public PlayerFactory(IServiceProvider serviceProvider, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IInventorySystem inventorySystem, ITaskbarSystem taskbarSystem, ITradeSystem tradeSystem)
+        /// <param name="questSystem">Quest system.</param>
+        public PlayerFactory(IServiceProvider serviceProvider, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IInventorySystem inventorySystem, ITaskbarSystem taskbarSystem, ITradeSystem tradeSystem, IQuestSystem questSystem)
         {
             this._serviceProvider = serviceProvider;
             this._gameResources = gameResources;
@@ -49,6 +52,7 @@ namespace Rhisis.World.Game.Factories.Internal
             this._inventorySystem = inventorySystem;
             this._taskbarSystem = taskbarSystem;
             this._tradeSystem = tradeSystem;
+            this._questSystem = questSystem;
             this._playerFactory = ActivatorUtilities.CreateFactory(typeof(PlayerEntity), Type.EmptyTypes);
         }
 
@@ -134,6 +138,9 @@ namespace Rhisis.World.Game.Factories.Internal
 
             // Trade
             this._tradeSystem.Initialize(player);
+
+            // Quests
+            this._questSystem.Initialize(player);
 
             mapLayer.AddEntity(player);
 

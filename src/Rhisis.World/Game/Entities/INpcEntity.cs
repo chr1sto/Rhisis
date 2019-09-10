@@ -1,5 +1,7 @@
 ﻿using Rhisis.Core.Structures.Game;
+using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Components;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities
 {
@@ -17,5 +19,10 @@ namespace Rhisis.World.Game.Entities
         /// Gets the NPC data.
         /// </summary>
         NpcData Data { get; }
+
+        /// <summary>
+        /// Gets the NPC quests.
+        /// </summary>
+        IEnumerable<IQuestScript> Quests { get; }
     }
 }

@@ -10,7 +10,8 @@ namespace Rhisis.Core.Extensions
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static bool IsValidEmail(this string source) => new EmailAddressAttribute().IsValid(source);
+        public static bool IsValidEmail(this string source) 
+            => new EmailAddressAttribute().IsValid(source);
 
         /// <summary>
         /// Converts a string to a given enumeration type.
@@ -18,9 +19,7 @@ namespace Rhisis.Core.Extensions
         /// <typeparam name="T">Enumeration type.</typeparam>
         /// <param name="source">Source</param>
         /// <returns>String source converted as given enum.</returns>
-        public static T ToEnum<T>(this string source) where T : struct, IConvertible, IComparable, IFormattable
-        {
-            return (T)Enum.Parse(typeof(T), source, true);
-        }
+        public static T ToEnum<T>(this string source) where T : struct, IConvertible, IComparable, IFormattable 
+            => Enum.TryParse(source, true, out T result) ? result : default;
     }
 }

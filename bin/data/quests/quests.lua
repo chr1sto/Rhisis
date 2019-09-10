@@ -1,0 +1,3 @@
+﻿QUESTS = {
+	'QUEST_NEWPETYORN'
+}

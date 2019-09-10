@@ -6,6 +6,8 @@ namespace Rhisis.Core.Resources.Include
 {
     public class Instruction : IStatement, IDisposable
     {
+        private readonly char[] EscapeCharacters = new[] { '"' };
+
         private readonly ICollection<object> _parameters;
 
         /// <summary>
@@ -50,6 +52,29 @@ namespace Rhisis.Core.Resources.Include
         {
             if (parameter.ToString() != ",")
                 this._parameters.Add(parameter);
+        }
+
+        /// <summary>
+        /// Gets the parameter at the given index and convert it into the given generic type.
+        /// </summary>
+        /// <typeparam name="T">Target type.</typeparam>
+        /// <param name="parameterIndex">Instruction parameter index.</param>
+        /// <returns></returns>
+        public T GetParameter<T>(int parameterIndex)
+        {
+            if (parameterIndex < 0 || parameterIndex >= this.Parameters.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(parameterIndex), "The instruction parameter index is out of range.");
+            }
+
+            object parameter = this.Parameters.ElementAtOrDefault(parameterIndex);
+
+            if (parameter is string)
+                parameter = parameter.ToString().Trim(this.EscapeCharacters);
+
+            Type targetType = typeof(T);
+
+            return (T)Convert.ChangeType(parameter, Nullable.GetUnderlyingType(targetType) ?? targetType);
         }
         
         /// <inheritdoc />

@@ -13,146 +13,198 @@ namespace Rhisis.Database.MySQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<float>("Angle");
+                    b.Property<float>("Angle")
+                        .HasColumnType("float");
 
-                    b.Property<int>("BankCode");
+                    b.Property<int>("BankCode")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ClassId");
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Dexterity");
+                    b.Property<int>("Dexterity")
+                        .HasColumnType("int");
 
-                    b.Property<long>("Experience");
+                    b.Property<long>("Experience")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("FaceId");
+                    b.Property<int>("FaceId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Fp");
+                    b.Property<int>("Fp")
+                        .HasColumnType("int");
 
-                    b.Property<byte>("Gender");
+                    b.Property<byte>("Gender")
+                        .HasColumnType("tinyint unsigned");
 
-                    b.Property<int>("Gold");
+                    b.Property<int>("Gold")
+                        .HasColumnType("int");
 
-                    b.Property<int>("HairColor");
+                    b.Property<int>("HairColor")
+                        .HasColumnType("int");
 
-                    b.Property<int>("HairId");
+                    b.Property<int>("HairId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Hp");
+                    b.Property<int>("Hp")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Intelligence");
+                    b.Property<int>("Intelligence")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
 
-                    b.Property<int>("Level");
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
 
-                    b.Property<int>("MapId");
+                    b.Property<int>("MapId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("MapLayerId");
+                    b.Property<int>("MapLayerId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Mp");
+                    b.Property<int>("Mp")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<long>("PlayTime")
                         .HasColumnType("BIGINT");
 
-                    b.Property<float>("PosX");
+                    b.Property<float>("PosX")
+                        .HasColumnType("float");
 
-                    b.Property<float>("PosY");
+                    b.Property<float>("PosY")
+                        .HasColumnType("float");
 
-                    b.Property<float>("PosZ");
+                    b.Property<float>("PosZ")
+                        .HasColumnType("float");
 
-                    b.Property<int>("SkillPoints");
+                    b.Property<int>("SkillPoints")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SkinSetId");
+                    b.Property<int>("SkinSetId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Slot");
+                    b.Property<int>("Slot")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Stamina");
+                    b.Property<int>("Stamina")
+                        .HasColumnType("int");
 
-                    b.Property<int>("StatPoints");
+                    b.Property<int>("StatPoints")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Strength");
+                    b.Property<int>("Strength")
+                        .HasColumnType("int");
 
-                    b.Property<int>("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("characters");
+                    b.ToTable("Characters");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbItem", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<int>("CharacterId");
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("CreatorId");
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("int");
 
-                    b.Property<byte>("Element");
+                    b.Property<byte>("Element")
+                        .HasColumnType("tinyint unsigned");
 
-                    b.Property<byte>("ElementRefine");
+                    b.Property<byte>("ElementRefine")
+                        .HasColumnType("tinyint unsigned");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("ItemCount");
+                    b.Property<int>("ItemCount")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemId");
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("ItemSlot");
+                    b.Property<int>("ItemSlot")
+                        .HasColumnType("int");
 
-                    b.Property<byte>("Refine");
+                    b.Property<byte>("Refine")
+                        .HasColumnType("tinyint unsigned");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("items");
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbMail", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("CreateTime");
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<long>("Gold")
                         .HasColumnType("BIGINT");
 
-                    b.Property<bool>("HasBeenRead");
+                    b.Property<bool>("HasBeenRead")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("HasReceivedGold");
+                    b.Property<bool>("HasReceivedGold")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("HasReceivedItem");
+                    b.Property<bool>("HasReceivedItem")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("ItemId");
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
 
-                    b.Property<short>("ItemQuantity");
+                    b.Property<short>("ItemQuantity")
+                        .HasColumnType("smallint");
 
-                    b.Property<int>("ReceiverId");
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
 
-                    b.Property<int>("SenderId");
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Text");
+                    b.Property<string>("Text")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Title")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -162,73 +214,144 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("mails");
+                    b.ToTable("Mails");
                 });
 
-            modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
+            modelBuilder.Entity("Rhisis.Database.Entities.DbQuest", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<int>("CharacterId");
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
 
-                    b.Property<uint>("ObjectData");
+                    b.Property<bool>("Finished")
+                        .HasColumnType("BIT");
 
-                    b.Property<uint>("ObjectId");
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("BIT");
 
-                    b.Property<uint>("ObjectIndex");
+                    b.Property<int>("QuestId")
+                        .HasColumnType("int");
 
-                    b.Property<uint>("ObjectType");
-
-                    b.Property<int>("SlotIndex");
-
-                    b.Property<int?>("SlotLevelIndex");
-
-                    b.Property<int>("TargetTaskbar");
-
-                    b.Property<string>("Text");
-
-                    b.Property<uint>("Type");
-
-                    b.Property<uint>("UserId");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("DATETIME");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("shortcuts");
+                    b.ToTable("Quests");
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbQuestAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestId");
+
+                    b.ToTable("QuestActions");
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<uint>("ObjectData")
+                        .HasColumnType("int unsigned");
+
+                    b.Property<uint>("ObjectId")
+                        .HasColumnType("int unsigned");
+
+                    b.Property<uint>("ObjectIndex")
+                        .HasColumnType("int unsigned");
+
+                    b.Property<uint>("ObjectType")
+                        .HasColumnType("int unsigned");
+
+                    b.Property<int>("SlotIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SlotLevelIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TargetTaskbar")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("longtext");
+
+                    b.Property<uint>("Type")
+                        .HasColumnType("int unsigned");
+
+                    b.Property<uint>("UserId")
+                        .HasColumnType("int unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId");
+
+                    b.ToTable("Shortcuts");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbUser", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<int>("Authority");
+                    b.Property<int>("Authority")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("DATETIME");
 
                     b.Property<string>("Email")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<bool>("IsDeleted");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
 
                     b.Property<string>("Password")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Username")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Username", "Email")
                         .IsUnique();
 
-                    b.ToTable("users");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
@@ -236,7 +359,8 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasOne("Rhisis.Database.Entities.DbUser", "User")
                         .WithMany("Characters")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbItem", b =>
@@ -244,7 +368,8 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
                         .WithMany("Items")
                         .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbMail", b =>
@@ -256,12 +381,32 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Receiver")
                         .WithMany("ReceivedMails")
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Sender")
                         .WithMany("SentMails")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbQuest", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
+                        .WithMany()
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbQuestAction", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbQuest", "Quest")
+                        .WithMany("QuestActions")
+                        .HasForeignKey("QuestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
@@ -269,7 +414,8 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
                         .WithMany("TaskbarShortcuts")
                         .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

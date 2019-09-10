@@ -10,6 +10,7 @@ namespace Rhisis.World.Systems.Dialog
         /// <param name="player">Player.</param>
         /// <param name="npcObjectId">NPC object id.</param>
         /// <param name="dialogKey">Dialog key.</param>
-        void OpenNpcDialog(IPlayerEntity player, uint npcObjectId, string dialogKey);
+        /// <param name="questId">Quest id.</param>
+        void OpenNpcDialog(IPlayerEntity player, uint npcObjectId, string dialogKey, int questId = 0);
     }
 }
