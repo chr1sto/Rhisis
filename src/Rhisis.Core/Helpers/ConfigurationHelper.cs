@@ -19,7 +19,7 @@ namespace Rhisis.Core.Helpers
         {
             if (!File.Exists(path))
             {
-                throw new RhisisConfigurationException(path);
+                return default;
             }
 
             string fileContent = File.ReadAllText(path);
