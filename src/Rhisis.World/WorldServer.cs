@@ -1,6 +1,4 @@
-﻿using Ether.Network.Packets;
-using Ether.Network.Server;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Resources;
@@ -14,6 +12,7 @@ using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Sylver.HandlerInvoker;
+using Sylver.Network.Server;
 using System;
 using System.Linq;
 
@@ -21,7 +20,6 @@ namespace Rhisis.World
 {
     public sealed partial class WorldServer : NetServer<WorldClient>, IWorldServer
     {
-        private const int MaxConnections = 500;
         private const int ClientBufferSize = 128;
         private const int ClientBacklog = 50;
 
@@ -32,9 +30,6 @@ namespace Rhisis.World
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
         private readonly IChatCommandManager _chatCommandManager;
-
-        /// <inheritdoc />
-        protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
 
         /// <summary>
         /// Creates a new <see cref="WorldServer"/> instance.
@@ -48,16 +43,12 @@ namespace Rhisis.World
             this._mapManager = mapManager;
             this._behaviorManager = behaviorManager;
             this._chatCommandManager = chatCommandManager;
-            this.Configuration.Host = this._worldConfiguration.Host;
-            this.Configuration.Port = this._worldConfiguration.Port;
-            this.Configuration.MaximumNumberOfConnections = MaxConnections;
-            this.Configuration.Backlog = ClientBacklog;
-            this.Configuration.BufferSize = ClientBufferSize;
-            this.Configuration.Blocking = false;
+            this.PacketProcessor = new FlyffPacketProcessor();
+            this.ServerConfiguration = new NetServerConfiguration(this._worldConfiguration.Host, this._worldConfiguration.Port, ClientBacklog, ClientBufferSize);
         }
 
         /// <inheritdoc />
-        protected override void Initialize()
+        protected override void OnBeforeStart()
         {
             this._gameResources.Load(typeof(DefineLoader),
                 typeof(TextLoader),
@@ -73,10 +64,13 @@ namespace Rhisis.World
             this._chatCommandManager.Load();
             this._behaviorManager.Load();
             this._mapManager.Load();
+        }
 
-            //TODO: Implement this log inside OnStarted method when will be available.
+        /// <inheritdoc />
+        protected override void OnAfterStart()
+        {
             this._logger.LogInformation("'{0}' world server is started and listen on {1}:{2}.",
-                this._worldConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
+                this._worldConfiguration.Name, this.ServerConfiguration.Host, this.ServerConfiguration.Port);
         }
 
         /// <inheritdoc />
@@ -86,20 +80,20 @@ namespace Rhisis.World
                 this._serviceProvider.GetRequiredService<IHandlerInvoker>());
             CommonPacketFactory.SendWelcome(client, client.SessionId);
 
-            this._logger.LogInformation("New client connected from {0}.", client.RemoteEndPoint);
+            this._logger.LogInformation("New client connected from {0}.", client.Socket.RemoteEndPoint);
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(WorldClient client)
         {
-            this._logger.LogInformation("Client disconnected from {0}.", client.RemoteEndPoint);
+            this._logger.LogInformation("Client disconnected from {0}.", client.Socket.RemoteEndPoint);
         }
 
         /// <inheritdoc />
-        protected override void OnError(Exception exception)
-        {
-            this._logger.LogError("WorldServer Error: {0}", exception.Message);
-        }
+        //protected override void OnError(Exception exception)
+        //{
+        //    this._logger.LogError("WorldServer Error: {0}", exception.Message);
+        //}
 
         /// <inheritdoc />
         public IPlayerEntity GetPlayerEntity(uint id) => this.Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;

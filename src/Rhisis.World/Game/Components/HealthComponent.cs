@@ -1,6 +1,4 @@
-﻿using Rhisis.Core.Data;
-
-namespace Rhisis.World.Game.Components
+﻿namespace Rhisis.World.Game.Components
 {
     public class HealthComponent
     {

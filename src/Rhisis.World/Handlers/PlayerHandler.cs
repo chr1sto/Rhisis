@@ -1,5 +1,4 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
@@ -10,6 +9,7 @@ using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.Interaction;
 using Rhisis.World.Systems.SpecialEffect;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.World.Handlers

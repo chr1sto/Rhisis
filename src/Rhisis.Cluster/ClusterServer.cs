@@ -1,6 +1,4 @@
-﻿using Ether.Network.Packets;
-using Ether.Network.Server;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Cluster.Client;
@@ -11,6 +9,7 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
+using Sylver.Network.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +34,6 @@ namespace Rhisis.Cluster
         /// <inheritdoc />
         public IList<WorldServerInfo> WorldServers { get; } = new List<WorldServerInfo>();
 
-        /// <inheritdoc />
-        protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
-
         /// <summary>
         /// Creates a new <see cref="ClusterServer"/> instance.
         /// </summary>
@@ -51,25 +47,29 @@ namespace Rhisis.Cluster
             this.ClusterConfiguration = clusterConfiguration.Value;
             this._gameResources = gameResources;
             this._serviceProvider = serviceProvider;
-            this.Configuration.Host = this.ClusterConfiguration.Host;
-            this.Configuration.Port = this.ClusterConfiguration.Port;
-            this.Configuration.MaximumNumberOfConnections = MaxConnections;
-            this.Configuration.Backlog = ClientBacklog;
-            this.Configuration.BufferSize = ClientBufferSize;
-            this.Configuration.Blocking = false;
+            this.PacketProcessor = new FlyffPacketProcessor();
+            this.ServerConfiguration = new NetServerConfiguration(this.ClusterConfiguration.Host,
+                this.ClusterConfiguration.Port,
+                ClientBacklog,
+                ClientBufferSize);
         }
 
         /// <inheritdoc />
-        protected override void Initialize()
+        protected override void OnBeforeStart()
         {
             this._gameResources.Load(typeof(DefineLoader), typeof(JobLoader));
-            this._logger.LogInformation($"'{this.ClusterConfiguration.Name}' cluster server is started and listen on {this.Configuration.Host}:{this.Configuration.Port}."); 
+        }
+
+        /// <inheritdoc />
+        protected override void OnAfterStart()
+        {
+            this._logger.LogInformation($"'{this.ClusterConfiguration.Name}' cluster server is started and listen on {this.ServerConfiguration.Host}:{this.ServerConfiguration.Port}.");
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(ClusterClient client)
         {
-            this._logger.LogInformation($"New client connected to {nameof(ClusterServer)} from {client.RemoteEndPoint}.");
+            this._logger.LogInformation($"New client connected to {nameof(ClusterServer)} from {client.Socket.RemoteEndPoint}.");
 
             client.Initialize(this,
                 this._serviceProvider.GetRequiredService<ILogger<ClusterClient>>(),
@@ -79,11 +79,11 @@ namespace Rhisis.Cluster
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(ClusterClient client) 
-            => this._logger.LogInformation($"Client disconnected from {client.RemoteEndPoint}.");
+            => this._logger.LogInformation($"Client disconnected from {client.Socket.RemoteEndPoint}.");
 
         /// <inheritdoc />
-        protected override void OnError(Exception exception) 
-            => this._logger.LogInformation($"{nameof(ClusterServer)} socket error: {exception.Message}");
+        //protected override void OnError(Exception exception) 
+        //    => this._logger.LogInformation($"{nameof(ClusterServer)} socket error: {exception.Message}");
 
         /// <inheritdoc />
         public WorldServerInfo GetWorldServerById(int id) => this.WorldServers.FirstOrDefault(x => x.Id == id);

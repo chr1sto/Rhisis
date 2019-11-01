@@ -1,15 +1,16 @@
-﻿using Ether.Network.Common;
-using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using Sylver.HandlerInvoker;
+using Sylver.Network.Data;
+using Sylver.Network.Server;
 using System;
+using System.Net.Sockets;
 
 namespace Rhisis.Login.Client
 {
-    public sealed class LoginClient : NetUser, ILoginClient
+    public sealed class LoginClient : NetServerClient, ILoginClient
     {
         private ILogger<LoginClient> _logger;
         private ILoginServer _loginServer;
@@ -22,15 +23,13 @@ namespace Rhisis.Login.Client
         public string Username { get; private set; }
 
         /// <inheritdoc />
-        public string RemoteEndPoint => this.Socket?.RemoteEndPoint?.ToString();
-
-        /// <inheritdoc />
         public bool IsConnected => !string.IsNullOrEmpty(this.Username);
 
         /// <summary>
         /// Creates a new <see cref="LoginClient"/> instance.
         /// </summary>
-        public LoginClient()
+        public LoginClient(Socket socketConnection)
+            : base(socketConnection)
         {
             this.SessionId = RandomHelper.GenerateSessionKey();
         }
@@ -70,7 +69,7 @@ namespace Rhisis.Login.Client
         /// <inheritdoc />
         public override void Send(INetPacketStream packet)
         {
-            this._logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packet.Buffer, 5), this.RemoteEndPoint);
+            this._logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packet.Buffer, 5), this.Socket.RemoteEndPoint);
             base.Send(packet);
         }
 
@@ -89,7 +88,7 @@ namespace Rhisis.Login.Client
             {
                 packetHeaderNumber = packet.Read<uint>();
 
-                this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.RemoteEndPoint);
+                this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.Socket.RemoteEndPoint);
                 this._handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentException)
@@ -99,13 +98,13 @@ namespace Rhisis.Login.Client
                     this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.",
                         Enum.GetName(typeof(PacketType), packetHeaderNumber),
                         packetHeaderNumber.ToString("X2"),
-                        this.RemoteEndPoint);
+                        this.Socket.RemoteEndPoint);
                 }
                 else
                 {
                     this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", 
                         packetHeaderNumber.ToString("X2"), 
-                        this.RemoteEndPoint);
+                        this.Socket.RemoteEndPoint);
                 }
             }
             catch (Exception exception)

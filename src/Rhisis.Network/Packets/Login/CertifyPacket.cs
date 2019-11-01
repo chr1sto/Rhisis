@@ -1,4 +1,4 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Structures.Configuration;
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.Login
 
             if (this._configuration.PasswordEncryption)
             {
-                byte[] encryptedPassword = packet.ReadArray<byte>(16 * 42);
+                byte[] encryptedPassword = packet.Read<byte>(16 * 42);
                 byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(this._configuration.EncryptionKey, 16);
 
                 this.Password = Aes.DecryptByteArray(encryptedPassword, encryptionKey);

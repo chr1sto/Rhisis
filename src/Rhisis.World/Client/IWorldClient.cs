@@ -1,6 +1,5 @@
-﻿using Ether.Network.Common;
-using Rhisis.World.Game.Entities;
-using System;
+﻿using Rhisis.World.Game.Entities;
+using Sylver.Network.Common;
 
 namespace Rhisis.World.Client
 {
@@ -15,10 +14,5 @@ namespace Rhisis.World.Client
         /// Gets or sets the player entity.
         /// </summary>
         IPlayerEntity Player { get; set; }
-
-        /// <summary>
-        /// Gets the remote end point (IP and port) for this client.
-        /// </summary>
-        string RemoteEndPoint { get; }
     }
 }

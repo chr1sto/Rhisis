@@ -1,5 +1,4 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,6 +12,7 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Network.Packets;
 using Sylver.HandlerInvoker;
+using Sylver.Network.Data;
 using System.IO;
 using System.Threading.Tasks;
 

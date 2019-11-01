@@ -1,5 +1,5 @@
-﻿using Ether.Network.Common;
-using Rhisis.Network.Core;
+﻿using Rhisis.Network.Core;
+using Sylver.Network.Common;
 
 namespace Rhisis.Login.Core
 {

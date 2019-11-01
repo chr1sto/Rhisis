@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;

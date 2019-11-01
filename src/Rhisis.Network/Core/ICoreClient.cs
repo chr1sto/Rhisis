@@ -1,4 +1,4 @@
-﻿using Ether.Network.Client;
+﻿using Sylver.Network.Client;
 
 namespace Rhisis.Network.Core
 {

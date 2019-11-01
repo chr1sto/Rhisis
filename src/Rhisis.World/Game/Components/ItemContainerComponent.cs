@@ -1,10 +1,10 @@
 ﻿using System;
-using Ether.Network.Packets;
 using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
 using Rhisis.Core.Data;
 using Rhisis.Core.IO;
+using Sylver.Network.Data;
 
 namespace Rhisis.World.Game.Components
 {

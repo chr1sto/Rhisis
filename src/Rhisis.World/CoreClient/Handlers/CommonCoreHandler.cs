@@ -1,8 +1,8 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Network.Core;
 using Rhisis.World.CoreClient.Packets;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.World.CoreClient.Handlers
@@ -30,7 +30,7 @@ namespace Rhisis.World.CoreClient.Handlers
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(CorePacketType.Welcome)]
-        public void OnWelcome(IWorldCoreClient client, INetPacketStream packet)
+        public void OnWelcome(IWorldCoreClient client, INetPacketStream _)
         {
             this._corePacketFactory.SendAuthentication(client, client.WorldServerConfiguration);
         }
@@ -41,7 +41,7 @@ namespace Rhisis.World.CoreClient.Handlers
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(CorePacketType.AuthenticationResult)]
-        public void OnAuthenticationResult(IWorldCoreClient client, INetPacketStream packet)
+        public void OnAuthenticationResult(IWorldCoreClient _, INetPacketStream packet)
         {
             var authenticationResult = (CoreAuthenticationResultType)(packet.Read<uint>());
 

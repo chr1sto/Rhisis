@@ -1,18 +1,19 @@
-﻿using Ether.Network.Client;
-using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
+using Sylver.Network.Client;
+using Sylver.Network.Data;
 using System;
-using System.Net.Sockets;
 
 namespace Rhisis.World.CoreClient
 {
     public sealed class WorldCoreClient : NetClient, IWorldCoreClient
     {
+        public const int BufferSize = 128;
+
         private readonly ILogger<WorldCoreClient> _logger;
         private readonly IHandlerInvoker _handlerInvoker;
 
@@ -38,9 +39,7 @@ namespace Rhisis.World.CoreClient
             this.WorldServerConfiguration = worldConfiguration.Value;
             this.CoreClientConfiguration = coreConfiguration.Value;
             this._handlerInvoker = handlerInvoker;
-            this.Configuration.Host = this.CoreClientConfiguration.Host;
-            this.Configuration.Port = this.CoreClientConfiguration.Port;
-            this.Configuration.BufferSize = 128;
+            this.ClientConfiguration = new NetClientConfiguration(this.CoreClientConfiguration.Host, this.CoreClientConfiguration.Port, BufferSize);
         }
 
         /// <inheritdoc />
@@ -58,10 +57,10 @@ namespace Rhisis.World.CoreClient
         }
 
         /// <inheritdoc />
-        protected override void OnSocketError(SocketError socketError)
-        {
-            this._logger.LogError($"An error occured on {nameof(WorldCoreClient)}: {socketError}");
-        }
+        //protected override void OnSocketError(SocketError socketError)
+        //{
+        //    this._logger.LogError($"An error occured on {nameof(WorldCoreClient)}: {socketError}");
+        //}
 
         /// <inheritdoc />
         public override void HandleMessage(INetPacketStream packet)
