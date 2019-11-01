@@ -1,8 +1,8 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
+using Sylver.Network.Data;
 
 namespace Rhisis.World.CoreClient.Packets
 {

@@ -1,8 +1,8 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Login.Core.Packets;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 
 namespace Rhisis.Login.Core.Handlers
 {
@@ -44,14 +44,14 @@ namespace Rhisis.Login.Core.Handlers
             {
                 if (this._coreServer.HasCluster(id))
                 {
-                    this._logger.LogWarning($"Cluster Server '{name}' incoming connection from {client.RemoteEndPoint} refused. Reason: An other Cluster server with id '{id}' is already connected.");
+                    this._logger.LogWarning($"Cluster Server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: An other Cluster server with id '{id}' is already connected.");
                     this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedClusterExists);
                     this._coreServer.DisconnectClient(client.Id);
                     return;
                 }
 
                 client.ServerInfo = new ClusterServerInfo(id, name, host, port);
-                this._logger.LogInformation($"Cluster server '{name}' connected to ISC server from {client.RemoteEndPoint}.");
+                this._logger.LogInformation($"Cluster server '{name}' connected to ISC server from {client.Socket.RemoteEndPoint}.");
             }
             else if (type == ServerType.World)
             {
@@ -61,7 +61,7 @@ namespace Rhisis.Login.Core.Handlers
 
                 if (parentClusterServer == null)
                 {
-                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.RemoteEndPoint} refused. Reason: Cluster server with id '{parentClusterId}' is not connected.");
+                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: Cluster server with id '{parentClusterId}' is not connected.");
 
                     this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedNoCluster);
                     this._coreServer.DisconnectClient(client.Id);
@@ -70,7 +70,7 @@ namespace Rhisis.Login.Core.Handlers
 
                 if (this._coreServer.HasWorld(parentClusterId, id))
                 {
-                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.RemoteEndPoint} refused. Reason: An other World server with id '{id}' is already connected to Cluster Server '{parentClusterServer.ServerInfo.Name}'.");
+                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: An other World server with id '{id}' is already connected to Cluster Server '{parentClusterServer.ServerInfo.Name}'.");
                     this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedWorldExists);
                     this._coreServer.DisconnectClient(client.Id);
                     return;
@@ -82,11 +82,11 @@ namespace Rhisis.Login.Core.Handlers
                 cluster.Worlds.Add(worldInfo);
                 client.ServerInfo = worldInfo;
                 this._corePacketFactory.SendUpdateWorldList(parentClusterServer, cluster.Worlds);
-                this._logger.LogInformation($"World server '{name}' join cluster '{cluster.Name}' and is connected to ISC server from {client.RemoteEndPoint}.");
+                this._logger.LogInformation($"World server '{name}' join cluster '{cluster.Name}' and is connected to ISC server from {client.Socket.RemoteEndPoint}.");
             }
             else
             {
-                this._logger.LogWarning($"Incoming core connection from {client.RemoteEndPoint} refused. Reason: server type is unknown.");
+                this._logger.LogWarning($"Incoming core connection from {client.Socket.RemoteEndPoint} refused. Reason: server type is unknown.");
                 this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedUnknownServer);
                 this._coreServer.DisconnectClient(client.Id);
                 return;

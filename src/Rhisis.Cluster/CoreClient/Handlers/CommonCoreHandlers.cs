@@ -1,8 +1,8 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.Cluster.CoreClient.Handlers
@@ -43,7 +43,7 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         /// <param name="client"></param>
         /// <param name="packet"></param>
         [HandlerAction(CorePacketType.AuthenticationResult)]
-        public void OnAuthenticationResult(IClusterCoreClient client, INetPacketStream packet)
+        public void OnAuthenticationResult(IClusterCoreClient _, INetPacketStream packet)
         {
             var authenticationResult = (CoreAuthenticationResultType)(packet.Read<uint>());
 
@@ -76,7 +76,7 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         /// <param name="client"></param>
         /// <param name="packet"></param>
         [HandlerAction(CorePacketType.UpdateClusterWorldsList)]
-        public void OnUpdateClusterWorldsList(IClusterCoreClient client, INetPacketStream packet)
+        public void OnUpdateClusterWorldsList(IClusterCoreClient _, INetPacketStream packet)
         {
             int numberOfWorldServers = packet.Read<int>();
 

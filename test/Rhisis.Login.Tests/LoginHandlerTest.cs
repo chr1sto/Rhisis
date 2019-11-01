@@ -14,6 +14,7 @@ using Rhisis.Network.Packets.Login;
 using Sylver.HandlerInvoker;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using Xunit;
 
 namespace Rhisis.Login.Tests
@@ -26,7 +27,8 @@ namespace Rhisis.Login.Tests
         {
             BuildVersion = BuildVersion
         };
-        private readonly LoginClient _loginClient = new LoginClient();
+        private readonly Socket _socket;
+        private readonly LoginClient _loginClient;
 
         private readonly Mock<ILogger<LoginHandler>> _loggerMock;
         private readonly Mock<ILoginServer> _loginServerMock;
@@ -41,6 +43,9 @@ namespace Rhisis.Login.Tests
 
         public LoginHandlerTest()
         {
+            this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this._loginClient = new LoginClient(_socket);
+
             this._users = new UserGenerator().Generate(100);
 
             this._loggerMock = new Mock<ILogger<LoginHandler>>();

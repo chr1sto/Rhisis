@@ -1,4 +1,4 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 using System.IO;
 using System.Text;
 
@@ -11,8 +11,16 @@ namespace Rhisis.Network
     {
         public const byte Header = 0x5E;
         public const uint NullId = 0xFFFFFFFF;
-        
+
+        private static readonly Encoding FlyFFWriteStringEncoding = Encoding.GetEncoding(0);
+        private static readonly Encoding FlyFFReadStringEncoding = Encoding.GetEncoding(1252);
         private short _mergedPacketCount;
+
+        /// <inheritdoc />
+        protected override Encoding StringReadEncoding => FlyFFReadStringEncoding;
+
+        /// <inheritdoc />
+        protected override Encoding StringWriteEncoding => FlyFFWriteStringEncoding;
 
         /// <summary>
         /// Gets the FFPacket buffer.
@@ -54,62 +62,6 @@ namespace Rhisis.Network
         public void WriteHeader(object packetHeader) => this.Write((uint)packetHeader);
 
         /// <summary>
-        /// Write data into a packet.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        public override void Write<T>(T value)
-        {
-            if (typeof(T) == typeof(string))
-            {
-                this.WriteString(value as string);
-                return;
-            }
-
-            base.Write(value);
-        }
-
-        /// <summary>
-        /// Read data.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public override T Read<T>()
-        {
-            if (typeof(T) == typeof(string))
-                return (T)(object)this.ReadString();
-
-            return base.Read<T>();
-        }
-
-        /// <summary>
-        /// Read FF String.
-        /// </summary>
-        /// <returns></returns>
-        private string ReadString()
-        {
-            var size = this.Read<int>();
-
-            return size == 0 ? string.Empty : Encoding.GetEncoding(1252).GetString(this.ReadBytes(size));
-        }
-
-        /// <summary>
-        /// Read a specified number of bytes.
-        /// </summary>
-        /// <param name="count">Number of bytes to read</param>
-        /// <returns></returns>
-        public byte[] ReadBytes(int count) => this.ReadArray<byte>(count);
-
-        /// <summary>
-        /// Write FF string.
-        /// </summary>
-        /// <param name="value"></param>
-        private void WriteString(string value)
-        {
-            base.Write(Encoding.GetEncoding(0).GetBytes(value));
-        }
-
-        /// <summary>
         /// Builds the packet buffer.
         /// </summary>
         /// <returns></returns>
@@ -118,7 +70,7 @@ namespace Rhisis.Network
             long oldPointer = this.Position;
 
             this.Seek(1, SeekOrigin.Begin);
-            base.Write(this.Size - 5);
+            base.Write((int)this.Length - 5);
             this.Seek(oldPointer, SeekOrigin.Begin);
 
             return base.Buffer;

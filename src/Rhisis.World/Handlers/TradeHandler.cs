@@ -1,5 +1,4 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Network.Packets;
+﻿using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World.Trade;
 using Rhisis.World.Client;
 using Rhisis.World.Systems.Trade;

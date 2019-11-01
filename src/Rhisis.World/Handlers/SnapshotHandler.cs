@@ -1,9 +1,9 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Network.Packets;
 using Rhisis.World.Client;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.World.Handlers
@@ -49,9 +49,9 @@ namespace Rhisis.World.Handlers
                 catch (ArgumentNullException)
                 {
                     if (Enum.IsDefined(typeof(SnapshotType), snapshotHeaderNumber))
-                        this._logger.LogWarning("Received an unimplemented World snapshot {0} (0x{1}) from {2}.", Enum.GetName(typeof(SnapshotType), snapshotHeaderNumber), snapshotHeaderNumber.ToString("X4"), client.RemoteEndPoint);
+                        this._logger.LogWarning("Received an unimplemented World snapshot {0} (0x{1}) from {2}.", Enum.GetName(typeof(SnapshotType), snapshotHeaderNumber), snapshotHeaderNumber.ToString("X4"), client.Socket.RemoteEndPoint);
                     else
-                        this._logger.LogWarning("[SECURITY] Received an unknown World snapshot 0x{0} from {1}.", snapshotHeaderNumber.ToString("X4"), client.RemoteEndPoint);
+                        this._logger.LogWarning("[SECURITY] Received an unknown World snapshot 0x{0} from {1}.", snapshotHeaderNumber.ToString("X4"), client.Socket.RemoteEndPoint);
                 }
                 catch (Exception exception)
                 {

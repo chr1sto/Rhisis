@@ -1,4 +1,4 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 using Rhisis.Core.Common;
 using Rhisis.Core.Common.Game.Structures;
 using System;

@@ -1,5 +1,5 @@
-﻿using Ether.Network.Server;
-using Rhisis.World.Game.Entities;
+﻿using Rhisis.World.Game.Entities;
+using Sylver.Network.Server;
 
 namespace Rhisis.World
 {

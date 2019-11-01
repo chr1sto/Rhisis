@@ -1,7 +1,6 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Core.Resources;
-using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Core.Structures.Game;
 using Rhisis.World.Systems.Inventory;
+using Sylver.Network.Data;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Structures

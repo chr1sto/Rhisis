@@ -1,4 +1,4 @@
-﻿using Ether.Network.Common;
+﻿using Sylver.Network.Common;
 
 namespace Rhisis.Login.Client
 {
@@ -13,11 +13,6 @@ namespace Rhisis.Login.Client
         /// Gets the client's logged username.
         /// </summary>
         string Username { get; }
-
-        /// <summary>
-        /// Gets the remote end point (IP and port) for this client.
-        /// </summary>
-        string RemoteEndPoint { get; }
 
         /// <summary>
         /// Check if the client is connected.

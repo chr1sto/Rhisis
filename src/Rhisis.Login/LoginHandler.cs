@@ -104,7 +104,7 @@ namespace Rhisis.Login
 
                     this._loginPacketFactory.SendServerList(client, certifyPacket.Username, this._coreServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);
-                    this._logger.LogInformation($"User '{client.Username}' logged succesfully from {client.RemoteEndPoint}.");
+                    this._logger.LogInformation($"User '{client.Username}' logged succesfully from {client.Socket.RemoteEndPoint}.");
                     break;
                 default:
                     break;
@@ -139,7 +139,7 @@ namespace Rhisis.Login
         /// <param name="disconnectClient">A boolean value that indicates if we disconnect the client or not.</param>
         private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason, bool disconnectClient = true)
         {
-            this._logger.LogWarning($"Unable to authenticate user from {client.RemoteEndPoint}. Reason: {reason}");
+            this._logger.LogWarning($"Unable to authenticate user from {client.Socket.RemoteEndPoint}. Reason: {reason}");
             this._loginPacketFactory.SendLoginError(client, error);
 
             if (disconnectClient)

@@ -1,8 +1,8 @@
-﻿using Ether.Network.Packets;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
+using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
 

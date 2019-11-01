@@ -1,6 +1,6 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Core.Structures.Configuration;
+﻿using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network.Core;
+using Sylver.Network.Data;
 
 namespace Rhisis.Cluster.CoreClient.Packets
 {

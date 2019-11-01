@@ -1,8 +1,9 @@
-﻿using Ether.Network.Common;
+﻿using Sylver.Network.Common;
+using Sylver.Network.Server;
 
 namespace Rhisis.Cluster.Client
 {
-    public interface IClusterClient : INetUser
+    public interface IClusterClient : INetServerClient
     {
         /// <summary>
         /// Gets the ID assigned to this session.
@@ -14,11 +15,6 @@ namespace Rhisis.Cluster.Client
         /// This value is random and valid only for this session in order to secure num pad disposition.
         /// </summary>
         int LoginProtectValue { get; set; }
-
-        /// <summary>
-        /// Gets the remote end point (IP and port) for this client.
-        /// </summary>
-        string RemoteEndPoint { get; }
 
         /// <summary>
         /// Disconnects the current cluster client.

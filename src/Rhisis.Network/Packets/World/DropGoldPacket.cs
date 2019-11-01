@@ -1,5 +1,5 @@
 ﻿using System;
-using Ether.Network.Packets;
+using Sylver.Network.Data;
 using Rhisis.Core.Structures;
 
 namespace Rhisis.Network.Packets.World

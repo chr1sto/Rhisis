@@ -1,5 +1,4 @@
 ﻿using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Maps;
 
 namespace Rhisis.World.Systems.Visibility
 {

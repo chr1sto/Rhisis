@@ -1,11 +1,11 @@
-﻿using Ether.Network.Server;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Login.Core.Packets;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
+using Sylver.Network.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +17,8 @@ namespace Rhisis.Login.Core
     /// </summary>
     internal class CoreServer : NetServer<CoreServerClient>, ICoreServer
     {
+        private const int ClientBacklog = 50;
+        private const int ClientBufferSize = 64;
         private readonly ILogger<CoreServer> _logger;
         private readonly CoreConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
@@ -34,16 +36,14 @@ namespace Rhisis.Login.Core
             this._configuration = configuration.Value;
             this._serviceProvider = serviceProvider;
             this._handlerInvoker = handlerInvoker;
-            this.Configuration.Host = this._configuration.Host;
-            this.Configuration.Port = this._configuration.Port;
-            this.Configuration.MaximumNumberOfConnections = 10;
-            this.Configuration.BufferSize = 128;
-            this.Configuration.Backlog = 50;
-            this.Configuration.Blocking = false;
+            this.ServerConfiguration = new NetServerConfiguration(this._configuration.Host, 
+                this._configuration.Port, 
+                ClientBacklog, 
+                ClientBufferSize);
         }
 
         /// <inheritdoc />
-        protected override void Initialize()
+        protected override void OnAfterStart()
         {
             this._logger.LogInformation($"{nameof(CoreServer)} started!");
         }
@@ -57,7 +57,7 @@ namespace Rhisis.Login.Core
 
             corePacketFactory.SendWelcome(connection);
 
-            this._logger.LogTrace($"New incoming Core client connection from {connection.RemoteEndPoint}.");
+            this._logger.LogTrace($"New incoming Core client connection from {connection.Socket.RemoteEndPoint}.");
         }
 
         /// <inheritdoc />
@@ -67,10 +67,10 @@ namespace Rhisis.Login.Core
         }
 
         /// <inheritdoc />
-        protected override void OnError(Exception exception)
-        {
-            this._logger.LogError(exception, $"An error occured in {nameof(CoreServer)}.");
-        }
+        //protected override void OnError(Exception exception)
+        //{
+        //    this._logger.LogError(exception, $"An error occured in {nameof(CoreServer)}.");
+        //}
 
         /// <inheritdoc />
         public CoreServerClient GetClusterServer(int clusterId)

@@ -122,7 +122,8 @@ namespace Rhisis.World.Systems.Inventory
                     if (revivalMap == null)
                     {
                         this._logger.LogError($"Cannot find revival map with id '{revivalRegion.MapId}'.");
-                        player.Connection.Server.DisconnectClient(player.Connection.Id);
+                        // TODO: disconnect client
+                        //player.Connection.Server.DisconnectClient(player.Connection.Id);
                         return;
                     }
 

@@ -1,6 +1,6 @@
-﻿using Ether.Network.Server;
-using Rhisis.Core.Structures.Configuration;
+﻿using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network.Core;
+using Sylver.Network.Server;
 using System.Collections.Generic;
 
 namespace Rhisis.Cluster
