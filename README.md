@@ -7,7 +7,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/500148ec8bdd4f2e954f11c682c39f3c)](https://www.codacy.com/app/Eastrall/Rhisis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Rhisis&amp;utm_campaign=Badge_Grade)
 [![discord](https://discordapp.com/api/guilds/294405146300121088/widget.png)](https://discord.gg/zAT6Az2)
 
-Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 2.2.
+Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 3.0.
 
 This project has been created for learning purposes about the network and game logic problematics on the server-side.
 We choose to use the [Sylver.Network][sylvernetwork] to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.
@@ -16,8 +16,8 @@ We choose to use the [Sylver.Network][sylvernetwork] to manage our server connec
 
 ## Technical environment and details
 
-- Language: `C#` 7.3 (latest)
-- Framework: `.NET Core 2.2`
+- Language: `C#` 8 (latest)
+- Framework: `.NET Core 3.0`
 - Application type: `Console`
 - Database type: `MySQL`
 - Configuration files type: `JSON`
@@ -100,7 +100,7 @@ We choose to use the [Sylver.Network][sylvernetwork] to manage our server connec
 ## How to setup Rhisis (from `develop` branch) (Windows platform)
 
 1. Download or Clone the `develop` branch.
-2. Install the latest [.NET Core SDK](https://dotnet.microsoft.com/download)
+2. Install the latest [.NET Core 3.X SDK](https://dotnet.microsoft.com/download)
 3. Install [`MySQL Server`](https://dev.mysql.com/downloads/installer/)
 4. Go to your Rhisis folder, open a `cmd` or `PowerShell` and compile the solution with the command : `dotnet build`
 5. Go to the `bin/` folder, open a `cmd` or `PowerShell` and type the following commands: 
