@@ -10,7 +10,7 @@
 Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 2.2.
 
 This project has been created for learning purposes about the network and game logic problematics on the server-side.
-We choose to use the [Ether.Network][ethernetwork] to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.
+We choose to use the [Sylver.Network][sylvernetwork] to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.
 
 > :warning: This project is not affiliated with **Gala Lab**.
 
@@ -22,7 +22,7 @@ We choose to use the [Ether.Network][ethernetwork] to manage our server connecit
 - Database type: `MySQL`
 - Configuration files type: `JSON`
 - External libraries used:
-	- [Ether.Network][ethernetwork]
+	- [Sylver.Network][sylvernetwork]
 	- [Sylver.HandlerInvoker](https://github.com/Eastrall/Sylver.HandlerInvoker)
 	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
@@ -136,4 +136,4 @@ $ ./rhisis-cli.bat configure world
 - Kinami
 - Sauce
 
-[ethernetwork]: https://github.com/Eastrall/Ether.Network
+[sylvernetwork]: https://github.com/Eastrall/Sylver.Network
