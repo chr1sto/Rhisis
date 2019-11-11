@@ -5,9 +5,8 @@ using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Inventory;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.World.Systems.PlayerData
 {
@@ -15,6 +14,7 @@ namespace Rhisis.World.Systems.PlayerData
     public sealed class PlayerDataSystem : IPlayerDataSystem
     {
         private readonly IDatabase _database;
+        private readonly IInventorySystem _inventorySystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
 
@@ -22,11 +22,13 @@ namespace Rhisis.World.Systems.PlayerData
         /// Creates a new <see cref="PlayerDataSystem"/> instance.
         /// </summary>
         /// <param name="database"></param>
+        /// <param name="inventorySystem">Inventory system.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
         /// <param name="textPacketFactory">Text packet factory.</param>
-        public PlayerDataSystem(IDatabase database, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
+        public PlayerDataSystem(IDatabase database, IInventorySystem inventorySystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
         {
             this._database = database;
+            this._inventorySystem = inventorySystem;
             this._moverPacketFactory = moverPacketFactory;
             this._textPacketFactory = textPacketFactory;
         }
@@ -100,53 +102,8 @@ namespace Rhisis.World.Systems.PlayerData
                 character.Mp = player.Health.Mp;
                 character.Fp = player.Health.Fp;
 
-                // Delete items
-                var itemsToDelete = new List<DbItem>(character.Items.Count);
-                itemsToDelete.AddRange(from dbItem in character.Items
-                                       let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id) ??
-                                                           new Game.Structures.Item()
-                                       where inventoryItem.Id == -1
-                                       select dbItem);
-                itemsToDelete.ForEach(x => character.Items.Remove(x));
-
-                // Add or update items
-                foreach (var item in player.Inventory.Items)
-                {
-                    if (item.Id == -1)
-                    {
-                        continue;
-                    }
-
-                    DbItem dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId);
-
-                    if (dbItem != null)
-                    {
-                        dbItem.CharacterId = player.PlayerData.Id;
-                        dbItem.ItemId = item.Id;
-                        dbItem.ItemCount = item.Quantity;
-                        dbItem.ItemSlot = item.Slot;
-                        dbItem.Refine = item.Refine;
-                        dbItem.Element = item.Element;
-                        dbItem.ElementRefine = item.ElementRefine;
-                        this._database.Items.Update(dbItem);
-                    }
-                    else
-                    {
-                        dbItem = new DbItem
-                        {
-                            CharacterId = player.PlayerData.Id,
-                            CreatorId = item.CreatorId,
-                            ItemId = item.Id,
-                            ItemCount = item.Quantity,
-                            ItemSlot = item.Slot,
-                            Refine = item.Refine,
-                            Element = item.Element,
-                            ElementRefine = item.ElementRefine
-                        };
-
-                        this._database.Items.Create(dbItem);
-                    }
-                }
+                // Save inventory items.
+                this._inventorySystem.SaveInventory(player, character);
 
                 // Taskbar
                 character.TaskbarShortcuts.Clear();

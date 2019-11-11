@@ -4,6 +4,7 @@ using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
+using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
@@ -13,6 +14,7 @@ using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Systems.Inventory
 {
@@ -26,15 +28,17 @@ namespace Rhisis.World.Systems.Inventory
         public const int MaxHumanParts = MaxItems - EquipOffset;
         public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
         private readonly ILogger<InventorySystem> _logger;
+        private readonly IDatabase _database;
         private readonly IItemFactory _itemFactory;
         private readonly IInventoryPacketFactory _inventoryPacketFactory;
         private readonly IInventoryItemUsage _inventoryItemUsage;
         private readonly IDropSystem _dropSystem;
         private readonly ITextPacketFactory _textPacketFactory;
 
-        public InventorySystem(ILogger<InventorySystem> logger, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
+        public InventorySystem(ILogger<InventorySystem> logger, IDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
         {
             this._logger = logger;
+            this._database = database;
             this._itemFactory = itemFactory;
             this._inventoryPacketFactory = inventoryPacketFactory;
             this._inventoryItemUsage = inventoryItemUsage;
@@ -46,19 +50,18 @@ namespace Rhisis.World.Systems.Inventory
         public void InitializeInventory(IPlayerEntity player, IEnumerable<DbItem> items)
         {
             player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
+
+            if (items == null || (items != null && !items.Any()))
+                return;
+
             var inventory = player.Inventory;
 
-            if (items != null)
+            foreach (DbItem item in items.Where(x => !x.IsDeleted))
             {
-                foreach (DbItem item in items)
-                {
-                    int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
+                int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
 
-                    inventory.Items[item.ItemSlot] = this._itemFactory.CreateItem(item.ItemId, item.Refine, item.Element, item.ElementRefine, item.CreatorId);
-                    inventory.Items[item.ItemSlot].Slot = item.ItemSlot;
-                    inventory.Items[item.ItemSlot].UniqueId = uniqueId;
-                    inventory.Items[item.ItemSlot].Quantity = item.ItemCount;
-                }
+                inventory.Items[item.ItemSlot] = this._itemFactory.CreateItem(item);
+                inventory.Items[item.ItemSlot].UniqueId = uniqueId;
             }
         }
 
@@ -377,7 +380,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="player">Player trying to equip an item.</param>
         /// <param name="item">Item to equip.</param>
         /// <returns>True if the player can equip the item; false otherwise.</returns>
-        public bool IsItemEquipable(IPlayerEntity player, Item item)
+        private bool IsItemEquipable(IPlayerEntity player, Item item)
         {
             if (item.Data.ItemSex != int.MaxValue && item.Data.ItemSex != player.VisualAppearance.Gender)
             {
@@ -394,6 +397,63 @@ namespace Rhisis.World.Systems.Inventory
             }
 
             return true;
+        }
+
+        /// <inheritdoc />
+        public void SaveInventory(IPlayerEntity player, DbCharacter databaseCharacter)
+        {
+            DbCharacter character = databaseCharacter ?? this._database.Characters.Get(player.PlayerData.Id);
+            IEnumerable<DbItem> itemsToDelete = from dbItem in character.Items
+                                                let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id)
+                                                where !dbItem.IsDeleted && inventoryItem == null || (inventoryItem != null && inventoryItem.Id == -1)
+                                                select dbItem;
+
+            foreach (DbItem dbItem in itemsToDelete)
+            {
+                dbItem.IsDeleted = true;
+
+                this._database.Items.Update(dbItem);
+            }
+
+            // Add or update items
+            foreach (var item in player.Inventory.Items)
+            {
+                if (item.Id == -1)
+                {
+                    continue;
+                }
+
+                DbItem dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId && !x.IsDeleted);
+
+                if (dbItem != null && dbItem.Id != 0)
+                {
+                    dbItem.CharacterId = player.PlayerData.Id;
+                    dbItem.ItemId = item.Id;
+                    dbItem.ItemCount = item.Quantity;
+                    dbItem.ItemSlot = item.Slot;
+                    dbItem.Refine = item.Refine;
+                    dbItem.Element = item.Element;
+                    dbItem.ElementRefine = item.ElementRefine;
+
+                    this._database.Items.Update(dbItem);
+                }
+                else
+                {
+                    dbItem = new DbItem
+                    {
+                        CharacterId = player.PlayerData.Id,
+                        CreatorId = item.CreatorId,
+                        ItemId = item.Id,
+                        ItemCount = item.Quantity,
+                        ItemSlot = item.Slot,
+                        Refine = item.Refine,
+                        Element = item.Element,
+                        ElementRefine = item.ElementRefine
+                    };
+
+                    this._database.Items.Create(dbItem);
+                }
+            }
         }
     }
 }

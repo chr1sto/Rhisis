@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Structures.Game;
+using Rhisis.Database.Entities;
 using Rhisis.World.Systems.Inventory;
 using Sylver.Network.Data;
 using System.Collections.Generic;
@@ -51,7 +52,6 @@ namespace Rhisis.World.Game.Structures
         {
         }
 
-
         /// <summary>
         /// Create an <see cref="Item"/> with an id and a quantity.
         /// </summary>
@@ -59,17 +59,6 @@ namespace Rhisis.World.Game.Structures
         /// <param name="quantity">Item quantity</param>
         public Item(int id, int quantity)
             : this(id, quantity, -1, -1, -1)
-        {
-        }
-
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity and creator id.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Item quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        public Item(int id, int quantity, int creatorId)
-            : this(id, quantity, creatorId, -1, -1)
         {
         }
 
@@ -173,13 +162,24 @@ namespace Rhisis.World.Game.Structures
         /// Creates a new <see cref="Item"/> based on a database item.
         /// </summary>
         /// <param name="dbItem">Database item</param>
-        public Item(Database.Entities.DbItem dbItem)
+        /// <param name="itemData">Item data.</param>
+        public Item(DbItem dbItem, ItemData itemData)
             : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
                 dbItem.Element, dbItem.ElementRefine, 0)
         {
             this.DbId = dbItem.Id;
+            this.Data = itemData;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Item"/>.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="refine"></param>
+        /// <param name="element"></param>
+        /// <param name="elementRefine"></param>
+        /// <param name="itemData"></param>
+        /// <param name="creatorId"></param>
         public Item(int id, byte refine, byte element, byte elementRefine, ItemData itemData, int creatorId)
         {
             this.Id = id;

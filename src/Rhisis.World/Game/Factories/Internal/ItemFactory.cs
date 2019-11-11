@@ -4,6 +4,7 @@ using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
+using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
@@ -19,6 +20,7 @@ namespace Rhisis.World.Game.Factories.Internal
         private readonly IServiceProvider _serviceProvider;
         private readonly IGameResources _gameResources;
         private readonly ObjectFactory _itemFactory;
+        private readonly ObjectFactory _itemDatabaseFactory;
         private readonly ObjectFactory _itemEntityFactory;
 
         /// <summary>
@@ -33,6 +35,7 @@ namespace Rhisis.World.Game.Factories.Internal
             this._serviceProvider = serviceProvider;
             this._gameResources = gameResources;
             this._itemFactory = ActivatorUtilities.CreateFactory(typeof(Item), new[] { typeof(int), typeof(byte), typeof(byte), typeof(byte), typeof(ItemData), typeof(int) });
+            this._itemDatabaseFactory = ActivatorUtilities.CreateFactory(typeof(Item), new[] { typeof(DbItem), typeof(ItemData) });
             this._itemEntityFactory = ActivatorUtilities.CreateFactory(typeof(ItemEntity), Type.EmptyTypes);
         }
 
@@ -45,6 +48,17 @@ namespace Rhisis.World.Game.Factories.Internal
             }
 
             return this._itemFactory(this._serviceProvider, new object[] { id, refine, element, elementRefine, itemData, creatorId }) as Item;
+        }
+
+        /// <inheritdoc />
+        public Item CreateItem(DbItem databaseItem)
+        {
+            if (!this._gameResources.Items.TryGetValue(databaseItem.ItemId, out ItemData itemData))
+            {
+                this._logger.LogWarning($"Cannot find item data for item id: '{databaseItem.ItemId}'.");
+            }
+
+            return this._itemDatabaseFactory(this._serviceProvider, new object[] { databaseItem, itemData }) as Item;
         }
 
         /// <inheritdoc />

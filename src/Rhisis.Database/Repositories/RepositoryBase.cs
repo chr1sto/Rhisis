@@ -62,13 +62,13 @@ namespace Rhisis.Database.Repositories
         public T Get(int id) => this.Get(x => x.Id == id);
 
         /// <inheritdoc />
-        public T Get(Expression<Func<T, bool>> func) => this.GetQueryable(this._context).FirstOrDefault(func);
+        public T Get(Expression<Func<T, bool>> func) => this.GetQueryable().FirstOrDefault(func);
 
         /// <inheritdoc />
-        public IEnumerable<T> GetAll() => this.GetQueryable(this._context).AsEnumerable();
+        public IEnumerable<T> GetAll() => this.GetQueryable().AsEnumerable();
 
         /// <inheritdoc />
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>> func) => this.GetQueryable(this._context).Where(func).AsEnumerable();
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>> func) => this.GetQueryable().Where(func).AsEnumerable();
 
         /// <inheritdoc />
         public int Count() => this._context.Set<T>().AsNoTracking().Count();
@@ -80,6 +80,6 @@ namespace Rhisis.Database.Repositories
         public bool HasAny(Expression<Func<T, bool>> predicate) => this._context.Set<T>().AsNoTracking().Any(predicate);
 
         /// <inheritdoc />
-        protected virtual IQueryable<T> GetQueryable(DbContext context) => context.Set<T>().AsQueryable();
+        protected virtual IQueryable<T> GetQueryable() => this._context.Set<T>().AsQueryable();
     }
 }

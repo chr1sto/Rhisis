@@ -27,9 +27,9 @@ namespace Rhisis.Database.Repositories.Implementation
             => this._context.Set<DbUser>().AsQueryable().AsNoTracking().FirstOrDefault(x => x.Username == username && x.Password == password);
 
         /// <inheritdoc />
-        protected override IQueryable<DbUser> GetQueryable(DbContext context)
+        protected override IQueryable<DbUser> GetQueryable()
         {
-            return base.GetQueryable(context)
+            return base.GetQueryable()
                 .Include(x => x.Characters)
                     .ThenInclude(x => x.Items)
                 .Include(x => x.Characters)

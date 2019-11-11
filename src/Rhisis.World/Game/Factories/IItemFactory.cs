@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Structures.Game;
+using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Structures;
@@ -27,5 +28,12 @@ namespace Rhisis.World.Game.Factories
         /// <param name="creatorId">Creator id.</param>
         /// <returns>New item.</returns>
         Item CreateItem(int id, byte refine, byte element, byte elementRefine, int creatorId = -1);
+
+        /// <summary>
+        /// Creates a new <see cref="Item"/> from a <see cref="DbItem"/> instance.
+        /// </summary>
+        /// <param name="databaseItem">Database item.</param>
+        /// <returns>New item.</returns>
+        Item CreateItem(DbItem databaseItem);
     }
 }
