@@ -22,7 +22,7 @@ namespace Rhisis.Database.Repositories.Implementation
         /// <inheritdoc />
         public IEnumerable<DbCharacter> GetCharacters(int userId, bool includeDeletedCharacters = false)
         {
-            IQueryable<DbCharacter> query = this._context.Set<DbCharacter>().Include(x => x.Items).AsNoTracking();
+            IQueryable<DbCharacter> query = this.GetQueryable().Include(x => x.Items).AsNoTracking();
 
             query = query.Where(x => x.UserId == userId);
 
@@ -41,23 +41,11 @@ namespace Rhisis.Database.Repositories.Implementation
         }
 
         /// <inheritdoc />
-        protected override IQueryable<DbCharacter> GetQueryable(DbContext context)
+        protected override IQueryable<DbCharacter> GetQueryable()
         {
-            return base.GetQueryable(context)
+            return base.GetQueryable()
                 .Include(x => x.User)
                 .Include(x => x.Items)
-                .Include(x => x.ReceivedMails)
-                    .ThenInclude(x => x.Receiver)
-                .Include(x => x.ReceivedMails)
-                    .ThenInclude(x => x.Sender)
-                .Include(x => x.ReceivedMails)
-                    .ThenInclude(x => x.Item)
-                .Include(x => x.SentMails)
-                    .ThenInclude(x => x.Receiver)
-                .Include(x => x.SentMails)
-                    .ThenInclude(x => x.Sender)
-                .Include(x => x.SentMails)
-                    .ThenInclude(x => x.Item)
                 .Include(x => x.TaskbarShortcuts);
         }
     }

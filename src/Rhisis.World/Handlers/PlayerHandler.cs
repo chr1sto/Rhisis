@@ -63,13 +63,11 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.QUERY_PLAYER_DATA)]
         public void OnQueryPlayerData(IWorldClient client, INetPacketStream packet)
         {
-            throw new NotImplementedException();
         }
 
         [HandlerAction(PacketType.QUERY_PLAYER_DATA2)]
         public void OnQueryPlayerData2(IWorldClient client, INetPacketStream packet)
         {
-            throw new NotImplementedException();
         }
 
         [HandlerAction(PacketType.PLAYERMOVED)]

@@ -81,5 +81,12 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="itemUniqueId">Item unique id to drop.</param>
         /// <param name="quantity">Quantity to drop.</param>
         void DropItem(IPlayerEntity player, int itemUniqueId, int quantity);
+
+        /// <summary>
+        /// Saves the player's inventory.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="databaseCharacter">Database character entity.</param>
+        void SaveInventory(IPlayerEntity player, DbCharacter databaseCharacter);
     }
 }

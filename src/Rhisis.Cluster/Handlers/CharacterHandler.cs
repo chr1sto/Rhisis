@@ -13,6 +13,7 @@ using Rhisis.Network.Packets.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Cluster.Handlers
 {
@@ -70,7 +71,7 @@ namespace Rhisis.Cluster.Handlers
                 return;
             }
 
-            IEnumerable<DbCharacter> userCharacters = this._database.Characters.GetCharacters(dbUser.Id);
+            IEnumerable<DbCharacter> userCharacters = this.GetCharacters(dbUser.Id);
 
             this._clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, userCharacters);
             this._clusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
@@ -161,7 +162,7 @@ namespace Rhisis.Cluster.Handlers
 
             this._logger.LogInformation($"Character '{newCharacter.Name}' has been created successfully for user '{dbUser.Username}' from {client.Socket.RemoteEndPoint}.");
 
-            IEnumerable<DbCharacter> dbCharacters = this._database.Characters.GetCharacters(dbUser.Id);
+            IEnumerable<DbCharacter> dbCharacters = this.GetCharacters(dbUser.Id);
 
             this._clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, dbCharacters);
         }
@@ -215,7 +216,7 @@ namespace Rhisis.Cluster.Handlers
 
             this._logger.LogInformation($"Character '{characterToDelete.Name}' has been deleted successfully for user '{packet.Username}' from {client.Socket.RemoteEndPoint}.");
 
-            IEnumerable<DbCharacter> dbCharacters = this._database.Characters.GetCharacters(dbUser.Id);
+            IEnumerable<DbCharacter> dbCharacters = this.GetCharacters(dbUser.Id);
 
             this._clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, dbCharacters);
         }
@@ -266,6 +267,29 @@ namespace Rhisis.Cluster.Handlers
 
             this._clusterPacketFactory.SendJoinWorld(client);
             this._logger.LogInformation($"Character '{character.Name}' has prejoin successfully the game for user '{packet.Username}' from {client.Socket.RemoteEndPoint}.");
+        }
+
+        /// <summary>
+        /// Gets the characters of a given user id.
+        /// </summary>
+        /// <param name="userId">User id.</param>
+        /// <returns>Collection of <see cref="DbCharacter"/>.</returns>
+        private IEnumerable<DbCharacter> GetCharacters(int userId)
+        {
+            const int EquipOffset = 42;
+            IEnumerable<DbCharacter> dbCharacters = this._database.Characters.GetCharacters(userId);
+
+            for (int i = 0; i < dbCharacters.Count(); i++)
+            {
+                DbCharacter character = dbCharacters.ElementAt(i);
+
+                if (character == null)
+                    continue;
+
+                character.Items = character.Items.Where(x => x.ItemSlot > EquipOffset).ToList();
+            }
+
+            return dbCharacters;
         }
     }
 }
