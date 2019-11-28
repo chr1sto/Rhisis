@@ -6,18 +6,15 @@ namespace Rhisis.Network.Packets.World
     /// <summary>
     /// Defines the <see cref="ExperiencePacket"/> structure.
     /// </summary>
-    public struct ExperiencePacket : IEquatable<ExperiencePacket>
+    public class ExperiencePacket : IPacketDeserializer
     {
         /// <summary>
-        /// Gets the id.
+        /// Gets the experience amount.
         /// </summary>
-        public long Experience { get; set; }
+        public long Experience { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="ExperiencePacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public ExperiencePacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             this.Experience = packet.Read<long>();
         }
