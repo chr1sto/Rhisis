@@ -4,12 +4,12 @@ using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
-using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
+using Rhisis.World.Game.Maps.Regions;
 using System;
 
 namespace Rhisis.World.Game.Factories.Internal
@@ -27,7 +27,7 @@ namespace Rhisis.World.Game.Factories.Internal
         }
 
         /// <inheritdoc />
-        public IMonsterEntity CreateMonster(IMapInstance currentMap, IMapLayer currentMapLayer, int moverId, Vector3 position)
+        public IMonsterEntity CreateMonster(IMapInstance currentMap, IMapLayer currentMapLayer, int moverId, IMapRespawnRegion region, bool respawn = false)
         {
             if (!this._gameResources.Movers.TryGetValue(moverId, out MoverData moverData))
             {
@@ -44,9 +44,10 @@ namespace Rhisis.World.Game.Factories.Internal
                     Type = WorldObjectType.Mover,
                     Size = ObjectComponent.DefaultObjectSize,
                     MovingFlags = ObjectState.OBJSTA_STAND,
-                    Position = position,
+                    Position = region.GetRandomPosition(),
                     Angle = RandomHelper.FloatRandom(0, 360f),
                     Spawned = true,
+                    AbleRespawn = respawn,
                     CurrentMap = currentMap,
                     LayerId = currentMapLayer.Id
                 },
@@ -73,6 +74,7 @@ namespace Rhisis.World.Game.Factories.Internal
             monster.Attributes.ResetAttribute(DefineAttributes.INT, moverData.Intelligence);
             monster.Behavior = this._behaviorManager.GetBehavior(BehaviorType.Monster, monster, moverId);
             monster.Data = moverData;
+            monster.Region = region;
 
             if (moverData.Class == MoverClassType.RANK_BOSS)
                 monster.Object.Size *= 2;

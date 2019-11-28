@@ -29,9 +29,11 @@ namespace Rhisis.World.Systems
                 {
                     this._logger.LogDebug($"Despawning {monster.Object.Name}...");
                     monster.Object.Spawned = false;
-                    monster.Timers.RespawnTime = Time.TimeInSeconds() + monster.Region.Time;
+                    if (monster.Object.AbleRespawn != true) {
+                        monster.Timers.RespawnTime = Time.TimeInSeconds() + monster.Region.Time;
+                    } 
                 }
-                else if (!monster.Object.Spawned && monster.Timers.RespawnTime < Time.TimeInSeconds())
+                else if (!monster.Object.Spawned && monster.Timers.RespawnTime < Time.TimeInSeconds() && monster.Object.AbleRespawn != true )
                 {
                     this._logger.LogDebug($"Respawning {monster.Object.Name}...");
                     this.ResetMonster(monster);

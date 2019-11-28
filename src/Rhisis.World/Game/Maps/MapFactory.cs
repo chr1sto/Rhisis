@@ -63,9 +63,7 @@ namespace Rhisis.World.Game.Maps
                     {
                         for (int i = 0; i < respawnRegion.Count; i++)
                         {
-                            IMonsterEntity monster = this._monsterFactory.CreateMonster(parentMapInstance, mapLayer, respawnRegion.ModelId, respawnRegion.GetRandomPosition());
-
-                            monster.Region = respawnRegion;
+                            IMonsterEntity monster = this._monsterFactory.CreateMonster(parentMapInstance, mapLayer, respawnRegion.ModelId, respawnRegion);
                                 
                             mapLayer.AddEntity(monster);
                         }
