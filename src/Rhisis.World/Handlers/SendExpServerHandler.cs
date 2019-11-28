@@ -43,7 +43,7 @@ namespace Rhisis.World.Handlers
             } 
             else 
             {
-                throw new ArgumentException($"{client.Player.Object.Name} cannot send exp server while beeing {client.Player.PlayerData.Authority}.");
+                throw new ArgumentException($"{client.Player.Object.Name} cannot send to himself exp server while beeing {client.Player.PlayerData.Authority}.");
             }
         }
     }
