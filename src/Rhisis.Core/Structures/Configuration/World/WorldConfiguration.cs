@@ -23,7 +23,7 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// Gets or sets the port.
         /// </summary>
         [DataMember(Name = "port")]
-        [DefaultValue(23000)]
+        [DefaultValue(5400)]
         [Display(Name = "World server listening port", Order = 1)]
         public int Port { get; set; }
 
