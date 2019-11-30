@@ -54,15 +54,13 @@ namespace Rhisis.World.Game.Factories.Internal
 
         public Item CreateItem(string name, byte refine, byte element, byte elementRefine, int creatorId = -1)
         {
-            var itemByName = this._gameResources.Items.Where(x => x.Value.Name == name);
-            if (itemByName.Count() == 0)
+            var itemData = this._gameResources.Items.FirstOrDefault(x => x.Value.Name == name);
+            if (itemData.Value is null)
             {
                 this._logger.LogWarning($"Cannot find item data for item name: '{name}'.");
                 return null;
             }
-            var item = itemByName.ElementAt(0);
-            this._gameResources.Items.TryGetValue(item.Value.Id, out ItemData itemData);
-            return this._itemFactory(this._serviceProvider, new object[] { item.Value.Id, refine, element, elementRefine, itemData, creatorId }) as Item;
+            return this._itemFactory(this._serviceProvider, new object[] { itemData.Value.Id, refine, element, elementRefine, itemData.Value, creatorId }) as Item;
         }
 
         /// <inheritdoc />
