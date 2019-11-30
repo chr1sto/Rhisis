@@ -9,6 +9,15 @@ This is the changelog of the Rhisis project. All notable changes to this project
 ### Fixes
 
 - ![login] Optimize authentication SQL request ([#259](https://github.com/Eastrall/Rhisis/pull/259))
+- ![world] Fix inventory decrease item ([#278](https://github.com/Eastrall/Rhisis/pull/278))
+- ![world] Fix teleport bug for visible entities ([#283](https://github.com/Eastrall/Rhisis/pull/283))
+- ![common] Update WorldServer default port ([#282](https://github.com/Eastrall/Rhisis/pull/282))
+
+### Features
+
+- ![world] Delete item from inventory ([#278](https://github.com/Eastrall/Rhisis/pull/278))
+- ![world] Add create monster admin command ([#280](https://github.com/Eastrall/Rhisis/pull/280))
+- ![world] Gives to himself exp via Debug Panel as a GM/Admin ([#281](https://github.com/Eastrall/Rhisis/pull/281))
 
 ### BREAKING CHANGES
 
@@ -158,3 +167,4 @@ This is the changelog of the Rhisis project. All notable changes to this project
 [cluster]: https://img.shields.io/badge/-cluster-brightgreen.svg "cluster-component"
 [login]: https://img.shields.io/badge/-login-brightgreen.svg "login-component"
 [tools]: https://img.shields.io/badge/-tools-brightgreen.svg "tools-component"
+[common]: https://img.shields.io/badge/-common-brightgreen.svg "common-components"
