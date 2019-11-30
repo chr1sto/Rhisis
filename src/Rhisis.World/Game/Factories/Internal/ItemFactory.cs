@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
@@ -10,6 +10,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Structures;
 using System;
+using System.Linq;
 
 namespace Rhisis.World.Game.Factories.Internal
 {
@@ -41,7 +42,7 @@ namespace Rhisis.World.Game.Factories.Internal
 
         /// <inheritdoc />
         public Item CreateItem(int id, byte refine, byte element, byte elementRefine, int creatorId = -1)
-        {
+        {            
             if (!this._gameResources.Items.TryGetValue(id, out ItemData itemData))
             {
                 this._logger.LogWarning($"Cannot find item data for item id: '{id}'.");
@@ -50,12 +51,26 @@ namespace Rhisis.World.Game.Factories.Internal
             return this._itemFactory(this._serviceProvider, new object[] { id, refine, element, elementRefine, itemData, creatorId }) as Item;
         }
 
+        public Item CreateItem(string name, byte refine, byte element, byte elementRefine, int creatorId = -1)
+        {
+            var itemByName = this._gameResources.Items.Where(x => x.Value.Name == name);
+            if (itemByName.Count() == 0)
+            {
+                this._logger.LogWarning($"Cannot find item data for item name: '{name}'.");
+                return null;
+            }
+            var item = itemByName.ElementAt(0);
+            this._gameResources.Items.TryGetValue(item.Value.Id, out ItemData itemData);
+            return this._itemFactory(this._serviceProvider, new object[] { item.Value.Id, refine, element, elementRefine, itemData, creatorId }) as Item;
+        }
+
         /// <inheritdoc />
         public Item CreateItem(DbItem databaseItem)
         {
             if (!this._gameResources.Items.TryGetValue(databaseItem.ItemId, out ItemData itemData))
             {
                 this._logger.LogWarning($"Cannot find item data for item id: '{databaseItem.ItemId}'.");
+                return null;
             }
 
             return this._itemDatabaseFactory(this._serviceProvider, new object[] { databaseItem, itemData }) as Item;
