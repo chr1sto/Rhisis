@@ -40,7 +40,6 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(player.Object.Position.Y);
                 packet.Write(player.Object.Position.Z);
 
-                player.Connection.Send(packet);
                 this._packetFactoryUtilities.SendToVisible(packet, player, sendToPlayer: true);
             }
         }
