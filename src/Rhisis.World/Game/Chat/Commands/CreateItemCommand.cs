@@ -51,7 +51,6 @@ namespace Rhisis.World.Game.Chat
                 this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
-            //int itemId = Convert.ToInt32(parameters[0]);
             int quantity = parameters.Length >= 2 ? Convert.ToInt32(parameters[1]) : 1;
             byte refine = parameters.Length >= 3 ? Convert.ToByte(parameters[2]) : (byte)0;
             byte element = parameters.Length >= 4 ? Convert.ToByte(parameters[3]) : (byte)0;
