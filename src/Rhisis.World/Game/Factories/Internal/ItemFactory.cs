@@ -46,6 +46,7 @@ namespace Rhisis.World.Game.Factories.Internal
             if (!this._gameResources.Items.TryGetValue(id, out ItemData itemData))
             {
                 this._logger.LogWarning($"Cannot find item data for item id: '{id}'.");
+                return null;
             }
 
             return this._itemFactory(this._serviceProvider, new object[] { id, refine, element, elementRefine, itemData, creatorId }) as Item;
