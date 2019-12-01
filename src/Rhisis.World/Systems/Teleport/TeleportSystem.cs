@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Entities;
@@ -67,6 +68,7 @@ namespace Rhisis.World.Systems.Teleport
                 float positionY = y ?? 100;
                 player.Object.Position = new Vector3(x, positionY, z);
                 player.Moves.DestinationPosition = player.Object.Position.Clone();
+                player.Object.MovingFlags = ObjectState.OBJSTA_STAND;
 
                 this._playerPacketFactory.SendPlayerReplace(player);
                 this._worldSpawnPacketFactory.SendPlayerSpawn(player);
