@@ -20,7 +20,7 @@ namespace Rhisis.World.Systems.Inventory
         void UseBlinkwingItem(IPlayerEntity player, Item blinkwing);
 
         /// <summary>
-        /// Uses blinkwing items.
+        /// Uses fireworks items.
         /// </summary>
         /// <param name="player"></param>
         /// <param name="magicItem"></param>
