@@ -155,12 +155,24 @@ namespace Rhisis.World.Systems.Inventory
             this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
         }
 
+        public void UseMagicItem(IPlayerEntity player, Item magicItem)
+        {
+            bool noFollowSfx = true;
+            player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(magicItem.Data.SkillReadyType), () =>
+            {
+                this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
+                player.Inventory.ItemInUseActionId = Guid.Empty;
+                this.DecreaseItem(player, magicItem, noFollowSfx);
+            });
+            this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, magicItem);
+        }
+
         /// <summary>
         /// Decreases an item from player's inventory.
         /// </summary>
         /// <param name="player">Player.</param>
         /// <param name="item">Item to decrease.</param>
-        private void DecreaseItem(IPlayerEntity player, Item item)
+        private void DecreaseItem(IPlayerEntity player, Item item, bool noFollowSfx = false)
         {
             var itemUpdateType = UpdateItemType.UI_NUM;
 
@@ -177,7 +189,7 @@ namespace Rhisis.World.Systems.Inventory
             this._inventoryPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
 
             if (item.Data.SfxObject3 != 0)
-                this._specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3);
+                this._specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3, noFollowSfx);
 
             if (item.Quantity <= 0)
                 item.Reset();

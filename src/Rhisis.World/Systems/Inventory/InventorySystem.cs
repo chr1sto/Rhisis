@@ -335,6 +335,48 @@ namespace Rhisis.World.Systems.Inventory
                         case ItemKind2.FOOD:
                             this._inventoryItemUsage.UseFoodItem(player, itemToUse);
                             break;
+                        case ItemKind2.MAGIC:
+                            this._inventoryItemUsage.UseMagicItem(player, itemToUse);
+                            break;
+                        case ItemKind2.SYSTEM:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.GMTEXT:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.GENERAL:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.BUFF:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.BUFF2:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.AIRFUEL:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.FURNITURE:
+                        case ItemKind2.PAPERING:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.GUILDHOUSE_FURNITURE:
+                        case ItemKind2.GUILDHOUSE_NPC:
+                        case ItemKind2.GUILDHOUSE_PAPERING:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.GUILDHOUES_COMEBACK:
+                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
                         case ItemKind2.BLINKWING:
                             this._inventoryItemUsage.UseBlinkwingItem(player, itemToUse);
                             break;

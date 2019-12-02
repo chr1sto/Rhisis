@@ -38,9 +38,9 @@ namespace Rhisis.World.Systems.SpecialEffect
         }
 
         /// <inheritdoc />
-        public void StartSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect)
+        public void StartSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect, bool noFollowSfx)
         {
-            this._specialEffectPacketFactory.SendSpecialEffect(entity, specialEffect);
+            this._specialEffectPacketFactory.SendSpecialEffect(entity, specialEffect, noFollowSfx);
         }
     }
 }

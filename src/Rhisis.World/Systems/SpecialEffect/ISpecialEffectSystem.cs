@@ -11,7 +11,7 @@ namespace Rhisis.World.Systems.SpecialEffect
         /// </summary>
         /// <param name="entity">Entity that activates the special effect.</param>
         /// <param name="specialEffect">Special effect to start.</param>
-        void StartSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect);
+        void StartSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect, bool noFollowSfx);
 
         /// <summary>
         /// Sets the player's state mode base motion.
