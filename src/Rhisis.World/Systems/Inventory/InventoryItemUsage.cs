@@ -157,12 +157,11 @@ namespace Rhisis.World.Systems.Inventory
 
         public void UseMagicItem(IPlayerEntity player, Item magicItem)
         {
-            bool noFollowSfx = true;
             player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(magicItem.Data.SkillReadyType), () =>
             {
                 this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
-                this.DecreaseItem(player, magicItem, noFollowSfx);
+                this.DecreaseItem(player, magicItem, noFollowSfx: true);
             });
             this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, magicItem);
         }

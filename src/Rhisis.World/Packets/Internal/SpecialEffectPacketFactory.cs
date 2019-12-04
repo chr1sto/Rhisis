@@ -28,7 +28,7 @@ namespace Rhisis.World.Packets.Internal
             {
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.CREATESFXOBJ);
                 packet.Write(specialEffectId);
-                if (sfxNoFollow == true)
+                if (sfxNoFollow)
                 {
                     packet.Write(entity.Object.Position.X); // X
                     packet.Write(entity.Object.Position.Y); // Y
