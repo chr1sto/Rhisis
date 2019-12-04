@@ -10,13 +10,13 @@ namespace Rhisis.World.Packets
         /// </summary>
         /// <param name="entity">Entity.</param>
         /// <param name="specialEffectId">Special effect Id.</param>
-        void SendSpecialEffect(IWorldEntity entity, int specialEffectId);
+        void SendSpecialEffect(IWorldEntity entity, int specialEffectId, bool noFollowSfx);
 
         /// <summary>
         /// Sends a special effect to every entities around the given entity.
         /// </summary>
         /// <param name="entity">Entity.</param>
         /// <param name="specialEffect">Special effect.</param>
-        void SendSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect);
+        void SendSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect, bool noFollowSfx);
     }
 }

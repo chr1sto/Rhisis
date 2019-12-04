@@ -22,23 +22,33 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
-        public void SendSpecialEffect(IWorldEntity entity, int specialEffectId)
+        public void SendSpecialEffect(IWorldEntity entity, int specialEffectId, bool sfxNoFollow)
         {
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(entity.Id, SnapshotType.CREATESFXOBJ);
                 packet.Write(specialEffectId);
-                packet.Write(0f); // X
-                packet.Write(0f); // Y
-                packet.Write(0f); // Z
+                if (sfxNoFollow)
+                {
+                    packet.Write(entity.Object.Position.X); // X
+                    packet.Write(entity.Object.Position.Y); // Y
+                    packet.Write(entity.Object.Position.Z); // Z
+                }
+                else 
+                {
+                    packet.Write(0f); // X
+                    packet.Write(0f); // Y
+                    packet.Write(0f); // Z
+                }
+
                 packet.Write(false); // Flag
 
-                this._packetFactoryUtilities.SendToVisible(packet, entity, true);
+                this._packetFactoryUtilities.SendToVisible(packet, entity, sendToPlayer: true);
             }
         }
 
         /// <inheritdoc />
-        public void SendSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect)
-            => this.SendSpecialEffect(entity, (int)specialEffect);
+        public void SendSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect, bool sfxNoFollow)
+            => this.SendSpecialEffect(entity, (int)specialEffect, sfxNoFollow);
     }
 }
