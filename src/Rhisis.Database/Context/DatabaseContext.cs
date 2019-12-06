@@ -8,7 +8,6 @@ using Rhisis.Database.Entities;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace Rhisis.Database.Context
 {

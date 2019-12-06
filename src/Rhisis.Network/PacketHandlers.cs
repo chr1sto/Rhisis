@@ -1,6 +1,5 @@
 ﻿using Sylver.Network.Data;
 using Rhisis.Core.Exceptions;
-using Rhisis.Core.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

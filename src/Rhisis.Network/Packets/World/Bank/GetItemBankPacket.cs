@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Bank
