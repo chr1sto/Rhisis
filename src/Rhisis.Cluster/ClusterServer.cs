@@ -21,7 +21,6 @@ namespace Rhisis.Cluster
     /// </summary>
     public class ClusterServer : NetServer<ClusterClient>, IClusterServer
     {
-        private const int MaxConnections = 500;
         private const int ClientBufferSize = 128;
         private const int ClientBacklog = 50;
         private readonly ILogger<ClusterServer> _logger;
