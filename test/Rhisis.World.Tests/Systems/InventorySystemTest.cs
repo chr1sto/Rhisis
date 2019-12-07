@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace Rhisis.World.Tests.Systems
 {
@@ -10,26 +7,31 @@ namespace Rhisis.World.Tests.Systems
         [Fact]
         public void InitializeInventoryTest()
         {
+            Assert.True(true);
         }
 
         [Fact]
         public void CreateItemTest()
         {
+            Assert.True(true);
         }
 
         [Fact]
         public void DeleteItemTest()
         {
+            Assert.True(true);
         }
 
         [Fact]
         public void MoveItemTest()
         {
+            Assert.True(true);
         }
 
         [Fact]
         public void EquipItemTest()
         {
+            Assert.True(true);
         }
     }
 }
