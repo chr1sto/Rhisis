@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Rhisis.Core.Resources
+﻿namespace Rhisis.Core.Resources
 {
     /// <summary>
     /// Provides a mechanism to load a game resource.

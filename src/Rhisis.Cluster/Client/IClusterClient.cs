@@ -1,5 +1,4 @@
-﻿using Sylver.Network.Common;
-using Sylver.Network.Server;
+﻿using Sylver.Network.Server;
 
 namespace Rhisis.Cluster.Client
 {

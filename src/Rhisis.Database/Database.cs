@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Context;
 using Rhisis.Database.Repositories;
 using Rhisis.Database.Repositories.Implementation;

@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
-using Rhisis.CLI.Commands.Configure;
 using Rhisis.CLI.Services;
 
 namespace Rhisis.CLI.Core

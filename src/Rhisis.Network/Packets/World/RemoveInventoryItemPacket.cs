@@ -1,5 +1,4 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
