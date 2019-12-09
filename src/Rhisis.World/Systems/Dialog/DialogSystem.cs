@@ -66,7 +66,7 @@ namespace Rhisis.World.Systems.Dialog
 
             if (string.IsNullOrEmpty(dialogKey))
             {
-                if (npcEntity.Quests.Count() == 1)
+                if (npcEntity.Quests.Count() == 1 && this._questSystem.CanStartQuest(player, npcEntity.Quests.First()))
                 {
                     this._questSystem.ProcessQuest(player, npcEntity, npcEntity.Quests.First(), QuestStateType.Suggest);
                 }

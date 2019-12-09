@@ -18,5 +18,13 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Quest.</param>
         /// <returns>Quest <see cref="DialogLink"/>.</returns>
         DialogLink CreateQuestLink(IQuestScript quest);
+
+        /// <summary>
+        /// Check or uncheck a quest.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="questId">Quest id to check.</param>
+        /// <param name="checkedState">Check state.</param>
+        void CheckQuest(IPlayerEntity player, int questId, bool checkedState);
     }
 }

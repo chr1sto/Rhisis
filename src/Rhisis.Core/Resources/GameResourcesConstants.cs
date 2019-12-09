@@ -7,8 +7,8 @@ namespace Rhisis.Core.Resources
     public class GameResourcesConstants
     {
         // Cache keys
-        public const string Defines = "Defines";
-        public const string Texts = "Texts";
+        public const string Defines = nameof(Defines);
+        public const string Texts = nameof(Texts);
         public const string Movers = nameof(MoverData);
         public const string Items = nameof(ItemData);
         public const string Dialogs = nameof(DialogLoader);

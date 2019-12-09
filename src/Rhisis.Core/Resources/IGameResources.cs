@@ -12,6 +12,11 @@ namespace Rhisis.Core.Resources
     public interface IGameResources
     {
         /// <summary>
+        /// Gets the game texts.
+        /// </summary>
+        IReadOnlyDictionary<string, string> Texts { get; }
+
+        /// <summary>
         /// Gets the movers data.
         /// </summary>
         IReadOnlyDictionary<int, MoverData> Movers { get; }
@@ -61,5 +66,14 @@ namespace Rhisis.Core.Resources
         /// </summary>
         /// <param name="loaders">Loader types.</param>
         void Load(params Type[] loaders);
+
+        /// <summary>
+        /// Gets the correct text based on the given text key.
+        /// If the text is not found, it returns the given default text or the text key.
+        /// </summary>
+        /// <param name="textKey">Text key.</param>
+        /// <param name="defaultText">Default text in case the text key has not been found.</param>
+        /// <returns>Text.</returns>
+        string GetText(string textKey, string defaultText = null);
     }
 }

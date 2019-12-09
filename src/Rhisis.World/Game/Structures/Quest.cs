@@ -23,18 +23,14 @@ namespace Rhisis.World.Game.Structures
 
         public void Serialize(INetPacketStream packet)
         {
-            packet.Write<byte>(0); // state
+            packet.Write<short>(0); // state
             packet.Write<short>(0); // time limit
-            packet.Write<short>((short)this.QuestId);
+            packet.Write((short)this.QuestId);
 
             packet.Write<short>(0); // monster 1 killed
             packet.Write<short>(0); // monster 2 killed
             packet.Write<byte>(0); // patrol done
             packet.Write<byte>(0); // dialog done
-
-            // Reserved
-            packet.Write<int>(0);
-            packet.Write<short>(0);
         }
     }
 }

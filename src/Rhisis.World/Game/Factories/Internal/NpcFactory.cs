@@ -55,7 +55,7 @@ namespace Rhisis.World.Game.Factories.Internal
             };
             npc.Behavior = behaviorManager.GetBehavior(BehaviorType.Npc, npc, npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
-            npc.Quests = this._gameResources.Quests.Values.Where(x => !string.IsNullOrEmpty(x.StartCharacter) && x.StartCharacter.Equals(npc.Object.Name, StringComparison.OrdinalIgnoreCase));
+            npc.Quests = this._gameResources.Quests.Values.Where(x => !string.IsNullOrEmpty(x.StartCharacter) && x.StartCharacter.Equals(npc.Object.Name, StringComparison.OrdinalIgnoreCase)).ToList();
 
             if (this._gameResources.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
