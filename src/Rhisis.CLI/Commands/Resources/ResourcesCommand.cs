@@ -7,5 +7,6 @@ namespace Rhisis.CLI.Commands.Resources
     [Subcommand(typeof(QuestCommand))]
     public class ResourcesCommand
     {
+        public void OnExecute(CommandLineApplication app) => app.ShowHelp();
     }
 }

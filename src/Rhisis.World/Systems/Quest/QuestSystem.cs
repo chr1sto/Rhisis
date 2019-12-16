@@ -49,6 +49,12 @@ namespace Rhisis.World.Systems.Quest
         }
 
         /// <inheritdoc />
+        public void Save(IPlayerEntity player)
+        {
+
+        }
+
+        /// <inheritdoc />
         public bool CanStartQuest(IPlayerEntity player, IQuestScript quest)
         {
             if (player.Object.Level < quest.StartRequirements.MinLevel || player.Object.Level > quest.StartRequirements.MaxLevel)

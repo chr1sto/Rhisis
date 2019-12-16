@@ -6,5 +6,6 @@ namespace Rhisis.CLI.Commands.Game.Quests
     [Subcommand(typeof(QuestConverterCommand))]
     public class QuestCommand
     {
+        public void OnExecute(CommandLineApplication app) => app.ShowHelp();
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Scripting.Quests
 {
-    internal class QuestScriptConstants
+    public class QuestScriptConstants
     {
         public const string Title = "title";
 

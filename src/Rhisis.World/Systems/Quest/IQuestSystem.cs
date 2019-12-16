@@ -6,10 +6,33 @@ namespace Rhisis.World.Systems.Quest
 {
     public interface IQuestSystem
     {
+        /// <summary>
+        /// Initialize the player's quest diairy.
+        /// </summary>
+        /// <param name="player">Current player.</param>
         void Initialize(IPlayerEntity player);
 
+        /// <summary>
+        /// Saves the player's quest diary.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        void Save(IPlayerEntity player);
+
+        /// <summary>
+        /// Check if the player can start the given quest script.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="quest">Quest script to start.</param>
+        /// <returns>True if the player can start the quest; false otherwise.</returns>
         bool CanStartQuest(IPlayerEntity player, IQuestScript quest);
 
+        /// <summary>
+        /// Process a quest script state.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="npc">Current NPC holding the quest.</param>
+        /// <param name="quest">Quest script.</param>
+        /// <param name="state">Quest script state.</param>
         void ProcessQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest, QuestStateType state);
 
         /// <summary>

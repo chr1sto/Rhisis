@@ -30,6 +30,12 @@ namespace Rhisis.Database.Entities
         public bool IsChecked { get; set; }
 
         /// <summary>
+        /// Gets or sets a value that indicates if the quest is deleted.
+        /// </summary>
+        [Column(TypeName = "BIT")]
+        public bool IsDeleted { get; set; }
+
+        /// <summary>
         /// Gets or sets the quest start date.
         /// </summary>
         [Column(TypeName = "DATETIME")]

@@ -77,6 +77,11 @@ namespace Rhisis.Database.Context
                 .HasMany(x => x.ReceivedMails).WithOne(x => x.Receiver);
             modelBuilder.Entity<DbCharacter>()
                 .HasMany(x => x.SentMails).WithOne(x => x.Sender);
+
+            // Configure quest entity
+            modelBuilder.Entity<DbQuest>()
+                .HasIndex(x => new { x.QuestId, x.CharacterId })
+                .IsUnique();
         }
 
         /// <summary>

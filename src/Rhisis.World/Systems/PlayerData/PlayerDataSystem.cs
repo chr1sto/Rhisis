@@ -6,6 +6,7 @@ using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Quest;
 using System;
 
 namespace Rhisis.World.Systems.PlayerData
@@ -15,6 +16,7 @@ namespace Rhisis.World.Systems.PlayerData
     {
         private readonly IDatabase _database;
         private readonly IInventorySystem _inventorySystem;
+        private readonly IQuestSystem _questSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
 
@@ -23,12 +25,14 @@ namespace Rhisis.World.Systems.PlayerData
         /// </summary>
         /// <param name="database"></param>
         /// <param name="inventorySystem">Inventory system.</param>
+        /// <param name="questSystem">Quest system.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
         /// <param name="textPacketFactory">Text packet factory.</param>
-        public PlayerDataSystem(IDatabase database, IInventorySystem inventorySystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
+        public PlayerDataSystem(IDatabase database, IInventorySystem inventorySystem, IQuestSystem questSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
         {
             this._database = database;
             this._inventorySystem = inventorySystem;
+            this._questSystem = questSystem;
             this._moverPacketFactory = moverPacketFactory;
             this._textPacketFactory = textPacketFactory;
         }
@@ -104,6 +108,9 @@ namespace Rhisis.World.Systems.PlayerData
 
                 // Save inventory items.
                 this._inventorySystem.SaveInventory(player, character);
+
+                // Save quest diairy.
+                this._questSystem.Save(player);
 
                 // Taskbar
                 character.TaskbarShortcuts.Clear();
