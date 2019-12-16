@@ -1,0 +1,31 @@
+QUEST_INTHEDARK = {
+	title = 'IDS_PROPQUEST_DUNGEONANDPK_INC_000605',
+	character = 'MaSa_SainMayor',
+	start_requirements = {
+		min_level = 45,
+		max_level = 70,
+		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN', 'JOB_KNIGHT', 'JOB_BLADE', 'JOB_JESTER', 'JOB_RANGER', 'JOB_RINGMASTER', 'JOB_BILLPOSTER', 'JOB_PSYCHIKEEPER', 'JOB_ELEMENTOR' },
+	},
+	rewards = {
+		gold = 0,
+	},
+	dialogs = {
+		begin = {
+			'IDS_PROPQUEST_DUNGEONANDPK_INC_000606',
+			'IDS_PROPQUEST_DUNGEONANDPK_INC_000607',
+			'IDS_PROPQUEST_DUNGEONANDPK_INC_000608',
+		},
+		begin_yes = {
+			'IDS_PROPQUEST_DUNGEONANDPK_INC_000609',
+		},
+		begin_no = {
+			'IDS_PROPQUEST_DUNGEONANDPK_INC_000610',
+		},
+		completed = {
+			'IDS_PROPQUEST_DUNGEONANDPK_INC_000611',
+		},
+		not_finished = {
+			'IDS_PROPQUEST_DUNGEONANDPK_INC_000612',
+		},
+	}
+}
