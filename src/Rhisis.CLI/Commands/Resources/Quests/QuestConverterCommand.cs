@@ -28,11 +28,12 @@ namespace Rhisis.CLI.Commands.Game.Quests
                 return;
             }
 
+            IEnumerable<string> questFiles = GetFilesFromInput();
             this.Output = string.IsNullOrEmpty(this.Output) ? Directory.GetCurrentDirectory() : Path.GetDirectoryName(this.Output);
 
             var questsSaved = new List<string>();
 
-            foreach (string inputFile in this.InputFiles)
+            foreach (string inputFile in questFiles)
             {
                 using var questIncludeFile = new IncludeFile(inputFile);
 
@@ -70,6 +71,15 @@ namespace Rhisis.CLI.Commands.Game.Quests
             SaveQuestDefinition(questsSaved);
         }
 
+        private IEnumerable<string> GetFilesFromInput()
+        {
+            return InputFiles.Select(x => new
+            {
+                Path = Path.GetDirectoryName(x),
+                Filter = Path.GetFileName(x)
+            }).SelectMany(x => Directory.EnumerateFiles(x.Path, x.Filter));
+        }
+
         /// <summary>
         /// Creates a new <see cref="QuestData"/> based on an official quest block instruction.
         /// </summary>
@@ -80,6 +90,12 @@ namespace Rhisis.CLI.Commands.Game.Quests
             var quest = new QuestData();
 
             quest.Name = questBlock.Name;
+
+            if (int.TryParse(quest.Name, out int _))
+            {
+                quest.Name = $"QUEST_{quest.Name}";
+            }
+
             quest.Title = questBlock.GetInstruction("SetTitle")?.GetParameter<string>(0);
 
             Block questSettingsBlock = questBlock.GetBlockByName("setting");

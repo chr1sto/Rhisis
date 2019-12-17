@@ -2,7 +2,7 @@
   "profiles": {
     "Rhisis.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "resources quest convert \"./data/res/dataSub1/propQuest.inc\" -o \"./data/quests/file.txt\"",
+      "commandLineArgs": "resources quest convert \"./data/res/dataSub1/propQuest*.inc\" -o \"./data/quests/file.txt\"",
       "workingDirectory": "../../bin"
     }
   }
