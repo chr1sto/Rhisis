@@ -2,6 +2,12 @@
 {
     public class QuestScriptConstants
     {
+        public const string QuestDefinitionKey = "QUESTS";
+
+        public const string QuestDefinitionFile = "quests.lua";
+
+        public const string QuestPrefix = "QUEST_";
+
         public const string Title = "title";
 
         public const string StartCharacter = "character";

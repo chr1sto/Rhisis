@@ -13,13 +13,9 @@ QUEST_SCENARIO5 = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000250',
 		},
-		begin_yes = {
-		},
-		begin_no = {
-		},
-		completed = {
-		},
-		not_finished = {
-		},
+		begin_yes = nil,
+		begin_no = nil,
+		completed = nil,
+		not_finished = nil,
 	}
 }

@@ -10,10 +10,10 @@ QUEST_VOLCANETELEPORT = {
 		gold = 0,
 	},
 	dialogs = {
-		begin = {
-		begin_yes = {
-		begin_no = {
-		completed = {
-		not_finished = {
+		begin = nil,
+		begin_yes = nil,
+		begin_no = nil,
+		completed = nil,
+		not_finished = nil,
 	}
 }

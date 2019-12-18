@@ -13,9 +13,7 @@ namespace Rhisis.Scripting.Quests
 {
     public class QuestLoader : IGameResourceLoader
     {
-        private const string QuestDefinitionKey = "QUESTS";
-        private const string QuestDefinitionFile = "quests.lua";
-        private static readonly string QuestDefinitionPath = Path.Combine(GameResourcesConstants.Paths.QuestsPath, QuestDefinitionFile);
+        private static readonly string QuestDefinitionPath = Path.Combine(GameResourcesConstants.Paths.QuestsPath, QuestScriptConstants.QuestDefinitionFile);
 
         private readonly ILogger<QuestLoader> _logger;
         private readonly IMemoryCache _cache;
@@ -38,36 +36,37 @@ namespace Rhisis.Scripting.Quests
         {
             this._logger.LogLoading("Loading quests...");
 
+            using var lua = new Lua();
             var quests = new ConcurrentDictionary<int, IQuestScript>();
             IEnumerable<string> questsDefinition = this.LoadQuestsDefinitions();
             IEnumerable<string> questFiles = Directory.GetFiles(GameResourcesConstants.Paths.QuestsPath, "*.*", SearchOption.AllDirectories).Where(x => x != QuestDefinitionPath);
 
-            using (var lua = new Lua())
+            foreach (string questFile in questFiles)
             {
-                foreach (string questFile in questFiles)
+                lua.DoFile(questFile);
+            }
+
+            foreach (var questName in questsDefinition)
+            {
+                this._logger.LogLoading($"Loading quests '{questName}': {quests.Count} / {questsDefinition.Count()}");
+
+                var questTable = lua[questName] as LuaTable;
+
+                if (!this._defines.TryGetValue(questName, out int questId))
                 {
-                    lua.DoFile(questFile);
-                }
-
-                foreach (var questName in questsDefinition)
-                {
-                    this._logger.LogLoading($"Loading quests '{questName}': {quests.Count} / {questsDefinition.Count()}");
-
-                    var questTable = lua[questName] as LuaTable;
-
-                    if (!this._defines.TryGetValue(questName, out int questId))
+                    if (questName.StartsWith(QuestScriptConstants.QuestPrefix) && !int.TryParse(questName.Replace(QuestScriptConstants.QuestPrefix, ""), out questId))
                     {
                         this._logger.LogWarning($"Cannot find quest id for quest: '{questName}'.");
                         continue;
                     }
-
-                    quests.TryAdd(questId, new QuestScript(questId, questName, questTable));
                 }
 
-                this._logger.ClearCurrentConsoleLine();
-                this._logger.LogInformation($"-> {quests.Count} quests loaded.");
-                this._cache.Set(GameResourcesConstants.Quests, quests);
+                quests.TryAdd(questId, new QuestScript(questId, questName, questTable));
             }
+
+            this._logger.ClearCurrentConsoleLine();
+            this._logger.LogInformation($"-> {quests.Count} quests loaded.");
+            this._cache.Set(GameResourcesConstants.Quests, quests);
         }
 
         /// <summary>
@@ -76,14 +75,13 @@ namespace Rhisis.Scripting.Quests
         /// <returns></returns>
         private IEnumerable<string> LoadQuestsDefinitions()
         {
-            using (var lua = new Lua())
-            {
-                lua.DoFile(QuestDefinitionPath);
+            using var lua = new Lua();
 
-                var quests = lua[QuestDefinitionKey] as LuaTable;
+            lua.DoFile(QuestDefinitionPath);
 
-                return quests.Values.ToArray<string>();
-            }
+            var quests = lua[QuestScriptConstants.QuestDefinitionKey] as LuaTable;
+
+            return quests.Values.ToArray<string>();
         }
     }
 }

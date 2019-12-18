@@ -71,6 +71,10 @@ namespace Rhisis.CLI.Commands.Game.Quests
             SaveQuestDefinition(questsSaved);
         }
 
+        /// <summary>
+        /// Gets the correct file path from the file input.
+        /// </summary>
+        /// <returns>Collection of file paths.</returns>
         private IEnumerable<string> GetFilesFromInput()
         {
             return InputFiles.Select(x => new
@@ -89,13 +93,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
         {
             var quest = new QuestData();
 
-            quest.Name = questBlock.Name;
-
-            if (int.TryParse(quest.Name, out int _))
-            {
-                quest.Name = $"QUEST_{quest.Name}";
-            }
-
+            quest.Name = int.TryParse(questBlock.Name, out int _) ? $"{QuestScriptConstants.QuestPrefix}{questBlock.Name}" : questBlock.Name;
             quest.Title = questBlock.GetInstruction("SetTitle")?.GetParameter<string>(0);
 
             Block questSettingsBlock = questBlock.GetBlockByName("setting");
@@ -177,21 +175,23 @@ namespace Rhisis.CLI.Commands.Game.Quests
         /// <param name="quests">Quests to save.</param>
         private void SaveQuestDefinition(IEnumerable<string> quests)
         {
-            if (quests == null || (quests != null && !quests.Any()))
-            {
-                return;
-            }
-
-            string filePath = Path.Combine(this.Output, "quests.lua");
+            string filePath = Path.Combine(this.Output, QuestScriptConstants.QuestDefinitionFile);
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             using var writer = new StreamWriter(fileStream);
 
-            writer.WriteLine("QUESTS = {");
-            foreach (string questName in quests)
+            if (quests == null || (quests != null && !quests.Any()))
             {
-                writer.WriteLine($"\t'{questName}',");
+                writer.WriteLine($"{QuestScriptConstants.QuestDefinitionKey} = nil");
             }
-            writer.WriteLine("}");
+            else
+            {
+                writer.WriteLine($"{QuestScriptConstants.QuestDefinitionKey} = {{");
+                foreach (string questName in quests)
+                {
+                    writer.WriteLine($"\t'{questName}',");
+                }
+                writer.WriteLine("}");
+            }
         }
 
         /// <summary>
@@ -268,19 +268,21 @@ namespace Rhisis.CLI.Commands.Game.Quests
         /// <param name="dialogs">Dialogs string enumerable/array.</param>
         private void WriteDialogSection(StreamWriter writer, int level, string sectionName, IEnumerable<string> dialogs)
         {
-            WriteAtLevel(writer, level, $"{sectionName} = {{", includeComma: false);
-
-            if (dialogs == null)
+            if (dialogs == null || (dialogs != null && !dialogs.Any()))
             {
-                return;
+                WriteAtLevel(writer, level, $"{sectionName} = nil");
             }
-
-            foreach (string dialog in dialogs)
+            else
             {
-                WriteAtLevel(writer, level + 1, $"'{dialog}'");
-            }
+                WriteAtLevel(writer, level, $"{sectionName} = {{", includeComma: false);
 
-            WriteAtLevel(writer, 2, $"}}");
+                foreach (string dialog in dialogs)
+                {
+                    WriteAtLevel(writer, level + 1, $"'{dialog}'");
+                }
+
+                WriteAtLevel(writer, 2, $"}}");
+            }
         }
 
         /// <summary>

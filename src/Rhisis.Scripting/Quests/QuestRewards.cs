@@ -26,14 +26,17 @@ namespace Rhisis.Scripting.Quests
 
             object gold = questRewardsLuaTable[QuestScriptConstants.Gold];
 
-            if (gold == null)
+            if (gold != null)
             {
-                this._minGold = LuaScriptHelper.GetValue<int>(questRewardsLuaTable, QuestScriptConstants.MinGold);
-                this._maxGold = LuaScriptHelper.GetValue<int>(questRewardsLuaTable, QuestScriptConstants.MaxGold);
-            }
-            else
-            {
-                this._gold = LuaScriptHelper.GetValue<int>(questRewardsLuaTable, QuestScriptConstants.Gold);
+                if (gold is LuaTable goldRangeTable)
+                {
+                    this._minGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.MinGold);
+                    this._maxGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.MaxGold);
+                }
+                else
+                {
+                    this._gold = LuaScriptHelper.GetValue<int>(questRewardsLuaTable, QuestScriptConstants.Gold);
+                }
             }
         }
     }

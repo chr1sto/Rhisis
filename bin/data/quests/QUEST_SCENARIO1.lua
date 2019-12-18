@@ -26,7 +26,6 @@ QUEST_SCENARIO1 = {
 		completed = {
 			'IDS_PROPQUEST_SCENARIO_INC_000009',
 		},
-		not_finished = {
-		},
+		not_finished = nil,
 	}
 }
