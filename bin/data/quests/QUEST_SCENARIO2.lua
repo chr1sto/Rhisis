@@ -1,6 +1,7 @@
 QUEST_SCENARIO2 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000087',
 	character = 'MaFl_Dunkan',
+	end_character = 'MaFl_Juria',
 	start_requirements = {
 		min_level = 15,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCENARIO2 = {
 	},
 	rewards = {
 		gold = 36000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_NERBALSWORD', quantity = 1, sex = 'Any', remove = false },
+		},
 	},
 	dialogs = {
 		begin = nil,

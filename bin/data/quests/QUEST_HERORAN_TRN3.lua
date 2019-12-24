@@ -1,6 +1,7 @@
 QUEST_HERORAN_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_000593',
 	character = 'MaFl_Kimel',
+	end_character = 'MaDa_Liekyen',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HERORAN_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_LTHYNAN', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

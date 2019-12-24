@@ -1,6 +1,7 @@
 QUEST_SCENARIO4 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000197',
 	character = 'MaSa_Molang',
+	end_character = '',
 	start_requirements = {
 		min_level = 15,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCENARIO4 = {
 	},
 	rewards = {
 		gold = 2400000,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

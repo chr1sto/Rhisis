@@ -1,6 +1,7 @@
 QUEST_SCE_HARMONINDAILYBOOK2 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000573',
 	character = 'MaFl_SgRadion',
+	end_character = 'MaFl_Gergantes',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_HARMONINDAILYBOOK2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

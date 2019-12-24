@@ -20,6 +20,14 @@ namespace Rhisis.Core.Extensions
                         .ToList();
         }
 
+        /// <summary>
+        /// Check if there is any duplicate in a collection based on an expression.
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         public static bool HasDuplicates<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> expression)
         {
             return source.GroupBy(expression).Any(x => x.Count() > 1);

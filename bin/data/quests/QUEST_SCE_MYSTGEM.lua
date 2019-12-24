@@ -1,6 +1,7 @@
 QUEST_SCE_MYSTGEM = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000427',
 	character = 'MaSa_Gothante',
+	end_character = 'MaSa_Gothante',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,12 @@ QUEST_SCE_MYSTGEM = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MYSTGEMB', quantity = 1, sex = 'Any', remove = false },
+			{ id = 'II_SYS_SYS_QUE_MYSTGEMR', quantity = 1, sex = 'Any', remove = false },
+		},
 	},
 	dialogs = {
 		begin = {

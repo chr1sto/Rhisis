@@ -12,6 +12,8 @@
 
         public const string StartCharacter = "character";
 
+        public const string EndCharacter = "end_character";
+
         public const string StartRequirements = "start_requirements";
 
         public const string MinLevel = "min_level";
@@ -29,6 +31,12 @@
         public const string MaxGold = "max_gold";
 
         public const string Items = "items";
+
+        public const string Monsters = "monsters";
+
+        public const string Patrols = "patrols";
+
+        public const string EndConditions = "end_conditions";
 
         public const string Dialogs = "dialogs";
 

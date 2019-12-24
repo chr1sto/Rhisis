@@ -1,6 +1,7 @@
 QUEST_TRUTH_MIA = {
 	title = 'IDS_PROPQUEST_INC_001027',
 	character = 'MaSa_Porgo',
+	end_character = 'MaSa_SainMayor',
 	start_requirements = {
 		min_level = 20,
 		max_level = 30,
@@ -8,6 +9,8 @@ QUEST_TRUTH_MIA = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_PHANTASM = {
 	title = 'IDS_PROPQUEST_INC_001721',
 	character = 'MaFl_DrEstly',
+	end_character = 'MaFl_DrEstly',
 	start_requirements = {
 		min_level = 20,
 		max_level = 35,
@@ -8,6 +9,15 @@ QUEST_PHANTASM = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_DUFEFERN2', quantity = 1 },
+			{ id = 'MI_DUNYANGNYANG2', quantity = 1 },
+		},
+		patrols = {
+			{ map = 'WI_DUNGEON_FL_MAS', left = 1085, top = 1049, right = 1134, bottom = 993 },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_GETBACK_LUDASAFE = {
 	title = 'IDS_PROPQUEST_INC_000831',
 	character = 'MaFl_Luda',
+	end_character = 'MaFl_Luda',
 	start_requirements = {
 		min_level = 30,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_GETBACK_LUDASAFE = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_LUDASAFE', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

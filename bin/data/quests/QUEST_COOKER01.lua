@@ -1,6 +1,7 @@
 QUEST_COOKER01 = {
 	title = 'IDS_PROPQUEST_INC_001928',
 	character = 'MaFl_Cooker01',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,12 @@ QUEST_COOKER01 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_EVE_CHOCOLATE01', quantity = 10, sex = 'Any', remove = true },
+			{ id = 'II_GEN_FOO_INS_MILK', quantity = 10, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

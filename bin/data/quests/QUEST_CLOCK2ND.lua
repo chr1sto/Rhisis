@@ -1,6 +1,7 @@
 QUEST_CLOCK2ND = {
 	title = 'IDS_PROPQUEST_INC_001777',
 	character = 'MaFl_DrEstern',
+	end_character = 'MaFl_DrEstly',
 	start_requirements = {
 		min_level = 70,
 		max_level = 129,
@@ -8,6 +9,13 @@ QUEST_CLOCK2ND = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MONBOOK1', quantity = 1, sex = 'Any', remove = false },
+			{ id = 'II_SYS_SYS_QUE_MONBOOK2', quantity = 1, sex = 'Any', remove = false },
+			{ id = 'II_SYS_SYS_QUE_WOUNDWAR', quantity = 5, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

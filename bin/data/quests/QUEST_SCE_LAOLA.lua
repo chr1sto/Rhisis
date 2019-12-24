@@ -1,6 +1,7 @@
 QUEST_SCE_LAOLA = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000441',
 	character = 'MaDa_Laloa',
+	end_character = 'MaDa_Laloa',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,12 @@ QUEST_SCE_LAOLA = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MYSTGEMB', quantity = 1, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_MYSTGEMR', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_HEROBLA_TRN4 = {
 	title = 'IDS_PROPQUEST_INC_001459',
 	character = 'MaFl_Ata',
+	end_character = 'MaDa_Jeperdy',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_HEROBLA_TRN4 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_TEARDARK', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_SHAKALPION', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

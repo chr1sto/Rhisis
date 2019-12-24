@@ -1,6 +1,7 @@
 QUEST_SCENARIO1_2 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000035',
 	character = 'MaFl_Roji',
+	end_character = 'MaFl_Zaikun',
 	start_requirements = {
 		min_level = 15,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCENARIO1_2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_RATTOOTH', quantity = 50, sex = 'Any', remove = false },
+		},
 	},
 	dialogs = {
 		begin = {

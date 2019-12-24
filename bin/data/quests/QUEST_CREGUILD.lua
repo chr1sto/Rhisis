@@ -1,6 +1,7 @@
 QUEST_CREGUILD = {
 	title = 'IDS_PROPQUEST_INC_001800',
 	character = 'MaSa_Helena',
+	end_character = 'MaSa_Helena',
 	start_requirements = {
 		min_level = 40,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_CREGUILD = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

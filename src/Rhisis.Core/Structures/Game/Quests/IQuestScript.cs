@@ -25,6 +25,11 @@ namespace Rhisis.Core.Structures.Game.Quests
         string StartCharacter { get; }
 
         /// <summary>
+        /// Gets the quest end character.
+        /// </summary>
+        string EndCharacter { get; }
+
+        /// <summary>
         /// Gets the quest rewards.
         /// </summary>
         IQuestRewards Rewards { get; }
@@ -33,6 +38,11 @@ namespace Rhisis.Core.Structures.Game.Quests
         /// Gets the quest start requirements.
         /// </summary>
         IQuestStartRequirements StartRequirements { get; }
+
+        /// <summary>
+        /// Gets the quest end conditions.
+        /// </summary>
+        IQuestEndConditions EndConditions { get; }
 
         /// <summary>
         /// Gets the quest introduction/begin dialogs.

@@ -1,6 +1,7 @@
 QUEST_SCE_HARMONINDAILYBOOK3 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000582',
 	character = 'MaFl_Gergantes',
+	end_character = 'MaFl_Gergantes',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_HARMONINDAILYBOOK3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_ALCOHOLMAJU01', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

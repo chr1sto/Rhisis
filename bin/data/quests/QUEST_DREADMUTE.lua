@@ -1,6 +1,7 @@
 QUEST_DREADMUTE = {
 	title = 'IDS_PROPQUEST_INC_001236',
 	character = 'MaFl_Gergantes',
+	end_character = 'MaFl_Gergantes',
 	start_requirements = {
 		min_level = 40,
 		max_level = 50,
@@ -8,6 +9,15 @@ QUEST_DREADMUTE = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BKDREAD3', quantity = 1, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_MAPDREAD3', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_HADESEOR', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

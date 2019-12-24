@@ -1,6 +1,7 @@
 QUEST_HEROELE_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_001677',
 	character = 'MaFl_Cuzrill',
+	end_character = 'MaSa_Parine',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HEROELE_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_FEATHERMANA', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

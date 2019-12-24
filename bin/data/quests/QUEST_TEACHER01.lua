@@ -1,6 +1,7 @@
 QUEST_TEACHER01 = {
 	title = 'IDS_PROPQUEST_INC_001901',
 	character = 'MaFl_Teacher01',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_TEACHER01 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_EVE_SCHOOL01', quantity = 50, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

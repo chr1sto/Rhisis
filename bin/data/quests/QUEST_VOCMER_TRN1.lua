@@ -1,6 +1,7 @@
 QUEST_VOCMER_TRN1 = {
 	title = 'IDS_PROPQUEST_INC_000685',
 	character = 'MaFl_Mustang',
+	end_character = 'MaFl_Andy',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,11 @@ QUEST_VOCMER_TRN1 = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_TWINKLESTONE', quantity = 5, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

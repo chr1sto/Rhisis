@@ -1,6 +1,7 @@
 QUEST_SCE_DAILYBOOK = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000482',
 	character = 'MaDa_Tandy',
+	end_character = 'MaDa_DarMayor',
 	start_requirements = {
 		min_level = 105,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_DAILYBOOK = {
 	},
 	rewards = {
 		gold = 100000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_ADVANTUREDAILY', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

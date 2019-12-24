@@ -1,6 +1,7 @@
 QUEST_HERORIN_TRN2 = {
 	title = 'IDS_PROPQUEST_INC_001552',
 	character = 'MaDa_Ellend',
+	end_character = 'MaFl_Clamb',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_HERORIN_TRN2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MARKEIEN', quantity = 1, sex = 'Any', remove = false },
+		},
+		monsters = {
+			{ id = 'MI_REN', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

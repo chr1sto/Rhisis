@@ -1,6 +1,7 @@
 QUEST_ABILITYYE = {
 	title = 'IDS_PROPQUEST_INC_001789',
 	character = 'MaFl_DrEstly',
+	end_character = 'MaDa_DarMayor',
 	start_requirements = {
 		min_level = 70,
 		max_level = 129,
@@ -8,6 +9,16 @@ QUEST_ABILITYYE = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MONBOOK1', quantity = 1, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_MONBOOK2', quantity = 1, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_MONBOOK3', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_CLOCKS', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

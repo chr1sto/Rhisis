@@ -1,6 +1,7 @@
 QUEST_PUMPKINCHILD = {
 	title = 'IDS_PROPQUEST_INC_001339',
 	character = 'MaSa_JeongHwa',
+	end_character = 'MaSa_MaYun',
 	start_requirements = {
 		min_level = 10,
 		max_level = 15,
@@ -8,6 +9,8 @@ QUEST_PUMPKINCHILD = {
 	},
 	rewards = {
 		gold = 20000,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

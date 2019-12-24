@@ -1,6 +1,7 @@
 QUEST_EVE_LOVEHOUSE = {
 	title = 'IDS_PROPQUEST_INC_001294',
 	character = 'MaFl_Nina',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_EVE_LOVEHOUSE = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_GEM_DRYNRT', quantity = 1000, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

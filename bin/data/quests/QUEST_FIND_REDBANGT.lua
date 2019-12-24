@@ -1,6 +1,7 @@
 QUEST_FIND_REDBANGT = {
 	title = 'IDS_PROPQUEST_INC_000820',
 	character = 'MaFl_Luda',
+	end_character = 'MaFl_Luda',
 	start_requirements = {
 		min_level = 30,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_FIND_REDBANGT = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_REDBANGHEAD', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

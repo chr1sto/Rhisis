@@ -1,6 +1,7 @@
 QUEST_SUMMONDARK = {
 	title = 'IDS_PROPQUEST_INC_001710',
 	character = 'MaFl_DrEstly',
+	end_character = 'MaFl_DrEstly',
 	start_requirements = {
 		min_level = 20,
 		max_level = 35,
@@ -8,6 +9,11 @@ QUEST_SUMMONDARK = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		patrols = {
+			{ map = 'WI_WORLD_MADRIGAL', left = 7609, top = 4283, right = 7625, bottom = 4265 },
+		},
 	},
 	dialogs = {
 		begin = {

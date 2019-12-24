@@ -1,6 +1,7 @@
 QUEST_2066 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000727',
 	character = 'MaDa_RedRobeGirl',
+	end_character = 'MaDa_RedRobeGirl',
 	start_requirements = {
 		min_level = 86,
 		max_level = 96,
@@ -8,6 +9,11 @@ QUEST_2066 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_RENYKEN', quantity = 20, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

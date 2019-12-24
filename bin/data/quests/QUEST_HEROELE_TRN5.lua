@@ -1,6 +1,7 @@
 QUEST_HEROELE_TRN5 = {
 	title = 'IDS_PROPQUEST_INC_001698',
 	character = 'MaDa_Condram',
+	end_character = 'MaDa_Wendien',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_HEROELE_TRN5 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_VENHEART', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_GUARDMON1', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

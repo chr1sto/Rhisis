@@ -1,6 +1,7 @@
 QUEST_2005 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000056',
 	character = 'MaFl_Mikyel',
+	end_character = 'MaFl_Mikyel',
 	start_requirements = {
 		min_level = 11,
 		max_level = 13,
@@ -8,6 +9,11 @@ QUEST_2005 = {
 	},
 	rewards = {
 		gold = 5500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_POPORAM', quantity = 10, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

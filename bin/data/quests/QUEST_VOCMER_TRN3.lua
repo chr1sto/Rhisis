@@ -1,6 +1,7 @@
 QUEST_VOCMER_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_000711',
 	character = 'MaFl_Langdrong',
+	end_character = 'MaFl_Hyuit',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,14 @@ QUEST_VOCMER_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_NTSKILL', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_BABARI', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

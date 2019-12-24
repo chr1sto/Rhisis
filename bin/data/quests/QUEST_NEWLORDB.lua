@@ -1,6 +1,7 @@
 QUEST_NEWLORDB = {
 	title = 'IDS_PROPQUEST_INC_001174',
 	character = 'MaFl_Luda',
+	end_character = 'MaFl_Luda',
 	start_requirements = {
 		min_level = 60,
 		max_level = 80,
@@ -8,6 +9,11 @@ QUEST_NEWLORDB = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		patrols = {
+			{ map = 'WI_WORLD_MADRIGAL', left = 7782, top = 4505, right = 7809, bottom = 4474 },
+		},
 	},
 	dialogs = {
 		begin = {

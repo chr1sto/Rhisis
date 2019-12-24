@@ -1,6 +1,7 @@
 QUEST_SECDEAL = {
 	title = 'IDS_PROPQUEST_INC_001107',
 	character = 'MaSa_Porgo',
+	end_character = 'MaSa_SainMayor',
 	start_requirements = {
 		min_level = 20,
 		max_level = 40,
@@ -8,6 +9,11 @@ QUEST_SECDEAL = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_PRFMISS', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

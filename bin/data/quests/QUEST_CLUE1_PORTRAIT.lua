@@ -1,6 +1,7 @@
 QUEST_CLUE1_PORTRAIT = {
 	title = 'IDS_PROPQUEST_INC_000907',
 	character = 'MaSa_Helgar',
+	end_character = 'MaFl_Tucani',
 	start_requirements = {
 		min_level = 26,
 		max_level = 30,
@@ -8,6 +9,8 @@ QUEST_CLUE1_PORTRAIT = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

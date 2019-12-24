@@ -1,6 +1,7 @@
 QUEST_2082 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000903',
 	character = 'MaDa_Lurif',
+	end_character = 'MaDa_Lurif',
 	start_requirements = {
 		min_level = 99,
 		max_level = 105,
@@ -8,6 +9,11 @@ QUEST_2082 = {
 	},
 	rewards = {
 		gold = 148500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_CRUETMUF', quantity = 60, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

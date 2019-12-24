@@ -1,6 +1,7 @@
 QUEST_EXISTDARK = {
 	title = 'IDS_PROPQUEST_DUNGEONANDPK_INC_000593',
 	character = 'MaSa_SainMayor',
+	end_character = 'MaSa_SainMayor',
 	start_requirements = {
 		min_level = 45,
 		max_level = 70,
@@ -8,6 +9,11 @@ QUEST_EXISTDARK = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_IBLCRASHER', quantity = 8 },
+		},
 	},
 	dialogs = {
 		begin = {

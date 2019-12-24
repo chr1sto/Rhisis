@@ -1,6 +1,7 @@
 QUEST_SCE_SHADOW = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000466',
 	character = 'MaSa_Gothante',
+	end_character = 'MaFl_Martinyc',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_SHADOW = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_SCRGOTH', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

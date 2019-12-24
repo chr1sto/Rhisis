@@ -1,6 +1,7 @@
 QUEST_PLOT_COLACK = {
 	title = 'IDS_PROPQUEST_INC_000841',
 	character = 'MaSa_Colack',
+	end_character = 'MaSa_Colack',
 	start_requirements = {
 		min_level = 35,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_PLOT_COLACK = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_METEORITILL', quantity = 5, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

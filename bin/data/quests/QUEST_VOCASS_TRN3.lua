@@ -1,6 +1,7 @@
 QUEST_VOCASS_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_000760',
 	character = 'MaFl_Goripeg',
+	end_character = 'MaFl_Kidmen',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,14 @@ QUEST_VOCASS_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_NTSKILL', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_CHANER', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

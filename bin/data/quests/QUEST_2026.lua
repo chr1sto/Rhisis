@@ -1,6 +1,7 @@
 QUEST_2026 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000287',
 	character = 'MaSa_Lancomi',
+	end_character = 'MaSa_Lancomi',
 	start_requirements = {
 		min_level = 47,
 		max_level = 51,
@@ -8,6 +9,11 @@ QUEST_2026 = {
 	},
 	rewards = {
 		gold = 47000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_ORBRIN', quantity = 35, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

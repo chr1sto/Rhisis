@@ -1,6 +1,7 @@
 QUEST_SERUSURIEL = {
 	title = 'IDS_PROPQUEST_INC_001731',
 	character = 'MaFl_DrEstly',
+	end_character = 'MaFl_DrEstly',
 	start_requirements = {
 		min_level = 20,
 		max_level = 35,
@@ -8,6 +9,11 @@ QUEST_SERUSURIEL = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_KEYPIECE', quantity = 5, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

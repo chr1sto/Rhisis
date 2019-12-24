@@ -11,22 +11,27 @@ namespace Rhisis.Scripting.Quests
     internal class QuestScript : ScriptBase, IQuestScript
     {
         /// <inheritdoc />
-        public int Id { get; private set; }
+        public int Id { get; }
 
         /// <inheritdoc />
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <inheritdoc />
-        public string Title { get; private set; }
+        public string Title { get; }
 
         /// <inheritdoc />
-        public string StartCharacter { get; private set; }
+        public string StartCharacter { get; }
+
+        public string EndCharacter { get; }
 
         /// <inheritdoc />
-        public IQuestRewards Rewards { get; private set; }
+        public IQuestRewards Rewards { get; }
 
         /// <inheritdoc />
         public IQuestStartRequirements StartRequirements { get; }
+
+        /// <inheritdoc />
+        public IQuestEndConditions EndConditions { get; }
 
         /// <inheritdoc />
         public IEnumerable<string> BeginDialogs { get; }
@@ -56,8 +61,16 @@ namespace Rhisis.Scripting.Quests
             this.Name = questName;
             this.Title = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.Title);
             this.StartCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.StartCharacter);
+            this.EndCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.EndCharacter);
+
+            if (string.IsNullOrEmpty(EndCharacter))
+            {
+                this.EndCharacter = this.StartCharacter;
+            }
+
             this.Rewards = new QuestRewards(this.ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
             this.StartRequirements = new QuestStartRequirements(this.ScriptTable[QuestScriptConstants.StartRequirements] as LuaTable);
+            this.EndConditions = new QuestEndConditions(this.ScriptTable[QuestScriptConstants.EndConditions] as LuaTable);
 
             if (this.ScriptTable[QuestScriptConstants.Dialogs] is LuaTable dialogsTable)
             {

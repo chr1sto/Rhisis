@@ -1,6 +1,7 @@
 QUEST_HEROBLA_TRN2 = {
 	title = 'IDS_PROPQUEST_INC_001435',
 	character = 'MaDa_Corel',
+	end_character = 'MaFl_Guabrill',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HEROBLA_TRN2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_EARRHEREN', quantity = 1, sex = 'Any', remove = false },
+		},
 	},
 	dialogs = {
 		begin = {

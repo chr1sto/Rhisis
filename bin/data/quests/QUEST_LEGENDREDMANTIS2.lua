@@ -1,6 +1,7 @@
 QUEST_LEGENDREDMANTIS2 = {
 	title = 'IDS_PROPQUEST_INC_001142',
 	character = 'MaSa_Helgar',
+	end_character = 'MaSa_Helgar',
 	start_requirements = {
 		min_level = 60,
 		max_level = 80,
@@ -8,6 +9,14 @@ QUEST_LEGENDREDMANTIS2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_REDYSPAWN', quantity = 15, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_REDMANTIS1', quantity = 10 },
+		},
 	},
 	dialogs = {
 		begin = {

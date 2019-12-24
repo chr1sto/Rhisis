@@ -1,6 +1,7 @@
 QUEST_MIACURSE = {
 	title = 'IDS_PROPQUEST_INC_001119',
 	character = 'MaSa_SainMayor',
+	end_character = 'MaSa_Porgo',
 	start_requirements = {
 		min_level = 20,
 		max_level = 40,
@@ -8,6 +9,8 @@ QUEST_MIACURSE = {
 	},
 	rewards = {
 		gold = 32000,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

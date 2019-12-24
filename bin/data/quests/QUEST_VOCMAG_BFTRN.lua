@@ -1,6 +1,7 @@
 QUEST_VOCMAG_BFTRN = {
 	title = 'IDS_PROPQUEST_INC_000772',
 	character = 'MaSa_Wingyei',
+	end_character = 'MaSa_Wingyei',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,11 @@ QUEST_VOCMAG_BFTRN = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_AIBATT3', quantity = 10 },
+		},
 	},
 	dialogs = {
 		begin = {

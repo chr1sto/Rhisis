@@ -1,6 +1,7 @@
 QUEST_SCE_QUESTIONDAILY1 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000609',
 	character = 'MaDa_DarMayor',
+	end_character = 'MaHa_Ryan',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_QUESTIONDAILY1 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

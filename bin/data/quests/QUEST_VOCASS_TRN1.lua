@@ -1,6 +1,7 @@
 QUEST_VOCASS_TRN1 = {
 	title = 'IDS_PROPQUEST_INC_000735',
 	character = 'MaFl_Elic',
+	end_character = 'MaFl_Maki',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,11 @@ QUEST_VOCASS_TRN1 = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_FORFORM', quantity = 5, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_FIND_BONEWAG = {
 	title = 'IDS_PROPQUEST_INC_000946',
 	character = 'MaSa_Heltung',
+	end_character = 'MaSa_Heltung',
 	start_requirements = {
 		min_level = 20,
 		max_level = 25,
@@ -8,6 +9,11 @@ QUEST_FIND_BONEWAG = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BONEWAG', quantity = 10, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

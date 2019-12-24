@@ -1,6 +1,7 @@
 QUEST_2008 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000089',
 	character = 'MaFl_Mikyel',
+	end_character = 'MaFl_Mikyel',
 	start_requirements = {
 		min_level = 17,
 		max_level = 19,
@@ -8,6 +9,11 @@ QUEST_2008 = {
 	},
 	rewards = {
 		gold = 8500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_NYANYA', quantity = 10, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

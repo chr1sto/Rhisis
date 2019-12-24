@@ -1,6 +1,7 @@
 QUEST_SCE_BLKMAGI = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000403',
 	character = 'MaDa_Hachal',
+	end_character = 'MaSa_Gothante',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_BLKMAGI = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_EXAMDATA', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

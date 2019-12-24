@@ -1,6 +1,7 @@
 QUEST_SCE_BEGINDOUT = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000304',
 	character = 'MaFl_Martinyc',
+	end_character = 'MaFl_FlaMayor',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_BEGINDOUT = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_REQFORM', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

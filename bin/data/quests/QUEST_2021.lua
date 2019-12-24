@@ -1,6 +1,7 @@
 QUEST_2021 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000232',
 	character = 'MaSa_Lancomi',
+	end_character = 'MaSa_Lancomi',
 	start_requirements = {
 		min_level = 37,
 		max_level = 42,
@@ -8,6 +9,11 @@ QUEST_2021 = {
 	},
 	rewards = {
 		gold = 37000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_DUMBLING', quantity = 30, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

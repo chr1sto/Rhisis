@@ -1,6 +1,7 @@
 QUEST_HEROPSY_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_001622',
 	character = 'MaFl_Cuarine',
+	end_character = 'MaFl_Ryupang',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HEROPSY_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_UNDERSTRENGTH', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

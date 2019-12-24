@@ -1,6 +1,7 @@
 QUEST_VOCMAG_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_000808',
 	character = 'MaFl_Hastan',
+	end_character = 'MaSa_Lopaze',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,14 @@ QUEST_VOCMAG_TRN3 = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_NTSKILL', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_SEIDO', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_VOCACR_TRN2 = {
 	title = 'IDS_PROPQUEST_INC_000491',
 	character = 'MaDa_Pyre',
+	end_character = 'MaFl_Tucani',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,8 @@ QUEST_VOCACR_TRN2 = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_ARBORDAY04 = {
 	title = 'IDS_PROPQUEST_INC_001973',
 	character = 'MaFl_Arborday04',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_ARBORDAY04 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_EVE_YOUNGSEEDING', quantity = 500, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_SCENARIO5_2 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000285',
 	character = 'MaDa_Achaben',
+	end_character = '',
 	start_requirements = {
 		min_level = 15,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCENARIO5_2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MONGTEAR', quantity = 5, sex = 'Any', remove = false },
+		},
 	},
 	dialogs = {
 		begin = nil,

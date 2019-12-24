@@ -1,6 +1,7 @@
 QUEST_JAPEVE_BOZFL = {
 	title = 'IDS_PROPQUEST_INC_000628',
 	character = 'MaFl_Furan',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_JAPEVE_BOZFL = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_GRPFLARIS', quantity = 20, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

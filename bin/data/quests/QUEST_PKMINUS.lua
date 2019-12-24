@@ -1,6 +1,7 @@
 QUEST_PKMINUS = {
 	title = 'IDS_PROPQUEST_INC_001892',
 	character = 'MaMa_PKNPC01',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_PKMINUS = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

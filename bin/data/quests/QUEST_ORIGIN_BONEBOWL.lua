@@ -1,6 +1,7 @@
 QUEST_ORIGIN_BONEBOWL = {
 	title = 'IDS_PROPQUEST_INC_000966',
 	character = 'MaSa_QueerCollector',
+	end_character = 'MaSa_Bowler',
 	start_requirements = {
 		min_level = 44,
 		max_level = 60,
@@ -8,6 +9,8 @@ QUEST_ORIGIN_BONEBOWL = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

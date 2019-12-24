@@ -1,6 +1,7 @@
 QUEST_VOCMAG_TRN1 = {
 	title = 'IDS_PROPQUEST_INC_000783',
 	character = 'MaSa_Wingyei',
+	end_character = 'MaSa_Hee',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,11 @@ QUEST_VOCMAG_TRN1 = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_TWINKLESTONE', quantity = 10, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_TEAR_MOTHER = {
 	title = 'IDS_PROPQUEST_INC_001002',
 	character = 'MaSa_JeongHwa',
+	end_character = 'MaSa_Porgo',
 	start_requirements = {
 		min_level = 20,
 		max_level = 30,
@@ -8,6 +9,8 @@ QUEST_TEAR_MOTHER = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

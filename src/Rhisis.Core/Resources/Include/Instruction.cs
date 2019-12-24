@@ -72,6 +72,12 @@ namespace Rhisis.Core.Resources.Include
             if (parameter is string)
                 parameter = parameter.ToString().Trim(this.EscapeCharacters);
 
+            if (typeof(T).IsEnum)
+            {
+                if (Enum.TryParse(typeof(T), parameter.ToString(), out object value))
+                    return (T)value;
+            }
+
             Type targetType = typeof(T);
 
             return (T)Convert.ChangeType(parameter, Nullable.GetUnderlyingType(targetType) ?? targetType);

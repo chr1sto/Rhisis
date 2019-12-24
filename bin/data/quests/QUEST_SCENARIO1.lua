@@ -1,6 +1,7 @@
 QUEST_SCENARIO1 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000001',
 	character = 'MaFl_Geron',
+	end_character = '',
 	start_requirements = {
 		min_level = 15,
 		max_level = 129,
@@ -8,6 +9,13 @@ QUEST_SCENARIO1 = {
 	},
 	rewards = {
 		gold = 21000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_TESTIMONY', quantity = 1, sex = 'Any', remove = false },
+			{ id = 'II_SYS_SYS_QUE_MOONPAPER', quantity = 1, sex = 'Any', remove = false },
+			{ id = 'II_SYS_SYS_QUE_SNAKEBONE', quantity = 1, sex = 'Any', remove = false },
+		},
 	},
 	dialogs = {
 		begin = {

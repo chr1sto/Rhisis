@@ -1,6 +1,7 @@
 QUEST_HEROBIL_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_001505',
 	character = 'MaFl_Domek',
+	end_character = 'MaFl_Segho',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HEROBIL_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_DOCHALL', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

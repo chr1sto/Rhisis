@@ -1,6 +1,7 @@
 QUEST_EVE_GBRCSOUP = {
 	title = 'IDS_PROPQUEST_INC_001283',
 	character = 'MaFl_Juglin',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_EVE_GBRCSOUP = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_GEM_RCSOUP', quantity = 100, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

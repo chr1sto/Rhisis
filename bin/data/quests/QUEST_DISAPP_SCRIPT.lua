@@ -1,6 +1,7 @@
 QUEST_DISAPP_SCRIPT = {
 	title = 'IDS_PROPQUEST_INC_000855',
 	character = 'MaSa_Troupemember1',
+	end_character = 'MaDa_Colar',
 	start_requirements = {
 		min_level = 37,
 		max_level = 60,
@@ -8,6 +9,8 @@ QUEST_DISAPP_SCRIPT = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

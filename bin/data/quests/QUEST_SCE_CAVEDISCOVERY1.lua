@@ -1,6 +1,7 @@
 QUEST_SCE_CAVEDISCOVERY1 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000652',
 	character = 'MaDa_DarMayor',
+	end_character = 'MaHa_Ryan',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_CAVEDISCOVERY1 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_SPLITPIECE01', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

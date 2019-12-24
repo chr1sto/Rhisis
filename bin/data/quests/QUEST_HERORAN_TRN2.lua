@@ -1,6 +1,7 @@
 QUEST_HERORAN_TRN2 = {
 	title = 'IDS_PROPQUEST_INC_000581',
 	character = 'MaDa_Eliff',
+	end_character = 'MaFl_Kimel',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_HERORAN_TRN2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_LTHYNAN', quantity = 1, sex = 'Any', remove = false },
+		},
+		monsters = {
+			{ id = 'MI_RUBO', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

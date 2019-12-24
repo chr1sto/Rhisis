@@ -1,6 +1,7 @@
 QUEST_VOCASS_BFTRN = {
 	title = 'IDS_PROPQUEST_INC_000723',
 	character = 'MaFl_Elic',
+	end_character = 'MaFl_Elic',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,11 @@ QUEST_VOCASS_BFTRN = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_AIBATT1', quantity = 10 },
+		},
 	},
 	dialogs = {
 		begin = {

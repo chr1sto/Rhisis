@@ -1,6 +1,7 @@
 QUEST_2088 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000969',
 	character = 'MaHa_Jano',
+	end_character = 'MaHa_Jano',
 	start_requirements = {
 		min_level = 111,
 		max_level = 117,
@@ -8,6 +9,11 @@ QUEST_2088 = {
 	},
 	rewards = {
 		gold = 1300000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_NECKLACE', quantity = 70, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

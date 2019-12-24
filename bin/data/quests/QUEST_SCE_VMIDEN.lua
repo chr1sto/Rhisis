@@ -1,6 +1,7 @@
 QUEST_SCE_VMIDEN = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000452',
 	character = 'MaDa_Laloa',
+	end_character = 'MaSa_Gothante',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_VMIDEN = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BKLAOLA', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

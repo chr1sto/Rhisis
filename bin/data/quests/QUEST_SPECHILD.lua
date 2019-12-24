@@ -1,6 +1,7 @@
 QUEST_SPECHILD = {
 	title = 'IDS_PROPQUEST_INC_001096',
 	character = 'MaSa_Porgo',
+	end_character = 'MaSa_Porgo',
 	start_requirements = {
 		min_level = 20,
 		max_level = 40,
@@ -8,6 +9,15 @@ QUEST_SPECHILD = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MIAREPORT', quantity = 22, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_MIA2', quantity = 7 },
+			{ id = 'MI_MIA3', quantity = 5 },
+		},
 	},
 	dialogs = {
 		begin = {

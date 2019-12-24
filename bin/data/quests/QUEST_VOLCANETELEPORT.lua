@@ -1,6 +1,7 @@
 QUEST_VOLCANETELEPORT = {
 	title = 'IDS_PROPQUEST_INC_002001',
 	character = 'MaDa_RedRobeMan',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_VOLCANETELEPORT = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_PHANBUBLE', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = nil,

@@ -1,6 +1,7 @@
 QUEST_HEROKNI_TRN1 = {
 	title = 'IDS_PROPQUEST_INC_001361',
 	character = 'MaDa_Karanduru',
+	end_character = 'MaDa_Karanduru',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HEROKNI_TRN1 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_DRILLER2', quantity = 20 },
+		},
 	},
 	dialogs = {
 		begin = {

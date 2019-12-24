@@ -1,6 +1,7 @@
 QUEST_SCE_CAVEDISCOVERY4 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000678',
 	character = 'MaHa_Ryan',
+	end_character = 'MaHa_Ryan',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_CAVEDISCOVERY4 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_THREEBOOK01', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

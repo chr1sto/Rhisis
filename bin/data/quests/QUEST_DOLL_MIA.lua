@@ -1,6 +1,7 @@
 QUEST_DOLL_MIA = {
 	title = 'IDS_PROPQUEST_INC_001038',
 	character = 'MaSa_Porgo',
+	end_character = 'MaSa_JeongHwa',
 	start_requirements = {
 		min_level = 20,
 		max_level = 30,
@@ -8,6 +9,11 @@ QUEST_DOLL_MIA = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_JINDOLL', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

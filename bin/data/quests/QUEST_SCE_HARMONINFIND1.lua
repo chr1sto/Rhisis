@@ -1,6 +1,7 @@
 QUEST_SCE_HARMONINFIND1 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000524',
 	character = 'MaDa_Esof',
+	end_character = 'MaHa_Lasa',
 	start_requirements = {
 		min_level = 105,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_HARMONINFIND1 = {
 	},
 	rewards = {
 		gold = 200000,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

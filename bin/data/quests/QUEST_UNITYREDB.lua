@@ -1,6 +1,7 @@
 QUEST_UNITYREDB = {
 	title = 'IDS_PROPQUEST_INC_001197',
 	character = 'MaDa_Amadolka',
+	end_character = 'MaDa_Amadolka',
 	start_requirements = {
 		min_level = 60,
 		max_level = 80,
@@ -8,6 +9,11 @@ QUEST_UNITYREDB = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		patrols = {
+			{ map = 'WI_WORLD_MADRIGAL', left = 5159, top = 3381, right = 5195, bottom = 3359 },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_HEROKNI_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_001385',
 	character = 'MaFl_Hormes',
+	end_character = 'MaFl_Kurumin',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HEROKNI_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_GOLDHELM', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

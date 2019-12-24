@@ -1,6 +1,7 @@
 QUEST_SCE_MDRIGALTEACHER5 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000728',
 	character = 'MaDa_Hent',
+	end_character = 'MaDa_Icinis',
 	start_requirements = {
 		min_level = 91,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_MDRIGALTEACHER5 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

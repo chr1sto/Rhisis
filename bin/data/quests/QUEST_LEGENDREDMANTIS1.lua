@@ -1,6 +1,7 @@
 QUEST_LEGENDREDMANTIS1 = {
 	title = 'IDS_PROPQUEST_INC_001129',
 	character = 'MaFl_Rudvihil',
+	end_character = 'MaSa_Helgar',
 	start_requirements = {
 		min_level = 60,
 		max_level = 80,
@@ -8,6 +9,8 @@ QUEST_LEGENDREDMANTIS1 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_FIRST_BONEBOWL = {
 	title = 'IDS_PROPQUEST_INC_000978',
 	character = 'MaSa_Bowler',
+	end_character = 'MaSa_Bowler',
 	start_requirements = {
 		min_level = 44,
 		max_level = 60,
@@ -8,6 +9,13 @@ QUEST_FIRST_BONEBOWL = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BLKMAR', quantity = 10, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_BLKSPL', quantity = 5, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_BLKHER', quantity = 5, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

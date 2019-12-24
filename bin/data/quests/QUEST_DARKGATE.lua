@@ -1,6 +1,7 @@
 QUEST_DARKGATE = {
 	title = 'IDS_PROPQUEST_DUNGEONANDPK_INC_000572',
 	character = 'MaSa_SainMayor',
+	end_character = 'MaSa_SainMayor',
 	start_requirements = {
 		min_level = 45,
 		max_level = 70,
@@ -8,6 +9,11 @@ QUEST_DARKGATE = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		patrols = {
+			{ map = 'WI_WORLD_MADRIGAL', left = 8606, top = 2172, right = 8657, bottom = 2158 },
+		},
 	},
 	dialogs = {
 		begin = {

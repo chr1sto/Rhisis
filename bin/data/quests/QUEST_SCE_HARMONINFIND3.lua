@@ -1,6 +1,7 @@
 QUEST_SCE_HARMONINFIND3 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000539',
 	character = 'MaHa_Ryan',
+	end_character = 'MaHa_Ryan',
 	start_requirements = {
 		min_level = 105,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_HARMONINFIND3 = {
 	},
 	rewards = {
 		gold = 285000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_TODRINHEART', quantity = 10, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

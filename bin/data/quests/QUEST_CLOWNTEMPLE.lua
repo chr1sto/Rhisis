@@ -1,6 +1,7 @@
 QUEST_CLOWNTEMPLE = {
 	title = 'IDS_PROPQUEST_DUNGEONANDPK_INC_000584',
 	character = 'MaSa_SainMayor',
+	end_character = 'MaSa_SainMayor',
 	start_requirements = {
 		min_level = 45,
 		max_level = 70,
@@ -8,6 +9,11 @@ QUEST_CLOWNTEMPLE = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_IBLRECORD', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

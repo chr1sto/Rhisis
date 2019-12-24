@@ -1,6 +1,7 @@
 QUEST_SCE_QUESTIONDAILY3 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000626',
 	character = 'MaHa_Ryan',
+	end_character = 'MaHa_Vespu',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_QUESTIONDAILY3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

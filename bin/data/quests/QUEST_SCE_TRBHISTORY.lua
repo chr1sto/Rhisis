@@ -1,6 +1,7 @@
 QUEST_SCE_TRBHISTORY = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000394',
 	character = 'MaSa_Rovanett',
+	end_character = 'MaDa_Hachal',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_TRBHISTORY = {
 	},
 	rewards = {
 		gold = 124800,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BOOKTRBHIS', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

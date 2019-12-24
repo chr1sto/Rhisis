@@ -1,6 +1,7 @@
 QUEST_HERORIN_TRN1 = {
 	title = 'IDS_PROPQUEST_INC_001540',
 	character = 'MaDa_Ellend',
+	end_character = 'MaDa_Ellend',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HERORIN_TRN1 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_DRILLER2', quantity = 20 },
+		},
 	},
 	dialogs = {
 		begin = {

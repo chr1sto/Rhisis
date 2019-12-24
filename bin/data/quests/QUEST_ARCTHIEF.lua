@@ -1,6 +1,7 @@
 QUEST_ARCTHIEF = {
 	title = 'IDS_PROPQUEST_INC_001085',
 	character = 'MaFl_Luda',
+	end_character = 'MaFl_Luda',
 	start_requirements = {
 		min_level = 30,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_ARCTHIEF = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_LBNECKLACE', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_LORDBANG', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

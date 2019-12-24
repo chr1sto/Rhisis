@@ -1,6 +1,7 @@
 QUEST_EXISTDESIRE = {
 	title = 'IDS_PROPQUEST_INC_001756',
 	character = 'MaDa_DarMayor',
+	end_character = 'MaDa_DrEst',
 	start_requirements = {
 		min_level = 70,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_EXISTDESIRE = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

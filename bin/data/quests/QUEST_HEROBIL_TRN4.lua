@@ -1,6 +1,7 @@
 QUEST_HEROBIL_TRN4 = {
 	title = 'IDS_PROPQUEST_INC_001517',
 	character = 'MaFl_Segho',
+	end_character = 'MaDa_Fera',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_HEROBIL_TRN4 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MPOSTERSKILL', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_STEAMWALKER2', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

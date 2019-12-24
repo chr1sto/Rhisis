@@ -1,6 +1,7 @@
 QUEST_HERORIN_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_001564',
 	character = 'MaFl_Clamb',
+	end_character = 'MaFl_Teshar',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HERORIN_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MARKEIEN', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

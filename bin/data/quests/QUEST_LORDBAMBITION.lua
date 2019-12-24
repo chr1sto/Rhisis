@@ -1,6 +1,7 @@
 QUEST_LORDBAMBITION = {
 	title = 'IDS_PROPQUEST_INC_001185',
 	character = 'MaFl_Luda',
+	end_character = 'MaDa_Amadolka',
 	start_requirements = {
 		min_level = 60,
 		max_level = 80,
@@ -8,6 +9,11 @@ QUEST_LORDBAMBITION = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_RBANG2', quantity = 35 },
+		},
 	},
 	dialogs = {
 		begin = {

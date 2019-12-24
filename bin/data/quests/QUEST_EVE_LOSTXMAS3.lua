@@ -1,6 +1,7 @@
 QUEST_EVE_LOSTXMAS3 = {
 	title = 'IDS_PROPQUEST_INC_001272',
 	character = 'MaFl_Atto',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_EVE_LOSTXMAS3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_GEM_REDSOCKS', quantity = 100, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_FIND_PORTRAIT = {
 	title = 'IDS_PROPQUEST_INC_000894',
 	character = 'MaFl_Rudvihil',
+	end_character = 'MaSa_Helgar',
 	start_requirements = {
 		min_level = 26,
 		max_level = 30,
@@ -8,6 +9,8 @@ QUEST_FIND_PORTRAIT = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

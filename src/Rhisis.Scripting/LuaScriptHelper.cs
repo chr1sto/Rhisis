@@ -19,6 +19,11 @@ namespace Rhisis.Scripting
         {
             object scriptObject = table[path];
 
+            if (typeof(T).IsEnum)
+            {
+                return Enum.TryParse(typeof(T), scriptObject.ToString(), out object result) ? (T)result : default;
+            }
+
             return scriptObject != null ? (T)Convert.ChangeType(scriptObject, typeof(T)) : default;
         }
     }

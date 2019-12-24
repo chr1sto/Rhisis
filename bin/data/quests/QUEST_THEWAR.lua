@@ -1,6 +1,7 @@
 QUEST_THEWAR = {
 	title = 'IDS_PROPQUEST_INC_001743',
 	character = 'MaFl_DrEstly',
+	end_character = 'MaFl_DrEstly',
 	start_requirements = {
 		min_level = 20,
 		max_level = 35,
@@ -8,6 +9,11 @@ QUEST_THEWAR = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_VICEVEDUQUE', quantity = 5 },
+		},
 	},
 	dialogs = {
 		begin = {

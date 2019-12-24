@@ -1,6 +1,7 @@
 QUEST_TRUTH_BONEBOWL = {
 	title = 'IDS_PROPQUEST_INC_000990',
 	character = 'MaSa_Bowler',
+	end_character = 'MaSa_QueerCollector',
 	start_requirements = {
 		min_level = 44,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_TRUTH_BONEBOWL = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BONEBOWL', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

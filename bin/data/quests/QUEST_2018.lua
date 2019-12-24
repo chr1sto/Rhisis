@@ -1,6 +1,7 @@
 QUEST_2018 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000199',
 	character = 'MaSa_Lancomi',
+	end_character = 'MaSa_Lancomi',
 	start_requirements = {
 		min_level = 31,
 		max_level = 36,
@@ -8,6 +9,11 @@ QUEST_2018 = {
 	},
 	rewards = {
 		gold = 31000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_GIGGLANDE', quantity = 30, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_LEGENDREDMANTIS3 = {
 	title = 'IDS_PROPQUEST_INC_001151',
 	character = 'MaSa_Helgar',
+	end_character = 'MaFl_Rudvihil',
 	start_requirements = {
 		min_level = 60,
 		max_level = 80,
@@ -8,6 +9,14 @@ QUEST_LEGENDREDMANTIS3 = {
 	},
 	rewards = {
 		gold = 145000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_EMERSPAWN', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_EMERALDMANTIS', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

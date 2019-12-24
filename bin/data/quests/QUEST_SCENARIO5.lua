@@ -1,6 +1,7 @@
 QUEST_SCENARIO5 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000249',
 	character = 'MaDa_Adin',
+	end_character = 'MaFl_Geron',
 	start_requirements = {
 		min_level = 15,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCENARIO5 = {
 	},
 	rewards = {
 		gold = 5550000,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

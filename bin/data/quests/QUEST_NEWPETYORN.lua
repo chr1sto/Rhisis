@@ -1,6 +1,7 @@
 QUEST_NEWPETYORN = {
 	title = 'IDS_PROPQUEST_INC_001327',
 	character = 'MaFl_Loyah',
+	end_character = 'MaFl_Loyah',
 	start_requirements = {
 		min_level = 5,
 		max_level = 15,
@@ -8,6 +9,11 @@ QUEST_NEWPETYORN = {
 	},
 	rewards = {
 		gold = 15000,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_YORN', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

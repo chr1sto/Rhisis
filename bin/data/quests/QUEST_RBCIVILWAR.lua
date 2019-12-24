@@ -1,6 +1,7 @@
 QUEST_RBCIVILWAR = {
 	title = 'IDS_PROPQUEST_INC_001163',
 	character = 'MaFl_Luda',
+	end_character = 'MaFl_Luda',
 	start_requirements = {
 		min_level = 60,
 		max_level = 80,
@@ -8,6 +9,11 @@ QUEST_RBCIVILWAR = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		patrols = {
+			{ map = 'WI_WORLD_MADRIGAL', left = 5280, top = 3413, right = 5324, bottom = 3377 },
+		},
 	},
 	dialogs = {
 		begin = {

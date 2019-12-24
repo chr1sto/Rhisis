@@ -1,6 +1,7 @@
 QUEST_SCE_CAVEDISCOVERY3 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000669',
 	character = 'MaFl_SgRadion',
+	end_character = 'MaHa_Ryan',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_CAVEDISCOVERY3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

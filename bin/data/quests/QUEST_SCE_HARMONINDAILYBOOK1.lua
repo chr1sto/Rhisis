@@ -1,6 +1,7 @@
 QUEST_SCE_HARMONINDAILYBOOK1 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000564',
 	character = 'MaDa_DarMayor',
+	end_character = 'MaFl_SgRadion',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_HARMONINDAILYBOOK1 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

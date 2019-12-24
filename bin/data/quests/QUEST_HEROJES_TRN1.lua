@@ -1,6 +1,7 @@
 QUEST_HEROJES_TRN1 = {
 	title = 'IDS_PROPQUEST_INC_000515',
 	character = 'MaDa_Lorein',
+	end_character = 'MaDa_Lorein',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -10,6 +11,11 @@ QUEST_HEROJES_TRN1 = {
 		gold = {
 			min_gold = 500000,
 			max_gold = 550000,
+		},
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_DRILLER2', quantity = 20 },
 		},
 	},
 	dialogs = {

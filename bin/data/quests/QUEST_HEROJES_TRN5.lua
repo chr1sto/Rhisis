@@ -1,6 +1,7 @@
 QUEST_HEROJES_TRN5 = {
 	title = 'IDS_PROPQUEST_INC_000559',
 	character = 'MaDa_Homeit',
+	end_character = 'MaDa_Heingard',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_HEROJES_TRN5 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_VENHEART', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_GUARDMON1', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

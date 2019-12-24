@@ -1,6 +1,7 @@
 QUEST_VOCASS_TRN2 = {
 	title = 'IDS_PROPQUEST_INC_000748',
 	character = 'MaFl_Maki',
+	end_character = 'MaFl_Goripeg',
 	start_requirements = {
 		min_level = 15,
 		max_level = 15,
@@ -8,6 +9,8 @@ QUEST_VOCASS_TRN2 = {
 	},
 	rewards = {
 		gold = 1500,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

@@ -1,6 +1,7 @@
 QUEST_DREADKREN = {
 	title = 'IDS_PROPQUEST_INC_001222',
 	character = 'MaFl_Gergantes',
+	end_character = 'MaFl_Gergantes',
 	start_requirements = {
 		min_level = 30,
 		max_level = 39,
@@ -8,6 +9,15 @@ QUEST_DREADKREN = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BKDREAD2', quantity = 1, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_MAPDREAD2', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_GANGARD', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

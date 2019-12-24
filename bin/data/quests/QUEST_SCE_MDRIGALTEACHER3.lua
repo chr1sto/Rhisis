@@ -1,6 +1,7 @@
 QUEST_SCE_MDRIGALTEACHER3 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000709',
 	character = 'MaFl_Mustang',
+	end_character = 'MaSa_Wingyei',
 	start_requirements = {
 		min_level = 91,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_MDRIGALTEACHER3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

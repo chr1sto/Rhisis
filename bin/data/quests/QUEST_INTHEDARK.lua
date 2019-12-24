@@ -1,6 +1,7 @@
 QUEST_INTHEDARK = {
 	title = 'IDS_PROPQUEST_DUNGEONANDPK_INC_000605',
 	character = 'MaSa_SainMayor',
+	end_character = 'MaSa_SainMayor',
 	start_requirements = {
 		min_level = 45,
 		max_level = 70,
@@ -8,6 +9,14 @@ QUEST_INTHEDARK = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_IBLGUAMARK', quantity = 4, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_IBLGUARDER', quantity = 4 },
+		},
 	},
 	dialogs = {
 		begin = {

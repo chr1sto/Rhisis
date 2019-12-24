@@ -1,6 +1,7 @@
 QUEST_HEROJES_TRN4 = {
 	title = 'IDS_PROPQUEST_INC_000546',
 	character = 'MaSa_Troupemember5',
+	end_character = 'MaDa_Homeit',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,14 @@ QUEST_HEROJES_TRN4 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_HEROSOUL01', quantity = 1, sex = 'Any', remove = true },
+		},
+		monsters = {
+			{ id = 'MI_SISIF', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

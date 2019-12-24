@@ -1,6 +1,7 @@
 QUEST_2014 = {
 	title = 'IDS_PROPQUEST_REQUESTBOX_INC_000155',
 	character = 'MaFl_Mikyel',
+	end_character = 'MaFl_Mikyel',
 	start_requirements = {
 		min_level = 25,
 		max_level = 27,
@@ -8,6 +9,11 @@ QUEST_2014 = {
 	},
 	rewards = {
 		gold = 12500,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_GEN_GEM_GEM_FURIOUSMATCH', quantity = 17, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

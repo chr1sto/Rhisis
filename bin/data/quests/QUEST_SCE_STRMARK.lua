@@ -1,6 +1,7 @@
 QUEST_SCE_STRMARK = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000350',
 	character = 'MaDa_CloneHachal',
+	end_character = 'MaDa_CloneHachal',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_STRMARK = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_STRCLOTH', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

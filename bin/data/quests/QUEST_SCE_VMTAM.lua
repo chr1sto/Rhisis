@@ -1,6 +1,7 @@
 QUEST_SCE_VMTAM = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000383',
 	character = 'MaSa_Rovanett',
+	end_character = 'MaSa_Rovanett',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,12 @@ QUEST_SCE_VMTAM = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_UNKMARK', quantity = 1, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_UNKCLOTH', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

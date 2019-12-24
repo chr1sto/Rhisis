@@ -1,6 +1,7 @@
 QUEST_LOST_CHILD = {
 	title = 'IDS_PROPQUEST_INC_001015',
 	character = 'MaSa_Porgo',
+	end_character = 'MaSa_Porgo',
 	start_requirements = {
 		min_level = 20,
 		max_level = 30,
@@ -8,6 +9,11 @@ QUEST_LOST_CHILD = {
 	},
 	rewards = {
 		gold = 43200,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_MIA1', quantity = 20 },
+		},
 	},
 	dialogs = {
 		begin = {

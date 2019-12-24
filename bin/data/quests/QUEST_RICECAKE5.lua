@@ -1,6 +1,7 @@
 QUEST_RICECAKE5 = {
 	title = 'IDS_PROPQUEST_INC_001847',
 	character = 'MaFl_Iblis05',
+	end_character = '',
 	start_requirements = {
 		min_level = 1,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_RICECAKE5 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_EVE_SONGPYUN', quantity = 50, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

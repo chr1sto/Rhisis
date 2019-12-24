@@ -1,6 +1,7 @@
 QUEST_SCENARIO3 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000107',
 	character = 'MaSa_Neidan',
+	end_character = '',
 	start_requirements = {
 		min_level = 15,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCENARIO3 = {
 	},
 	rewards = {
 		gold = 52000,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

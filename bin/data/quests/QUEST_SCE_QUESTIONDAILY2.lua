@@ -1,6 +1,7 @@
 QUEST_SCE_QUESTIONDAILY2 = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000617',
 	character = 'MaHa_Ryan',
+	end_character = 'MaHa_Ryan',
 	start_requirements = {
 		min_level = 121,
 		max_level = 129,
@@ -8,6 +9,11 @@ QUEST_SCE_QUESTIONDAILY2 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BXQUESTION01', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

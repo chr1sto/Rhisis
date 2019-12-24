@@ -1,6 +1,7 @@
 QUEST_HEROJES_TRN3 = {
 	title = 'IDS_PROPQUEST_INC_000536',
 	character = 'MaFl_Radyon',
+	end_character = 'MaSa_Troupemember5',
 	start_requirements = {
 		min_level = 60,
 		max_level = 60,
@@ -8,6 +9,11 @@ QUEST_HEROJES_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_RENSRING', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

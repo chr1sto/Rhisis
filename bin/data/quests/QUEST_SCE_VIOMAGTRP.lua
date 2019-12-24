@@ -1,6 +1,7 @@
 QUEST_SCE_VIOMAGTRP = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000361',
 	character = 'MaDa_CloneHachal',
+	end_character = 'MaDa_Hachal',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,12 @@ QUEST_SCE_VIOMAGTRP = {
 	},
 	rewards = {
 		gold = 15800,
+	},
+	end_conditions = {
+		monsters = {
+			{ id = 'MI_VIOLMAGICION', quantity = 10 },
+			{ id = 'MI_VIOLMAGICION2', quantity = 1 },
+		},
 	},
 	dialogs = {
 		begin = {

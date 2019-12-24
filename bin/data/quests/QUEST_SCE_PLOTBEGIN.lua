@@ -1,6 +1,7 @@
 QUEST_SCE_PLOTBEGIN = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000327',
 	character = 'MaFl_Martinyc',
+	end_character = 'MaSa_Gothante',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,8 @@ QUEST_SCE_PLOTBEGIN = {
 	},
 	rewards = {
 		gold = 12500,
+	},
+	end_conditions = {
 	},
 	dialogs = {
 		begin = {

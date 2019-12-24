@@ -1,6 +1,7 @@
 QUEST_GETBACK_PORTRAIT = {
 	title = 'IDS_PROPQUEST_INC_000935',
 	character = 'MaFl_Ancimys',
+	end_character = 'MaFl_Rudvihil',
 	start_requirements = {
 		min_level = 26,
 		max_level = 30,
@@ -8,6 +9,11 @@ QUEST_GETBACK_PORTRAIT = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_RADIPORT', quantity = 1, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {

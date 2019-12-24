@@ -1,6 +1,7 @@
 QUEST_SCE_REASONCONDIV = {
 	title = 'IDS_PROPQUEST_SCENARIO_INC_000314',
 	character = 'MaFl_Martinyc',
+	end_character = 'MaFl_Martinyc',
 	start_requirements = {
 		min_level = 20,
 		max_level = 129,
@@ -8,6 +9,13 @@ QUEST_SCE_REASONCONDIV = {
 	},
 	rewards = {
 		gold = 0,
+	},
+	end_conditions = {
+		items = {
+			{ id = 'II_SYS_SYS_QUE_FLASTONE', quantity = 5, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_SAINSTONE', quantity = 5, sex = 'Any', remove = true },
+			{ id = 'II_SYS_SYS_QUE_DARSTONE', quantity = 5, sex = 'Any', remove = true },
+		},
 	},
 	dialogs = {
 		begin = {
