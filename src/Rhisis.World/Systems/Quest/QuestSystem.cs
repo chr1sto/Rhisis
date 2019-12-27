@@ -168,7 +168,8 @@ namespace Rhisis.World.Systems.Quest
             }
 
             quest.IsChecked = !quest.IsChecked;
-            // TODO: send quest check
+
+            this._questPacketFactory.SendCheckedQuests(player, player.QuestDiary.GetCheckedQuests());
         }
 
         /// <inheritdoc />
