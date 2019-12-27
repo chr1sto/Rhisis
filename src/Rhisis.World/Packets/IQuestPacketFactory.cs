@@ -5,6 +5,6 @@ namespace Rhisis.World.Packets
 {
     public interface IQuestPacketFactory
     {
-        void SendQuest(IPlayerEntity player, Quest quest);
+        void SendQuest(IPlayerEntity player, QuestInfo quest);
     }
 }

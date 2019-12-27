@@ -56,23 +56,18 @@ namespace Rhisis.World.Systems.Dialog
             IEnumerable<string> dialogTexts = npcEntity.Data.Dialog.IntroText;
             var dialogLinks = new List<DialogLink>(npcEntity.Data.Dialog.Links);
 
-            if (npcEntity.Quests.Any())
-            {
-                IEnumerable<DialogLink> questLinks = from x in npcEntity.Quests
-                                                     where this._questSystem.CanStartQuest(player, x)
-                                                     select this._questSystem.CreateQuestLink(x);
-                dialogLinks.AddRange(questLinks);
-            }
-
             if (string.IsNullOrEmpty(dialogKey))
             {
-                if (npcEntity.Quests.Count() == 1 && this._questSystem.CanStartQuest(player, npcEntity.Quests.First()))
+                if (npcEntity.Quests.Count() == 1)
                 {
-                    this._questSystem.ProcessQuest(player, npcEntity, npcEntity.Quests.First(), QuestStateType.Suggest);
+                    IQuestScript firstQuest = npcEntity.Quests.First();
+                    var questState = this._questSystem.CanStartQuest(player, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
+
+                    this._questSystem.ProcessQuest(player, npcEntity, firstQuest, questState);
                 }
                 else
                 {
-                    this._npcDialogPacketFactory.SendDialog(player, dialogTexts, dialogLinks);
+                    this.SendNpcDialog(player, npcEntity, dialogTexts, dialogLinks);
                 }
             }
             else
@@ -109,11 +104,24 @@ namespace Rhisis.World.Systems.Dialog
 
                         dialogTexts = dialogLink.Texts;
 
-                        this._npcDialogPacketFactory.SendDialog(player, dialogTexts, dialogLinks);
+                        this.SendNpcDialog(player, npcEntity, dialogTexts, dialogLinks);
                     }
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Sends a NPC dialog to the given player.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="npc">Current npc.</param>
+        /// <param name="texts">Npc dialog texts.</param>
+        /// <param name="links">Npc dialog links.</param>
+        private void SendNpcDialog(IPlayerEntity player, INpcEntity npc, IEnumerable<string> texts, IEnumerable<DialogLink> links)
+        {
+            this._npcDialogPacketFactory.SendDialog(player, texts, links);
+            this._questSystem.SendQuestsInfo(player, npc);
         }
     }
 }

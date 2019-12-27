@@ -32,7 +32,7 @@ namespace Rhisis.Scripting.Quests
                     Quantity = LuaScriptHelper.GetValue<int>(x, "quantity"),
                     Sex = LuaScriptHelper.GetValue<GenderType>(x, "sex"),
                     Remove = LuaScriptHelper.GetValue<bool>(x, "remove")
-                });
+                }).ToList();
             }
 
             if (questEndConditionsTable[QuestScriptConstants.Monsters] is LuaTable monsters)
@@ -41,7 +41,7 @@ namespace Rhisis.Scripting.Quests
                 {
                     Id = LuaScriptHelper.GetValue<string>(x, "id"),
                     Amount = LuaScriptHelper.GetValue<int>(x, "quantity")
-                });
+                }).ToList();
             }
 
             if (questEndConditionsTable[QuestScriptConstants.Patrols] is LuaTable patrols)
@@ -53,7 +53,7 @@ namespace Rhisis.Scripting.Quests
                     Top = LuaScriptHelper.GetValue<int>(x, "top"),
                     Right = LuaScriptHelper.GetValue<int>(x, "right"),
                     Bottom = LuaScriptHelper.GetValue<int>(x, "bottom")
-                });
+                }).ToList();
             }
         }
     }

@@ -7,17 +7,17 @@ namespace Rhisis.World.Game.Components
 {
     public class QuestDiaryComponent
     {
-        public IList<Quest> ActiveQuests { get; }
+        public IList<QuestInfo> ActiveQuests { get; }
 
-        public IList<Quest> FinishedQuests { get; }
+        public IList<QuestInfo> FinishedQuests { get; }
 
         public QuestDiaryComponent()
         {
-            this.ActiveQuests = new List<Quest>();
-            this.FinishedQuests = new List<Quest>();
+            this.ActiveQuests = new List<QuestInfo>();
+            this.FinishedQuests = new List<QuestInfo>();
         }
 
-        public QuestDiaryComponent(IEnumerable<Quest> quests)
+        public QuestDiaryComponent(IEnumerable<QuestInfo> quests)
         {
             this.ActiveQuests = quests.Where(x => !x.IsFinished).ToList();
             this.FinishedQuests = quests.Where(x => x.IsFinished).ToList();
@@ -26,26 +26,26 @@ namespace Rhisis.World.Game.Components
         public bool HasQuest(int questId) 
             => this.ActiveQuests.Any(x => x.QuestId == questId) || this.FinishedQuests.Any(x => x.QuestId == questId);
 
-        public IEnumerable<Quest> GetCheckedQuests() => this.ActiveQuests.Where(x => x.IsChecked);
+        public IEnumerable<QuestInfo> GetCheckedQuests() => this.ActiveQuests.Where(x => x.IsChecked);
 
         public void Serialize(INetPacketStream packet)
         {
             packet.Write((byte)this.ActiveQuests.Count());
-            foreach (Quest quest in this.ActiveQuests)
+            foreach (QuestInfo quest in this.ActiveQuests)
             {
                 quest.Serialize(packet);
             }
 
             packet.Write((byte)this.FinishedQuests.Count());
-            foreach (Quest quest in this.FinishedQuests)
+            foreach (QuestInfo quest in this.FinishedQuests)
             {
                 packet.Write((short)quest.QuestId);
             }
 
-            IEnumerable<Quest> checkedQuests = this.GetCheckedQuests();
+            IEnumerable<QuestInfo> checkedQuests = this.GetCheckedQuests();
 
             packet.Write((byte)checkedQuests.Count());
-            foreach (Quest quest in checkedQuests)
+            foreach (QuestInfo quest in checkedQuests)
             {
                 packet.Write((short)quest.QuestId);
             }

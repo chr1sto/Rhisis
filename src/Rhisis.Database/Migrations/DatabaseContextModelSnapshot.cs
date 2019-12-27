@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rhisis.Database.Context;
 
 namespace Rhisis.Database.MySQL.Migrations
@@ -13,7 +14,7 @@ namespace Rhisis.Database.MySQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.0")
+                .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
@@ -62,7 +63,7 @@ namespace Rhisis.Database.MySQL.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
@@ -81,7 +82,7 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<long>("PlayTime")
                         .HasColumnType("BIGINT");
@@ -142,7 +143,7 @@ namespace Rhisis.Database.MySQL.Migrations
                         .HasColumnType("tinyint unsigned");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("ItemCount")
                         .HasColumnType("int");
@@ -176,16 +177,16 @@ namespace Rhisis.Database.MySQL.Migrations
                         .HasColumnType("BIGINT");
 
                     b.Property<bool>("HasBeenRead")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("HasReceivedGold")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("HasReceivedItem")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int?>("ItemId")
                         .HasColumnType("int");
@@ -200,11 +201,11 @@ namespace Rhisis.Database.MySQL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -226,10 +227,13 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.Property<int>("CharacterId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Finished")
+                    b.Property<ulong>("Finished")
                         .HasColumnType("BIT");
 
-                    b.Property<bool>("IsChecked")
+                    b.Property<ulong>("IsChecked")
+                        .HasColumnType("BIT");
+
+                    b.Property<ulong>("IsDeleted")
                         .HasColumnType("BIT");
 
                     b.Property<int>("QuestId")
@@ -241,6 +245,9 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterId");
+
+                    b.HasIndex("QuestId", "CharacterId")
+                        .IsUnique();
 
                     b.ToTable("Quests");
                 });
@@ -301,7 +308,7 @@ namespace Rhisis.Database.MySQL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<uint>("Type")
                         .HasColumnType("int unsigned");
@@ -330,21 +337,21 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 

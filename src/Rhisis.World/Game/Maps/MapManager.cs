@@ -21,6 +21,7 @@ namespace Rhisis.World.Game.Maps
         private readonly ILogger<MapManager> _logger;
         private readonly WorldConfiguration _worldConfiguration;
         private readonly IMemoryCache _cache;
+        private readonly IGameResources _gameResources;
         private readonly IMapFactory _mapFactory;
         private readonly IDictionary<int, IMapInstance> _maps;
 
@@ -30,12 +31,14 @@ namespace Rhisis.World.Game.Maps
         /// <param name="logger">Logger.</param>
         /// <param name="worldConfiguration">World server configuration.</param>
         /// <param name="cache">World server memory cache.</param>
+        /// <param name="gameResources">Game resources.</param>
         /// <param name="mapFactory">Map factory.</param>
-        public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IMemoryCache cache, IMapFactory mapFactory)
+        public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IMemoryCache cache, IGameResources gameResources, IMapFactory mapFactory)
         {
             this._logger = logger;
             this._worldConfiguration = worldConfiguration.Value;
             this._cache = cache;
+            this._gameResources = gameResources;
             this._mapFactory = mapFactory;
             this._maps = new ConcurrentDictionary<int, IMapInstance>();
         }
@@ -48,7 +51,6 @@ namespace Rhisis.World.Game.Maps
         {
             string worldScriptPath = GameResourcesConstants.Paths.WorldScriptPath;
             var worldsPaths = new Dictionary<string, string>();
-            var defines = this._cache.Get<Dictionary<string, int>>(GameResourcesConstants.Defines);
 
             using (var textFile = new TextFile(worldScriptPath))
             {
@@ -64,7 +66,7 @@ namespace Rhisis.World.Game.Maps
                     continue;
                 }
 
-                if (!defines.TryGetValue(mapDefineName, out int mapId))
+                if (!this._gameResources.Defines.TryGetValue(mapDefineName, out int mapId))
                 {
                     this._logger.LogWarning(GameResourcesConstants.Errors.UnableLoadMapMessage, mapDefineName, $"map has no define id inside '{GameResourcesConstants.Paths.DataSub0Path}/defineWorld.h' file");
                     continue;

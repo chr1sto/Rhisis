@@ -12,6 +12,11 @@ namespace Rhisis.Core.Resources
     public interface IGameResources
     {
         /// <summary>
+        /// Gets the game defined values.
+        /// </summary>
+        IReadOnlyDictionary<string, int> Defines { get; }
+
+        /// <summary>
         /// Gets the game texts.
         /// </summary>
         IReadOnlyDictionary<string, string> Texts { get; }
@@ -75,5 +80,14 @@ namespace Rhisis.Core.Resources
         /// <param name="defaultText">Default text in case the text key has not been found.</param>
         /// <returns>Text.</returns>
         string GetText(string textKey, string defaultText = null);
+
+        /// <summary>
+        /// Gets the correct defined value based on the given key.
+        /// If the defined value is not found, it returns the given default value.
+        /// </summary>
+        /// <param name="defineKey">Define key.</param>
+        /// <param name="defaultValue">Default value in case the defined value has not been found.</param>
+        /// <returns>Defined value.</returns>
+        int GetDefinedValue(string defineKey, int defaultValue = 0);
     }
 }

@@ -31,7 +31,7 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// Gets or sets the link quest id.
         /// </summary>
         [IgnoreDataMember]
-        public int QuestId { get; set; }
+        public int? QuestId { get; set; }
 
         /// <summary>
         /// Create an empty <see cref="DialogLink"/> instance.
@@ -48,7 +48,7 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// <param name="title">Dialog link title</param>
         /// <param name="text">Dialog link text</param>
         public DialogLink(string id, string title)
-            : this(id, title, 0)
+            : this(id, title, default)
         {
         }
 
@@ -58,7 +58,7 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// <param name="id">Dialog link id.</param>
         /// <param name="title">Dialog link title.</param>
         /// <param name="questId">Dialog link quest id.</param>
-        public DialogLink(string id, string title, int questId)
+        public DialogLink(string id, string title, int? questId)
         {
             this.Id = id;
             this.Title = title;

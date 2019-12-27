@@ -16,6 +16,7 @@ namespace Rhisis.Core.Resources
         private readonly ILogger<GameResources> _logger;
         private readonly IMemoryCache _cache;
         private readonly IServiceProvider _serciceProvider;
+        private ConcurrentDictionary<string, int> _defines;
         private ConcurrentDictionary<string, string> _texts;
         private ConcurrentDictionary<int, MoverData> _movers;
         private ConcurrentDictionary<int, ItemData> _items;
@@ -26,6 +27,9 @@ namespace Rhisis.Core.Resources
         private ConcurrentDictionary<int, IQuestScript> _quests;
         private ExpTableData _expTableData;
         private DeathPenalityData _penalities;
+
+        /// <inheritdoc />
+        public IReadOnlyDictionary<string, int> Defines => this.GetCacheValue(GameResourcesConstants.Defines, ref this._defines);
 
         /// <inheritdoc />
         public IReadOnlyDictionary<string, string> Texts => this.GetCacheValue(GameResourcesConstants.Texts, ref this._texts);
@@ -115,6 +119,12 @@ namespace Rhisis.Core.Resources
             }
 
             return string.IsNullOrEmpty(defaultText) ? textKey : defaultText;
+        }
+
+        /// <inheritdoc />
+        public int GetDefinedValue(string defineKey, int defaultValue = 0)
+        {
+            return this.Defines.TryGetValue(defineKey, out int value) ? value : defaultValue;
         }
     }
 }

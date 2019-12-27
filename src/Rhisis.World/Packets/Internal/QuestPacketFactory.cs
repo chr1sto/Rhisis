@@ -11,7 +11,7 @@ namespace Rhisis.World.Packets.Internal
     internal sealed class QuestPacketFactory : IQuestPacketFactory
     {
         /// <inheritdoc />
-        public void SendQuest(IPlayerEntity player, Quest quest)
+        public void SendQuest(IPlayerEntity player, QuestInfo quest)
         {
             using (var packet = new FFPacket())
             {

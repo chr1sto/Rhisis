@@ -1,12 +1,13 @@
 ﻿using Sylver.Network.Data;
+using System;
 
 namespace Rhisis.World.Game.Structures
 {
-    public class Quest
+    public class QuestInfo
     {
         public int QuestId { get; }
 
-        public int DatabaseQuestId { get; }
+        public int? DatabaseQuestId { get; }
 
         public int CharacterId { get; }
 
@@ -14,11 +15,18 @@ namespace Rhisis.World.Game.Structures
 
         public bool IsChecked { get; set; }
 
-        public Quest(int questId, int databaseQuestId, int characterId)
+        public DateTime StartTime { get; set; }
+
+        public QuestInfo(int questId, int characterId)
+            : this(questId, characterId, default)
+        {
+        }
+
+        public QuestInfo(int questId, int characterId, int? databaseQuestId)
         {
             this.QuestId = questId;
-            this.DatabaseQuestId = databaseQuestId;
             this.CharacterId = characterId;
+            this.DatabaseQuestId = databaseQuestId;
         }
 
         public void Serialize(INetPacketStream packet)

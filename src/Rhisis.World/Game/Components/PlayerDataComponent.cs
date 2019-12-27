@@ -23,6 +23,11 @@ namespace Rhisis.World.Game.Components
         public DateTime LoggedInAt { get; set; }
 
         /// <summary>
+        /// Gets or sets the player's gender.
+        /// </summary>
+        public GenderType Gender { get; set; }
+
+        /// <summary>
         /// Gets or sets the player's slot.
         /// </summary>
         public int Slot { get; set; }

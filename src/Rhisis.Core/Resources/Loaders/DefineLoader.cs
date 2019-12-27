@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 
@@ -24,7 +24,7 @@ namespace Rhisis.Core.Resources.Loaders
         /// <inheritdoc />
         public void Load()
         {
-            var defines = new Dictionary<string, int>();
+            var defines = new ConcurrentDictionary<string, int>();
             var headerFiles = from x in Directory.GetFiles(GameResourcesConstants.Paths.ResourcePath, "*.*", SearchOption.AllDirectories)
                               where DefineFile.Extensions.Contains(Path.GetExtension(x))
                               select x;
@@ -38,7 +38,7 @@ namespace Rhisis.Core.Resources.Loaders
                         var isIntValue = int.TryParse(define.Value.ToString(), out int intValue);
 
                         if (isIntValue && !defines.ContainsKey(define.Key))
-                            defines.Add(define.Key, intValue);
+                            defines.TryAdd(define.Key, intValue);
                         else
                         {
                             this._logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Define", define.Key,

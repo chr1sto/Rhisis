@@ -2,6 +2,7 @@
 using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
@@ -72,7 +73,7 @@ namespace Rhisis.World.Game.Factories.Internal
 
             player.Object = new ObjectComponent
             {
-                ModelId = character.Gender == 0 ? 11 : 12,
+                ModelId = character.Gender == 0 ? 11 : 12, // TODO: remove these magic numbers
                 Type = WorldObjectType.Mover,
                 MapId = character.MapId,
                 CurrentMap = map,
@@ -105,6 +106,7 @@ namespace Rhisis.World.Game.Factories.Internal
             player.PlayerData = new PlayerDataComponent
             {
                 Id = character.Id,
+                Gender = character.Gender.ToString().ToEnum<GenderType>(),
                 Slot = character.Slot,
                 Gold = character.Gold,
                 Authority = (AuthorityType)character.User.Authority,

@@ -21,6 +21,9 @@ namespace Rhisis.Scripting
 
             if (typeof(T).IsEnum)
             {
+                if (scriptObject == null)
+                    return default;
+
                 return Enum.TryParse(typeof(T), scriptObject.ToString(), out object result) ? (T)result : default;
             }
 
