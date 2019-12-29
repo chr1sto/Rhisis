@@ -57,5 +57,13 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="player">Current player.</param>
         /// <param name="npc">Npc holing quests.</param>
         void SendQuestsInfo(IPlayerEntity player, INpcEntity npc);
+
+        /// <summary>
+        /// Updates the player's quest diary.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="actionType">Current quest action.</param>
+        /// <param name="values">Update values.</param>
+        void UpdateQuestDiary(IPlayerEntity player, QuestActionType actionType, params object[] values);
     }
 }

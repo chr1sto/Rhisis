@@ -68,6 +68,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
                 quest.MinLevel = questSettingsBlock.GetInstruction("SetBeginCondLevel")?.GetParameter<int>(0) ?? default;
                 quest.MaxLevel = questSettingsBlock.GetInstruction("SetBeginCondLevel")?.GetParameter<int>(1) ?? default;
                 quest.StartJobs = questSettingsBlock.GetInstruction("SetBeginCondJob")?.Parameters.Select(x => x.ToString()).ToArray();
+                quest.PreviousQuestId = questSettingsBlock.GetInstruction("SetBeginCondPreviousQuest")?.GetParameter<string>(1) ?? default;
 
                 LoadEndConditions(quest, questSettingsBlock);
                 LoadQuestRewards(quest, questSettingsBlock);

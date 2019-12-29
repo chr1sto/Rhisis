@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Entities;
+using Rhisis.Database.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,11 @@ namespace Rhisis.Database.Repositories
         /// <inheritdoc />
         public T Update(T entity)
         {
+            if (this._context.Entry(entity).State == EntityState.Detached)
+            {
+                this._context.Attach(entity);
+            }
+
             var trackedEntity = this._context.Set<T>().Update(entity);
 
             return trackedEntity.Entity;

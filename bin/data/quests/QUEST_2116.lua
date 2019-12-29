@@ -6,6 +6,7 @@ QUEST_2116 = {
 		min_level = 121,
 		max_level = 129,
 		job = { 'JOB_KNIGHT_HERO', 'JOB_BLADE_HERO', 'JOB_JESTER_HERO', 'JOB_RANGER_HERO', 'JOB_RINGMASTER_HERO', 'JOB_BILLPOSTER_HERO', 'JOB_PSYCHIKEEPER_HERO', 'JOB_ELEMENTOR_HERO' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 0,

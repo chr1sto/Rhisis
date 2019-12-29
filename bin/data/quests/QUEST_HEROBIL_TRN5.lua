@@ -6,6 +6,7 @@ QUEST_HEROBIL_TRN5 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_ASSIST' },
+		previous_quest = 'QUEST_HEROBIL_TRN4',
 	},
 	rewards = {
 		gold = 0,

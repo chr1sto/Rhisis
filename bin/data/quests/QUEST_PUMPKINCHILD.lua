@@ -6,6 +6,7 @@ QUEST_PUMPKINCHILD = {
 		min_level = 10,
 		max_level = 15,
 		job = { 'JOB_VAGRANT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 20000,

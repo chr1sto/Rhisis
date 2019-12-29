@@ -6,6 +6,7 @@ QUEST_VOCACR_TRN1 = {
 		min_level = 15,
 		max_level = 15,
 		job = { 'JOB_VAGRANT' },
+		previous_quest = 'QUEST_VOCACR_BFTRN',
 	},
 	rewards = {
 		gold = 1500,

@@ -6,6 +6,7 @@ QUEST_ORIGIN_BONEBOWL = {
 		min_level = 44,
 		max_level = 60,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 0,

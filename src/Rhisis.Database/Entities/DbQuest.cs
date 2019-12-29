@@ -42,6 +42,24 @@ namespace Rhisis.Database.Entities
         public DateTime StartTime { get; set; }
 
         /// <summary>
+        /// Gets or sets a value that indicates that the patrol has been done.
+        /// </summary>
+        [Column(TypeName = "BIT")]
+        public bool IsPatrolDone { get; set; }
+
+        /// <summary>
+        /// Gets or sets the amount of monsters killed for the first monster type.
+        /// </summary>
+        [Column(TypeName = "TINYINT")]
+        public int MonsterKilled1 { get; set; }
+
+        /// <summary>
+        /// Gets or sets the amount of monsters killed for the second monster type.
+        /// </summary>
+        [Column(TypeName = "TINYINT")]
+        public int MonsterKilled2 { get; set; }
+
+        /// <summary>
         /// Gets or sets the character id the quest belongs to.
         /// </summary>
         [Column]
@@ -53,18 +71,5 @@ namespace Rhisis.Database.Entities
         /// </summary>
         [ForeignKey(nameof(CharacterId))]
         public DbCharacter Character { get; set; }
-
-        /// <summary>
-        /// Gets or sets the quest actions.
-        /// </summary>
-        public ICollection<DbQuestAction> QuestActions { get; set; }
-
-        /// <summary>
-        /// Creates a new <see cref="DbQuest"/> instance.
-        /// </summary>
-        public DbQuest()
-        {
-            this.QuestActions = new HashSet<DbQuestAction>();
-        }
     }
 }

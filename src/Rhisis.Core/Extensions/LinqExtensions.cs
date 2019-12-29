@@ -32,5 +32,21 @@ namespace Rhisis.Core.Extensions
         {
             return source.GroupBy(expression).Any(x => x.Count() > 1);
         }
+
+        /// <summary>
+        /// Gets the value at a given index of a dictionary.
+        /// </summary>
+        /// <typeparam name="TKey">Key type.</typeparam>
+        /// <typeparam name="TValue">Value type.</typeparam>
+        /// <param name="source">Source dictionary or similar.</param>
+        /// <param name="index">Element index.</param>
+        /// <param name="defaultValue">Default value in case the index is out of range.</param>
+        /// <returns></returns>
+        public static TValue GetValueAtIndexOrDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, int index, TValue defaultValue = default)
+        {
+            KeyValuePair<TKey, TValue> keyValuePair = source.ElementAtOrDefault(index);
+
+            return keyValuePair.Equals(default(KeyValuePair<TKey, TValue>)) ? defaultValue : keyValuePair.Value;
+        }
     }
 }

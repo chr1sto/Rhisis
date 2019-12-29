@@ -6,6 +6,7 @@ QUEST_HEROPSY_TRN3 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_MAGICIAN' },
+		previous_quest = 'QUEST_HEROPSY_TRN2',
 	},
 	rewards = {
 		gold = 0,

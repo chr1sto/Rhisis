@@ -6,6 +6,7 @@ QUEST_HEROKNI_TRN1 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_MERCENARY' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 0,

@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
+using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.Database;
+using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
@@ -53,13 +56,35 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<QuestInfo> playerQuests = this._database.Quests.GetAll(x => x.CharacterId == player.PlayerData.Id)
-                .Select(x => new QuestInfo(x.QuestId, x.CharacterId, x.Id)
+            IEnumerable<QuestInfo> playerQuests = this._database.Quests.GetCharactersQuests(player.PlayerData.Id)
+                .AsQueryable()
+                .AsNoTracking()
+                .AsEnumerable()
+                .Select(x =>
                 {
-                    IsChecked = x.IsChecked,
-                    IsFinished = x.Finished,
-                    StartTime = x.StartTime
-                });
+                    IQuestScript questScript = _gameResources.Quests.GetValueOrDefault(x.QuestId);
+
+                    if (questScript == null)
+                    {
+                        return null;
+                    }
+
+                    var quest = new QuestInfo(x.QuestId, x.CharacterId, x.Id)
+                    {
+                        IsChecked = x.IsChecked,
+                        IsFinished = x.Finished,
+                        StartTime = x.StartTime,
+                        Monsters = new Dictionary<int, short>
+                        {
+                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters.ElementAtOrDefault(0)?.Id), (short)x.MonsterKilled1 },
+                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters.ElementAtOrDefault(1)?.Id), (short)x.MonsterKilled2 }
+                        },
+                        IsPatrolDone = x.IsPatrolDone
+                    };
+
+                    return quest;
+                })
+                .Where(x => x != null);
 
             player.QuestDiary = new QuestDiaryComponent(playerQuests);
         }
@@ -67,7 +92,47 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            // TODO
+            var questsSet = from x in _database.Quests.GetCharactersQuests(player.PlayerData.Id).ToList()
+                            join q in player.QuestDiary on
+                             new { x.QuestId, x.CharacterId }
+                             equals
+                             new { q.QuestId, q.CharacterId }
+                            select new { DbQuest = x, PlayerQuest = q };
+
+            foreach (var questSet in questsSet)
+            {
+                questSet.DbQuest.IsChecked = questSet.PlayerQuest.IsChecked;
+                questSet.DbQuest.IsDeleted = questSet.PlayerQuest.IsDeleted;
+                questSet.DbQuest.IsPatrolDone = questSet.PlayerQuest.IsPatrolDone;
+                questSet.DbQuest.Finished = questSet.PlayerQuest.IsFinished;
+
+                if (questSet.PlayerQuest.Monsters != null)
+                {
+                    questSet.DbQuest.MonsterKilled1 = questSet.PlayerQuest.Monsters.ElementAtOrDefault(0).Value;
+                    questSet.DbQuest.MonsterKilled2 = questSet.PlayerQuest.Monsters.ElementAtOrDefault(1).Value;
+                }
+
+                _database.Quests.Update(questSet.DbQuest);
+            }
+
+            foreach (QuestInfo quest in player.QuestDiary)
+            {
+                if (!quest.DatabaseQuestId.HasValue)
+                {
+                    this._database.Quests.Create(new DbQuest
+                    {
+                        CharacterId = player.PlayerData.Id,
+                        QuestId = quest.QuestId,
+                        StartTime = quest.StartTime,
+                        MonsterKilled1 = quest.Monsters.ElementAtOrDefault(0).Value,
+                        MonsterKilled2 = quest.Monsters.ElementAtOrDefault(1).Value,
+                        IsPatrolDone = quest.IsPatrolDone,
+                        IsChecked = quest.IsChecked
+                    });
+                }
+            }
+
+            this._database.Complete();
         }
 
         /// <inheritdoc />
@@ -78,15 +143,23 @@ namespace Rhisis.World.Systems.Quest
                 return false;
             }
 
+            int previousQuestId = this._gameResources.GetDefinedValue(quest.StartRequirements.PreviousQuestId);
+
+            if (previousQuestId != 0 && !player.QuestDiary.CompletedQuests.Any(x => x.QuestId == previousQuestId))
+            {
+                this._logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player '{player}'. Did not finished quest '{quest.StartRequirements.PreviousQuestId}'.");
+                return false;
+            }
+
             if (player.Object.Level < quest.StartRequirements.MinLevel || player.Object.Level > quest.StartRequirements.MaxLevel)
             {
-                this._logger.LogTrace($"Cannot start quest '{quest.Title}' (id: '{quest.Id}') for player: '{player}'. Level too low or too high.");
+                this._logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player: '{player}'. Level too low or too high.");
                 return false;
             }
 
             if (quest.StartRequirements.Jobs != null && !quest.StartRequirements.Jobs.Contains((DefineJob.Job)player.PlayerData.JobId))
             {
-                this._logger.LogTrace($"Cannot start quest '{quest.Title}' (id: '{quest.Id}') for player: '{player}'. Invalid job.");
+                this._logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player: '{player}'. Invalid job.");
                 return false;
             }
 
@@ -169,7 +242,7 @@ namespace Rhisis.World.Systems.Quest
 
             quest.IsChecked = !quest.IsChecked;
 
-            this._questPacketFactory.SendCheckedQuests(player, player.QuestDiary.GetCheckedQuests());
+            this._questPacketFactory.SendCheckedQuests(player, player.QuestDiary.CheckedQuests);
         }
 
         /// <inheritdoc />
@@ -185,6 +258,37 @@ namespace Rhisis.World.Systems.Quest
                                                            select this.CreateQuestLink(x, QuestStateType.End);
 
                 this._npcDialogPacketFactory.SendQuestDialogs(player, newQuestsLinks, questsInProgress);
+            }
+        }
+
+        /// <inheritdoc />
+        public void UpdateQuestDiary(IPlayerEntity player, QuestActionType actionType, params object[] values)
+        {
+            foreach (QuestInfo quest in player.QuestDiary.ActiveQuests)
+            {
+                bool updateQuest = false;
+
+                if (actionType == QuestActionType.KillMonster)
+                {
+                    int killedMonsterId = Convert.ToInt32(values.ElementAtOrDefault(0));
+                    short killedAmount = Convert.ToInt16(values.ElementAtOrDefault(1));
+
+                    if (quest.Monsters.ContainsKey(killedMonsterId))
+                    {
+                        quest.Monsters[killedMonsterId] += killedAmount;
+                        updateQuest = true;
+                    }
+                }
+
+                if (actionType == QuestActionType.Patrol)
+                {
+                    // TODO
+                }
+
+                if (updateQuest)
+                {
+                    this._questPacketFactory.SendQuest(player, quest);
+                }
             }
         }
 
@@ -207,17 +311,25 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Quest to accept.</param>
         private void AcceptQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
-            this.SendQuestDialog(player, npc, quest.Id, quest.AcceptedDialogs, OkButtons);
-
             var acceptedQuest = new QuestInfo(quest.Id, player.PlayerData.Id)
             {
-                StartTime = DateTime.UtcNow,
+                StartTime = DateTime.UtcNow
             };
 
-            player.QuestDiary.ActiveQuests.Add(acceptedQuest);
+            if (quest.EndConditions.Monsters != null)
+            {
+                acceptedQuest.Monsters = new Dictionary<int, short>
+                {
+                    { _gameResources.GetDefinedValue(quest.EndConditions.Monsters?.ElementAtOrDefault(0)?.Id), 0 },
+                    { _gameResources.GetDefinedValue(quest.EndConditions.Monsters?.ElementAtOrDefault(1)?.Id), 0 }
+                };
+            }
+
+            player.QuestDiary.Add(acceptedQuest);
 
             this._questPacketFactory.SendQuest(player, acceptedQuest);
-            this._textPacketFactory.SendDefinedText(player, DefineText.TID_EVE_STARTQUEST, _gameResources.GetText(quest.Title));
+            this._textPacketFactory.SendDefinedText(player, DefineText.TID_EVE_STARTQUEST, $"\"{_gameResources.GetText(quest.Title)}\"");
+            this.SendQuestDialog(player, npc, quest.Id, quest.AcceptedDialogs, OkButtons);
         }
 
         /// <summary>
@@ -258,7 +370,9 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Current quest.</param>
         private void FinalizeQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
-            this._logger.LogDebug($"Finalize quest '{quest.Name}' for player '{player}'.");
+            // TODO: give rewards
+
+            // TODO: set quest to "finished"
 
             this._npcDialogPacketFactory.SendCloseDialog(player);
         }

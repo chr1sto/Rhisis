@@ -6,6 +6,7 @@ QUEST_HEROBLA_TRN5 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_MERCENARY' },
+		previous_quest = 'QUEST_HEROBLA_TRN4',
 	},
 	rewards = {
 		gold = 0,

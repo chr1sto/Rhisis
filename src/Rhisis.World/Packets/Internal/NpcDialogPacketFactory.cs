@@ -41,7 +41,7 @@ namespace Rhisis.World.Packets.Internal
                     packet.Write(link.Title);
                     packet.Write(link.Id);
                     packet.Write(0);
-                    packet.Write(link.QuestId.GetValueOrDefault(questId));
+                    packet.Write(link.QuestId.GetValueOrDefault());
                 }
             }
 

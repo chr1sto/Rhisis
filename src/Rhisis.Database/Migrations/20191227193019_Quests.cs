@@ -143,6 +143,9 @@ namespace Rhisis.Database.MsySQL.Migrations
                     IsChecked = table.Column<ulong>(type: "BIT", nullable: false),
                     IsDeleted = table.Column<ulong>(type: "BIT", nullable: false),
                     StartTime = table.Column<DateTime>(type: "DATETIME", nullable: false),
+                    IsPatrolDone = table.Column<ulong>(type: "BIT", nullable: false),
+                    MonsterKilled1 = table.Column<sbyte>(type: "TINYINT", nullable: false),
+                    MonsterKilled2 = table.Column<sbyte>(type: "TINYINT", nullable: false),
                     CharacterId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -155,33 +158,6 @@ namespace Rhisis.Database.MsySQL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "QuestActions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Type = table.Column<int>(nullable: false),
-                    Index = table.Column<int>(nullable: true),
-                    Value = table.Column<int>(nullable: false),
-                    QuestId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QuestActions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_QuestActions_Quests_QuestId",
-                        column: x => x.QuestId,
-                        principalTable: "Quests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuestActions_QuestId",
-                table: "QuestActions",
-                column: "QuestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Quests_CharacterId",
@@ -268,9 +244,6 @@ namespace Rhisis.Database.MsySQL.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Shortcuts_Characters_CharacterId",
                 table: "Shortcuts");
-
-            migrationBuilder.DropTable(
-                name: "QuestActions");
 
             migrationBuilder.DropTable(
                 name: "Quests");

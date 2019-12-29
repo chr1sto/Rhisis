@@ -6,6 +6,7 @@ QUEST_VOCMER_TRN3 = {
 		min_level = 15,
 		max_level = 15,
 		job = { 'JOB_VAGRANT' },
+		previous_quest = 'QUEST_VOCMER_TRN2',
 	},
 	rewards = {
 		gold = 0,

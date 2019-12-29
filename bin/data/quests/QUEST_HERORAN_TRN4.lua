@@ -6,6 +6,7 @@ QUEST_HERORAN_TRN4 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_ACROBAT' },
+		previous_quest = 'QUEST_HERORAN_TRN3',
 	},
 	rewards = {
 		gold = 0,

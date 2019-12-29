@@ -6,6 +6,7 @@ QUEST_2126 = {
 		min_level = 60,
 		max_level = 129,
 		job = { 'JOB_KNIGHT_MASTER', 'JOB_BLADE_MASTER', 'JOB_JESTER_MASTER', 'JOB_RANGER_MASTER', 'JOB_RINGMASTER_MASTER', 'JOB_BILLPOSTER_MASTER', 'JOB_PSYCHIKEEPER_MASTER', 'JOB_ELEMENTOR_MASTER' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 0,

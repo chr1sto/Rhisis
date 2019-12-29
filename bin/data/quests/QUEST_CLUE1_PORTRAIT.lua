@@ -6,6 +6,7 @@ QUEST_CLUE1_PORTRAIT = {
 		min_level = 26,
 		max_level = 30,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN' },
+		previous_quest = 'QUEST_FIND_PORTRAIT',
 	},
 	rewards = {
 		gold = 0,

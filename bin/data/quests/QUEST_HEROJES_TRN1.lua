@@ -6,6 +6,7 @@ QUEST_HEROJES_TRN1 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_ACROBAT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = {

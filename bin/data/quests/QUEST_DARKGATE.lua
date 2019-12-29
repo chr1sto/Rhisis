@@ -6,6 +6,7 @@ QUEST_DARKGATE = {
 		min_level = 45,
 		max_level = 70,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN', 'JOB_KNIGHT', 'JOB_BLADE', 'JOB_JESTER', 'JOB_RANGER', 'JOB_RINGMASTER', 'JOB_BILLPOSTER', 'JOB_PSYCHIKEEPER', 'JOB_ELEMENTOR' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 0,

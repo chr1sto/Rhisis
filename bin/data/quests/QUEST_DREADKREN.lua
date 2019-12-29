@@ -6,6 +6,7 @@ QUEST_DREADKREN = {
 		min_level = 30,
 		max_level = 39,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 0,

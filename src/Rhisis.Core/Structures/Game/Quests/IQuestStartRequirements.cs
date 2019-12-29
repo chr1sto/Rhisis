@@ -19,5 +19,10 @@ namespace Rhisis.Core.Structures.Game.Quests
         /// Gets the jobs the player must have to start the quest.
         /// </summary>
         IEnumerable<DefineJob.Job> Jobs { get; }
+
+        /// <summary>
+        /// Gets the previous quest id.
+        /// </summary>
+        string PreviousQuestId { get; }
     }
 }

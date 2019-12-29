@@ -132,6 +132,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
             WriteAtLevel(writer, 2, $"{QuestScriptConstants.MinLevel} = {quest.MinLevel}");
             WriteAtLevel(writer, 2, $"{QuestScriptConstants.MaxLevel} = {quest.MaxLevel}");
             WriteAtLevel(writer, 2, $"{QuestScriptConstants.Job} = {{ {string.Join(", ", quest.StartJobs.Select(x => $"'{x}'"))} }}");
+            WriteAtLevel(writer, 2, $"{QuestScriptConstants.PreviousQuest} = '{quest.PreviousQuestId}'");
             WriteAtLevel(writer, 1, $"}}");
         }
 

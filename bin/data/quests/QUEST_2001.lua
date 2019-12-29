@@ -6,6 +6,7 @@ QUEST_2001 = {
 		min_level = 7,
 		max_level = 11,
 		job = { 'JOB_VAGRANT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 3500,

@@ -27,7 +27,9 @@ namespace Rhisis.Scripting
                 return Enum.TryParse(typeof(T), scriptObject.ToString(), out object result) ? (T)result : default;
             }
 
-            return scriptObject != null ? (T)Convert.ChangeType(scriptObject, typeof(T)) : default;
+            Type targetType = typeof(T);
+
+            return scriptObject != null ? (T)Convert.ChangeType(scriptObject, Nullable.GetUnderlyingType(targetType) ?? targetType) : default;
         }
     }
 }

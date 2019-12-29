@@ -7,12 +7,14 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Core.Structures.Game;
+using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Leveling;
+using Rhisis.World.Systems.Quest;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
@@ -24,6 +26,7 @@ namespace Rhisis.World.Systems.Battle
         private readonly IGameResources _gameResources;
         private readonly IDropSystem _dropSystem;
         private readonly IExperienceSystem _experienceSystem;
+        private readonly IQuestSystem _questSystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly WorldConfiguration _worldConfiguration;
@@ -36,15 +39,17 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="gameResources">Game resources.</param>
         /// <param name="dropSystem">Drop system.</param>
         /// <param name="experienceSystem">Experience system.</param>
+        /// <param name="questSystem">Quest system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IQuestSystem questSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             this._logger = logger;
             this._worldConfiguration = worldConfiguration.Value;
             this._gameResources = gameResources;
             this._dropSystem = dropSystem;
             this._experienceSystem = experienceSystem;
+            this._questSystem = questSystem;
             this._battlePacketFactory = battlePacketFactory;
             this._moverPacketFactory = moverPacketFactory;
         }
@@ -141,6 +146,9 @@ namespace Rhisis.World.Systems.Battle
 
                     // Give experience
                     this._experienceSystem.GiveExeperience(player, deadMonster.Data.Experience * this._worldConfiguration.Rates.Experience);
+
+                    // Quest check
+                    this._questSystem.UpdateQuestDiary(player, QuestActionType.KillMonster, deadMonster.Data.Id, 1);
                 }
                 else if (defender is IPlayerEntity deadPlayer)
                 {

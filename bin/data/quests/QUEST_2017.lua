@@ -6,6 +6,7 @@ QUEST_2017 = {
 		min_level = 29,
 		max_level = 34,
 		job = { 'JOB_ASSIST', 'JOB_MERCENARY', 'JOB_MAGICIAN', 'JOB_ACROBAT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 29000,

@@ -6,6 +6,7 @@ QUEST_2019 = {
 		min_level = 33,
 		max_level = 38,
 		job = { 'JOB_ASSIST', 'JOB_MERCENARY', 'JOB_MAGICIAN', 'JOB_ACROBAT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 33000,

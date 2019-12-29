@@ -40,6 +40,11 @@ namespace Rhisis.Core.Structures.Game.Quests
         public string[] StartJobs { get; set; }
 
         /// <summary>
+        /// Gets or sets the previous quest id.
+        /// </summary>
+        public string PreviousQuestId { get; set; }
+
+        /// <summary>
         /// Gets or sets the quest begin dialogs.
         /// </summary>
         public string[] BeginDialogs { get; set; }

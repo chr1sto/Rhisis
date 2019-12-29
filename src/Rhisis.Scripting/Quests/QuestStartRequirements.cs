@@ -19,6 +19,9 @@ namespace Rhisis.Scripting.Quests
         /// <inheritdoc />
         public IEnumerable<DefineJob.Job> Jobs { get; }
 
+        /// <inheritdoc />
+        public string PreviousQuestId { get; }
+
         /// <summary>
         /// Creates a new <see cref="QuestStartRequirements"/> instance.
         /// </summary>
@@ -30,6 +33,7 @@ namespace Rhisis.Scripting.Quests
             this.Jobs = (questStartRequirementsTable[QuestScriptConstants.Job] as LuaTable)?.Values
                 .ToArray<string>()
                 .Select(x => (DefineJob.Job)Enum.Parse(typeof(DefineJob.Job), x));
+            this.PreviousQuestId = LuaScriptHelper.GetValue<string>(questStartRequirementsTable, QuestScriptConstants.PreviousQuest);
         }
     }
 }

@@ -124,6 +124,11 @@ namespace Rhisis.Core.Resources
         /// <inheritdoc />
         public int GetDefinedValue(string defineKey, int defaultValue = 0)
         {
+            if (string.IsNullOrEmpty(defineKey))
+            {
+                return defaultValue;
+            }
+
             return this.Defines.TryGetValue(defineKey, out int value) ? value : defaultValue;
         }
     }

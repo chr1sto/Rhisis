@@ -6,6 +6,7 @@ QUEST_NEWPETYORN = {
 		min_level = 5,
 		max_level = 15,
 		job = { 'JOB_VAGRANT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 15000,

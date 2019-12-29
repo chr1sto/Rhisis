@@ -6,6 +6,7 @@ QUEST_SERUSURIEL = {
 		min_level = 20,
 		max_level = 35,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN' },
+		previous_quest = 'QUEST_PHANTASM',
 	},
 	rewards = {
 		gold = 0,

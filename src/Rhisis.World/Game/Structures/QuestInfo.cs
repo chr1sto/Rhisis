@@ -1,9 +1,12 @@
 ﻿using Sylver.Network.Data;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Rhisis.World.Game.Structures
 {
-    public class QuestInfo
+    public class QuestInfo : IEquatable<QuestInfo>
     {
         public int QuestId { get; }
 
@@ -15,7 +18,13 @@ namespace Rhisis.World.Game.Structures
 
         public bool IsChecked { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public DateTime StartTime { get; set; }
+
+        public IDictionary<int, short> Monsters { get; set; }
+
+        public bool IsPatrolDone { get; set; }
 
         public QuestInfo(int questId, int characterId)
             : this(questId, characterId, default)
@@ -27,6 +36,7 @@ namespace Rhisis.World.Game.Structures
             this.QuestId = questId;
             this.CharacterId = characterId;
             this.DatabaseQuestId = databaseQuestId;
+            this.Monsters = new Dictionary<int, short>();
         }
 
         public void Serialize(INetPacketStream packet)
@@ -35,10 +45,15 @@ namespace Rhisis.World.Game.Structures
             packet.Write<short>(0); // time limit
             packet.Write((short)this.QuestId);
 
-            packet.Write<short>(0); // monster 1 killed
-            packet.Write<short>(0); // monster 2 killed
-            packet.Write<byte>(0); // patrol done
+            packet.Write<short>(Monsters.ElementAtOrDefault(0).Value); // monster 1 killed
+            packet.Write<short>(Monsters.ElementAtOrDefault(1).Value); // monster 2 killed
+            packet.Write<byte>(Convert.ToByte(this.IsPatrolDone)); // patrol done
             packet.Write<byte>(0); // dialog done
+        }
+
+        public bool Equals([AllowNull] QuestInfo other)
+        {
+            return QuestId == other.QuestId && CharacterId == other.CharacterId;
         }
     }
 }

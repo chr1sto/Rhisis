@@ -20,6 +20,8 @@
 
         public const string MaxLevel = "max_level";
 
+        public const string PreviousQuest = "previous_quest";
+
         public const string Job = "job";
 
         public const string Rewards = "rewards";

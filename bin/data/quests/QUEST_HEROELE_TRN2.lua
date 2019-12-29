@@ -6,6 +6,7 @@ QUEST_HEROELE_TRN2 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_MAGICIAN' },
+		previous_quest = 'QUEST_HEROELE_TRN1',
 	},
 	rewards = {
 		gold = 0,

@@ -1,54 +1,148 @@
 ﻿using Rhisis.World.Game.Structures;
 using Sylver.Network.Data;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.World.Game.Components
 {
-    public class QuestDiaryComponent
+    public class QuestDiaryComponent : ICollection<QuestInfo>
     {
-        public IList<QuestInfo> ActiveQuests { get; }
+        private readonly List<QuestInfo> _quests;
 
-        public IList<QuestInfo> FinishedQuests { get; }
+        /// <summary>
+        /// Gets the active quests.
+        /// </summary>
+        public IEnumerable<QuestInfo> ActiveQuests => _quests.Where(x => !x.IsFinished);
 
+        /// <summary>
+        /// Gets the completed quests.
+        /// </summary>
+        public IEnumerable<QuestInfo> CompletedQuests => _quests.Where(x => x.IsFinished);
+
+        /// <summary>
+        /// Gets the active checked quests.
+        /// </summary>
+        public IEnumerable<QuestInfo> CheckedQuests => ActiveQuests.Where(x => x.IsChecked);
+
+        /// <summary>
+        /// Gets the total amount of quests in the diary.
+        /// </summary>
+        public int Count => _quests.Count;
+
+        /// <summary>
+        /// Gets a value that indicates if the diary is in readonly mode.
+        /// </summary>
+        public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Creates a new empty <see cref="QuestDiaryComponent"/> instance.
+        /// </summary>
         public QuestDiaryComponent()
         {
-            this.ActiveQuests = new List<QuestInfo>();
-            this.FinishedQuests = new List<QuestInfo>();
+            _quests = new List<QuestInfo>();
         }
 
+        /// <summary>
+        /// Creates a new <see cref="QuestDiaryComponent"/> instance from a collection of <see cref="QuestInfo"/>.
+        /// </summary>
+        /// <param name="quests">Quest information.</param>
         public QuestDiaryComponent(IEnumerable<QuestInfo> quests)
         {
-            this.ActiveQuests = quests.Where(x => !x.IsFinished).ToList();
-            this.FinishedQuests = quests.Where(x => x.IsFinished).ToList();
+            _quests = quests.ToList();
         }
 
-        public bool HasQuest(int questId) 
-            => this.ActiveQuests.Any(x => x.QuestId == questId) || this.FinishedQuests.Any(x => x.QuestId == questId);
+        /// <summary>
+        /// Checks if the quest exists in the diary.
+        /// </summary>
+        /// <param name="questId">Quest Id.</param>
+        /// <returns>True if the quest exists, false otherwise.</returns>
+        public bool HasQuest(int questId) => _quests.Any(x => x.QuestId == questId);
 
-        public IEnumerable<QuestInfo> GetCheckedQuests() => this.ActiveQuests.Where(x => x.IsChecked);
-
+        /// <summary>
+        /// Serialize the quest diary.
+        /// </summary>
+        /// <param name="packet">Packet stream.</param>
         public void Serialize(INetPacketStream packet)
         {
-            packet.Write((byte)this.ActiveQuests.Count());
-            foreach (QuestInfo quest in this.ActiveQuests)
+            packet.Write((byte)ActiveQuests.Count());
+            foreach (QuestInfo quest in ActiveQuests)
             {
                 quest.Serialize(packet);
             }
 
-            packet.Write((byte)this.FinishedQuests.Count());
-            foreach (QuestInfo quest in this.FinishedQuests)
+            packet.Write((byte)CompletedQuests.Count());
+            foreach (QuestInfo quest in CompletedQuests)
             {
                 packet.Write((short)quest.QuestId);
             }
 
-            IEnumerable<QuestInfo> checkedQuests = this.GetCheckedQuests();
-
-            packet.Write((byte)checkedQuests.Count());
-            foreach (QuestInfo quest in checkedQuests)
+            packet.Write((byte)CheckedQuests.Count());
+            foreach (QuestInfo quest in CheckedQuests)
             {
                 packet.Write((short)quest.QuestId);
             }
         }
+
+        /// <summary>
+        /// Adds a new quest to the diary.
+        /// </summary>
+        /// <param name="item"></param>
+        public void Add(QuestInfo item)
+        {
+            if (Contains(item))
+            {
+                throw new InvalidOperationException($"Quest '{item.QuestId}' for player with id '{item.CharacterId}' already exists.");
+            }
+
+            _quests.Add(item);
+        }
+
+        /// <summary>
+        /// Clears the quest diary.
+        /// </summary>
+        public void Clear() => throw new NotImplementedException();
+
+        /// <summary>
+        /// Checks if the quest diary contains the given <see cref="QuestInfo"/>.
+        /// </summary>
+        /// <param name="item">Quest information.</param>
+        /// <returns>True if the quest exist, false otherwise.</returns>
+        public bool Contains(QuestInfo item)
+        {
+            return _quests.Contains(item);
+        }
+
+        /// <summary>
+        /// Copy the quests into an array.
+        /// </summary>
+        /// <param name="array">Destination array.</param>
+        /// <param name="arrayIndex">Array index.</param>
+        public void CopyTo(QuestInfo[] array, int arrayIndex) => throw new NotImplementedException();
+
+        /// <summary>
+        /// Removes a quest from the diary.
+        /// </summary>
+        /// <param name="item">Quest to remove.</param>
+        /// <returns></returns>
+        public bool Remove(QuestInfo item)
+        {
+            item.IsDeleted = true;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gets the quest diary enumerator.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<QuestInfo> GetEnumerator() => _quests.GetEnumerator();
+
+        /// <summary>
+        /// Gets the quest diary enumerator.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator IEnumerable.GetEnumerator() => _quests.GetEnumerator();
     }
 }

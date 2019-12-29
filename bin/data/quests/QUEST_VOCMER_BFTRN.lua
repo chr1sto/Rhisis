@@ -6,6 +6,7 @@ QUEST_VOCMER_BFTRN = {
 		min_level = 15,
 		max_level = 15,
 		job = { 'JOB_VAGRANT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 1500,

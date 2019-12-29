@@ -6,6 +6,7 @@ QUEST_2021 = {
 		min_level = 37,
 		max_level = 42,
 		job = { 'JOB_ASSIST', 'JOB_MERCENARY', 'JOB_MAGICIAN', 'JOB_ACROBAT' },
+		previous_quest = '',
 	},
 	rewards = {
 		gold = 37000,

@@ -58,17 +58,21 @@ namespace Rhisis.World.Systems.Dialog
 
             if (string.IsNullOrEmpty(dialogKey))
             {
-                if (npcEntity.Quests.Count() == 1)
+                if (npcEntity.Quests.Any())
                 {
-                    IQuestScript firstQuest = npcEntity.Quests.First();
-                    var questState = this._questSystem.CanStartQuest(player, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
+                    IEnumerable<IQuestScript> availableQuests = npcEntity.Quests.Where(x => this._questSystem.CanStartQuest(player, x));
 
-                    this._questSystem.ProcessQuest(player, npcEntity, firstQuest, questState);
+                    if (availableQuests.Count() == 1)
+                    {
+                        IQuestScript firstQuest = availableQuests.First();
+                        var questState = this._questSystem.CanStartQuest(player, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
+
+                        this._questSystem.ProcessQuest(player, npcEntity, firstQuest, questState);
+                        return;
+                    }
                 }
-                else
-                {
-                    this.SendNpcDialog(player, npcEntity, dialogTexts, dialogLinks);
-                }
+
+                this.SendNpcDialog(player, npcEntity, dialogTexts, dialogLinks);
             }
             else
             {

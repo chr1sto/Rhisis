@@ -6,6 +6,7 @@ QUEST_TRUTH_PAST = {
 		min_level = 20,
 		max_level = 30,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN' },
+		previous_quest = 'QUEST_DOLL_MIA',
 	},
 	rewards = {
 		gold = 0,

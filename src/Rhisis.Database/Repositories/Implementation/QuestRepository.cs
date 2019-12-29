@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Entities;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.Database.Repositories.Implementation
 {
@@ -20,13 +19,6 @@ namespace Rhisis.Database.Repositories.Implementation
         public IEnumerable<DbQuest> GetCharactersQuests(int characterId)
         {
             return this.GetAll(x => x.CharacterId == characterId);
-        }
-
-        /// <inheritdoc />
-        protected override IQueryable<DbQuest> GetQueryable()
-        {
-            return base.GetQueryable()
-                .Include(x => x.QuestActions);
         }
     }
 }

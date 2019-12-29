@@ -6,6 +6,7 @@ QUEST_HERORIN_TRN3 = {
 		min_level = 60,
 		max_level = 60,
 		job = { 'JOB_ASSIST' },
+		previous_quest = 'QUEST_HERORIN_TRN2',
 	},
 	rewards = {
 		gold = 0,

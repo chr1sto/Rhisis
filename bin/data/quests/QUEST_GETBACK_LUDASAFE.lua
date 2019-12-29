@@ -6,6 +6,7 @@ QUEST_GETBACK_LUDASAFE = {
 		min_level = 30,
 		max_level = 60,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN' },
+		previous_quest = 'QUEST_FIND_REDBANGT',
 	},
 	rewards = {
 		gold = 0,

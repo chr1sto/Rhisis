@@ -6,6 +6,7 @@ QUEST_FIND_SCRIPT = {
 		min_level = 37,
 		max_level = 60,
 		job = { 'JOB_MERCENARY', 'JOB_ACROBAT', 'JOB_ASSIST', 'JOB_MAGICIAN' },
+		previous_quest = 'QUEST_DISAPP_SCRIPT',
 	},
 	rewards = {
 		gold = 0,

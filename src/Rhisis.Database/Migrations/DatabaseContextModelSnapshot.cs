@@ -236,6 +236,15 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.Property<ulong>("IsDeleted")
                         .HasColumnType("BIT");
 
+                    b.Property<ulong>("IsPatrolDone")
+                        .HasColumnType("BIT");
+
+                    b.Property<sbyte>("MonsterKilled1")
+                        .HasColumnType("TINYINT");
+
+                    b.Property<sbyte>("MonsterKilled2")
+                        .HasColumnType("TINYINT");
+
                     b.Property<int>("QuestId")
                         .HasColumnType("int");
 
@@ -250,31 +259,6 @@ namespace Rhisis.Database.MySQL.Migrations
                         .IsUnique();
 
                     b.ToTable("Quests");
-                });
-
-            modelBuilder.Entity("Rhisis.Database.Entities.DbQuestAction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Index")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Value")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestId");
-
-                    b.ToTable("QuestActions");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
@@ -403,15 +387,6 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
                         .WithMany()
                         .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Rhisis.Database.Entities.DbQuestAction", b =>
-                {
-                    b.HasOne("Rhisis.Database.Entities.DbQuest", "Quest")
-                        .WithMany("QuestActions")
-                        .HasForeignKey("QuestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
