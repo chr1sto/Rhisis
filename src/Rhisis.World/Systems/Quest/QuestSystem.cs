@@ -192,7 +192,23 @@ namespace Rhisis.World.Systems.Quest
                     }
                 }
 
-                // TODO: Check killed monsters
+                // Check monsters
+                if (quest.EndConditions.Monsters != null && quest.EndConditions.Monsters.Any())
+                {
+                    foreach (QuestMonster questMonster in quest.EndConditions.Monsters)
+                    {
+                        int questMonsterId = _gameResources.GetDefinedValue(questMonster.Id);
+
+                        if (questToFinish.Monsters.TryGetValue(questMonsterId, out short killedQuantity))
+                        {
+                            if (killedQuantity < questMonster.Amount)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            
                 // TODO: Check region patrols
             }
 
@@ -313,17 +329,9 @@ namespace Rhisis.World.Systems.Quest
         {
             var acceptedQuest = new QuestInfo(quest.Id, player.PlayerData.Id)
             {
-                StartTime = DateTime.UtcNow
+                StartTime = DateTime.UtcNow,
+                Monsters = quest.EndConditions.Monsters?.ToDictionary(x => _gameResources.GetDefinedValue(x.Id), x => (short)0)
             };
-
-            if (quest.EndConditions.Monsters != null)
-            {
-                acceptedQuest.Monsters = new Dictionary<int, short>
-                {
-                    { _gameResources.GetDefinedValue(quest.EndConditions.Monsters?.ElementAtOrDefault(0)?.Id), 0 },
-                    { _gameResources.GetDefinedValue(quest.EndConditions.Monsters?.ElementAtOrDefault(1)?.Id), 0 }
-                };
-            }
 
             player.QuestDiary.Add(acceptedQuest);
 
