@@ -10,6 +10,9 @@ QUEST_2009 = {
 	},
 	rewards = {
 		gold = 8500,
+		items = {
+			{ id = 'II_SYS_BLI_TWO_TOWNBLINKWING', quantity = 20, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

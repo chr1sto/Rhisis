@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Factories;
 using Rhisis.World.Systems.PlayerData;
 using Sylver.Network.Common;
 
@@ -8,7 +9,7 @@ namespace Rhisis.World.Game.Entities
 {
     public class PlayerEntity : WorldEntity, IPlayerEntity
     {
-        private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly IPlayerFactory _playerFactory;
 
         /// <inheritdoc />
         public override WorldEntityType Type => WorldEntityType.Player;
@@ -65,7 +66,7 @@ namespace Rhisis.World.Game.Entities
         /// Creates a new <see cref="PlayerEntity"/> instance.
         /// </summary>
         /// <param name="context"></param>
-        public PlayerEntity(IPlayerDataSystem playerDataSystem)
+        public PlayerEntity(IPlayerFactory playerFactory)
         {
             this.Moves = new MovableComponent();
             this.PlayerData = new PlayerDataComponent();
@@ -77,7 +78,7 @@ namespace Rhisis.World.Game.Entities
             this.Timers = new TimerComponent();
             this.Attributes = new AttributeComponent();
             this.QuestDiary = new QuestDiaryComponent();
-            this._playerDataSystem = playerDataSystem;
+            this._playerFactory = playerFactory;
         }
 
         /// <summary>
@@ -86,7 +87,8 @@ namespace Rhisis.World.Game.Entities
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            this._playerDataSystem.SavePlayer(this);
+            this._playerFactory.SavePlayer(this);
+
             base.Dispose(disposing);
         }
 

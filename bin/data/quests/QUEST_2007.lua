@@ -10,6 +10,9 @@ QUEST_2007 = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_GEN_REF_REF_FOUTH', quantity = 20, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

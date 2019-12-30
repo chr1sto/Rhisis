@@ -10,6 +10,9 @@ QUEST_SCE_QUESTIONDAILY6 = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_QUESTIONPAPER01', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 	},

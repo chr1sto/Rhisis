@@ -10,6 +10,9 @@ QUEST_CLUE1_PORTRAIT = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_CLUEPORT1', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 	},

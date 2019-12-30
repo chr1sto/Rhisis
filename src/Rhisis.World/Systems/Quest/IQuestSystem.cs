@@ -1,23 +1,14 @@
-﻿using Rhisis.Core.Structures.Game.Dialogs;
-using Rhisis.Core.Structures.Game.Quests;
+﻿using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems.Quest
 {
-    public interface IQuestSystem
+    /// <summary>
+    /// Provides a mechansim to manage player quests.
+    /// </summary>
+    public interface IQuestSystem : IGameSystemLifeCycle
     {
-        /// <summary>
-        /// Initialize the player's quest diairy.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        void Initialize(IPlayerEntity player);
-
-        /// <summary>
-        /// Saves the player's quest diary.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        void Save(IPlayerEntity player);
-
         /// <summary>
         /// Check if the player can start the given quest script.
         /// </summary>

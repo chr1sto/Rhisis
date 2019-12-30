@@ -10,6 +10,9 @@ QUEST_REVENGE_RBANG = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_WEA_SWO_ENTANALE', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

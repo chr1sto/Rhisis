@@ -218,14 +218,12 @@ namespace Rhisis.World.Game.Components
             if (item.Data.CoolTime <= 0)
                 return null;
 
-            switch (item.Data.ItemKind2)
+            return item.Data.ItemKind2 switch
             {
-                case ItemKind2.FOOD:
-                    return item.Data.ItemKind3 == ItemKind3.PILL ? 1 : 0;
-                case ItemKind2.SKILL:
-                    return 2;
-                default: return null;
-            }
+                ItemKind2.FOOD => item.Data.ItemKind3 == ItemKind3.PILL ? 1 : 0,
+                ItemKind2.SKILL => 2,
+                _ => null,
+            };
         }
 
         /// <summary>

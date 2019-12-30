@@ -10,6 +10,9 @@ QUEST_RICECAKE5 = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_EVE_BLUEBALL', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

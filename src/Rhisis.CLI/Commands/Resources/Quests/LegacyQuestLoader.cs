@@ -134,6 +134,19 @@ namespace Rhisis.CLI.Commands.Game.Quests
         {
             quest.MinGold = settingsBlock.GetInstruction("SetEndRewardGold")?.GetParameter<int>(0) ?? default;
             quest.MaxGold = settingsBlock.GetInstruction("SetEndRewardGold")?.GetParameter<int>(1) ?? default;
+
+            // Load items
+            IEnumerable<Instruction> questRewardItems = settingsBlock.GetInstructions("SetEndRewardItem");
+
+            if (questRewardItems != null && questRewardItems.Any())
+            {
+                quest.RewardItems = questRewardItems.Select(x => new QuestItem
+                {
+                    Sex = x.GetParameter<GenderType>(0),
+                    Id = x.GetParameter<string>(3),
+                    Quantity = x.GetParameter<int>(4)
+                }).ToList();
+            }
         }
 
         private void LoadQuestDialogs(QuestData quest, Block questBlock)

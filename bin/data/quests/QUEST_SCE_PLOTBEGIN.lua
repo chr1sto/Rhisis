@@ -10,6 +10,9 @@ QUEST_SCE_PLOTBEGIN = {
 	},
 	rewards = {
 		gold = 12500,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_GOTNOMINATE', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 	},

@@ -10,6 +10,9 @@ QUEST_CLOCK2ND = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MONBOOK3', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

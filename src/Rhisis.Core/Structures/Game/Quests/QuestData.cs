@@ -80,6 +80,11 @@ namespace Rhisis.Core.Structures.Game.Quests
         public int MaxGold { get; set; }
 
         /// <summary>
+        /// Gets or sets the reward items when the quest is completed.
+        /// </summary>
+        public IEnumerable<QuestItem> RewardItems { get; set; }
+
+        /// <summary>
         /// Gets or sets the required items to finish the quest.
         /// </summary>
         public IList<QuestItem> EndQuestItems { get; set; }

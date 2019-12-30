@@ -10,6 +10,10 @@ QUEST_VOCACR_TRN2 = {
 	},
 	rewards = {
 		gold = 1500,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_NTSKILL', quantity = 1, sex = 'Any' },
+			{ id = 'II_SYS_BLI_BLI_DARKON', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 	},

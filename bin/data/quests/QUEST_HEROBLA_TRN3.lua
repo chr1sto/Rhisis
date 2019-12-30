@@ -10,6 +10,9 @@ QUEST_HEROBLA_TRN3 = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_SCRSTAMP', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

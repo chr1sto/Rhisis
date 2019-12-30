@@ -27,6 +27,7 @@ namespace Rhisis.World.Systems.Inventory
         public const int InventorySize = EquipOffset;
         public const int MaxHumanParts = MaxItems - EquipOffset;
         public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
+
         private readonly ILogger<InventorySystem> _logger;
         private readonly IDatabase _database;
         private readonly IItemFactory _itemFactory;

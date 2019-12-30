@@ -10,6 +10,9 @@ QUEST_THEWAR = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_KEY_DUGATE1', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		monsters = {

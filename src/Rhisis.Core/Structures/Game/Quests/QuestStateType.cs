@@ -8,6 +8,7 @@
         BeginNo,
         End,
         EndCompleted,
-        Ok
+        Ok,
+        Completed = 14
     }
 }

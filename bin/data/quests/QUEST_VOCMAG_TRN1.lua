@@ -10,6 +10,9 @@ QUEST_VOCMAG_TRN1 = {
 	},
 	rewards = {
 		gold = 1500,
+		items = {
+			{ id = 'II_SYS_BLI_BLI_FLARIS', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

@@ -10,6 +10,9 @@ QUEST_VOCASS_TRN2 = {
 	},
 	rewards = {
 		gold = 1500,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_NTSKILL', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 	},

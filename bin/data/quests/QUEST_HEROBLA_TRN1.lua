@@ -10,6 +10,9 @@ QUEST_HEROBLA_TRN1 = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MASNOMINATE', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		monsters = {

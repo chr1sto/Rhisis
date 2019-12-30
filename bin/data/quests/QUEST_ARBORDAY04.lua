@@ -10,6 +10,9 @@ QUEST_ARBORDAY04 = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_SCR_BXARBORDAY08', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

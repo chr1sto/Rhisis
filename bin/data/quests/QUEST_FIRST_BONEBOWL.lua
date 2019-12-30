@@ -10,6 +10,9 @@ QUEST_FIRST_BONEBOWL = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_QUE_BONEBOWL', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

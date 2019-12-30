@@ -13,6 +13,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.PlayerData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,15 +40,17 @@ namespace Rhisis.World.Systems.Quest
         private readonly ILogger<QuestSystem> _logger;
         private readonly IDatabase _database;
         private readonly IGameResources _gameResources;
+        private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IQuestPacketFactory _questPacketFactory;
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
 
-        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
+        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
             this._logger = logger;
             this._database = database;
             this._gameResources = gameResources;
+            this._playerDataSystem = playerDataSystem;
             this._questPacketFactory = questPacketFactory;
             this._npcDialogPacketFactory = npcDialogPacketFactory;
             this._textPacketFactory = textPacketFactory;
@@ -244,7 +247,7 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public void CheckQuest(IPlayerEntity player, int questId, bool checkedState)
         {
-            QuestInfo quest = player.QuestDiary.ActiveQuests.FirstOrDefault(x => x.QuestId == questId);
+            QuestInfo quest = player.QuestDiary.GetActiveQuest(questId);
 
             if (quest == null)
             {
@@ -282,6 +285,11 @@ namespace Rhisis.World.Systems.Quest
         {
             foreach (QuestInfo quest in player.QuestDiary.ActiveQuests)
             {
+                if (!_gameResources.Quests.TryGetValue(quest.QuestId, out IQuestScript questScript))
+                {
+                    return;
+                }
+
                 bool updateQuest = false;
 
                 if (actionType == QuestActionType.KillMonster)
@@ -289,7 +297,9 @@ namespace Rhisis.World.Systems.Quest
                     int killedMonsterId = Convert.ToInt32(values.ElementAtOrDefault(0));
                     short killedAmount = Convert.ToInt16(values.ElementAtOrDefault(1));
 
-                    if (quest.Monsters.ContainsKey(killedMonsterId))
+                    QuestMonster monsterToKill = questScript.EndConditions.Monsters.FirstOrDefault(x => _gameResources.GetDefinedValue(x.Id) == killedMonsterId);
+
+                    if (quest.Monsters.ContainsKey(killedMonsterId) && quest.Monsters[killedMonsterId] < monsterToKill.Amount)
                     {
                         quest.Monsters[killedMonsterId] += killedAmount;
                         updateQuest = true;
@@ -378,10 +388,50 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Current quest.</param>
         private void FinalizeQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
-            // TODO: give rewards
+            QuestInfo questToFinish = player.QuestDiary.GetActiveQuest(quest.Id);
 
-            // TODO: set quest to "finished"
+            if (questToFinish == null)
+            {
+                _logger.LogError($"Cannot find quest with id '{quest.Id}' for player '{player}'.");
+                return;
+            }
 
+            // Check if player has enough space for reward items.
+            if (quest.Rewards.Items != null && quest.Rewards.Items.Any())
+            {
+                IEnumerable<QuestItem> itemsForPlayer = quest.Rewards.Items.Where(x => x.Sex == player.PlayerData.Gender);
+
+                if (player.Inventory.GetItemCount() + itemsForPlayer.Count() > player.Inventory.MaxStorageCapacity)
+                {
+                    _textPacketFactory.SendDefinedText(player, DefineText.TID_QUEST_NOINVENTORYSPACE);
+                    return;
+                }
+
+                foreach (QuestItem rewardItem in itemsForPlayer)
+                {
+                    int rewardItemId = _gameResources.GetDefinedValue(rewardItem.Id);
+
+                    if (_gameResources.Items.TryGetValue(rewardItemId, out ItemData itemData))
+                    {
+                        player.Inventory.CreateItem(new Item(itemData.Id, 0, 0, 0, itemData, -1));
+                    }
+                }
+            }
+
+            int goldRewad = quest.Rewards.Gold;
+
+            if (this._playerDataSystem.IncreaseGold(player, goldRewad))
+            {
+                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, goldRewad.ToString("###,###,###,###"), player.PlayerData.Gold.ToString("###,###,###,###"));
+            }
+
+            questToFinish.IsFinished = true;
+            questToFinish.State = QuestStateType.Completed;
+
+            _textPacketFactory.SendDefinedText(player, DefineText.TID_EVE_ENDQUEST, $"\"{_gameResources.GetText(quest.Title)}\"");
+            _questPacketFactory.SendQuest(player, questToFinish);
+
+            // TODO: if the NPC has another quest to suggest, send quest suggestion and do not close the dialog box
             this._npcDialogPacketFactory.SendCloseDialog(player);
         }
 

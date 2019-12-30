@@ -13,6 +13,9 @@ QUEST_HERORAN_TRN1 = {
 			min_gold = 500000,
 			max_gold = 550000,
 		},
+		items = {
+			{ id = 'II_SYS_SYS_QUE_MASNOMINATE', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		monsters = {

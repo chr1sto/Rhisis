@@ -10,6 +10,9 @@ QUEST_EVE_LOVEHOUSE2 = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_SYS_SYS_GEM_NORMBOX', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

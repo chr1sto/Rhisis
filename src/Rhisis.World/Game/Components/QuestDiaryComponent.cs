@@ -61,6 +61,13 @@ namespace Rhisis.World.Game.Components
         public bool HasQuest(int questId) => _quests.Any(x => x.QuestId == questId);
 
         /// <summary>
+        /// Gets the active quest based on the given id.
+        /// </summary>
+        /// <param name="questId">Quest id.</param>
+        /// <returns><see cref="QuestInfo"/>.</returns>
+        public QuestInfo GetActiveQuest(int questId) => ActiveQuests.FirstOrDefault(x => x.QuestId == questId);
+
+        /// <summary>
         /// Serialize the quest diary.
         /// </summary>
         /// <param name="packet">Packet stream.</param>
@@ -91,7 +98,7 @@ namespace Rhisis.World.Game.Components
         /// <param name="item"></param>
         public void Add(QuestInfo item)
         {
-            if (Contains(item))
+            if (this.Contains(item))
             {
                 throw new InvalidOperationException($"Quest '{item.QuestId}' for player with id '{item.CharacterId}' already exists.");
             }

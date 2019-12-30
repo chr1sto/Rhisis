@@ -157,6 +157,16 @@ namespace Rhisis.CLI.Commands.Game.Quests
                 WriteAtLevel(writer, 2, $"}}");
             }
 
+            if (quest.RewardItems != null && quest.RewardItems.Any())
+            {
+                WriteAtLevel(writer, 2, $"{QuestScriptConstants.Items} = {{", includeComma: false);
+                foreach (QuestItem item in quest.RewardItems)
+                {
+                    WriteAtLevel(writer, 3, $"{{ id = '{item.Id}', quantity = {item.Quantity}, sex = '{item.Sex}' }}");
+                }
+                WriteAtLevel(writer, 2, $"}}");
+            }
+
             WriteAtLevel(writer, 1, $"}}");
         }
 

@@ -10,6 +10,10 @@ QUEST_FIND_SCRIPT = {
 	},
 	rewards = {
 		gold = 0,
+		items = {
+			{ id = 'II_GEN_POT_DRI_VITAL700', quantity = 10, sex = 'Any' },
+			{ id = 'II_GEN_REF_REF_SEVENTH', quantity = 10, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

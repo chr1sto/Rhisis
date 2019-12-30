@@ -1,4 +1,5 @@
-﻿using Sylver.Network.Data;
+﻿using Rhisis.Core.Structures.Game.Quests;
+using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -13,6 +14,8 @@ namespace Rhisis.World.Game.Structures
         public int? DatabaseQuestId { get; }
 
         public int CharacterId { get; }
+
+        public QuestStateType State { get; set; }
 
         public bool IsFinished { get; set; }
 
@@ -41,12 +44,12 @@ namespace Rhisis.World.Game.Structures
 
         public void Serialize(INetPacketStream packet)
         {
-            packet.Write<short>(0); // state
+            packet.Write<short>((short)this.State); // state
             packet.Write<short>(0); // time limit
             packet.Write((short)this.QuestId);
 
-            packet.Write<short>(Monsters.ElementAtOrDefault(0).Value); // monster 1 killed
-            packet.Write<short>(Monsters.ElementAtOrDefault(1).Value); // monster 2 killed
+            packet.Write<short>(Monsters?.ElementAtOrDefault(0).Value ?? 0); // monster 1 killed
+            packet.Write<short>(Monsters?.ElementAtOrDefault(1).Value ?? 0); // monster 2 killed
             packet.Write<byte>(Convert.ToByte(this.IsPatrolDone)); // patrol done
             packet.Write<byte>(0); // dialog done
         }

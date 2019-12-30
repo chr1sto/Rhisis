@@ -10,6 +10,9 @@ QUEST_VOCACR_BFTRN = {
 	},
 	rewards = {
 		gold = 1500,
+		items = {
+			{ id = 'II_SYS_BLI_BLI_FLARIS', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		monsters = {

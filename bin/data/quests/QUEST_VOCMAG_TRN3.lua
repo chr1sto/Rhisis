@@ -10,6 +10,12 @@ QUEST_VOCMAG_TRN3 = {
 	},
 	rewards = {
 		gold = 1500,
+		items = {
+			{ id = 'II_SYS_SYS_SCR_RECCURENCE', quantity = 1, sex = 'Any' },
+			{ id = 'II_CHR_FOO_COO_BULLHAMS', quantity = 1, sex = 'Any' },
+			{ id = 'II_CHR_REF_REF_HOLD', quantity = 1, sex = 'Any' },
+			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any' },
+		},
 	},
 	end_conditions = {
 		items = {

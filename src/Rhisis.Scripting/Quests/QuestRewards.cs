@@ -1,6 +1,10 @@
 ﻿using NLua;
+using Rhisis.Core.Common;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Game.Quests;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Scripting.Quests
 {
@@ -12,6 +16,9 @@ namespace Rhisis.Scripting.Quests
 
         /// <inheritdoc />
         public int Gold => this._gold ?? RandomHelper.Random(this._minGold, this._maxGold);
+
+        /// <inheritdoc />
+        public IEnumerable<QuestItem> Items { get; }
 
         /// <summary>
         /// Creates a new <see cref="QuestRewards"/> instance.
@@ -37,6 +44,16 @@ namespace Rhisis.Scripting.Quests
                 {
                     this._gold = LuaScriptHelper.GetValue<int>(questRewardsLuaTable, QuestScriptConstants.Gold);
                 }
+            }
+
+            if (questRewardsLuaTable[QuestScriptConstants.Items] is LuaTable items)
+            {
+                Items = items.Values.ToArray<LuaTable>().Select(x => new QuestItem
+                {
+                    Id = LuaScriptHelper.GetValue<string>(x, "id"),
+                    Quantity = LuaScriptHelper.GetValue<int>(x, "quantity"),
+                    Sex = LuaScriptHelper.GetValue<GenderType>(x, "sex")
+                }).ToList();
             }
         }
     }
