@@ -45,6 +45,9 @@ namespace Rhisis.World.Systems.Quest
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
 
+        /// <inheritdoc />
+        public int Order => 3;
+
         public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
             this._logger = logger;

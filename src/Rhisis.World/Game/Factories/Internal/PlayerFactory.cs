@@ -12,12 +12,10 @@ using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
-using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Recovery;
-using Rhisis.World.Systems.Taskbar;
-using Rhisis.World.Systems.Trade;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Game.Factories.Internal
 {
@@ -29,9 +27,6 @@ namespace Rhisis.World.Game.Factories.Internal
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
-        private readonly IInventorySystem _inventorySystem;
-        private readonly ITaskbarSystem _taskbarSystem;
-        private readonly ITradeSystem _tradeSystem;
         private readonly ObjectFactory _playerFactory;
 
         /// <summary>
@@ -42,19 +37,13 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <param name="gameResources">Game resources.</param>
         /// <param name="mapManager">Map manager.</param>
         /// <param name="behaviorManager">Behavior manager.</param>
-        /// <param name="inventorySystem">Inventory system.</param>
-        /// <param name="taskbarSystem">Taskbar system.</param>
-        /// <param name="tradeSystem">Trade system.</param>
-        public PlayerFactory(IServiceProvider serviceProvider, IDatabase database, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IInventorySystem inventorySystem, ITaskbarSystem taskbarSystem, ITradeSystem tradeSystem)
+        public PlayerFactory(IServiceProvider serviceProvider, IDatabase database, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager)
         {
             this._serviceProvider = serviceProvider;
             this._database = database;
             this._gameResources = gameResources;
             this._mapManager = mapManager;
             this._behaviorManager = behaviorManager;
-            this._inventorySystem = inventorySystem;
-            this._taskbarSystem = taskbarSystem;
-            this._tradeSystem = tradeSystem;
             this._playerFactory = ActivatorUtilities.CreateFactory(typeof(PlayerEntity), Type.EmptyTypes);
         }
 
@@ -133,16 +122,7 @@ namespace Rhisis.World.Game.Factories.Internal
 
             player.Behavior = this._behaviorManager.GetDefaultBehavior(BehaviorType.Player, player);
 
-            // Initialize the inventory
-            this._inventorySystem.InitializeInventory(player, character.Items);
-
-            // Taskbar
-            this._taskbarSystem.InitializeTaskbar(player, character.TaskbarShortcuts);
-
-            // Trade
-            this._tradeSystem.Initialize(player);
-
-            var gameServices = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>();
+            var gameServices = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>().OrderBy(x => x.Order);
 
             foreach (IGameSystemLifeCycle service in gameServices)
             {
@@ -194,71 +174,15 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.Mp = player.Health.Mp;
                 character.Fp = player.Health.Fp;
 
-                var gameSystems = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>();
+                this._database.Complete();
+
+                var gameSystems = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>().OrderBy(x => x.Order);
 
                 foreach (IGameSystemLifeCycle system in gameSystems)
                 {
                     system.Save(player);
                 }
-
-                // Save inventory items.
-                this._inventorySystem.SaveInventory(player, character);
-
-                // Taskbar
-                character.TaskbarShortcuts.Clear();
-
-                foreach (var applet in player.Taskbar.Applets.Objects)
-                {
-                    if (applet == null)
-                        continue;
-
-                    var dbApplet = new DbShortcut(ShortcutTaskbarTarget.Applet, applet.SlotIndex, applet.Type,
-                        applet.ObjectId, applet.ObjectType, applet.ObjectIndex, applet.UserId, applet.ObjectData, applet.Text);
-
-                    if (applet.Type == ShortcutType.Item)
-                    {
-                        var item = player.Inventory.GetItem((int)applet.ObjectId);
-                        dbApplet.ObjectId = (uint)item.Slot;
-                    }
-
-                    character.TaskbarShortcuts.Add(dbApplet);
-                }
-
-
-                for (int slotLevel = 0; slotLevel < player.Taskbar.Items.Objects.Count; slotLevel++)
-                {
-                    for (int slot = 0; slot < player.Taskbar.Items.Objects[slotLevel].Count; slot++)
-                    {
-                        var itemShortcut = player.Taskbar.Items.Objects[slotLevel][slot];
-                        if (itemShortcut == null)
-                            continue;
-
-                        var dbItem = new DbShortcut(ShortcutTaskbarTarget.Item, slotLevel, itemShortcut.SlotIndex,
-                            itemShortcut.Type, itemShortcut.ObjectId, itemShortcut.ObjectType, itemShortcut.ObjectIndex,
-                            itemShortcut.UserId, itemShortcut.ObjectData, itemShortcut.Text);
-
-                        if (itemShortcut.Type == ShortcutType.Item)
-                        {
-                            var item = player.Inventory.GetItem((int)itemShortcut.ObjectId);
-                            dbItem.ObjectId = (uint)item.Slot;
-                        }
-
-                        character.TaskbarShortcuts.Add(dbItem);
-                    }
-                }
-
-                foreach (var queueItem in player.Taskbar.Queue.Shortcuts)
-                {
-                    if (queueItem == null)
-                        continue;
-
-                    character.TaskbarShortcuts.Add(new DbShortcut(ShortcutTaskbarTarget.Queue, queueItem.SlotIndex,
-                        queueItem.Type, queueItem.ObjectId, queueItem.ObjectType, queueItem.ObjectIndex, queueItem.UserId,
-                        queueItem.ObjectData, queueItem.Text));
-                }
             }
-
-            this._database.Complete();
         }
     }
 }

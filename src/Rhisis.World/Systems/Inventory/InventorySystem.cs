@@ -36,6 +36,8 @@ namespace Rhisis.World.Systems.Inventory
         private readonly IDropSystem _dropSystem;
         private readonly ITextPacketFactory _textPacketFactory;
 
+        public int Order => 0;
+
         public InventorySystem(ILogger<InventorySystem> logger, IDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
         {
             this._logger = logger;
@@ -48,22 +50,81 @@ namespace Rhisis.World.Systems.Inventory
         }
 
         /// <inheritdoc />
-        public void InitializeInventory(IPlayerEntity player, IEnumerable<DbItem> items)
+        public void Initialize(IPlayerEntity player)
         {
+            IEnumerable<DbItem> items = this._database.Items.GetAll(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
+
             player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
 
             if (items == null || (items != null && !items.Any()))
                 return;
 
-            var inventory = player.Inventory;
-
-            foreach (DbItem item in items.Where(x => !x.IsDeleted))
+            foreach (DbItem item in items)
             {
-                int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
+                int uniqueId = player.Inventory.Items[item.ItemSlot].UniqueId;
 
-                inventory.Items[item.ItemSlot] = this._itemFactory.CreateItem(item);
-                inventory.Items[item.ItemSlot].UniqueId = uniqueId;
+                player.Inventory.Items[item.ItemSlot] = this._itemFactory.CreateItem(item);
+                player.Inventory.Items[item.ItemSlot].UniqueId = uniqueId;
             }
+        }
+
+        /// <inheritdoc />
+        public void Save(IPlayerEntity player)
+        {
+            DbCharacter character = this._database.Characters.Get(player.PlayerData.Id);
+            IEnumerable<DbItem> itemsToDelete = from dbItem in character.Items
+                                                let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id)
+                                                where !dbItem.IsDeleted && inventoryItem == null || (inventoryItem != null && inventoryItem.Id == -1)
+                                                select dbItem;
+
+            foreach (DbItem dbItem in itemsToDelete)
+            {
+                dbItem.IsDeleted = true;
+
+                this._database.Items.Update(dbItem);
+            }
+
+            // Add or update items
+            foreach (var item in player.Inventory.Items)
+            {
+                if (item.Id == -1)
+                {
+                    continue;
+                }
+
+                DbItem dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId && !x.IsDeleted);
+
+                if (dbItem != null && dbItem.Id != 0)
+                {
+                    dbItem.CharacterId = player.PlayerData.Id;
+                    dbItem.ItemId = item.Id;
+                    dbItem.ItemCount = item.Quantity;
+                    dbItem.ItemSlot = item.Slot;
+                    dbItem.Refine = item.Refine;
+                    dbItem.Element = item.Element;
+                    dbItem.ElementRefine = item.ElementRefine;
+
+                    this._database.Items.Update(dbItem);
+                }
+                else
+                {
+                    dbItem = new DbItem
+                    {
+                        CharacterId = player.PlayerData.Id,
+                        CreatorId = item.CreatorId,
+                        ItemId = item.Id,
+                        ItemCount = item.Quantity,
+                        ItemSlot = item.Slot,
+                        Refine = item.Refine,
+                        Element = item.Element,
+                        ElementRefine = item.ElementRefine
+                    };
+
+                    this._database.Items.Create(dbItem);
+                }
+            }
+
+            this._database.Complete();
         }
 
         /// <inheritdoc />
@@ -440,63 +501,6 @@ namespace Rhisis.World.Systems.Inventory
             }
 
             return true;
-        }
-
-        /// <inheritdoc />
-        public void SaveInventory(IPlayerEntity player, DbCharacter databaseCharacter)
-        {
-            DbCharacter character = databaseCharacter ?? this._database.Characters.Get(player.PlayerData.Id);
-            IEnumerable<DbItem> itemsToDelete = from dbItem in character.Items
-                                                let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id)
-                                                where !dbItem.IsDeleted && inventoryItem == null || (inventoryItem != null && inventoryItem.Id == -1)
-                                                select dbItem;
-
-            foreach (DbItem dbItem in itemsToDelete)
-            {
-                dbItem.IsDeleted = true;
-
-                this._database.Items.Update(dbItem);
-            }
-
-            // Add or update items
-            foreach (var item in player.Inventory.Items)
-            {
-                if (item.Id == -1)
-                {
-                    continue;
-                }
-
-                DbItem dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId && !x.IsDeleted);
-
-                if (dbItem != null && dbItem.Id != 0)
-                {
-                    dbItem.CharacterId = player.PlayerData.Id;
-                    dbItem.ItemId = item.Id;
-                    dbItem.ItemCount = item.Quantity;
-                    dbItem.ItemSlot = item.Slot;
-                    dbItem.Refine = item.Refine;
-                    dbItem.Element = item.Element;
-                    dbItem.ElementRefine = item.ElementRefine;
-
-                    this._database.Items.Update(dbItem);
-                }
-                else
-                {
-                    dbItem = new DbItem
-                    {
-                        CharacterId = player.PlayerData.Id,
-                        CreatorId = item.CreatorId,
-                        ItemId = item.Id,
-                        ItemCount = item.Quantity,
-                        ItemSlot = item.Slot,
-                        Refine = item.Refine,
-                        Element = item.Element,
-                        ElementRefine = item.ElementRefine
-                    };
-
-                    this._database.Items.Create(dbItem);
-                }
-            }
         }
     }
 }

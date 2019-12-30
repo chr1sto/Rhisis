@@ -8,6 +8,11 @@ namespace Rhisis.World.Game
     public interface IGameSystemLifeCycle
     {
         /// <summary>
+        /// Gets the execution order.
+        /// </summary>
+        public int Order { get; }
+
+        /// <summary>
         /// Initialize the player.
         /// </summary>
         /// <param name="player">Current player.</param>

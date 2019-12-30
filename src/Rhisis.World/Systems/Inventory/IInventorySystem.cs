@@ -1,20 +1,12 @@
 ﻿using Rhisis.Core.Structures.Game;
-using Rhisis.Database.Entities;
+using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using System.Collections.Generic;
 
 namespace Rhisis.World.Systems.Inventory
 {
-    public interface IInventorySystem
+    public interface IInventorySystem : IGameSystemLifeCycle
     {
-        /// <summary>
-        /// Initialize the player's inventory.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        /// <param name="items">Player's inventory items.</param>
-        void InitializeInventory(IPlayerEntity player, IEnumerable<DbItem> items);
-
         /// <summary>
         /// Creates an item in player's inventory.
         /// </summary>
@@ -81,12 +73,5 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="itemUniqueId">Item unique id to drop.</param>
         /// <param name="quantity">Quantity to drop.</param>
         void DropItem(IPlayerEntity player, int itemUniqueId, int quantity);
-
-        /// <summary>
-        /// Saves the player's inventory.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        /// <param name="databaseCharacter">Database character entity.</param>
-        void SaveInventory(IPlayerEntity player, DbCharacter databaseCharacter);
     }
 }
