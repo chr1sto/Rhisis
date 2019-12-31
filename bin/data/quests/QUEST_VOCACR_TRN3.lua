@@ -11,10 +11,10 @@ QUEST_VOCACR_TRN3 = {
 	rewards = {
 		gold = 0,
 		items = {
-			{ id = 'II_SYS_SYS_SCR_RECCURENCE', quantity = 1, sex = 'Any' },
-			{ id = 'II_CHR_FOO_COO_BULLHAMS', quantity = 1, sex = 'Any' },
-			{ id = 'II_CHR_POT_DRI_VITALX', quantity = 1, sex = 'Any' },
-			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any' },
+			{ id = 'II_SYS_SYS_SCR_RECCURENCE', quantity = 1, sex = 'Any', refine = 2 },
+			{ id = 'II_CHR_FOO_COO_BULLHAMS', quantity = 1, sex = 'Any', refine = 2 },
+			{ id = 'II_CHR_POT_DRI_VITALX', quantity = 1, sex = 'Any', refine = 2 },
+			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any', refine = 2 },
 		},
 	},
 	end_conditions = {

@@ -1,5 +1,6 @@
 ﻿using NLua;
 using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Game.Quests;
@@ -52,7 +53,10 @@ namespace Rhisis.Scripting.Quests
                 {
                     Id = LuaScriptHelper.GetValue<string>(x, "id"),
                     Quantity = LuaScriptHelper.GetValue<int>(x, "quantity"),
-                    Sex = LuaScriptHelper.GetValue<GenderType>(x, "sex")
+                    Sex = LuaScriptHelper.GetValue<GenderType>(x, "sex"),
+                    Refine = LuaScriptHelper.GetValue<byte>(x, "refine"),
+                    Element = LuaScriptHelper.GetValue<ElementType>(x, "element"),
+                    ElementRefine = LuaScriptHelper.GetValue<byte>(x, "element_refine")
                 }).ToList();
             }
         }

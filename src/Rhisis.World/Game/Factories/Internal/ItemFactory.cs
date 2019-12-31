@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
@@ -35,13 +36,13 @@ namespace Rhisis.World.Game.Factories.Internal
             this._logger = logger;
             this._serviceProvider = serviceProvider;
             this._gameResources = gameResources;
-            this._itemFactory = ActivatorUtilities.CreateFactory(typeof(Item), new[] { typeof(int), typeof(byte), typeof(byte), typeof(byte), typeof(ItemData), typeof(int) });
+            this._itemFactory = ActivatorUtilities.CreateFactory(typeof(Item), new[] { typeof(int), typeof(byte), typeof(ElementType), typeof(byte), typeof(ItemData), typeof(int) });
             this._itemDatabaseFactory = ActivatorUtilities.CreateFactory(typeof(Item), new[] { typeof(DbItem), typeof(ItemData) });
             this._itemEntityFactory = ActivatorUtilities.CreateFactory(typeof(ItemEntity), Type.EmptyTypes);
         }
 
         /// <inheritdoc />
-        public Item CreateItem(int id, byte refine, byte element, byte elementRefine, int creatorId = -1)
+        public Item CreateItem(int id, byte refine, ElementType element, byte elementRefine, int creatorId = -1)
         {            
             if (!this._gameResources.Items.TryGetValue(id, out ItemData itemData))
             {
@@ -52,7 +53,7 @@ namespace Rhisis.World.Game.Factories.Internal
             return this._itemFactory(this._serviceProvider, new object[] { id, refine, element, elementRefine, itemData, creatorId }) as Item;
         }
 
-        public Item CreateItem(string name, byte refine, byte element, byte elementRefine, int creatorId = -1)
+        public Item CreateItem(string name, byte refine, ElementType element, byte elementRefine, int creatorId = -1)
         {
             var itemData = this._gameResources.Items.FirstOrDefault(x => x.Value.Name == name);
             if (itemData.Value is null)

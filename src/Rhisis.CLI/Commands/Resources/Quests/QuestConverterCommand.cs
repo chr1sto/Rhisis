@@ -1,10 +1,12 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.Scripting.Quests;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Rhisis.CLI.Commands.Game.Quests
 {
@@ -162,7 +164,23 @@ namespace Rhisis.CLI.Commands.Game.Quests
                 WriteAtLevel(writer, 2, $"{QuestScriptConstants.Items} = {{", includeComma: false);
                 foreach (QuestItem item in quest.RewardItems)
                 {
-                    WriteAtLevel(writer, 3, $"{{ id = '{item.Id}', quantity = {item.Quantity}, sex = '{item.Sex}' }}");
+                    var builder = new StringBuilder();
+
+                    builder.Append($"{{ id = '{item.Id}', quantity = { item.Quantity}, sex = '{item.Sex}'");
+
+                    if (item.Refine > 0)
+                    {
+                        builder.Append($", refine = {item.Refine}");
+                    }
+
+                    if (item.Element != ElementType.None && item.ElementRefine > 0)
+                    {
+                        builder.Append($", element = '{item.Element.ToString()}', element_refine = {item.ElementRefine}");
+                    }
+
+                    builder.Append($" }}");
+
+                    WriteAtLevel(writer, 3, builder.ToString());
                 }
                 WriteAtLevel(writer, 2, $"}}");
             }

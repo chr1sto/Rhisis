@@ -1,3 +1,4 @@
+using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
@@ -27,7 +28,7 @@ namespace Rhisis.World.Game.Factories
         /// <param name="elementRefine">Item element refine.</param>
         /// <param name="creatorId">Creator id.</param>
         /// <returns>New item.</returns>
-        Item CreateItem(int id, byte refine, byte element, byte elementRefine, int creatorId = -1);
+        Item CreateItem(int id, byte refine, ElementType element, byte elementRefine, int creatorId = -1);
 
         /// <summary>
         /// Creates a new <see cref="Item"/> using it's Item name.
@@ -38,7 +39,7 @@ namespace Rhisis.World.Game.Factories
         /// <param name="elementRefine">Item element refine.</param>
         /// <param name="creatorId">Creator id.</param>
         /// <returns>New item.</returns>
-        Item CreateItem(string name, byte refine, byte element, byte elementRefine, int creatorId = -1);
+        Item CreateItem(string name, byte refine, ElementType element, byte elementRefine, int creatorId = -1);
 
         /// <summary>
         /// Creates a new <see cref="Item"/> from a <see cref="DbItem"/> instance.

@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Core.Data;
+using Rhisis.Core.Structures.Game;
 using Rhisis.Database.Entities;
 using Rhisis.World.Systems.Inventory;
 using Sylver.Network.Data;
@@ -111,7 +112,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="uniqueId">Item unique id</param>
         /// <param name="refine">Item refine</param>
         /// <param name="element">Item element</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element)
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element)
             : this(id, quantity, creatorId, slot, uniqueId, refine, element, 0)
         {
         }
@@ -127,7 +128,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="refine">Item refine</param>
         /// <param name="element">Item element</param>
         /// <param name="elementRefine"></param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element, byte elementRefine)
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element, byte elementRefine)
             : this(id, quantity, creatorId, slot, uniqueId, refine, element, elementRefine, 0)
         {
         }
@@ -144,7 +145,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="element">Item element</param>
         /// <param name="elementRefine">Item element refine</param>
         /// <param name="extraUsed">Item extra used quantity</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element,
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element,
             byte elementRefine, int extraUsed)
         {
             this.Id = id;
@@ -165,7 +166,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="itemData">Item data.</param>
         public Item(DbItem dbItem, ItemData itemData)
             : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
-                dbItem.Element, dbItem.ElementRefine, 0)
+                (ElementType)dbItem.Element, dbItem.ElementRefine, 0)
         {
             this.DbId = dbItem.Id;
             this.Data = itemData;
@@ -180,7 +181,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="elementRefine"></param>
         /// <param name="itemData"></param>
         /// <param name="creatorId"></param>
-        public Item(int id, byte refine, byte element, byte elementRefine, ItemData itemData, int creatorId)
+        public Item(int id, byte refine, ElementType element, byte elementRefine, ItemData itemData, int creatorId)
         {
             this.Id = id;
             this.Quantity = 1;
@@ -214,8 +215,8 @@ namespace Rhisis.World.Game.Structures
             packet.Write<byte>(0); // flag ?
             packet.Write((int) this.Refine);
             packet.Write(0); // guild id (cloaks?)
-            packet.Write(this.Element);
-            packet.Write((int) this.ElementRefine);
+            packet.Write((byte)this.Element);
+            packet.Write((int)this.ElementRefine);
             packet.Write(0); // m_nResistSMItemId
             packet.Write(0); // Piercing size
             packet.Write(0); // Ultimate piercing size

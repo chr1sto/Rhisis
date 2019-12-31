@@ -101,7 +101,7 @@ namespace Rhisis.World.Systems.Inventory
                     dbItem.ItemCount = item.Quantity;
                     dbItem.ItemSlot = item.Slot;
                     dbItem.Refine = item.Refine;
-                    dbItem.Element = item.Element;
+                    dbItem.Element = (byte)item.Element;
                     dbItem.ElementRefine = item.ElementRefine;
 
                     this._database.Items.Update(dbItem);
@@ -116,7 +116,7 @@ namespace Rhisis.World.Systems.Inventory
                         ItemCount = item.Quantity,
                         ItemSlot = item.Slot,
                         Refine = item.Refine,
-                        Element = item.Element,
+                        Element = (byte)item.Element,
                         ElementRefine = item.ElementRefine
                     };
 

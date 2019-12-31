@@ -416,7 +416,9 @@ namespace Rhisis.World.Systems.Quest
 
                     if (_gameResources.Items.TryGetValue(rewardItemId, out ItemData itemData))
                     {
-                        player.Inventory.CreateItem(new Item(itemData.Id, 0, 0, 0, itemData, -1));
+                        var item = new Item(itemData.Id, rewardItem.Refine, rewardItem.Element, rewardItem.ElementRefine, itemData, -1);
+
+                        player.Inventory.CreateItem(item);
                     }
                 }
             }
