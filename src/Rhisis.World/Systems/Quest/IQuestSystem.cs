@@ -13,17 +13,19 @@ namespace Rhisis.World.Systems.Quest
         /// Check if the player can start the given quest script.
         /// </summary>
         /// <param name="player">Current player.</param>
+        /// <param name="npc">Current npc.</param>
         /// <param name="quest">Quest script to start.</param>
         /// <returns>True if the player can start the quest; false otherwise.</returns>
-        bool CanStartQuest(IPlayerEntity player, IQuestScript quest);
+        bool CanStartQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest);
 
         /// <summary>
         /// Check if the player can finish quests from the given npc.
         /// </summary>
         /// <param name="player">Current player.</param>
+        /// <param name="npc">Current npc.</param>
         /// <param name="quest">Quest sript to finish.</param>
         /// <returns>True if the player can finish a quest; false otherwise.</returns>
-        bool CanFinishQuest(IPlayerEntity player, IQuestScript quest);
+        bool CanFinishQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest);
 
         /// <summary>
         /// Process a quest script state.

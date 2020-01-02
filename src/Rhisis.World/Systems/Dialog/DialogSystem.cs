@@ -4,8 +4,10 @@ using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Quest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,78 +39,94 @@ namespace Rhisis.World.Systems.Dialog
         /// <inheritdoc />
         public void OpenNpcDialog(IPlayerEntity player, uint npcObjectId, string dialogKey, int questId = 0)
         {
-            var npcEntity = player.FindEntity<INpcEntity>(npcObjectId);
+            var npc = player.FindEntity<INpcEntity>(npcObjectId);
 
-            if (npcEntity == null)
+            if (npc == null)
             {
                 this._logger.LogError($"Cannot find NPC with id: {npcObjectId}.");
                 return;
             }
 
-            this._logger.LogTrace($"{npcEntity.Object.Name}: '{dialogKey}'/{questId}");
-
-            if (!npcEntity.Data.HasDialog)
-            {
-                this._logger.LogError($"NPC '{npcEntity.Object.Name}' doesn't have a dialog.");
-                return;
-            }
-
-            IEnumerable<string> dialogTexts = npcEntity.Data.Dialog.IntroText;
-            var dialogLinks = new List<DialogLink>(npcEntity.Data.Dialog.Links);
+            this._logger.LogTrace($"{npc.Object.Name}: '{dialogKey}'/{questId}");
 
             if (string.IsNullOrEmpty(dialogKey))
             {
-                if (npcEntity.Quests.Any())
+                if (npc.Quests.Any())
                 {
-                    IEnumerable<IQuestScript> availableQuests = npcEntity.Quests.Where(x => this._questSystem.CanStartQuest(player, x));
+                    IEnumerable<IQuestScript> availableQuests = npc.Quests.Where(x => this._questSystem.CanStartQuest(player, npc, x));
 
                     if (availableQuests.Count() == 1)
                     {
                         IQuestScript firstQuest = availableQuests.First();
-                        var questState = this._questSystem.CanStartQuest(player, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
+                        var questState = this._questSystem.CanStartQuest(player, npc, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
 
-                        this._questSystem.ProcessQuest(player, npcEntity, firstQuest, questState);
+                        this._questSystem.ProcessQuest(player, npc, firstQuest, questState);
                         return;
                     }
                 }
 
-                this.SendNpcDialog(player, npcEntity, dialogTexts, dialogLinks);
+                IEnumerable<IQuestScript> questsToBeFinished = player.QuestDiary.ActiveQuests.Where(x => npc.Object.Name.Equals(x.Script.EndCharacter, StringComparison.OrdinalIgnoreCase)).Select(x => x.Script);
+
+                if (questsToBeFinished.Any())
+                {
+                    this._questSystem.ProcessQuest(player, npc, questsToBeFinished.First(), QuestStateType.End);
+                    return;
+                }
+
+                if (!npc.Data.HasDialog)
+                {
+                    this._logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
+                    return;
+                }
+
+                this.SendNpcDialog(player, npc, npc.Data.Dialog.IntroText, npc.Data.Dialog.Links);
             }
             else
             {
                 if (questId != 0)
                 {
-                    IQuestScript quest = npcEntity.Quests.FirstOrDefault(x => x.Id == questId);
+                    // Check if the quest exists for the current NPC
+                    IQuestScript quest = npc.Quests.FirstOrDefault(x => x.Id == questId);
 
                     if (quest == null)
                     {
-                        this._logger.LogError($"Cannot find quest with id '{questId}' at npc '{npcEntity}' for player '{player}'.");
-                        return;
+                        // If not, check if the npc is the end character of player's active quest
+                        quest = player.QuestDiary.ActiveQuests.Where(x => x.QuestId == questId && npc.Object.Name.Equals(x.Script.EndCharacter, StringComparison.OrdinalIgnoreCase)).Select(x => x.Script).FirstOrDefault();
+
+                        if (quest == null)
+                        {
+                            this._logger.LogError($"Cannot find quest with id '{questId}' at npc '{npc}' for player '{player}'.");
+                            return;
+                        }
                     }
 
-                    this._questSystem.ProcessQuest(player, npcEntity, quest, dialogKey.ToEnum<QuestStateType>());
+                    this._questSystem.ProcessQuest(player, npc, quest, dialogKey.ToEnum<QuestStateType>());
                 }
                 else
                 {
+                    if (!npc.Data.HasDialog)
+                    {
+                        this._logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
+                        return;
+                    }
+
                     if (dialogKey == DialogConstants.Bye)
                     {
-                        this._chatPacketFactory.SendChatTo(npcEntity, player, npcEntity.Data.Dialog.ByeText);
+                        this._chatPacketFactory.SendChatTo(npc, player, npc.Data.Dialog.ByeText);
                         this._npcDialogPacketFactory.SendCloseDialog(player);
                         return;
                     }
                     else
                     {
-                        DialogLink dialogLink = npcEntity.Data.Dialog.Links?.FirstOrDefault(x => x.Id == dialogKey);
+                        DialogLink dialogLink = npc.Data.Dialog.Links?.FirstOrDefault(x => x.Id == dialogKey);
 
                         if (dialogLink == null)
                         {
-                            this._logger.LogError($"Cannot find dialog key: '{dialogKey}' for NPC '{npcEntity.Object.Name}'.");
+                            this._logger.LogError($"Cannot find dialog key: '{dialogKey}' for NPC '{npc.Object.Name}'.");
                             return;
                         }
 
-                        dialogTexts = dialogLink.Texts;
-
-                        this.SendNpcDialog(player, npcEntity, dialogTexts, dialogLinks);
+                        this.SendNpcDialog(player, npc, dialogLink.Texts, npc.Data.Dialog.Links);
                     }
                 }
             }

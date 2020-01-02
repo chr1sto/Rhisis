@@ -15,6 +15,8 @@ namespace Rhisis.World.Game.Structures
 
         public int CharacterId { get; }
 
+        public IQuestScript Script { get; }
+
         public QuestStateType State { get; set; }
 
         public bool IsFinished { get; set; }
@@ -29,15 +31,16 @@ namespace Rhisis.World.Game.Structures
 
         public bool IsPatrolDone { get; set; }
 
-        public QuestInfo(int questId, int characterId)
-            : this(questId, characterId, default)
+        public QuestInfo(int questId, int characterId, IQuestScript script)
+            : this(questId, characterId, script, default)
         {
         }
 
-        public QuestInfo(int questId, int characterId, int? databaseQuestId)
+        public QuestInfo(int questId, int characterId, IQuestScript script, int? databaseQuestId)
         {
             this.QuestId = questId;
             this.CharacterId = characterId;
+            this.Script = script;
             this.DatabaseQuestId = databaseQuestId;
             this.Monsters = new Dictionary<int, short>();
         }

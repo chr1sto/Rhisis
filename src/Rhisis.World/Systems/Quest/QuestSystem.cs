@@ -13,6 +13,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.PlayerData;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,7 @@ namespace Rhisis.World.Systems.Quest
         private readonly IDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly IInventorySystem _inventorySystem;
         private readonly IQuestPacketFactory _questPacketFactory;
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
@@ -48,12 +50,13 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public int Order => 3;
 
-        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
+        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
             this._logger = logger;
             this._database = database;
             this._gameResources = gameResources;
             this._playerDataSystem = playerDataSystem;
+            this._inventorySystem = inventorySystem;
             this._questPacketFactory = questPacketFactory;
             this._npcDialogPacketFactory = npcDialogPacketFactory;
             this._textPacketFactory = textPacketFactory;
@@ -75,18 +78,22 @@ namespace Rhisis.World.Systems.Quest
                         return null;
                     }
 
-                    var quest = new QuestInfo(x.QuestId, x.CharacterId, x.Id)
+                    var quest = new QuestInfo(x.QuestId, x.CharacterId, questScript, x.Id)
                     {
                         IsChecked = x.IsChecked,
                         IsFinished = x.Finished,
                         StartTime = x.StartTime,
-                        Monsters = new Dictionary<int, short>
-                        {
-                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters.ElementAtOrDefault(0)?.Id), (short)x.MonsterKilled1 },
-                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters.ElementAtOrDefault(1)?.Id), (short)x.MonsterKilled2 }
-                        },
                         IsPatrolDone = x.IsPatrolDone
                     };
+
+                    if (questScript.EndConditions.Monsters != null && questScript.EndConditions.Monsters.Any())
+                    {
+                        quest.Monsters = new Dictionary<int, short>
+                        {
+                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters?.ElementAtOrDefault(0)?.Id), (short)x.MonsterKilled1 },
+                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters?.ElementAtOrDefault(1)?.Id), (short)x.MonsterKilled2 }
+                        };
+                    }
 
                     return quest;
                 })
@@ -130,8 +137,8 @@ namespace Rhisis.World.Systems.Quest
                         CharacterId = player.PlayerData.Id,
                         QuestId = quest.QuestId,
                         StartTime = quest.StartTime,
-                        MonsterKilled1 = quest.Monsters.ElementAtOrDefault(0).Value,
-                        MonsterKilled2 = quest.Monsters.ElementAtOrDefault(1).Value,
+                        MonsterKilled1 = quest.Monsters?.ElementAtOrDefault(0).Value ?? default,
+                        MonsterKilled2 = quest.Monsters?.ElementAtOrDefault(1).Value ?? default,
                         IsPatrolDone = quest.IsPatrolDone,
                         IsChecked = quest.IsChecked
                     });
@@ -142,9 +149,19 @@ namespace Rhisis.World.Systems.Quest
         }
 
         /// <inheritdoc />
-        public bool CanStartQuest(IPlayerEntity player, IQuestScript quest)
+        public bool CanStartQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
+            if (quest == null)
+            {
+                return false;
+            }
+
             if (player.QuestDiary.HasQuest(quest.Id))
+            {
+                return false;
+            }
+
+            if (!npc.Object.Name.Equals(quest.StartCharacter, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -175,12 +192,17 @@ namespace Rhisis.World.Systems.Quest
         }
 
         /// <inheritdoc />
-        public bool CanFinishQuest(IPlayerEntity player, IQuestScript quest)
+        public bool CanFinishQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
             QuestInfo questToFinish = player.QuestDiary.ActiveQuests.FirstOrDefault(x => x.QuestId == quest.Id);
 
             if (questToFinish != null)
             {
+                if (!npc.Object.Name.Equals(quest.EndCharacter, StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
                 // Check items
                 if (quest.EndConditions.Items != null && quest.EndConditions.Items.Any())
                 {
@@ -273,7 +295,7 @@ namespace Rhisis.World.Systems.Quest
             if (npc.Quests.Any())
             {
                 IEnumerable<DialogLink> newQuestsLinks = from x in npc.Quests
-                                                         where this.CanStartQuest(player, x)
+                                                         where this.CanStartQuest(player, npc, x)
                                                          select this.CreateQuestLink(x, QuestStateType.Suggest);
                 IEnumerable<DialogLink> questsInProgress = from x in npc.Quests
                                                            where player.QuestDiary.ActiveQuests.Any(y => y.QuestId == x.Id)
@@ -295,7 +317,7 @@ namespace Rhisis.World.Systems.Quest
 
                 bool updateQuest = false;
 
-                if (actionType == QuestActionType.KillMonster)
+                if (actionType == QuestActionType.KillMonster && questScript.EndConditions.Monsters != null && questScript.EndConditions.Monsters.Any())
                 {
                     int killedMonsterId = Convert.ToInt32(values.ElementAtOrDefault(0));
                     short killedAmount = Convert.ToInt16(values.ElementAtOrDefault(1));
@@ -340,7 +362,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Quest to accept.</param>
         private void AcceptQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
-            var acceptedQuest = new QuestInfo(quest.Id, player.PlayerData.Id)
+            var acceptedQuest = new QuestInfo(quest.Id, player.PlayerData.Id, quest)
             {
                 StartTime = DateTime.UtcNow,
                 Monsters = quest.EndConditions.Monsters?.ToDictionary(x => _gameResources.GetDefinedValue(x.Id), x => (short)0)
@@ -374,7 +396,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Current quest.</param>
         private void FinishQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
-            if (!CanFinishQuest(player, quest))
+            if (!CanFinishQuest(player, npc, quest))
             {
                 SendQuestDialog(player, npc, quest.Id, quest.NotFinishedDialogs, OkButtons);
                 return;
@@ -402,7 +424,7 @@ namespace Rhisis.World.Systems.Quest
             // Check if player has enough space for reward items.
             if (quest.Rewards.Items != null && quest.Rewards.Items.Any())
             {
-                IEnumerable<QuestItem> itemsForPlayer = quest.Rewards.Items.Where(x => x.Sex == player.PlayerData.Gender);
+                IEnumerable<QuestItem> itemsForPlayer = quest.Rewards.Items.Where(x => x.Sex == player.PlayerData.Gender || x.Sex == GenderType.Any);
 
                 if (player.Inventory.GetItemCount() + itemsForPlayer.Count() > player.Inventory.MaxStorageCapacity)
                 {
@@ -418,17 +440,43 @@ namespace Rhisis.World.Systems.Quest
                     {
                         var item = new Item(itemData.Id, rewardItem.Refine, rewardItem.Element, rewardItem.ElementRefine, itemData, -1);
 
-                        player.Inventory.CreateItem(item);
+                        _inventorySystem.CreateItem(player, item, rewardItem.Quantity);
+                        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPITEM, $"\"{_gameResources.GetText(item.Data.Name)}\"");
                     }
                 }
             }
 
+            // Give gold reward
             int goldRewad = quest.Rewards.Gold;
 
-            if (this._playerDataSystem.IncreaseGold(player, goldRewad))
+            if (_playerDataSystem.IncreaseGold(player, goldRewad))
             {
-                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, goldRewad.ToString("###,###,###,###"), player.PlayerData.Gold.ToString("###,###,###,###"));
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, goldRewad.ToString("###,###,###,###"), player.PlayerData.Gold.ToString("###,###,###,###"));
             }
+
+            // Remove quest items from inventory
+            if (quest.EndConditions.Items != null && quest.EndConditions.Items.Any())
+            {
+                foreach (QuestItem questItem in quest.EndConditions.Items)
+                {
+                    if (questItem.Remove)
+                    {
+                        if (questItem.Sex == GenderType.Any || questItem.Sex == player.PlayerData.Gender)
+                        {
+                            Item inventoryItem = player.Inventory.GetItemById(this._gameResources.GetDefinedValue(questItem.Id));
+
+                            if (inventoryItem != null)
+                            {
+                                _inventorySystem.DeleteItem(player, inventoryItem, questItem.Quantity);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // TODO: give new job
+            // TODO: restat
+            // TODO: give extra points
 
             questToFinish.IsFinished = true;
             questToFinish.State = QuestStateType.Completed;
@@ -437,6 +485,21 @@ namespace Rhisis.World.Systems.Quest
             _questPacketFactory.SendQuest(player, questToFinish);
 
             // TODO: if the NPC has another quest to suggest, send quest suggestion and do not close the dialog box
+
+            if (npc.Quests.Any())
+            {
+                IEnumerable<IQuestScript> availableQuests = npc.Quests.Where(x => CanStartQuest(player, npc, x));
+
+                if (availableQuests.Count() == 1)
+                {
+                    IQuestScript firstQuest = availableQuests.First();
+                    var questState = CanStartQuest(player, npc, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
+
+                    ProcessQuest(player, npc, firstQuest, questState);
+                    return;
+                }
+            }
+
             this._npcDialogPacketFactory.SendCloseDialog(player);
         }
 
@@ -467,7 +530,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="buttons"></param>
         private void SendQuestDialog(IPlayerEntity player, INpcEntity npc, int questId, IEnumerable<string> questTexts, IEnumerable<DialogLink> buttons)
         {
-            this._npcDialogPacketFactory.SendDialog(player, GetQuestDialogsTexts(questTexts), npc.Data.Dialog.Links, buttons, questId);
+            this._npcDialogPacketFactory.SendDialog(player, GetQuestDialogsTexts(questTexts), npc.Data.Dialog?.Links, buttons, questId);
             this.SendQuestsInfo(player, npc);
         }
     }
