@@ -185,6 +185,11 @@ namespace Rhisis.CLI.Commands.Game.Quests
                 WriteAtLevel(writer, 2, $"}}");
             }
 
+            if (quest.RewardJob.HasValue)
+            {
+                WriteAtLevel(writer, 2, $"job = '{quest.RewardJob.Value.ToString()}'");
+            }
+
             WriteAtLevel(writer, 1, $"}}");
         }
 

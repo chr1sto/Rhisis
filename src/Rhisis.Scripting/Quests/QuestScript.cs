@@ -68,7 +68,7 @@ namespace Rhisis.Scripting.Quests
                 this.EndCharacter = this.StartCharacter;
             }
 
-            this.Rewards = new QuestRewards(this.ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
+            this.Rewards = new QuestRewards(luaScriptTable, this.ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
             this.StartRequirements = new QuestStartRequirements(this.ScriptTable[QuestScriptConstants.StartRequirements] as LuaTable);
             this.EndConditions = new QuestEndConditions(this.ScriptTable[QuestScriptConstants.EndConditions] as LuaTable);
 

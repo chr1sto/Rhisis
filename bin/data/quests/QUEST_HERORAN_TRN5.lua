@@ -10,6 +10,7 @@ QUEST_HERORAN_TRN5 = {
 	},
 	rewards = {
 		gold = 0,
+		job = 'JOB_RANGER',
 	},
 	end_conditions = {
 		items = {

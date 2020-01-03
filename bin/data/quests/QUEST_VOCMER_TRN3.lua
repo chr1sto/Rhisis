@@ -16,6 +16,7 @@ QUEST_VOCMER_TRN3 = {
 			{ id = 'II_CHR_POT_DRI_VITALX', quantity = 1, sex = 'Any', refine = 2 },
 			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any', refine = 2 },
 		},
+		job = 'JOB_MERCENARY',
 	},
 	end_conditions = {
 		items = {

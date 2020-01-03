@@ -57,7 +57,7 @@ namespace Rhisis.Core.IO
                     }
 
                     if (line.Contains(SingleLineComment))
-                        splitFileContent[i] = line.Remove(line.IndexOf(SingleLineComment, StringComparison.Ordinal));
+                        splitFileContent[i] = line.Remove(line.IndexOf(SingleLineComment, StringComparison.Ordinal)).Trim();
 
                     if (line.Contains(MultiLineCommentBegin))
                     {

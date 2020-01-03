@@ -17,10 +17,21 @@ QUEST_VOLCANETELEPORT = {
 		},
 	},
 	dialogs = {
-		begin = nil,
-		begin_yes = nil,
-		begin_no = nil,
-		completed = nil,
-		not_finished = nil,
+		begin = {
+			'IDS_PROPQUEST_INC_002002',
+			'IDS_PROPQUEST_INC_002003',
+		},
+		begin_yes = {
+			'IDS_PROPQUEST_INC_002004',
+		},
+		begin_no = {
+			'IDS_PROPQUEST_INC_002005',
+		},
+		completed = {
+			'IDS_PROPQUEST_INC_002006',
+		},
+		not_finished = {
+			'IDS_PROPQUEST_INC_002007',
+		},
 	}
 }

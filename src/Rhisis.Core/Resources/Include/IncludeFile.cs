@@ -86,7 +86,8 @@ namespace Rhisis.Core.Resources.Include
             while ((parameter = this._scanner.GetToken()) != ")")
                 instruction.AddParameter(parameter);
 
-            this._scanner.GetToken();
+            if (this._scanner.CurrentTokenIs(";"))
+                this._scanner.GetToken();
 
             return instruction;
         }

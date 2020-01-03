@@ -12,6 +12,24 @@ namespace Rhisis.CLI.Commands.Game.Quests
     internal class LegacyQuestLoader
     {
         private readonly List<QuestData> _quests;
+        private readonly IReadOnlyDictionary<string, DefineJob.Job> _jobs = new Dictionary<string, DefineJob.Job>
+        {
+            // Expert
+            { "QUEST_VOCMER_TRN3", DefineJob.Job.JOB_MERCENARY },
+            { "QUEST_VOCASS_TRN3", DefineJob.Job.JOB_ASSIST },
+            { "QUEST_VOCACR_TRN3", DefineJob.Job.JOB_ACROBAT },
+            { "QUEST_VOCMAG_TRN3", DefineJob.Job.JOB_MAGICIAN },
+
+            // Profesionnal
+            { "QUEST_HEROKNI_TRN5", DefineJob.Job.JOB_KNIGHT },
+            { "QUEST_HEROBLA_TRN5", DefineJob.Job.JOB_BLADE },
+            { "QUEST_HEROBIL_TRN5", DefineJob.Job.JOB_BILLPOSTER },
+            { "QUEST_HERORIG_TRN5", DefineJob.Job.JOB_RINGMASTER },
+            { "QUEST_HERORAN_TRN5", DefineJob.Job.JOB_RANGER },
+            { "QUEST_HEROJES_TRN5", DefineJob.Job.JOB_JESTER },
+            { "QUEST_HEROPSY_TRN5", DefineJob.Job.JOB_PSYCHIKEEPER },
+            { "QUEST_HEROELE_TRN5", DefineJob.Job.JOB_ELEMENTOR },
+        };
 
         /// <summary>
         /// Gets the quests.
@@ -75,6 +93,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
             }
 
             LoadQuestDialogs(quest, questBlock);
+            SetQuestJobChange(quest);
 
             return quest;
         }
@@ -191,6 +210,14 @@ namespace Rhisis.CLI.Commands.Game.Quests
             }
 
             return true;
+        }
+
+        private void SetQuestJobChange(QuestData quest)
+        {
+            if (_jobs.TryGetValue(quest.Name, out DefineJob.Job job))
+            {
+                quest.RewardJob = job;
+            }
         }
     }
 }

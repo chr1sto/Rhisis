@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Rhisis.Core.Data;
+using System.Collections.Generic;
 
 namespace Rhisis.Core.Structures.Game.Quests
 {
@@ -83,6 +84,11 @@ namespace Rhisis.Core.Structures.Game.Quests
         /// Gets or sets the reward items when the quest is completed.
         /// </summary>
         public IEnumerable<QuestItem> RewardItems { get; set; }
+
+        /// <summary>
+        /// Gets or sets the job to change once the quest is completed.
+        /// </summary>
+        public DefineJob.Job? RewardJob { get; set; }
 
         /// <summary>
         /// Gets or sets the required items to finish the quest.

@@ -16,6 +16,7 @@ QUEST_VOCASS_TRN3 = {
 			{ id = 'II_CHR_REF_REF_HOLD', quantity = 1, sex = 'Any', refine = 2 },
 			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any', refine = 2 },
 		},
+		job = 'JOB_ASSIST',
 	},
 	end_conditions = {
 		items = {

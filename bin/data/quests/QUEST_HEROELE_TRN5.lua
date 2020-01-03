@@ -10,6 +10,7 @@ QUEST_HEROELE_TRN5 = {
 	},
 	rewards = {
 		gold = 0,
+		job = 'JOB_ELEMENTOR',
 	},
 	end_conditions = {
 		items = {

@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using NLua;
+using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game.Quests;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -37,6 +39,11 @@ namespace Rhisis.Scripting.Quests
             this._logger.LogLoading("Loading quests...");
 
             using var lua = new Lua();
+
+            lua["Jobs"] = Enum.GetValues(typeof(DefineJob.Job))
+                                           .Cast<DefineJob.Job>()
+                                           .ToDictionary(x => x.ToString(), x => (int)x);
+
             var quests = new ConcurrentDictionary<int, IQuestScript>();
             IEnumerable<string> questsDefinition = this.LoadQuestsDefinitions();
             IEnumerable<string> questFiles = Directory.GetFiles(GameResourcesConstants.Paths.QuestsPath, "*.*", SearchOption.AllDirectories).Where(x => x != QuestDefinitionPath);

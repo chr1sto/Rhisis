@@ -51,5 +51,11 @@
         public const string CompletedDialogs = "completed";
 
         public const string NotFinishedDialogs = "not_finished";
+
+    }
+
+    public class QuestScriptHooksConstants
+    {
+        public const string ChangeJobReward = "change_job_reward";
     }
 }

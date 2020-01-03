@@ -10,6 +10,7 @@ QUEST_HEROBIL_TRN5 = {
 	},
 	rewards = {
 		gold = 0,
+		job = 'JOB_BILLPOSTER',
 	},
 	end_conditions = {
 		items = {
