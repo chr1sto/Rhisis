@@ -11,7 +11,7 @@ using System.Linq;
 namespace Rhisis.World.Packets.Internal
 {
     [Injectable(ServiceLifetime.Singleton)]
-    public sealed class NpcDialogPacketFactory : INpcDialogPacketFactory
+    internal class NpcDialogPacketFactory : PacketFactoryBase, INpcDialogPacketFactory
     {
         /// <inheritdoc />
         public void SendDialog(IPlayerEntity player, IEnumerable<string> dialogTexts, IEnumerable<DialogLink> dialogLinks, IEnumerable<DialogLink> buttons = null, int questId = 0)
@@ -58,7 +58,7 @@ namespace Rhisis.World.Packets.Internal
                 }
             }
 
-            player.Connection.Send(packet);
+            SendToPlayer(player, packet);
         }
 
         /// <inheritdoc />
@@ -94,7 +94,7 @@ namespace Rhisis.World.Packets.Internal
                     }
                 }
 
-                player.Connection.Send(packet);
+                SendToPlayer(player, packet);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Rhisis.World.Packets.Internal
             packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
             packet.Write((short)DialogOptions.FUNCTYPE_EXIT);
 
-            player.Connection.Send(packet);
+            SendToPlayer(player, packet);
         }
     }
 }

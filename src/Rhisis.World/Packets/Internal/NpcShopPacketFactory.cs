@@ -8,20 +8,21 @@ using Rhisis.World.Game.Entities;
 namespace Rhisis.World.Packets.Internal
 {
     [Injectable(ServiceLifetime.Singleton)]
-    public sealed class NpcShopPacketFactory : INpcShopPacketFactory
+    internal class NpcShopPacketFactory : PacketFactoryBase, INpcShopPacketFactory
     {
         /// <inheritdoc />
         public void SendOpenNpcShop(IPlayerEntity player, INpcEntity npc)
         {
-            using (var packet = new FFPacket())
+            using var packet = new FFPacket();
+            
+            packet.StartNewMergedPacket(npc.Id, SnapshotType.OPENSHOPWND);
+
+            foreach (ItemContainerComponent shopTab in npc.Shop)
             {
-                packet.StartNewMergedPacket(npc.Id, SnapshotType.OPENSHOPWND);
-
-                foreach (ItemContainerComponent shopTab in npc.Shop)
-                    shopTab.Serialize(packet);
-
-                player.Connection.Send(packet);
+                shopTab.Serialize(packet);
             }
+
+            SendToPlayer(player, packet);
         }
     }
 }
