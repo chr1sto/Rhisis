@@ -37,3 +37,21 @@ QUEST_HERO = {
 		},
 	}
 }
+
+--
+-- Returns the job reward based on the player's job.
+--
+function QUEST_HERO:change_job_reward(player)
+	local hero_jobs = {
+		[Jobs.JOB_KNIGHT_MASTER] = Jobs.JOB_KNIGHT_HERO,
+		[Jobs.JOB_BLADE_MASTER] = Jobs.JOB_BLADE_HERO,
+		[Jobs.JOB_BILLPOSTER_MASTER] = Jobs.JOB_BILLPOSTER_HERO,
+		[Jobs.JOB_RINGMASTER_MASTER] = Jobs.JOB_RINGHERO_HERO,
+		[Jobs.JOB_JESTER_MASTER] = Jobs.JOB_JESTER_HERO,
+		[Jobs.JOB_RANGER_MASTER] = Jobs.JOB_RANGER_HERO,
+		[Jobs.JOB_PSYCHIKEEPER_MASTER] = Jobs.JOB_PSYCHIKEEPER_HERO,
+		[Jobs.JOB_ELEMENTOR_MASTER] = Jobs.JOB_ELEMENTOR_HERO,
+	}
+
+	return hero_jobs[player.PlayerData.JobId] or -1
+end

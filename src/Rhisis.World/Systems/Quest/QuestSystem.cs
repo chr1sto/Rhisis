@@ -474,7 +474,13 @@ namespace Rhisis.World.Systems.Quest
                 }
             }
 
-            // TODO: give new job
+            if (quest.Rewards.HasJobReward())
+            {
+                DefineJob.Job newJob = quest.Rewards.GetJob(player);
+
+                // TODO: give new job
+            }
+
             // TODO: restat
             // TODO: give extra points
 
@@ -483,8 +489,6 @@ namespace Rhisis.World.Systems.Quest
 
             _textPacketFactory.SendDefinedText(player, DefineText.TID_EVE_ENDQUEST, $"\"{_gameResources.GetText(quest.Title)}\"");
             _questPacketFactory.SendQuest(player, questToFinish);
-
-            // TODO: if the NPC has another quest to suggest, send quest suggestion and do not close the dialog box
 
             if (npc.Quests.Any())
             {
