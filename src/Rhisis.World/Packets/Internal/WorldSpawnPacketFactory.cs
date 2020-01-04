@@ -13,7 +13,7 @@ using System.Linq;
 namespace Rhisis.World.Packets.Internal
 {
     [Injectable(ServiceLifetime.Singleton)]
-    public sealed class WorldSpawnPacketFactory : IWorldSpawnPacketFactory
+    internal class WorldSpawnPacketFactory : PacketFactoryBase, IWorldSpawnPacketFactory
     {
         /// <inheritdoc />
         public void SendPlayerSpawn(IPlayerEntity player)
@@ -201,7 +201,7 @@ namespace Rhisis.World.Packets.Internal
                 // buffs
                 packet.Write(0); // count
 
-                player.Connection.Send(packet);
+                SendToPlayer(player, packet);
             }
 
             // Taskbar
@@ -210,167 +210,164 @@ namespace Rhisis.World.Packets.Internal
                 packet.StartNewMergedPacket(player.Id, SnapshotType.TASKBAR);
                 player.Taskbar.Serialize(packet);
 
-                player.Connection.Send(packet);
+                SendToPlayer(player, packet);
             }
         }
 
         /// <inheritdoc />
         public void SendSpawnObjectTo(IPlayerEntity player, IWorldEntity entityToSpawn)
         {
-            using (var packet = new FFPacket())
+            using var packet = new FFPacket();
+            
+            packet.StartNewMergedPacket(entityToSpawn.Id, SnapshotType.ADD_OBJ);
+            packet.Write((byte)entityToSpawn.Object.Type);
+            packet.Write(entityToSpawn.Object.ModelId);
+            packet.Write((byte)entityToSpawn.Object.Type);
+            packet.Write(entityToSpawn.Object.ModelId);
+            packet.Write(entityToSpawn.Object.Size);
+            packet.Write(entityToSpawn.Object.Position.X);
+            packet.Write(entityToSpawn.Object.Position.Y);
+            packet.Write(entityToSpawn.Object.Position.Z);
+            packet.Write((short)(entityToSpawn.Object.Angle * 10f));
+            packet.Write((int)entityToSpawn.Id);
+
+            if (entityToSpawn.Type == WorldEntityType.Player)
             {
-                packet.StartNewMergedPacket(entityToSpawn.Id, SnapshotType.ADD_OBJ);
+                var playerEntity = entityToSpawn as IPlayerEntity;
 
-                packet.Write((byte)entityToSpawn.Object.Type);
-                packet.Write(entityToSpawn.Object.ModelId);
-                packet.Write((byte)entityToSpawn.Object.Type);
-                packet.Write(entityToSpawn.Object.ModelId);
-                packet.Write(entityToSpawn.Object.Size);
-                packet.Write(entityToSpawn.Object.Position.X);
-                packet.Write(entityToSpawn.Object.Position.Y);
-                packet.Write(entityToSpawn.Object.Position.Z);
-                packet.Write((short)(entityToSpawn.Object.Angle * 10f));
-                packet.Write((int)entityToSpawn.Id);
+                packet.Write<short>(0);
+                packet.Write<byte>(1); // is player?
+                packet.Write(playerEntity.Health.Hp); // HP
+                packet.Write((int)playerEntity.Object.MovingFlags); // moving flags
+                packet.Write((int)playerEntity.Object.MotionFlags); // motion flags
+                packet.Write<byte>(0);
+                packet.Write(-1); // baby buffer
 
-                if (entityToSpawn.Type == WorldEntityType.Player)
-                {
-                    var playerEntity = entityToSpawn as IPlayerEntity;
+                packet.Write(playerEntity.Object.Name);
+                packet.Write(playerEntity.VisualAppearance.Gender);
+                packet.Write((byte)playerEntity.VisualAppearance.SkinSetId);
+                packet.Write((byte)playerEntity.VisualAppearance.HairId);
+                packet.Write(playerEntity.VisualAppearance.HairColor);
+                packet.Write((byte)playerEntity.VisualAppearance.FaceId);
+                packet.Write(playerEntity.PlayerData.Id);
+                packet.Write((byte)1);
+                packet.Write((short)playerEntity.Attributes[DefineAttributes.STR]); // STR
+                packet.Write((short)playerEntity.Attributes[DefineAttributes.STA]); // STA
+                packet.Write((short)playerEntity.Attributes[DefineAttributes.DEX]); // DEX
+                packet.Write((short)playerEntity.Attributes[DefineAttributes.INT]); // INT
+                packet.Write((short)playerEntity.Object.Level); // Level
 
-                    packet.Write<short>(0);
-                    packet.Write<byte>(1); // is player?
-                    packet.Write(playerEntity.Health.Hp); // HP
-                    packet.Write((int)playerEntity.Object.MovingFlags); // moving flags
-                    packet.Write((int)playerEntity.Object.MotionFlags); // motion flags
-                    packet.Write<byte>(0);
-                    packet.Write(-1); // baby buffer
+                packet.Write(-1);
+                packet.Write(0);
 
-                    packet.Write(playerEntity.Object.Name);
-                    packet.Write(playerEntity.VisualAppearance.Gender);
-                    packet.Write((byte)playerEntity.VisualAppearance.SkinSetId);
-                    packet.Write((byte)playerEntity.VisualAppearance.HairId);
-                    packet.Write(playerEntity.VisualAppearance.HairColor);
-                    packet.Write((byte)playerEntity.VisualAppearance.FaceId);
-                    packet.Write(playerEntity.PlayerData.Id);
-                    packet.Write((byte)1);
-                    packet.Write((short)playerEntity.Attributes[DefineAttributes.STR]); // STR
-                    packet.Write((short)playerEntity.Attributes[DefineAttributes.STA]); // STA
-                    packet.Write((short)playerEntity.Attributes[DefineAttributes.DEX]); // DEX
-                    packet.Write((short)playerEntity.Attributes[DefineAttributes.INT]); // INT
-                    packet.Write((short)playerEntity.Object.Level); // Level
+                packet.Write<byte>(0); // has guild
+                packet.Write(0); // guild cloak
 
-                    packet.Write(-1);
+                packet.Write<byte>(0); // has party
+
+                packet.Write((byte)playerEntity.PlayerData.Authority); // Authority
+                packet.Write(0); // mode
+                packet.Write(0); // state mode
+                packet.Write(0x000001F6); // item used ??
+                packet.Write(0); // last pk time.
+                packet.Write(0); // karma
+                packet.Write(0); // pk propensity
+                packet.Write(0); // pk exp
+                packet.Write(0); // fame
+                packet.Write<byte>(0); // duel
+                packet.Write(-1); // titles
+
+                // Serialize visible effects
+                IEnumerable<Item> equipedItems = playerEntity.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+
+                foreach (var item in equipedItems)
+                    packet.Write(item.Refines);
+
+                for (var i = 0; i < 28; i++)
                     packet.Write(0);
 
-                    packet.Write<byte>(0); // has guild
-                    packet.Write(0); // guild cloak
+                // Serialize Equiped items
+                packet.Write((byte)equipedItems.Count(x => x.Id != -1));
 
-                    packet.Write<byte>(0); // has party
-
-                    packet.Write((byte)playerEntity.PlayerData.Authority); // Authority
-                    packet.Write(0); // mode
-                    packet.Write(0); // state mode
-                    packet.Write(0x000001F6); // item used ??
-                    packet.Write(0); // last pk time.
-                    packet.Write(0); // karma
-                    packet.Write(0); // pk propensity
-                    packet.Write(0); // pk exp
-                    packet.Write(0); // fame
-                    packet.Write<byte>(0); // duel
-                    packet.Write(-1); // titles
-
-                    // Serialize visible effects
-                    IEnumerable<Item> equipedItems = playerEntity.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
-
-                    foreach (var item in equipedItems)
-                        packet.Write(item.Refines);
-
-                    for (var i = 0; i < 28; i++)
-                        packet.Write(0);
-
-                    // Serialize Equiped items
-                    packet.Write((byte)equipedItems.Count(x => x.Id != -1));
-
-                    foreach (var item in equipedItems)
+                foreach (var item in equipedItems)
+                {
+                    if (item != null && item.Id > 0)
                     {
-                        if (item != null && item.Id > 0)
-                        {
-                            packet.Write((byte)(item.Slot - InventorySystem.EquipOffset));
-                            packet.Write((short)item.Id);
-                            packet.Write<byte>(0);
-                        }
+                        packet.Write((byte)(item.Slot - InventorySystem.EquipOffset));
+                        packet.Write((short)item.Id);
+                        packet.Write<byte>(0);
                     }
-
-                    packet.Write(-1); // pet ?
-                    packet.Write(0); // buffs ?
-                }
-                else if (entityToSpawn.Type == WorldEntityType.Monster)
-                {
-                    var monsterEntity = entityToSpawn as IMonsterEntity;
-
-                    packet.Write<short>(5);
-                    packet.Write<byte>(0);
-                    packet.Write(monsterEntity.Health.Hp);
-                    packet.Write(1);
-                    packet.Write(0);
-                    packet.Write((byte)monsterEntity.Data.Belligerence);
-                    packet.Write(-1);
-
-                    packet.Write((byte)0);
-                    packet.Write(-1);
-                    packet.Write((byte)0);
-                    packet.Write(0);
-                    packet.Write((byte)0);
-                    if (entityToSpawn.Object.ModelId == 1021)
-                        packet.Write((byte)0);
-                    else
-                        packet.Write(false ? (byte)1 : (byte)0);
-                    packet.Write((byte)0);
-                    packet.Write((byte)0);
-                    packet.Write(0);
-                    packet.Write(monsterEntity.Moves.SpeedFactor); // speed factor
-                    packet.Write(0);
-                }
-                else if (entityToSpawn.Type == WorldEntityType.Npc)
-                {
-                    packet.Write<short>(1);
-                    packet.Write<byte>(0);
-                    packet.Write(1); // can be selected
-                    packet.Write(1);
-                    packet.Write(0);
-                    packet.Write<byte>(1);
-                    packet.Write(-1);
-                    packet.Write<byte>(0); // Npc hair id
-                    packet.Write(0); // Npc hair color
-                    packet.Write<byte>(0); // Npc Face Id
-                    packet.Write(entityToSpawn.Object.Name);
-                    packet.Write<byte>(0); // item equiped count
-                    packet.Write<byte>(0);
-                    packet.Write<byte>(0);
-                    packet.Write<byte>(0);
-                    packet.Write(0);
-                    packet.Write<float>(1); // speed factor
-                    packet.Write(0);
-                }
-                else if (entityToSpawn.Type == WorldEntityType.Drop)
-                {
-                    var dropItemEntity = entityToSpawn as IItemEntity;
-
-                    dropItemEntity.Drop.Item.Serialize(packet);
                 }
 
-                player.Connection.Send(packet);
+                packet.Write(-1); // pet ?
+                packet.Write(0); // buffs ?
             }
+            else if (entityToSpawn.Type == WorldEntityType.Monster)
+            {
+                var monsterEntity = entityToSpawn as IMonsterEntity;
+
+                packet.Write<short>(5);
+                packet.Write<byte>(0);
+                packet.Write(monsterEntity.Health.Hp);
+                packet.Write(1);
+                packet.Write(0);
+                packet.Write((byte)monsterEntity.Data.Belligerence);
+                packet.Write(-1);
+
+                packet.Write((byte)0);
+                packet.Write(-1);
+                packet.Write((byte)0);
+                packet.Write(0);
+                packet.Write((byte)0);
+                if (entityToSpawn.Object.ModelId == 1021)
+                    packet.Write((byte)0);
+                else
+                    packet.Write(false ? (byte)1 : (byte)0);
+                packet.Write((byte)0);
+                packet.Write((byte)0);
+                packet.Write(0);
+                packet.Write(monsterEntity.Moves.SpeedFactor); // speed factor
+                packet.Write(0);
+            }
+            else if (entityToSpawn.Type == WorldEntityType.Npc)
+            {
+                packet.Write<short>(1);
+                packet.Write<byte>(0);
+                packet.Write(1); // can be selected
+                packet.Write(1);
+                packet.Write(0);
+                packet.Write<byte>(1);
+                packet.Write(-1);
+                packet.Write<byte>(0); // Npc hair id
+                packet.Write(0); // Npc hair color
+                packet.Write<byte>(0); // Npc Face Id
+                packet.Write(entityToSpawn.Object.Name);
+                packet.Write<byte>(0); // item equiped count
+                packet.Write<byte>(0);
+                packet.Write<byte>(0);
+                packet.Write<byte>(0);
+                packet.Write(0);
+                packet.Write<float>(1); // speed factor
+                packet.Write(0);
+            }
+            else if (entityToSpawn.Type == WorldEntityType.Drop)
+            {
+                var dropItemEntity = entityToSpawn as IItemEntity;
+
+                dropItemEntity.Drop.Item.Serialize(packet);
+            }
+
+            SendToPlayer(player, packet);
         }
 
         /// <inheritdoc />
         public void SendDespawnObjectTo(IPlayerEntity player, IWorldEntity entityToDespawn)
         {
-            using (var packet = new FFPacket())
-            {
-                packet.StartNewMergedPacket(entityToDespawn.Id, SnapshotType.DEL_OBJ);
+            using var packet = new FFPacket();
+            
+            packet.StartNewMergedPacket(entityToDespawn.Id, SnapshotType.DEL_OBJ);
 
-                player.Connection.Send(packet);
-            }
+            SendToPlayer(player, packet);
         }
     }
 }

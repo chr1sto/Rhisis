@@ -7,18 +7,17 @@ using Rhisis.World.Game.Entities;
 namespace Rhisis.World.Packets.Internal
 {
     [Injectable(ServiceLifetime.Singleton)]
-    internal sealed class TaskbarPacketFactory : ITaskbarPacketFactory
+    internal class TaskbarPacketFactory : PacketFactoryBase, ITaskbarPacketFactory
     {
         /// <inheritdoc />
         public void SendSetActionPoint(IPlayerEntity player, int actionPoint)
         {
-            using (var packet = new FFPacket())
-            {
-                packet.StartNewMergedPacket(player.Id, SnapshotType.SETACTIONPOINT);
-                packet.Write(actionPoint);
+            using var packet = new FFPacket();
+            
+            packet.StartNewMergedPacket(player.Id, SnapshotType.SETACTIONPOINT);
+            packet.Write(actionPoint);
 
-                player.Connection.Send(packet);
-            }
+            SendToPlayer(player, packet);
         }
     }
 }

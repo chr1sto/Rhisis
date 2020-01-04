@@ -95,6 +95,7 @@ We choose to use the [Sylver.Network][sylvernetwork] to manage our server connec
 	- Monster item/gold drop
 - Character customization system
 - Attribute System
+- Quest System
 
 
 ## How to setup Rhisis (from `develop` branch) (Windows platform)

@@ -10,7 +10,7 @@ using System.Linq;
 namespace Rhisis.World.Packets.Internal
 {
     [Injectable(ServiceLifetime.Singleton)]
-    internal sealed class QuestPacketFactory : IQuestPacketFactory
+    internal class QuestPacketFactory : PacketFactoryBase, IQuestPacketFactory
     {
         /// <inheritdoc />
         public void SendQuest(IPlayerEntity player, QuestInfo quest)
@@ -20,7 +20,7 @@ namespace Rhisis.World.Packets.Internal
             packet.StartNewMergedPacket(player.Id, SnapshotType.SETQUEST);
             quest.Serialize(packet);
 
-            player.Connection.Send(packet);
+            SendToPlayer(player, packet);
         }
 
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write((short)quest.QuestId);
             }
 
-            player.Connection.Send(packet);
+            SendToPlayer(player, packet);
         }
     }
 }
