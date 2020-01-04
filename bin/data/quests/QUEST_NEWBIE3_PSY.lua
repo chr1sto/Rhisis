@@ -10,6 +10,7 @@ QUEST_NEWBIE3_PSY = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_BXMPSYCHIKEEPER90', quantity = 1, sex = 'Male', refine = 2 },
 			{ id = 'II_SYS_SYS_EVE_BXFPSYCHIKEEPER90', quantity = 1, sex = 'Female', refine = 2 },

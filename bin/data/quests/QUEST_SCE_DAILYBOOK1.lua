@@ -10,6 +10,7 @@ QUEST_SCE_DAILYBOOK1 = {
 	},
 	rewards = {
 		gold = 119000,
+		exp = 4752893,
 	},
 	end_conditions = {
 	},

@@ -10,6 +10,7 @@ QUEST_HALLOWEEN03_2009 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_ARM_S_CLO_MAS_SOUL01', quantity = 1, sex = 'Any' },
 		},

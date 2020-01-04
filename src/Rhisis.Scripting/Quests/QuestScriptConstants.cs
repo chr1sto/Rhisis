@@ -28,9 +28,11 @@
 
         public const string Gold = "gold";
 
-        public const string MinGold = "min_gold";
+        public const string Min = "min";
 
-        public const string MaxGold = "max_gold";
+        public const string Max = "max";
+
+        public const string Experience = "exp";
 
         public const string Items = "items";
 

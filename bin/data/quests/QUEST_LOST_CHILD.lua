@@ -10,6 +10,7 @@ QUEST_LOST_CHILD = {
 	},
 	rewards = {
 		gold = 43200,
+		exp = 687,
 	},
 	end_conditions = {
 		monsters = {

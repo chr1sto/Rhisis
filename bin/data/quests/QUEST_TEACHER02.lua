@@ -10,6 +10,7 @@ QUEST_TEACHER02 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_SCR_BXSCHOOL02', quantity = 1, sex = 'Any' },
 		},

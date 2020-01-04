@@ -10,6 +10,7 @@ QUEST_JULY04 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_SCR_BXFESTIVAL02', quantity = 1, sex = 'Any' },
 		},

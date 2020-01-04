@@ -10,6 +10,7 @@ QUEST_SCE_TRBHISTORY = {
 	},
 	rewards = {
 		gold = 124800,
+		exp = 0,
 	},
 	end_conditions = {
 		items = {

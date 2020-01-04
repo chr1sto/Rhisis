@@ -10,6 +10,7 @@ QUEST_TUTORIAL05 = {
 	},
 	rewards = {
 		gold = 1500,
+		exp = 20,
 	},
 	end_conditions = {
 		monsters = {

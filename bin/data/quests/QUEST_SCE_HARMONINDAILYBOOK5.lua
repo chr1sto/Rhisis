@@ -10,6 +10,7 @@ QUEST_SCE_HARMONINDAILYBOOK5 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1969947768,
 	},
 	end_conditions = {
 	},

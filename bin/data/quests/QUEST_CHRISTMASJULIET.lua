@@ -10,6 +10,7 @@ QUEST_CHRISTMASJULIET = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_SCR_BXCHARISTMASRED', quantity = 1, sex = 'Any' },
 		},

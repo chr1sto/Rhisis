@@ -10,6 +10,7 @@ QUEST_SCE_REASONCONDIV = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_QUE_PRFCONDIV', quantity = 1, sex = 'Any' },
 		},

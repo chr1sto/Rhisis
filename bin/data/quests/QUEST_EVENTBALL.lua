@@ -10,6 +10,7 @@ QUEST_EVENTBALL = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_GEN_MAT_ORICHALCUM01', quantity = 5, sex = 'Any' },
 			{ id = 'II_GEN_MAT_MOONSTONE', quantity = 5, sex = 'Any' },

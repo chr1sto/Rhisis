@@ -10,6 +10,7 @@ QUEST_ALICE06 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_ARM_S_CLO_TAEGUK_1', quantity = 1, sex = 'Any' },
 		},

@@ -10,6 +10,7 @@ QUEST_SCE_CAVEDISCOVERY3 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1477460826,
 	},
 	end_conditions = {
 	},

@@ -10,6 +10,7 @@ QUEST_EXISTDESIRE = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_QUE_MONBOOK1', quantity = 1, sex = 'Any' },
 		},

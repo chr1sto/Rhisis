@@ -10,6 +10,7 @@ QUEST_UNITYREDB = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 6039776,
 	},
 	end_conditions = {
 		patrols = {

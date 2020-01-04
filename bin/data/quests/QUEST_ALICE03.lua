@@ -10,6 +10,7 @@ QUEST_ALICE03 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_ARM_S_CLO_CLO_DRAGON_1', quantity = 1, sex = 'Any' },
 		},

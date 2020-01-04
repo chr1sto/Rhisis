@@ -10,6 +10,7 @@ QUEST_BRAVERYCHALLENGE = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_ARM_S_CLO_CLO_HERO02', quantity = 1, sex = 'Any' },
 		},

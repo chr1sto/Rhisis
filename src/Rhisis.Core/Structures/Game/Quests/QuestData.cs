@@ -81,6 +81,16 @@ namespace Rhisis.Core.Structures.Game.Quests
         public int MaxGold { get; set; }
 
         /// <summary>
+        /// Gets or sets the min experience reward when the quest is completed.
+        /// </summary>
+        public int MinExp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the max experience reward when the quest is completed.
+        /// </summary>
+        public int MaxExp { get; set; }
+
+        /// <summary>
         /// Gets or sets the reward items when the quest is completed.
         /// </summary>
         public IEnumerable<QuestItem> RewardItems { get; set; }

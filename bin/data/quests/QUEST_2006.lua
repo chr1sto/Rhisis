@@ -10,6 +10,7 @@ QUEST_2006 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1064,
 		items = {
 			{ id = 'II_GEN_POT_DRI_VITAL400', quantity = 20, sex = 'Any' },
 		},

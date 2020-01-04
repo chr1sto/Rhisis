@@ -10,6 +10,7 @@ QUEST_SANTA01 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_REDSOCKS', quantity = 1, sex = 'Any' },
 		},

@@ -10,6 +10,7 @@ QUEST_SNOWMAN02_1 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_BALLOON01', quantity = 1, sex = 'Any' },
 		},

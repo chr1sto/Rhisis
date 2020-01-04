@@ -10,6 +10,7 @@ QUEST_EXISTDARK = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 669234,
 	},
 	end_conditions = {
 		monsters = {

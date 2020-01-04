@@ -10,6 +10,7 @@ QUEST_JAPEVE_BOZDA = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_BIN_BOZDARKON', quantity = 1, sex = 'Any' },
 		},

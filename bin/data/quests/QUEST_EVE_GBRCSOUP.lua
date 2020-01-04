@@ -10,6 +10,7 @@ QUEST_EVE_GBRCSOUP = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_GEM_LUCKBAG', quantity = 1, sex = 'Any' },
 		},

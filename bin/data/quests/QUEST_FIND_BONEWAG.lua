@@ -10,6 +10,7 @@ QUEST_FIND_BONEWAG = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1176,
 	},
 	end_conditions = {
 		items = {

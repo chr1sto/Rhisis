@@ -10,6 +10,7 @@ QUEST_HEROPSY_TRN5 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		job = 'JOB_PSYCHIKEEPER',
 	},
 	end_conditions = {

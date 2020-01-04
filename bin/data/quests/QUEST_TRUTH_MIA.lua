@@ -10,6 +10,7 @@ QUEST_TRUTH_MIA = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 412,
 		items = {
 			{ id = 'II_SYS_SYS_QUE_SECDIS', quantity = 1, sex = 'Any' },
 		},

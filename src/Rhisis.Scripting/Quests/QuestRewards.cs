@@ -15,12 +15,20 @@ namespace Rhisis.Scripting.Quests
         private readonly int? _gold;
         private readonly int _minGold;
         private readonly int _maxGold;
+
+        private readonly long? _experience;
+        private readonly long _minExperience;
+        private readonly long _maxExperience;
+
         private readonly DefineJob.Job? _rewardJob;
         private readonly LuaFunction _rewardJobFunction;
         private readonly LuaTable _mainLuaTable;
 
         /// <inheritdoc />
-        public int Gold => this._gold ?? RandomHelper.Random(this._minGold, this._maxGold);
+        public int Gold => _gold ?? RandomHelper.Random(_minGold, _maxGold);
+
+        /// <inheritdoc />
+        public long Experience => _experience ?? RandomHelper.LongRandom(_minExperience, _maxExperience);
 
         /// <inheritdoc />
         public IEnumerable<QuestItem> Items { get; }
@@ -45,12 +53,27 @@ namespace Rhisis.Scripting.Quests
             {
                 if (gold is LuaTable goldRangeTable)
                 {
-                    _minGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.MinGold);
-                    _maxGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.MaxGold);
+                    _minGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.Min);
+                    _maxGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.Max);
                 }
                 else
                 {
                     _gold = LuaScriptHelper.GetValue<int>(questRewardsLuaTable, QuestScriptConstants.Gold);
+                }
+            }
+
+            object experience = questRewardsLuaTable[QuestScriptConstants.Experience];
+
+            if (experience != null)
+            {
+                if (experience is LuaTable experienceRangeTable)
+                {
+                    _minExperience = LuaScriptHelper.GetValue<long>(experienceRangeTable, QuestScriptConstants.Min);
+                    _maxExperience = LuaScriptHelper.GetValue<long>(experienceRangeTable, QuestScriptConstants.Max);
+                }
+                else
+                {
+                    _experience = LuaScriptHelper.GetValue<long>(questRewardsLuaTable, QuestScriptConstants.Experience);
                 }
             }
 
@@ -69,11 +92,6 @@ namespace Rhisis.Scripting.Quests
 
             _rewardJob = LuaScriptHelper.GetValue<DefineJob.Job>(questRewardsLuaTable, QuestScriptConstants.Job);
             _rewardJobFunction = mainLuaTable[QuestScriptHooksConstants.ChangeJobReward] as LuaFunction;
-
-            if (_rewardJobFunction != null)
-            {
-                var job = GetJob((int)DefineJob.Job.JOB_BLADE);
-            }
         }
 
         /// <inheritdoc />

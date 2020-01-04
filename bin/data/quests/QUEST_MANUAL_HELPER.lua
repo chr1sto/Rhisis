@@ -10,6 +10,7 @@ QUEST_MANUAL_HELPER = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 784,
 	},
 	end_conditions = {
 		items = {

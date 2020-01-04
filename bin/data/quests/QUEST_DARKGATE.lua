@@ -10,6 +10,7 @@ QUEST_DARKGATE = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 200796,
 	},
 	end_conditions = {
 		patrols = {

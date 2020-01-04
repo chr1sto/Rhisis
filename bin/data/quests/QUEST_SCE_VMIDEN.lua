@@ -10,6 +10,7 @@ QUEST_SCE_VMIDEN = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 2884,
 	},
 	end_conditions = {
 		items = {

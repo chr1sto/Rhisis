@@ -10,6 +10,7 @@ QUEST_COOKER02 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_SCR_BXCHOCOLATE02', quantity = 1, sex = 'Any' },
 		},

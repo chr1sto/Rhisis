@@ -10,6 +10,7 @@ QUEST_CLOWNTEMPLE = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 319984,
 	},
 	end_conditions = {
 		items = {

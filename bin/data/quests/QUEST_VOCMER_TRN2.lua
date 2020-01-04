@@ -10,6 +10,7 @@ QUEST_VOCMER_TRN2 = {
 	},
 	rewards = {
 		gold = 1500,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_QUE_NTSKILL', quantity = 1, sex = 'Any' },
 		},

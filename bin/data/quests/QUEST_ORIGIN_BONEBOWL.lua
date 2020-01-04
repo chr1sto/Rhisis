@@ -10,6 +10,7 @@ QUEST_ORIGIN_BONEBOWL = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 56017,
 	},
 	end_conditions = {
 	},

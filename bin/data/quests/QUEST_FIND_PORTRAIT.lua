@@ -10,6 +10,7 @@ QUEST_FIND_PORTRAIT = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1645,
 	},
 	end_conditions = {
 	},

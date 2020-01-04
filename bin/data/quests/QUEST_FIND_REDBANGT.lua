@@ -10,6 +10,7 @@ QUEST_FIND_REDBANGT = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 14258,
 	},
 	end_conditions = {
 		items = {

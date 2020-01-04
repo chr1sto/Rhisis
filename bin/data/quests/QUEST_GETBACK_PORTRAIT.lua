@@ -10,6 +10,7 @@ QUEST_GETBACK_PORTRAIT = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 3195,
 	},
 	end_conditions = {
 		items = {

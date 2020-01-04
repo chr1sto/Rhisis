@@ -10,6 +10,7 @@ QUEST_SEVENTH2009 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_SCR_BXNATURE01', quantity = 1, sex = 'Any' },
 		},

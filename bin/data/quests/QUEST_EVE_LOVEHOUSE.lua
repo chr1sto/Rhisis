@@ -10,6 +10,7 @@ QUEST_EVE_LOVEHOUSE = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_GEM_LUXUBOX', quantity = 1, sex = 'Any' },
 		},

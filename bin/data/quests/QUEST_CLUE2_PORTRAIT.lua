@@ -10,6 +10,7 @@ QUEST_CLUE2_PORTRAIT = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 2614,
 		items = {
 			{ id = 'II_SYS_SYS_QUE_CLUEPORT2', quantity = 1, sex = 'Any' },
 		},

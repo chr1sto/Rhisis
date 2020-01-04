@@ -10,6 +10,7 @@ QUEST_GRAHOO01 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_CHOCOLATE06', quantity = 1, sex = 'Any' },
 			{ id = 'II_SYS_SYS_EVE_CHOCOLATE07', quantity = 1, sex = 'Any' },

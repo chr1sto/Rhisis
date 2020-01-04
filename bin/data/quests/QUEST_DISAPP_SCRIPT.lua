@@ -10,6 +10,7 @@ QUEST_DISAPP_SCRIPT = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 27345,
 	},
 	end_conditions = {
 	},

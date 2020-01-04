@@ -10,6 +10,7 @@ QUEST_EVE_LOSTXMAS3 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_GEM_YELLOWGBOX', quantity = 1, sex = 'Any' },
 		},

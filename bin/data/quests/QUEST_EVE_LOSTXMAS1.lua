@@ -10,6 +10,7 @@ QUEST_EVE_LOSTXMAS1 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_GEM_BLUEGBOX', quantity = 1, sex = 'Any' },
 		},

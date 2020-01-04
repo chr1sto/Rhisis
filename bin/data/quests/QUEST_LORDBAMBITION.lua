@@ -10,6 +10,7 @@ QUEST_LORDBAMBITION = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 4529832,
 	},
 	end_conditions = {
 		monsters = {

@@ -10,6 +10,7 @@ QUEST_WHITE2010 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_SCR_BXCUPID01', quantity = 1, sex = 'Any' },
 		},

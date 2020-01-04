@@ -10,6 +10,7 @@ QUEST_NEWBIE2_MAG = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_BXMMAGICIAN45', quantity = 1, sex = 'Male', refine = 2 },
 			{ id = 'II_SYS_SYS_EVE_BXFMAGICIAN45', quantity = 1, sex = 'Female', refine = 2 },

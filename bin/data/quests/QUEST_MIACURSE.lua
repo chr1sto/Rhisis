@@ -10,6 +10,7 @@ QUEST_MIACURSE = {
 	},
 	rewards = {
 		gold = 32000,
+		exp = 0,
 	},
 	end_conditions = {
 	},

@@ -10,6 +10,7 @@ QUEST_ABEROO02 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_BOX01', quantity = 1, sex = 'Any' },
 		},

@@ -10,6 +10,7 @@ QUEST_SCE_MYSTGEM = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 3435,
 	},
 	end_conditions = {
 		items = {

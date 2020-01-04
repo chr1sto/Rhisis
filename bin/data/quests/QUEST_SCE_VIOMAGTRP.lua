@@ -10,6 +10,7 @@ QUEST_SCE_VIOMAGTRP = {
 	},
 	rewards = {
 		gold = 15800,
+		exp = 3920,
 	},
 	end_conditions = {
 		monsters = {

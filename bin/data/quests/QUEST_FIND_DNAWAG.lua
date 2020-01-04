@@ -10,6 +10,7 @@ QUEST_FIND_DNAWAG = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 824,
 	},
 	end_conditions = {
 		items = {

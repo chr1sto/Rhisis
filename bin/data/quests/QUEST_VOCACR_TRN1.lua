@@ -10,6 +10,7 @@ QUEST_VOCACR_TRN1 = {
 	},
 	rewards = {
 		gold = 1500,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_BLI_BLI_FLARIS', quantity = 1, sex = 'Any' },
 		},

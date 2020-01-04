@@ -10,6 +10,7 @@ QUEST_GETBACK_LUDASAFE = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 16250,
 	},
 	end_conditions = {
 		items = {

@@ -10,6 +10,7 @@ QUEST_NEWLORDB = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 3019888,
 	},
 	end_conditions = {
 		patrols = {

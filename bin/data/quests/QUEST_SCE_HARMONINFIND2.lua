@@ -10,6 +10,7 @@ QUEST_SCE_HARMONINFIND2 = {
 	},
 	rewards = {
 		gold = 240000,
+		exp = 4752893,
 	},
 	end_conditions = {
 	},

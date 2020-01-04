@@ -10,6 +10,7 @@ QUEST_HEROKNI_TRN5 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		job = 'JOB_KNIGHT',
 	},
 	end_conditions = {

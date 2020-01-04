@@ -10,6 +10,7 @@ QUEST_MINIWHEEL = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_CHR_FOO_COO_REMANTIS', quantity = 10, sex = 'Any' },
 		},

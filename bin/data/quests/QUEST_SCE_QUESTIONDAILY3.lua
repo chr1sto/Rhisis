@@ -10,6 +10,7 @@ QUEST_SCE_QUESTIONDAILY3 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 656649256,
 	},
 	end_conditions = {
 	},

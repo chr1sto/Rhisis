@@ -10,6 +10,7 @@ QUEST_TUTORIAL01 = {
 	},
 	rewards = {
 		gold = 100,
+		exp = 4,
 	},
 	end_conditions = {
 	},

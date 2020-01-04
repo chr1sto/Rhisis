@@ -13,6 +13,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Experience;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.PlayerData;
 using System;
@@ -43,6 +44,7 @@ namespace Rhisis.World.Systems.Quest
         private readonly IGameResources _gameResources;
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IInventorySystem _inventorySystem;
+        private readonly IExperienceSystem _experienceSystem;
         private readonly IQuestPacketFactory _questPacketFactory;
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
@@ -50,13 +52,14 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public int Order => 3;
 
-        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
+        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
             this._logger = logger;
             this._database = database;
             this._gameResources = gameResources;
             this._playerDataSystem = playerDataSystem;
             this._inventorySystem = inventorySystem;
+            this._experienceSystem = experienceSystem;
             this._questPacketFactory = questPacketFactory;
             this._npcDialogPacketFactory = npcDialogPacketFactory;
             this._textPacketFactory = textPacketFactory;
@@ -447,11 +450,11 @@ namespace Rhisis.World.Systems.Quest
             }
 
             // Give gold reward
-            int goldRewad = quest.Rewards.Gold;
+            int goldReward = quest.Rewards.Gold;
 
-            if (_playerDataSystem.IncreaseGold(player, goldRewad))
+            if (goldReward > 0 && _playerDataSystem.IncreaseGold(player, goldReward))
             {
-                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, goldRewad.ToString("###,###,###,###"), player.PlayerData.Gold.ToString("###,###,###,###"));
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, goldReward.ToString("###,###,###,###"), player.PlayerData.Gold.ToString("###,###,###,###"));
             }
 
             // Remove quest items from inventory
@@ -472,6 +475,14 @@ namespace Rhisis.World.Systems.Quest
                         }
                     }
                 }
+            }
+
+            // Give experience
+            long expReward = quest.Rewards.Experience;
+
+            if (expReward > 0)
+            {
+                this._experienceSystem.GiveExeperience(player, expReward);
             }
 
             if (quest.Rewards.HasJobReward())

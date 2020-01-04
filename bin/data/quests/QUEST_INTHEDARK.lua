@@ -10,6 +10,7 @@ QUEST_INTHEDARK = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1331100,
 	},
 	end_conditions = {
 		items = {

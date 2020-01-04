@@ -11,6 +11,11 @@ namespace Rhisis.Core.Structures.Game.Quests
         int Gold { get; }
 
         /// <summary>
+        /// Gets the quest experience reward.
+        /// </summary>
+        long Experience { get; }
+
+        /// <summary>
         /// Gets the quest items reward.
         /// </summary>
         IEnumerable<QuestItem> Items { get; }

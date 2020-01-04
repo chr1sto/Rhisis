@@ -10,6 +10,7 @@ QUEST_SCENARIO5 = {
 	},
 	rewards = {
 		gold = 5550000,
+		exp = 0,
 	},
 	end_conditions = {
 	},

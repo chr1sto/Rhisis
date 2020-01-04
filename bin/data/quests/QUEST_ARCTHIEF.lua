@@ -10,6 +10,7 @@ QUEST_ARCTHIEF = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 21172,
 	},
 	end_conditions = {
 		items = {

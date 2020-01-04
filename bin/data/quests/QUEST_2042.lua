@@ -10,6 +10,7 @@ QUEST_2042 = {
 	},
 	rewards = {
 		gold = 219000,
+		exp = 17250568,
 	},
 	end_conditions = {
 		items = {

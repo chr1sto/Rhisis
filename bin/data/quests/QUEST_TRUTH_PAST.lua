@@ -10,6 +10,7 @@ QUEST_TRUTH_PAST = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1305,
 	},
 	end_conditions = {
 		items = {

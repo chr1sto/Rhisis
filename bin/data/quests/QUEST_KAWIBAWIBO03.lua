@@ -10,6 +10,7 @@ QUEST_KAWIBAWIBO03 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_KAWIBAWIBO', quantity = 1, sex = 'Any' },
 		},

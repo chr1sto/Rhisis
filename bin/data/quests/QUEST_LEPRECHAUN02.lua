@@ -10,6 +10,7 @@ QUEST_LEPRECHAUN02 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_ARM_S_CLO_CLO_CLOVER', quantity = 1, sex = 'Male' },
 		},

@@ -10,6 +10,7 @@ QUEST_COOK01 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_BXCOOKING01', quantity = 1, sex = 'Any' },
 		},

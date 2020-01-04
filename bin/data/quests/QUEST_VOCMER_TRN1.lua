@@ -10,6 +10,7 @@ QUEST_VOCMER_TRN1 = {
 	},
 	rewards = {
 		gold = 1500,
+		exp = 0,
 	},
 	end_conditions = {
 		items = {

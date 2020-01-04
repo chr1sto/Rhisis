@@ -10,6 +10,7 @@ QUEST_TEAR_MOTHER = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1176,
 	},
 	end_conditions = {
 	},

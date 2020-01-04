@@ -10,6 +10,7 @@ QUEST_VanHarlen02 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_SCR_BXALCHEMY', quantity = 1, sex = 'Any' },
 		},

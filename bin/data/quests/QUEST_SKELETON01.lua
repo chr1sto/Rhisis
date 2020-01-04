@@ -10,6 +10,7 @@ QUEST_SKELETON01 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_PET_SKEL01', quantity = 1, sex = 'Any' },
 		},

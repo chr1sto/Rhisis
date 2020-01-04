@@ -10,6 +10,7 @@ QUEST_LEGENDREDMANTIS2 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 3386828,
 	},
 	end_conditions = {
 		items = {

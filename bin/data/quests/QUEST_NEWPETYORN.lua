@@ -10,6 +10,7 @@ QUEST_NEWPETYORN = {
 	},
 	rewards = {
 		gold = 15000,
+		exp = 0,
 	},
 	end_conditions = {
 		items = {

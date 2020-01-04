@@ -10,6 +10,7 @@ QUEST_SCE_STRMARK = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 	},
 	end_conditions = {
 		items = {

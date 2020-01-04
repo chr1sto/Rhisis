@@ -10,6 +10,7 @@ QUEST_CLOCK1ST = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_QUE_MONBOOK2', quantity = 1, sex = 'Any' },
 		},

@@ -10,6 +10,7 @@ QUEST_SUMMONDARK = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 1031,
 	},
 	end_conditions = {
 		patrols = {

@@ -10,6 +10,7 @@ QUEST_DOLL_MIA = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 2076,
 	},
 	end_conditions = {
 		items = {

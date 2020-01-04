@@ -10,6 +10,7 @@ QUEST_SERUSURIEL = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 3114,
 	},
 	end_conditions = {
 		items = {

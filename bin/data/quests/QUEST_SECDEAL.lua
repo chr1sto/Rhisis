@@ -10,6 +10,7 @@ QUEST_SECDEAL = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_GEN_JEW_NEC_HPNECKLACE', quantity = 1, sex = 'Any', refine = 3 },
 		},

@@ -1,6 +1,6 @@
 ﻿using Rhisis.World.Game.Entities;
 
-namespace Rhisis.World.Systems.Leveling
+namespace Rhisis.World.Systems.Experience
 {
     public interface IExperienceSystem
     {

@@ -10,6 +10,7 @@ QUEST_PHANTASM = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 2060,
 	},
 	end_conditions = {
 		monsters = {

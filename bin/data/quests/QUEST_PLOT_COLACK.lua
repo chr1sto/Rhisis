@@ -10,6 +10,7 @@ QUEST_PLOT_COLACK = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 26465,
 	},
 	end_conditions = {
 		items = {

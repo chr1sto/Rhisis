@@ -10,9 +10,10 @@ QUEST_HERORAN_TRN1 = {
 	},
 	rewards = {
 		gold = {
-			min_gold = 500000,
-			max_gold = 550000,
+			min = 500000,
+			max = 550000,
 		},
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_QUE_MASNOMINATE', quantity = 1, sex = 'Any' },
 		},

@@ -10,6 +10,7 @@ QUEST_RBIDENTITY = {
 	},
 	rewards = {
 		gold = 357000,
+		exp = 17446,
 	},
 	end_conditions = {
 		items = {

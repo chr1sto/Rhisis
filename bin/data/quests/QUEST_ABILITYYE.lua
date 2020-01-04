@@ -10,6 +10,7 @@ QUEST_ABILITYYE = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 36778455,
 	},
 	end_conditions = {
 		items = {

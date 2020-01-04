@@ -154,8 +154,20 @@ namespace Rhisis.CLI.Commands.Game.Quests
             else
             {
                 WriteAtLevel(writer, 2, $"{QuestScriptConstants.Gold} = {{", includeComma: false);
-                WriteAtLevel(writer, 3, $"{QuestScriptConstants.MinGold} = {quest.MinGold}");
-                WriteAtLevel(writer, 3, $"{QuestScriptConstants.MaxGold} = {quest.MaxGold}");
+                WriteAtLevel(writer, 3, $"{QuestScriptConstants.Min} = {quest.MinGold}");
+                WriteAtLevel(writer, 3, $"{QuestScriptConstants.Max} = {quest.MaxGold}");
+                WriteAtLevel(writer, 2, $"}}");
+            }
+
+            if (quest.MinExp == quest.MaxExp)
+            {
+                WriteAtLevel(writer, 2, $"{QuestScriptConstants.Experience} = {quest.MaxExp}");
+            }
+            else
+            {
+                WriteAtLevel(writer, 2, $"{QuestScriptConstants.Experience} = {{", includeComma: false);
+                WriteAtLevel(writer, 3, $"{QuestScriptConstants.Min} = {quest.MinExp}");
+                WriteAtLevel(writer, 3, $"{QuestScriptConstants.Max} = {quest.MaxExp}");
                 WriteAtLevel(writer, 2, $"}}");
             }
 

@@ -10,6 +10,7 @@ QUEST_HALLOWEEN01_2009 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_EVE_STATUE01', quantity = 5, sex = 'Any' },
 		},

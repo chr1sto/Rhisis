@@ -10,6 +10,7 @@ QUEST_PUMPKINCHILD = {
 	},
 	rewards = {
 		gold = 20000,
+		exp = 0,
 	},
 	end_conditions = {
 	},

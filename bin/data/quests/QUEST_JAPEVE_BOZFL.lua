@@ -10,6 +10,7 @@ QUEST_JAPEVE_BOZFL = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_SYS_SYS_BIN_BOZFLARIS', quantity = 1, sex = 'Any' },
 		},

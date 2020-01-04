@@ -10,6 +10,7 @@ QUEST_TRUTH_BONEBOWL = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 79996,
 	},
 	end_conditions = {
 		items = {

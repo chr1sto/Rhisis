@@ -10,6 +10,7 @@ QUEST_SPECHILD = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 5758,
 	},
 	end_conditions = {
 		items = {

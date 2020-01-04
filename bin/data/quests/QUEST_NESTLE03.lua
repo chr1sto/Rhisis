@@ -10,6 +10,7 @@ QUEST_NESTLE03 = {
 	},
 	rewards = {
 		gold = 0,
+		exp = 0,
 		items = {
 			{ id = 'II_RID_RID_STI_NESCAFE01', quantity = 1, sex = 'Any' },
 		},
