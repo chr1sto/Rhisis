@@ -38,6 +38,11 @@ namespace Rhisis.Database
         IShortcutRepository TaskbarShortcuts { get; }
 
         /// <summary>
+        /// Gets the quests.
+        /// </summary>
+        IQuestRepository Quests { get; }
+
+        /// <summary>
         /// Complete the pending database operations.
         /// </summary>
         void Complete();

@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace Rhisis.Database.Entities
 {
-    [Table("items")]
+    [Table("Items")]
+    [DebuggerDisplay("Id: {ItemId} - slot: {ItemSlot} - x{ItemCount}")]
     public sealed class DbItem : DbEntity
     {        
         /// <summary>
@@ -91,11 +93,6 @@ namespace Rhisis.Database.Entities
             this.Refine = refine;
             this.Element = element;
             this.ElementRefine = elementRefine;
-        }
-
-        public override string ToString()
-        {
-            return $"Id: {this.ItemId} - slot: {this.ItemSlot} - x{this.ItemCount}";
         }
     }
 }

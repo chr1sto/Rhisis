@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Extensions;
+﻿using Bogus;
+using Rhisis.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,17 @@ namespace Rhisis.Core.Test.Extensions
             new object[] { SomeData.Generate(40, true), true },
             new object[] { SomeData.Generate(20, true), true },
         };
+
+        private readonly IDictionary<int, int> _dictionary;
+
+        public LinqExtensions()
+        {
+            var faker = new Faker();
+
+            this._dictionary = Enumerable.Range(0, 10)
+                .Select(x => new KeyValuePair<int, int>(faker.Random.Int(), faker.Random.Int()))
+                .ToDictionary(x => x.Key, x => x.Value);
+        }
 
         [Theory]
         [InlineData(2)]
@@ -43,6 +55,26 @@ namespace Rhisis.Core.Test.Extensions
             bool containsDuplicate = data.HasDuplicates(x => x.Id);
 
             Assert.Equal(hasDuplicate, containsDuplicate);
+        }
+
+        [Theory]
+        [InlineData(0, false)]
+        [InlineData(5, false)]
+        [InlineData(9, false)]
+        [InlineData(-1, true)]
+        [InlineData(10, true)]
+        public void GetElementAtIndexOrDefault(int index, bool shouldBeDefault)
+        {
+            int value = _dictionary.GetValueAtIndexOrDefault(index);
+
+            if (shouldBeDefault)
+            {
+                Assert.Equal(default, value);
+            }
+            else
+            {
+                Assert.Equal(_dictionary.ElementAt(index).Value, value);
+            }
         }
     }
 

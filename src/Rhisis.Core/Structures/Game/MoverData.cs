@@ -142,6 +142,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwAttackSpeed")]
         public int AttackSpeed { get; set; }
 
+        /// <summary>
+        /// Gets or sets the monster correction value.
+        /// </summary>
         [DataMember(Name = "dwCorrectionValue")]
         public int CorrectionValue { get; set; }
 
@@ -150,6 +153,12 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         [DataMember(Name = "dwExpValue")]
         public long Experience { get; set; }
+
+        /// <summary>
+        /// Gets or sets the monster element type.
+        /// </summary>
+        [DataMember(Name = "eElementType")]
+        public ElementType Element { get; set; }
 
         /// <summary>
         /// Gets or sets the minimal amount of gold dropped when the mover dies.

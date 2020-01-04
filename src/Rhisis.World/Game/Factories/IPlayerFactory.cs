@@ -11,5 +11,11 @@ namespace Rhisis.World.Game.Factories
         /// <param name="character">Player's database representation.</param>
         /// <returns>New player entity.</returns>
         IPlayerEntity CreatePlayer(DbCharacter character);
+
+        /// <summary>
+        /// Saves the player entity.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        void SavePlayer(IPlayerEntity player);
     }
 }

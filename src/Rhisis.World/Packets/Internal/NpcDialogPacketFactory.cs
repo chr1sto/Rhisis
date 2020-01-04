@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Data;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
-using Rhisis.Core.Structures.Game.Dialogs;
-using Rhisis.Core.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Packets.Internal
 {
@@ -13,21 +14,26 @@ namespace Rhisis.World.Packets.Internal
     public sealed class NpcDialogPacketFactory : INpcDialogPacketFactory
     {
         /// <inheritdoc />
-        public void SendDialog(IPlayerEntity player, IEnumerable<string> dialogTexts, IEnumerable<DialogLink> dialogLinks)
+        public void SendDialog(IPlayerEntity player, IEnumerable<string> dialogTexts, IEnumerable<DialogLink> dialogLinks, IEnumerable<DialogLink> buttons = null, int questId = 0)
         {
-            using (var packet = new FFPacket())
-            {
-                packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
-                packet.Write((short)DialogOptions.FUNCTYPE_REMOVEALLKEY);
+            using var packet = new FFPacket();
+            
+            packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
+            packet.Write((short)DialogOptions.FUNCTYPE_REMOVEALLKEY);
 
-                foreach (var text in dialogTexts)
+            if (dialogTexts != null)
+            {
+                foreach (string text in dialogTexts)
                 {
                     packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
                     packet.Write((short)DialogOptions.FUNCTYPE_SAY);
                     packet.Write(text);
-                    packet.Write(0); // quest id
+                    packet.Write(questId);
                 }
+            }
 
+            if (dialogLinks != null)
+            {
                 foreach (DialogLink link in dialogLinks)
                 {
                     packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
@@ -35,7 +41,57 @@ namespace Rhisis.World.Packets.Internal
                     packet.Write(link.Title);
                     packet.Write(link.Id);
                     packet.Write(0);
+                    packet.Write(link.QuestId.GetValueOrDefault());
+                }
+            }
+
+            if (buttons != null)
+            {
+                foreach (DialogLink buttonLink in buttons)
+                {
+                    packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
+                    packet.Write((short)DialogOptions.FUNCTYPE_ADDANSWER);
+                    packet.Write(buttonLink.Title);
+                    packet.Write(buttonLink.Id);
                     packet.Write(0);
+                    packet.Write(buttonLink.QuestId.GetValueOrDefault(questId));
+                }
+            }
+
+            player.Connection.Send(packet);
+        }
+
+        /// <inheritdoc />
+        public void SendQuestDialogs(IPlayerEntity player, IEnumerable<DialogLink> newQuests, IEnumerable<DialogLink> currentQuests)
+        {
+            if (newQuests != null || currentQuests != null)
+            {
+                using var packet = new FFPacket();
+
+                if (newQuests.Any())
+                {
+                    foreach (DialogLink newQuestLink in newQuests)
+                    {
+                        packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
+                        packet.Write((short)DialogOptions.FUNCTYPE_NEWQUEST);
+                        packet.Write(newQuestLink.Title);
+                        packet.Write(newQuestLink.Id);
+                        packet.Write(0);
+                        packet.Write(newQuestLink.QuestId.GetValueOrDefault());
+                    }
+                }
+
+                if (currentQuests.Any())
+                {
+                    foreach (DialogLink currentQuestLink in currentQuests)
+                    {
+                        packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
+                        packet.Write((short)DialogOptions.FUNCTYPE_CURRQUEST);
+                        packet.Write(currentQuestLink.Title);
+                        packet.Write(currentQuestLink.Id);
+                        packet.Write(0);
+                        packet.Write(currentQuestLink.QuestId.GetValueOrDefault());
+                    }
                 }
 
                 player.Connection.Send(packet);
@@ -45,13 +101,12 @@ namespace Rhisis.World.Packets.Internal
         /// <inheritdoc />
         public void SendCloseDialog(IPlayerEntity player)
         {
-            using (var packet = new FFPacket())
-            {
-                packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
-                packet.Write((short)DialogOptions.FUNCTYPE_EXIT);
+            using var packet = new FFPacket();
 
-                player.Connection.Send(packet);
-            }
+            packet.StartNewMergedPacket(player.Id, SnapshotType.RUNSCRIPTFUNC);
+            packet.Write((short)DialogOptions.FUNCTYPE_EXIT);
+
+            player.Connection.Send(packet);
         }
     }
 }

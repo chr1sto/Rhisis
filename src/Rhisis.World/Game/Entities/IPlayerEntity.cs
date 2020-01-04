@@ -36,6 +36,11 @@ namespace Rhisis.World.Game.Entities
         StatisticsComponent Statistics { get; set; }
 
         /// <summary>
+        /// Gets or sets the player's quest diary.
+        /// </summary>
+        QuestDiaryComponent QuestDiary { get; set; }
+
+        /// <summary>
         /// Gets or sets the player's connection.
         /// </summary>
         INetUser Connection { get; set; }

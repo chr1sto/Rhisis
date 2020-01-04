@@ -122,9 +122,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(player.Object.Position.Z);
 
                 // Quests
-                packet.Write<byte>(0);
-                packet.Write<byte>(0);
-                packet.Write<byte>(0);
+                player.QuestDiary.Serialize(packet);
 
                 packet.Write(0); // murderer id
                 packet.Write((short)player.Statistics.StatPoints); // stat points

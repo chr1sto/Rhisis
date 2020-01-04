@@ -53,7 +53,7 @@ namespace Rhisis.World.Game.Chat
             }
             int quantity = parameters.Length >= 2 ? Convert.ToInt32(parameters[1]) : 1;
             byte refine = parameters.Length >= 3 ? Convert.ToByte(parameters[2]) : (byte)0;
-            byte element = parameters.Length >= 4 ? Convert.ToByte(parameters[3]) : (byte)0;
+            ElementType element = parameters.Length >= 4 ? (ElementType)Enum.Parse(typeof(ElementType), parameters[3].ToString(), true) : default;
             byte elementRefine = parameters.Length >= 5 ? Convert.ToByte(parameters[4]) : (byte)0;
 
             string itemInput = parameters[0].ToString();

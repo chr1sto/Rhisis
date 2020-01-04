@@ -59,6 +59,13 @@ namespace Rhisis.World.Game.Behaviors
                 this._monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 10);
         }
 
+        /// <inheritdoc />
+        public void OnTargetKilled(ILivingEntity killedEntity)
+        {
+            this._monster.Battle.Target = null;
+            this._monster.Battle.Targets.Clear();
+        }
+
         /// <summary>
         /// Update monster moves.
         /// </summary>

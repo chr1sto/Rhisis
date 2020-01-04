@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
+using Rhisis.Core.Structures.Game.Quests;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,14 +16,23 @@ namespace Rhisis.Core.Resources
         private readonly ILogger<GameResources> _logger;
         private readonly IMemoryCache _cache;
         private readonly IServiceProvider _serciceProvider;
+        private ConcurrentDictionary<string, int> _defines;
+        private ConcurrentDictionary<string, string> _texts;
         private ConcurrentDictionary<int, MoverData> _movers;
         private ConcurrentDictionary<int, ItemData> _items;
         private ConcurrentDictionary<string, DialogSet> _dialogs;
         private ConcurrentDictionary<string, ShopData> _shops;
         private ConcurrentDictionary<int, JobData> _jobs;
         private ConcurrentDictionary<string, NpcData> _npcs;
+        private ConcurrentDictionary<int, IQuestScript> _quests;
         private ExpTableData _expTableData;
         private DeathPenalityData _penalities;
+
+        /// <inheritdoc />
+        public IReadOnlyDictionary<string, int> Defines => this.GetCacheValue(GameResourcesConstants.Defines, ref this._defines);
+
+        /// <inheritdoc />
+        public IReadOnlyDictionary<string, string> Texts => this.GetCacheValue(GameResourcesConstants.Texts, ref this._texts);
 
         /// <inheritdoc />
         public IReadOnlyDictionary<int, MoverData> Movers => this.GetCacheValue(GameResourcesConstants.Movers, ref this._movers);
@@ -41,6 +51,9 @@ namespace Rhisis.Core.Resources
 
         /// <inheritdoc />
         public IReadOnlyDictionary<string, NpcData> Npcs => this.GetCacheValue(GameResourcesConstants.Npcs, ref this._npcs);
+
+        /// <inheritdoc />
+        public IReadOnlyDictionary<int, IQuestScript> Quests => this.GetCacheValue(GameResourcesConstants.Quests, ref this._quests);
 
         /// <inheritdoc />
         public ExpTableData ExpTables => this.GetCacheValue(GameResourcesConstants.ExpTables, ref this._expTableData);
@@ -95,6 +108,28 @@ namespace Rhisis.Core.Resources
             }
 
             return value;
+        }
+
+        /// <inheritdoc />
+        public string GetText(string textKey, string defaultText = null)
+        {
+            if (this.Texts.TryGetValue(textKey, out string text))
+            {
+                return text;
+            }
+
+            return string.IsNullOrEmpty(defaultText) ? textKey : defaultText;
+        }
+
+        /// <inheritdoc />
+        public int GetDefinedValue(string defineKey, int defaultValue = 0)
+        {
+            if (string.IsNullOrEmpty(defineKey))
+            {
+                return defaultValue;
+            }
+
+            return this.Defines.TryGetValue(defineKey, out int value) ? value : defaultValue;
         }
     }
 }

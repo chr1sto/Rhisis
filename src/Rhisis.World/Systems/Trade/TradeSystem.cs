@@ -28,6 +28,9 @@ namespace Rhisis.World.Systems.Trade
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IInventorySystem _inventorySystem;
 
+        /// <inheritdoc />
+        public int Order => 2;
+
         /// <summary>
         /// Creates a new <see cref="TradeSystem"/> instance.
         /// </summary>
@@ -49,6 +52,12 @@ namespace Rhisis.World.Systems.Trade
         public void Initialize(IPlayerEntity player)
         {
             player.Trade = new TradeComponent(MaxTrade);
+        }
+
+        /// <inheritdoc />
+        public void Save(IPlayerEntity player)
+        {
+            // Nothing to do.
         }
 
         /// <inheritdoc />

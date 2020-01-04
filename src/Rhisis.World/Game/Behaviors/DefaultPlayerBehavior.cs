@@ -1,12 +1,14 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.IO;
+using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Mobility;
 using Rhisis.World.Systems.PlayerData;
+using Rhisis.World.Systems.Quest;
 using Rhisis.World.Systems.Recovery;
 
 namespace Rhisis.World.Game.Behaviors
@@ -20,6 +22,7 @@ namespace Rhisis.World.Game.Behaviors
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IRecoverySystem _recoverySystem;
         private readonly IRegionTriggerSystem _regionTriggerSystem;
+        private readonly IQuestSystem _questSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
 
@@ -32,6 +35,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="playerDataSystem">Player data system.</param>
         /// <param name="recoverySystem">Recovery system.</param>
         /// <param name="regionTriggerSystem">Region trigger system.</param>
+        /// <param name="questSystem">Quest system.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
         /// <param name="textPacketFactory">Text packet factory.</param>
         public DefaultPlayerBehavior(IPlayerEntity player, 
@@ -39,7 +43,8 @@ namespace Rhisis.World.Game.Behaviors
             IInventorySystem inventorySystem, 
             IPlayerDataSystem playerDataSystem, 
             IRecoverySystem recoverySystem, 
-            IRegionTriggerSystem regionTriggerSystem, 
+            IRegionTriggerSystem regionTriggerSystem,
+            IQuestSystem questSystem,
             IMoverPacketFactory moverPacketFactory, 
             ITextPacketFactory textPacketFactory)
         {
@@ -49,6 +54,7 @@ namespace Rhisis.World.Game.Behaviors
             this._playerDataSystem = playerDataSystem;
             this._recoverySystem = recoverySystem;
             this._regionTriggerSystem = regionTriggerSystem;
+            this._questSystem = questSystem;
             this._moverPacketFactory = moverPacketFactory;
             this._textPacketFactory = textPacketFactory;
         }
@@ -71,6 +77,16 @@ namespace Rhisis.World.Game.Behaviors
             {
                 this.PickUpDroppedItem(this._player.Follow.Target as IItemEntity);
                 this._player.Follow.Reset();
+            }
+        }
+
+        /// <inheritdoc />
+        public void OnTargetKilled(ILivingEntity killedEntity)
+        {
+            if (killedEntity is IMonsterEntity deadMonster)
+            {
+                // Quest check
+                this._questSystem.UpdateQuestDiary(_player, QuestActionType.KillMonster, deadMonster.Data.Id, 1);
             }
         }
 

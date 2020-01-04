@@ -38,6 +38,12 @@ namespace Rhisis.World.Game.Behaviors
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
+        public void OnTargetKilled(ILivingEntity killedEntity)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Update NPC oral text.
         /// </summary>

@@ -7,12 +7,14 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Core.Structures.Game;
+using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
-using Rhisis.World.Systems.Leveling;
+using Rhisis.World.Systems.Experience;
+using Rhisis.World.Systems.Quest;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
@@ -146,6 +148,8 @@ namespace Rhisis.World.Systems.Battle
                 {
                     this._battlePacketFactory.SendDie(deadPlayer, defender, attacker, attackType);
                 }
+
+                attacker.Behavior.OnTargetKilled(defender);
             }
         }
 

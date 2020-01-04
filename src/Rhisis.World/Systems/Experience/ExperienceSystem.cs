@@ -6,7 +6,7 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 
-namespace Rhisis.World.Systems.Leveling
+namespace Rhisis.World.Systems.Experience
 {
     [Injectable]
     public sealed class ExperienceSystem : IExperienceSystem
@@ -30,7 +30,7 @@ namespace Rhisis.World.Systems.Leveling
         /// <inheritdoc />
         public void GiveExeperience(IPlayerEntity player, long experience)
         {
-            long exp = this.CalculateExtraExperience(player, experience);
+            var exp = this.CalculateExtraExperience(player, experience);
 
             // TODO: experience to party
 
@@ -55,13 +55,13 @@ namespace Rhisis.World.Systems.Leveling
         /// <returns>True if the player has level up; false otherwise.</returns>
         private bool GiveExperienceToPlayer(IPlayerEntity player, long experience)
         {
-            int nextLevel = player.Object.Level + 1;
+            var nextLevel = player.Object.Level + 1;
             CharacterExpTableData nextLevelExpTable = this._gameResources.ExpTables.GetCharacterExp(nextLevel);
             player.PlayerData.Experience += experience;
 
             if (player.PlayerData.Experience >= nextLevelExpTable.Exp) // Level up
             {
-                long remainingExp = player.PlayerData.Experience - nextLevelExpTable.Exp;
+                var remainingExp = player.PlayerData.Experience - nextLevelExpTable.Exp;
 
                 this.ProcessLevelUp(player, (ushort)nextLevelExpTable.Gp);
 
@@ -98,14 +98,14 @@ namespace Rhisis.World.Systems.Leveling
 
             if (player.Object.Level != player.PlayerData.DeathLevel)
             {
-                player.Statistics.SkillPoints += (ushort)(((player.Object.Level - 1) / 20) + 2);
+                player.Statistics.SkillPoints += (ushort)((player.Object.Level - 1) / 20 + 2);
                 player.Statistics.StatPoints += statPoints;
             }
 
-            int strength = player.Attributes[DefineAttributes.STR];
-            int stamina = player.Attributes[DefineAttributes.STA];
-            int dexterity = player.Attributes[DefineAttributes.DEX];
-            int intelligence = player.Attributes[DefineAttributes.INT];
+            var strength = player.Attributes[DefineAttributes.STR];
+            var stamina = player.Attributes[DefineAttributes.STA];
+            var dexterity = player.Attributes[DefineAttributes.DEX];
+            var intelligence = player.Attributes[DefineAttributes.INT];
 
             player.PlayerData.Experience = 0;
             player.Health.Hp = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);

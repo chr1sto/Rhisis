@@ -7,8 +7,8 @@ namespace Rhisis.Core.Resources
     public class GameResourcesConstants
     {
         // Cache keys
-        public const string Defines = "Defines";
-        public const string Texts = "Texts";
+        public const string Defines = nameof(Defines);
+        public const string Texts = nameof(Texts);
         public const string Movers = nameof(MoverData);
         public const string Items = nameof(ItemData);
         public const string Dialogs = nameof(DialogLoader);
@@ -17,6 +17,7 @@ namespace Rhisis.Core.Resources
         public const string ExpTables = nameof(ExpTableLoader);
         public const string PenalityData = nameof(PenalityLoader);
         public const string Npcs = nameof(NpcLoader);
+        public const string Quests = nameof(Quests);
 
         public class Errors
         {
@@ -34,6 +35,7 @@ namespace Rhisis.Core.Resources
             public static readonly string ResourcePath = Path.Combine(DataPath, "res");
             public static readonly string MapsPath = Path.Combine(DataPath, "maps");
             public static readonly string ShopsPath = Path.Combine(DataPath, "shops");
+            public static readonly string QuestsPath = Path.Combine(DataPath, "quests");
             public static readonly string DataSub0Path = Path.Combine(ResourcePath, "data");
             public static readonly string DataSub1Path = Path.Combine(ResourcePath, "dataSub1");
             public static readonly string DataSub2Path = Path.Combine(ResourcePath, "dataSub2");
@@ -45,6 +47,16 @@ namespace Rhisis.Core.Resources
             public static readonly string TextClientPath = Path.Combine(DataSub1Path, "textClient.inc");
             public static readonly string ExpTablePath = Path.Combine(DataSub0Path, "expTable.inc");
             public static readonly string DeathPenalityPath = Path.Combine(ResourcePath, "deathPenality.json");
+        }
+
+        public class QuestInstructions
+        {
+            public const string SetTitle = "SetTitle";
+            public const string SetCharacter = "SetCharacter";
+            public const string SetEndCharacter = "SetEndCondCharacter";
+            public const string SetBeginLevel = "SetBeginCondLevel";
+            public const string SetBeginPreviousQuest = "SetBeginCondPreviousQuest";
+            public const string SetBeginJob = "SetBeginCondJob";
         }
     }
 }

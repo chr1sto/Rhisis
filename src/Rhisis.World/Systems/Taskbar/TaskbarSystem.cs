@@ -2,6 +2,7 @@
 using Rhisis.Core.Common;
 using Rhisis.Core.Common.Game.Structures;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
@@ -19,19 +20,27 @@ namespace Rhisis.World.Systems.Taskbar
         public const int MaxTaskbarQueue = 5;
 
         private readonly ILogger<TaskbarSystem> _logger;
+        private readonly IDatabase _database;
+
+        /// <inheritdoc />
+        public int Order => 1;
 
         /// <summary>
         /// Creates a new <see cref="TaskbarSystem"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        public TaskbarSystem(ILogger<TaskbarSystem> logger)
+        /// <param name="database">Rhisis database access layer.</param>
+        public TaskbarSystem(ILogger<TaskbarSystem> logger, IDatabase database)
         {
             this._logger = logger;
+            this._database = database;
         }
 
         /// <inheritdoc />
-        public void InitializeTaskbar(IPlayerEntity player, IEnumerable<DbShortcut> shortcuts)
+        public void Initialize(IPlayerEntity player)
         {
+            IEnumerable<DbShortcut> shortcuts = this._database.TaskbarShortcuts.GetAll(x => x.CharacterId == player.PlayerData.Id);
+
             player.Taskbar.Applets = new TaskbarAppletContainerComponent(MaxTaskbarApplets);
             player.Taskbar.Items = new TaskbarItemContainerComponent(MaxTaskbarItems, MaxTaskbarItemLevels);
             player.Taskbar.Queue = new TaskbarQueueContainerComponent(MaxTaskbarQueue);
@@ -60,6 +69,66 @@ namespace Rhisis.World.Systems.Taskbar
                     this.AddItem(player, shortcut, dbShortcut.SlotLevelIndex.GetValueOrDefault(int.MaxValue));
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public void Save(IPlayerEntity player)
+        {
+            DbCharacter character = this._database.Characters.Get(player.PlayerData.Id);
+
+            character.TaskbarShortcuts.Clear();
+
+            foreach (var applet in player.Taskbar.Applets.Objects)
+            {
+                if (applet == null)
+                    continue;
+
+                var dbApplet = new DbShortcut(ShortcutTaskbarTarget.Applet, applet.SlotIndex, applet.Type,
+                    applet.ObjectId, applet.ObjectType, applet.ObjectIndex, applet.UserId, applet.ObjectData, applet.Text);
+
+                if (applet.Type == ShortcutType.Item)
+                {
+                    var item = player.Inventory.GetItem((int)applet.ObjectId);
+                    dbApplet.ObjectId = (uint)item.Slot;
+                }
+
+                character.TaskbarShortcuts.Add(dbApplet);
+            }
+
+
+            for (int slotLevel = 0; slotLevel < player.Taskbar.Items.Objects.Count; slotLevel++)
+            {
+                for (int slot = 0; slot < player.Taskbar.Items.Objects[slotLevel].Count; slot++)
+                {
+                    var itemShortcut = player.Taskbar.Items.Objects[slotLevel][slot];
+                    if (itemShortcut == null)
+                        continue;
+
+                    var dbItem = new DbShortcut(ShortcutTaskbarTarget.Item, slotLevel, itemShortcut.SlotIndex,
+                        itemShortcut.Type, itemShortcut.ObjectId, itemShortcut.ObjectType, itemShortcut.ObjectIndex,
+                        itemShortcut.UserId, itemShortcut.ObjectData, itemShortcut.Text);
+
+                    if (itemShortcut.Type == ShortcutType.Item)
+                    {
+                        var item = player.Inventory.GetItem((int)itemShortcut.ObjectId);
+                        dbItem.ObjectId = (uint)item.Slot;
+                    }
+
+                    character.TaskbarShortcuts.Add(dbItem);
+                }
+            }
+
+            foreach (var queueItem in player.Taskbar.Queue.Shortcuts)
+            {
+                if (queueItem == null)
+                    continue;
+
+                character.TaskbarShortcuts.Add(new DbShortcut(ShortcutTaskbarTarget.Queue, queueItem.SlotIndex,
+                    queueItem.Type, queueItem.ObjectId, queueItem.ObjectType, queueItem.ObjectIndex, queueItem.UserId,
+                    queueItem.ObjectData, queueItem.Text));
+            }
+
+            this._database.Complete();
         }
 
         /// <inheritdoc />

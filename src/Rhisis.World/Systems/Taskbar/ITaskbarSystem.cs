@@ -1,19 +1,11 @@
 ﻿using Rhisis.Core.Common.Game.Structures;
-using Rhisis.Database.Entities;
+using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
-using System.Collections.Generic;
 
 namespace Rhisis.World.Systems.Taskbar
 {
-    public interface ITaskbarSystem
+    public interface ITaskbarSystem : IGameSystemLifeCycle
     {
-        /// <summary>
-        /// Initialize the player's taskbar.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        /// <param name="shortcuts">Shortcuts data from the database.</param>
-        void InitializeTaskbar(IPlayerEntity player, IEnumerable<DbShortcut> shortcuts);
-
         /// <summary>
         /// Adds a new applet to the player's applet taskbar.
         /// </summary>

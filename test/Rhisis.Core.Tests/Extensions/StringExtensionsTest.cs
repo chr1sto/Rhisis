@@ -24,19 +24,12 @@ namespace Rhisis.Core.Test.Extensions
         }
 
         [Theory]
-        [InlineData("One", TestEnum.One, false)]
-        [InlineData("tWo", TestEnum.Two, false)]
-        [InlineData("Three", TestEnum.Unknown, true)]
-        public void ToEnumTest(string enumAsText, TestEnum expected, bool shouldThrow)
+        [InlineData("One", TestEnum.One)]
+        [InlineData("tWo", TestEnum.Two)]
+        [InlineData("Three", TestEnum.Unknown)]
+        public void ToEnumTest(string enumAsText, TestEnum expected)
         {
-            if (shouldThrow)
-            {
-                Assert.Throws<ArgumentException>(() => enumAsText.ToEnum<TestEnum>());
-            }
-            else
-            {
-                Assert.Equal(expected, enumAsText.ToEnum<TestEnum>());
-            }
+            Assert.Equal(expected, enumAsText.ToEnum<TestEnum>());
         }
     }
 }
