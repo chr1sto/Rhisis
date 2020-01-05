@@ -57,6 +57,11 @@ namespace Rhisis.Core.Resources
         IReadOnlyDictionary<int, IQuestScript> Quests { get; }
 
         /// <summary>
+        /// Gets the skills data.
+        /// </summary>
+        IReadOnlyDictionary<int, SkillData> Skills { get; }
+
+        /// <summary>
         /// Gets the experience tables data.
         /// </summary>
         ExpTableData ExpTables { get; }

@@ -18,6 +18,7 @@ namespace Rhisis.Core.Resources
         public const string PenalityData = nameof(PenalityLoader);
         public const string Npcs = nameof(NpcLoader);
         public const string Quests = nameof(Quests);
+        public const string Skills = nameof(SkillLoader);
 
         public class Errors
         {
@@ -47,6 +48,8 @@ namespace Rhisis.Core.Resources
             public static readonly string TextClientPath = Path.Combine(DataSub1Path, "textClient.inc");
             public static readonly string ExpTablePath = Path.Combine(DataSub0Path, "expTable.inc");
             public static readonly string DeathPenalityPath = Path.Combine(ResourcePath, "deathPenality.json");
+            public static readonly string SkillPropPath = Path.Combine(DataSub0Path, "propSkill.txt");
+            public static readonly string SkillPropAddPath = Path.Combine(DataSub0Path, "propSkillAdd.csv");
         }
 
         public class QuestInstructions

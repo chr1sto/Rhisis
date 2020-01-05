@@ -3,14 +3,14 @@
 namespace Rhisis.Network.Packets
 {
     /// <summary>
-    /// Provides an interface to deserialize an object.
+    /// Provides an interface to serialize an object.
     /// </summary>
-    public interface IPacketDeserializer
+    public interface IPacketSerializer
     {
         /// <summary>
-        /// Deserializes the current packet stream.
+        /// Serializes the current object.
         /// </summary>
         /// <param name="packet">Packet stream.</param>
-        void Deserialize(INetPacketStream packet);
+        void Serialize(INetPacketStream packet);
     }
 }

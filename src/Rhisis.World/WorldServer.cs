@@ -58,6 +58,7 @@ namespace Rhisis.World
                 typeof(DialogLoader),
                 typeof(ShopLoader),
                 typeof(JobLoader),
+                typeof(SkillLoader),
                 typeof(ExpTableLoader),
                 typeof(PenalityLoader),
                 typeof(NpcLoader),
