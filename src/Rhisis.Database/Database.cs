@@ -24,6 +24,12 @@ namespace Rhisis.Database
         /// <inheritdoc />
         public IQuestRepository Quests { get; private set; }
 
+        /// <inheritdoc />
+        public ISkillRepository Skills { get; private set; }
+
+        /// <summary>
+        /// Gets the database context.
+        /// </summary>
         public DatabaseContext DatabaseContext { get; }
 
         /// <summary>
@@ -55,6 +61,7 @@ namespace Rhisis.Database
             Mails = new MailRepository(DatabaseContext);
             TaskbarShortcuts = new ShortcutRepository(DatabaseContext);
             Quests = new QuestRepository(DatabaseContext);
+            Skills = new SkillRepository(DatabaseContext);
         }
     }
 }

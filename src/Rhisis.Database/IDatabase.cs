@@ -43,6 +43,11 @@ namespace Rhisis.Database
         IQuestRepository Quests { get; }
 
         /// <summary>
+        /// Gets the skills.
+        /// </summary>
+        ISkillRepository Skills { get; }
+
+        /// <summary>
         /// Complete the pending database operations.
         /// </summary>
         void Complete();
