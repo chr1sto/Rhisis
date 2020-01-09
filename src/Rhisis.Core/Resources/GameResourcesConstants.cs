@@ -47,9 +47,12 @@ namespace Rhisis.Core.Resources
             public static readonly string JobPropPath = Path.Combine(DataSub1Path, "propJob.inc");
             public static readonly string TextClientPath = Path.Combine(DataSub1Path, "textClient.inc");
             public static readonly string ExpTablePath = Path.Combine(DataSub0Path, "expTable.inc");
-            public static readonly string DeathPenalityPath = Path.Combine(ResourcePath, "deathPenality.json");
             public static readonly string SkillPropPath = Path.Combine(DataSub0Path, "propSkill.txt");
             public static readonly string SkillPropAddPath = Path.Combine(DataSub0Path, "propSkillAdd.csv");
+
+            // Rhisis related
+            public static readonly string DeathPenalityPath = Path.Combine(ResourcePath, "deathPenality.json");
+            public static readonly string JobsDefinitionsPath = Path.Combine(ResourcePath, "jobsDefinitions.json");
         }
 
         public class QuestInstructions

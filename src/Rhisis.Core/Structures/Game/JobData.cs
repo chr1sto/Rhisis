@@ -1,12 +1,18 @@
-﻿using System.Runtime.Serialization;
+﻿using Rhisis.Core.Data;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
 {
     [DataContract]
+    [DebuggerDisplay("{Name}")]
     public class JobData
     {
         [DataMember(Order = 0)]
         public int Id { get; set; }
+
+        [DataMember(Order = 0)]
+        public DefineJob.Job Name { get; set; }
 
         [DataMember(Order = 1)]
         public float AttackSpeed { get; set; }
@@ -58,5 +64,11 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Order = 17)]
         public float Critical { get; set; }
+
+        [IgnoreDataMember]
+        public DefineJob.JobType Type { get; set; }
+
+        [IgnoreDataMember]
+        public JobData Parent { get; set; }
     }
 }
