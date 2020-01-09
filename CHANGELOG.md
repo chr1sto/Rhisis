@@ -18,6 +18,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - ![world] Delete item from inventory ([#278](https://github.com/Eastrall/Rhisis/pull/278))
 - ![world] Add create monster admin command ([#280](https://github.com/Eastrall/Rhisis/pull/280))
 - ![world] Gives to himself exp via Debug Panel as a GM/Admin ([#281](https://github.com/Eastrall/Rhisis/pull/281))
+- ![world] Quest system ([#292](https://github.com/Eastrall/Rhisis/pull/292))
 
 ### BREAKING CHANGES
 
