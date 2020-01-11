@@ -21,6 +21,36 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public SkillInfo GetSkill(int skillId) => Skills.FirstOrDefault(x => x.SkillId == skillId);
 
+        /// <summary>
+        /// Sets the skill level of the given skill id.
+        /// </summary>
+        /// <param name="skillId">Skill id.</param>
+        /// <param name="level">Skill level.</param>
+        public void SetSkillLevel(int skillId, int level)
+        {
+            SkillInfo skill = GetSkill(skillId);
+
+            if (skill != null)
+            {
+                skill.Level = level;
+            }
+        }
+
+        /// <summary>
+        /// Check if the given skill id is exists in the skill tree.
+        /// </summary>
+        /// <param name="skillId">Skill id.</param>
+        /// <returns>True if the skill exists; false otherwise.</returns>
+        public bool HasSkill(int skillId) => Skills.Any(x => x.SkillId == skillId);
+
+        /// <summary>
+        /// Check if the given skill is at least at the given level.
+        /// </summary>
+        /// <param name="skillId">Skill id.</param>
+        /// <param name="skillLevel">Skill level.</param>
+        /// <returns>True if the skill level is grather than the given skill level; false otherwise.</returns>
+        public bool HasSkillAtLeastAtLevel(int skillId, int skillLevel) => Skills.Any(x => x.SkillId == skillId && x.Level >= skillLevel);
+
         /// <inheritdoc />
         public void Serialize(INetPacketStream packet)
         {

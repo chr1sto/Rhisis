@@ -68,6 +68,9 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public int Version { get; set; } = StartVersion;
 
+        /// <summary>
+        /// Gets the player mode.
+        /// </summary>
         public ModeType Mode { get; set; }
 
         /// <summary>

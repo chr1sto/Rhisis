@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Data;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
@@ -70,6 +71,7 @@ namespace Rhisis.Core.Structures.Game
         /// Gets the first required skill id before learning the current skill.
         /// </summary>
         [DataMember(Name = "dwReSkill1")]
+        [DefaultValue(-1)]
         public int RequiredSkillId1 { get; internal set; }
 
         /// <summary>
@@ -82,6 +84,7 @@ namespace Rhisis.Core.Structures.Game
         /// Gets the second required skill id before learning the current skill.
         /// </summary>
         [DataMember(Name = "dwReSkill2")]
+        [DefaultValue(-1)]
         public int RequiredSkillId2 { get; internal set; }
 
         /// <summary>
