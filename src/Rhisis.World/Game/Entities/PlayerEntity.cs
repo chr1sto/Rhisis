@@ -62,6 +62,9 @@ namespace Rhisis.World.Game.Entities
         /// <inheritdoc />
         public QuestDiaryComponent QuestDiary { get; set; }
 
+        /// <inheritdoc />
+        public SkillTreeComponent SkillTree { get; set; }
+
         /// <summary>
         /// Creates a new <see cref="PlayerEntity"/> instance.
         /// </summary>
@@ -78,6 +81,7 @@ namespace Rhisis.World.Game.Entities
             Timers = new TimerComponent();
             Attributes = new AttributeComponent();
             QuestDiary = new QuestDiaryComponent();
+            this.SkillTree = new SkillTreeComponent();
             _playerFactory = playerFactory;
         }
 

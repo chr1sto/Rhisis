@@ -36,6 +36,7 @@
             MAX_MASTER = 24,
             MAX_HERO = 32,
             MAX_JOB = 32,
+            MAX_SKILLS = MAX_JOB_SKILL + MAX_EXPERT_SKILL + MAX_PRO_SKILL + MAX_MASTER_SKILL + MAX_HERO_SKILL
         }
 
         public enum Job : int

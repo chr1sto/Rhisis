@@ -114,7 +114,9 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(0); // death level
 
                 for (var i = 0; i < 32; ++i)
+                {
                     packet.Write(0); // job in each level
+                }
 
                 packet.Write(0); // marking world id
                 packet.Write(player.Object.Position.X);
@@ -130,14 +132,17 @@ namespace Rhisis.World.Packets.Internal
 
                 // item mask
                 foreach (var item in equippedItems)
+                {
                     packet.Write(item.Id);
+                }
 
                 // skills
-                for (var i = 0; i < 45; ++i)
-                {
-                    packet.Write(-1); // skill id
-                    packet.Write(0); // skill level
-                }
+                player.SkillTree.Serialize(packet);
+                //for (var i = 0; i < 45; ++i)
+                //{
+                //    packet.Write(-1); // skill id
+                //    packet.Write(0); // skill level
+                //}
 
                 packet.Write<byte>(0); // cheer point
                 packet.Write(0); // next cheer point ?

@@ -5,10 +5,11 @@ using System.Linq;
 using Rhisis.Core.Data;
 using Rhisis.Core.IO;
 using Sylver.Network.Data;
+using Rhisis.Network.Packets;
 
 namespace Rhisis.World.Game.Components
 {
-    public class ItemContainerComponent
+    public class ItemContainerComponent : IPacketSerializer
     {
         private const int MaxItemCoolTimes = 3;
         private readonly long[] _itemsCoolTimes = new long[MaxItemCoolTimes];

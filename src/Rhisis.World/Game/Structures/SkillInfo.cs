@@ -2,10 +2,12 @@
 using Rhisis.Network.Packets;
 using Sylver.Network.Data;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Rhisis.World.Game.Structures
 {
+    [DebuggerDisplay("{Data.Name} Lv. {Level}")]
     public class SkillInfo : IEquatable<SkillInfo>, IPacketSerializer
     {
         /// <summary>
