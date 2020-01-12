@@ -43,14 +43,6 @@ namespace Rhisis.World.Game.Components
         /// <returns>True if the skill exists; false otherwise.</returns>
         public bool HasSkill(int skillId) => Skills.Any(x => x.SkillId == skillId);
 
-        /// <summary>
-        /// Check if the given skill is at least at the given level.
-        /// </summary>
-        /// <param name="skillId">Skill id.</param>
-        /// <param name="skillLevel">Skill level.</param>
-        /// <returns>True if the skill level is grather than the given skill level; false otherwise.</returns>
-        public bool HasSkillAtLeastAtLevel(int skillId, int skillLevel) => Skills.Any(x => x.SkillId == skillId && x.Level >= skillLevel);
-
         /// <inheritdoc />
         public void Serialize(INetPacketStream packet)
         {

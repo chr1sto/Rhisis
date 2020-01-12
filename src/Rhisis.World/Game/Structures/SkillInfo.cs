@@ -41,13 +41,15 @@ namespace Rhisis.World.Game.Structures
         /// <param name="skillId">Skill id.</param>
         /// <param name="characterId">Character Id.</param>
         /// <param name="skillData">Skill data.</param>
+        /// <param name="level">Skill level.</param>
         /// <param name="databaseId">Database id.</param>
-        public SkillInfo(int skillId, int characterId, SkillData skillData, int? databaseId = default)
+        public SkillInfo(int skillId, int characterId, SkillData skillData, int level = default, int? databaseId = default)
         {
             this.SkillId = skillId;
             this.CharacterId = characterId;
             this.Data = skillData;
             this.DatabaseId = databaseId;
+            this.Level = level;
         }
 
         /// <summary>

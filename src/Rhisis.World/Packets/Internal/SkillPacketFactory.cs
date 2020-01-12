@@ -7,7 +7,7 @@ using Rhisis.World.Game.Entities;
 namespace Rhisis.World.Packets.Internal
 {
     [Injectable(ServiceLifetime.Singleton)]
-    public class SkillPacketFactory : ISkillPacketFactory
+    internal class SkillPacketFactory : PacketFactoryBase, ISkillPacketFactory
     {
         /// <inheritdoc />
         public void SendSkillTreeUpdate(IPlayerEntity player)
@@ -18,7 +18,7 @@ namespace Rhisis.World.Packets.Internal
             player.SkillTree.Serialize(packet);
             packet.Write((int)player.Statistics.SkillPoints);
 
-            player.Connection.Send(packet);
+            SendToPlayer(player, packet);
         }
     }
 }
