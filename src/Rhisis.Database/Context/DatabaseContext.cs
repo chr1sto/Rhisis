@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.DataEncryption;
 using Microsoft.EntityFrameworkCore.DataEncryption.Providers;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Rhisis.Core.Exceptions;
 using Rhisis.Database.Entities;
 using System;
 using System.Linq;
@@ -49,7 +48,7 @@ namespace Rhisis.Database.Context
             : base(options)
         {
             if (string.IsNullOrEmpty(configuration.EncryptionKey))
-                throw new RhisisConfigurationException($"Database configuration doesn't contain a valid encryption key.");
+                return;
 
             this._encryptionProvider = new AesProvider(
                 Convert.FromBase64String(configuration.EncryptionKey), 
@@ -60,7 +59,9 @@ namespace Rhisis.Database.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.UseEncryption(this._encryptionProvider);
+            if (this._encryptionProvider != null)
+                modelBuilder.UseEncryption(this._encryptionProvider);
+
             modelBuilder.Entity<DbUser>()
                 .HasIndex(c => new { c.Username, c.Email })
                 .IsUnique();
