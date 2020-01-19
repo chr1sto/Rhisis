@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Rhisis.Database.Entities
 {
-    [Table("Quests")]
+    [Table("quests")]
     [DebuggerDisplay("Id: {QuestId} | Finished: {Finished}")]
     public sealed class DbQuest : DbEntity
     {

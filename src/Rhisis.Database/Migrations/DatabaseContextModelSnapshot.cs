@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rhisis.Database.Context;
 
-namespace Rhisis.Database.MySQL.Migrations
+namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
@@ -121,7 +121,7 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Characters");
+                    b.ToTable("characters");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbItem", b =>
@@ -161,7 +161,7 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("Items");
+                    b.ToTable("items");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbMail", b =>
@@ -215,7 +215,7 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Mails");
+                    b.ToTable("mails");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbQuest", b =>
@@ -258,7 +258,7 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasIndex("QuestId", "CharacterId")
                         .IsUnique();
 
-                    b.ToTable("Quests");
+                    b.ToTable("quests");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
@@ -304,7 +304,7 @@ namespace Rhisis.Database.MySQL.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("Shortcuts");
+                    b.ToTable("shortcuts");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbUser", b =>
@@ -342,7 +342,7 @@ namespace Rhisis.Database.MySQL.Migrations
                     b.HasIndex("Username", "Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
