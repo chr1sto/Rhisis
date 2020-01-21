@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Rhisis.Database.Entities
 {
-    [Table("Items")]
+    [Table("items")]
     [DebuggerDisplay("Id: {ItemId} - slot: {ItemSlot} - x{ItemCount}")]
     public sealed class DbItem : DbEntity
     {        

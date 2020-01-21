@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rhisis.Database.Context;
 
-namespace Rhisis.Database.MsySQL.Migrations
+namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20191227193019_Quests")]
-    partial class Quests
+    [Migration("20200119144006_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -123,7 +123,7 @@ namespace Rhisis.Database.MsySQL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Characters");
+                    b.ToTable("characters");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbItem", b =>
@@ -163,7 +163,7 @@ namespace Rhisis.Database.MsySQL.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("Items");
+                    b.ToTable("items");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbMail", b =>
@@ -217,7 +217,7 @@ namespace Rhisis.Database.MsySQL.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Mails");
+                    b.ToTable("mails");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbQuest", b =>
@@ -260,7 +260,7 @@ namespace Rhisis.Database.MsySQL.Migrations
                     b.HasIndex("QuestId", "CharacterId")
                         .IsUnique();
 
-                    b.ToTable("Quests");
+                    b.ToTable("quests");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
@@ -306,7 +306,7 @@ namespace Rhisis.Database.MsySQL.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("Shortcuts");
+                    b.ToTable("shortcuts");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbUser", b =>
@@ -344,7 +344,7 @@ namespace Rhisis.Database.MsySQL.Migrations
                     b.HasIndex("Username", "Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>

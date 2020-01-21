@@ -48,6 +48,7 @@ namespace Rhisis.Database.Context
         /// Create a new <see cref="DatabaseContext"/> instance.
         /// </summary>
         /// <param name="options"></param>
+        /// <param name="configuration"></param>
         public DatabaseContext(DbContextOptions options, DatabaseConfiguration configuration)
             : base(options)
         {

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Rhisis.Database.Entities
 {
-    [Table("Users")]
+    [Table("users")]
     public class DbUser : DbEntity
     {
         /// <summary>

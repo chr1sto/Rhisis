@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
 {
-    [Table("Characters")]
+    [Table("characters")]
     public sealed class DbCharacter : DbEntity
     {
         /// <summary>

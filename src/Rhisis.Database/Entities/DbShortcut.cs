@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
 {
-    [Table("Shortcuts")]
+    [Table("shortcuts")]
     public sealed class DbShortcut : DbEntity
     {
         public ShortcutTaskbarTarget TargetTaskbar { get; set; }

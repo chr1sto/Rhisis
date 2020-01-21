@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Rhisis.Database.MsySQL.Migrations
+namespace Rhisis.Database.Migrations
 {
     public partial class InitialMigration : Migration
     {
@@ -97,6 +97,33 @@ namespace Rhisis.Database.MsySQL.Migrations
                     table.PrimaryKey("PK_items", x => x.Id);
                     table.ForeignKey(
                         name: "FK_items_characters_CharacterId",
+                        column: x => x.CharacterId,
+                        principalTable: "characters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "quests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    QuestId = table.Column<int>(nullable: false),
+                    Finished = table.Column<ulong>(type: "BIT", nullable: false),
+                    IsChecked = table.Column<ulong>(type: "BIT", nullable: false),
+                    IsDeleted = table.Column<ulong>(type: "BIT", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "DATETIME", nullable: false),
+                    IsPatrolDone = table.Column<ulong>(type: "BIT", nullable: false),
+                    MonsterKilled1 = table.Column<sbyte>(type: "TINYINT", nullable: false),
+                    MonsterKilled2 = table.Column<sbyte>(type: "TINYINT", nullable: false),
+                    CharacterId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_quests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_quests_characters_CharacterId",
                         column: x => x.CharacterId,
                         principalTable: "characters",
                         principalColumn: "Id",
@@ -200,6 +227,17 @@ namespace Rhisis.Database.MsySQL.Migrations
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_quests_CharacterId",
+                table: "quests",
+                column: "CharacterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_quests_QuestId_CharacterId",
+                table: "quests",
+                columns: new[] { "QuestId", "CharacterId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_shortcuts_CharacterId",
                 table: "shortcuts",
                 column: "CharacterId");
@@ -215,6 +253,9 @@ namespace Rhisis.Database.MsySQL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "mails");
+
+            migrationBuilder.DropTable(
+                name: "quests");
 
             migrationBuilder.DropTable(
                 name: "shortcuts");
