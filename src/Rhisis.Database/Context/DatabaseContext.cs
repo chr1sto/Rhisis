@@ -55,7 +55,7 @@ namespace Rhisis.Database.Context
             if (string.IsNullOrEmpty(configuration.EncryptionKey))
                 return;
 
-            this._encryptionProvider = new AesProvider(
+            _encryptionProvider = new AesProvider(
                 Convert.FromBase64String(configuration.EncryptionKey), 
                 Enumerable.Repeat<byte>(0, 16).ToArray(), 
                 CipherMode.CBC, 
@@ -64,8 +64,8 @@ namespace Rhisis.Database.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (this._encryptionProvider != null)
-                modelBuilder.UseEncryption(this._encryptionProvider);
+            if (_encryptionProvider != null)
+                modelBuilder.UseEncryption(_encryptionProvider);
 
             modelBuilder.Entity<DbUser>()
                 .HasIndex(c => new { c.Username, c.Email })
@@ -84,7 +84,7 @@ namespace Rhisis.Database.Context
         /// <summary>
         /// Migrates the database schema.
         /// </summary>
-        public void Migrate() => this.Database.Migrate();
+        public void Migrate() => Database.Migrate();
 
         /// <summary>
         /// Check if the database exists.

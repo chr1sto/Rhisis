@@ -51,17 +51,17 @@ namespace Rhisis.World.Game.Entities
         /// <param name="context"></param>
         public NpcEntity()
         {
-            this.Object.Type = WorldObjectType.Mover;
-            this.Timers = new TimerComponent();
-            this.Interaction = new InteractionComponent();
-            this.Battle = new BattleComponent();
-            this.Health = new HealthComponent();
-            this.Attributes = new AttributeComponent();
-            this.Moves = new MovableComponent();
-            this.Follow = new FollowComponent();
+            Object.Type = WorldObjectType.Mover;
+            Timers = new TimerComponent();
+            Interaction = new InteractionComponent();
+            Battle = new BattleComponent();
+            Health = new HealthComponent();
+            Attributes = new AttributeComponent();
+            Moves = new MovableComponent();
+            Follow = new FollowComponent();
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.Object.Name}";
+        public override string ToString() => $"{Object.Name}";
     }
 }

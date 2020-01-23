@@ -78,19 +78,19 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.WorldId = packet.Read<int>();
-            this.PlayerId = packet.Read<int>();
-            this.AuthenticationKey = packet.Read<int>();
-            this.PartyId = packet.Read<int>();
-            this.GuildId = packet.Read<int>();
-            this.GuildWarId = packet.Read<int>();
-            this.IdOfMulti = packet.Read<int>(); // what is this?
-            this.Slot = packet.Read<byte>();
-            this.PlayerName = packet.Read<string>();
-            this.Username = packet.Read<string>();
-            this.Password = packet.Read<string>();
-            this.MessengerState = packet.Read<int>();
-            this.MessengerCount = packet.Read<int>();
+            WorldId = packet.Read<int>();
+            PlayerId = packet.Read<int>();
+            AuthenticationKey = packet.Read<int>();
+            PartyId = packet.Read<int>();
+            GuildId = packet.Read<int>();
+            GuildWarId = packet.Read<int>();
+            IdOfMulti = packet.Read<int>(); // what is this?
+            Slot = packet.Read<byte>();
+            PlayerName = packet.Read<string>();
+            Username = packet.Read<string>();
+            Password = packet.Read<string>();
+            MessengerState = packet.Read<int>();
+            MessengerCount = packet.Read<int>();
         }
     }
 }

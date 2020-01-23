@@ -29,37 +29,37 @@ namespace Rhisis.Core.Resources
         private DeathPenalityData _penalities;
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, int> Defines => this.GetCacheValue(GameResourcesConstants.Defines, ref this._defines);
+        public IReadOnlyDictionary<string, int> Defines => GetCacheValue(GameResourcesConstants.Defines, ref _defines);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, string> Texts => this.GetCacheValue(GameResourcesConstants.Texts, ref this._texts);
+        public IReadOnlyDictionary<string, string> Texts => GetCacheValue(GameResourcesConstants.Texts, ref _texts);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<int, MoverData> Movers => this.GetCacheValue(GameResourcesConstants.Movers, ref this._movers);
+        public IReadOnlyDictionary<int, MoverData> Movers => GetCacheValue(GameResourcesConstants.Movers, ref _movers);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<int, ItemData> Items => this.GetCacheValue(GameResourcesConstants.Items, ref this._items);
+        public IReadOnlyDictionary<int, ItemData> Items => GetCacheValue(GameResourcesConstants.Items, ref _items);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, DialogSet> Dialogs => this.GetCacheValue(GameResourcesConstants.Dialogs, ref this._dialogs);
+        public IReadOnlyDictionary<string, DialogSet> Dialogs => GetCacheValue(GameResourcesConstants.Dialogs, ref _dialogs);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, ShopData> Shops => this.GetCacheValue(GameResourcesConstants.Shops, ref this._shops);
+        public IReadOnlyDictionary<string, ShopData> Shops => GetCacheValue(GameResourcesConstants.Shops, ref _shops);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<int, JobData> Jobs => this.GetCacheValue(GameResourcesConstants.Jobs, ref this._jobs);
+        public IReadOnlyDictionary<int, JobData> Jobs => GetCacheValue(GameResourcesConstants.Jobs, ref _jobs);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<string, NpcData> Npcs => this.GetCacheValue(GameResourcesConstants.Npcs, ref this._npcs);
+        public IReadOnlyDictionary<string, NpcData> Npcs => GetCacheValue(GameResourcesConstants.Npcs, ref _npcs);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<int, IQuestScript> Quests => this.GetCacheValue(GameResourcesConstants.Quests, ref this._quests);
+        public IReadOnlyDictionary<int, IQuestScript> Quests => GetCacheValue(GameResourcesConstants.Quests, ref _quests);
 
         /// <inheritdoc />
-        public ExpTableData ExpTables => this.GetCacheValue(GameResourcesConstants.ExpTables, ref this._expTableData);
+        public ExpTableData ExpTables => GetCacheValue(GameResourcesConstants.ExpTables, ref _expTableData);
 
         /// <inheritdoc />
-        public DeathPenalityData Penalities => this.GetCacheValue(GameResourcesConstants.PenalityData, ref this._penalities);
+        public DeathPenalityData Penalities => GetCacheValue(GameResourcesConstants.PenalityData, ref _penalities);
 
         /// <summary>
         /// Creates a new <see cref="GameResources"/> instance.
@@ -69,20 +69,20 @@ namespace Rhisis.Core.Resources
         /// <param name="serviceProvider">Service provider.</param>
         public GameResources(ILogger<GameResources> logger, IMemoryCache cache, IServiceProvider serviceProvider)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._serciceProvider = serviceProvider;
+            _logger = logger;
+            _cache = cache;
+            _serciceProvider = serviceProvider;
         }
 
         /// <inheritdoc />
         public void Load(params Type[] loaders)
         {
             Profiler.Start("LoadResources");
-            this._logger.LogInformation("Loading server resources...");
+            _logger.LogInformation("Loading server resources...");
 
             foreach (Type loaderType in loaders)
             {
-                var loader = (IGameResourceLoader)ActivatorUtilities.CreateInstance(this._serciceProvider, loaderType);
+                var loader = (IGameResourceLoader)ActivatorUtilities.CreateInstance(_serciceProvider, loaderType);
 
                 if (loader != null)
                 {
@@ -90,7 +90,7 @@ namespace Rhisis.Core.Resources
                 }
             }
 
-            this._logger.LogInformation("Resources loaded in {0} ms.", Profiler.Stop("LoadResources").ElapsedMilliseconds);
+            _logger.LogInformation("Resources loaded in {0} ms.", Profiler.Stop("LoadResources").ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Rhisis.Core.Resources
         {
             if (Equals(value, default(T)))
             {
-                this._cache.TryGetValue(key, out value);
+                _cache.TryGetValue(key, out value);
             }
 
             return value;
@@ -113,7 +113,7 @@ namespace Rhisis.Core.Resources
         /// <inheritdoc />
         public string GetText(string textKey, string defaultText = null)
         {
-            if (this.Texts.TryGetValue(textKey, out string text))
+            if (Texts.TryGetValue(textKey, out string text))
             {
                 return text;
             }
@@ -129,7 +129,7 @@ namespace Rhisis.Core.Resources
                 return defaultValue;
             }
 
-            return this.Defines.TryGetValue(defineKey, out int value) ? value : defaultValue;
+            return Defines.TryGetValue(defineKey, out int value) ? value : defaultValue;
         }
     }
 }

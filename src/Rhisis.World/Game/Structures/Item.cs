@@ -148,15 +148,15 @@ namespace Rhisis.World.Game.Structures
         public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element,
             byte elementRefine, int extraUsed)
         {
-            this.Id = id;
-            this.Quantity = quantity;
-            this.CreatorId = creatorId;
-            this.Slot = slot;
-            this.UniqueId = uniqueId;
-            this.Refine = refine;
-            this.Element = element;
-            this.ElementRefine = elementRefine;
-            this.ExtraUsed = extraUsed;
+            Id = id;
+            Quantity = quantity;
+            CreatorId = creatorId;
+            Slot = slot;
+            UniqueId = uniqueId;
+            Refine = refine;
+            Element = element;
+            ElementRefine = elementRefine;
+            ExtraUsed = extraUsed;
         }
 
         /// <summary>
@@ -168,8 +168,8 @@ namespace Rhisis.World.Game.Structures
             : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
                 (ElementType)dbItem.Element, dbItem.ElementRefine, 0)
         {
-            this.DbId = dbItem.Id;
-            this.Data = itemData;
+            DbId = dbItem.Id;
+            Data = itemData;
         }
 
         /// <summary>
@@ -183,13 +183,13 @@ namespace Rhisis.World.Game.Structures
         /// <param name="creatorId"></param>
         public Item(int id, byte refine, ElementType element, byte elementRefine, ItemData itemData, int creatorId)
         {
-            this.Id = id;
-            this.Quantity = 1;
-            this.Refine = refine;
-            this.Element = element;
-            this.ElementRefine = elementRefine;
-            this.Data = itemData;
-            this.CreatorId = creatorId;
+            Id = id;
+            Quantity = 1;
+            Refine = refine;
+            Element = element;
+            ElementRefine = elementRefine;
+            Data = itemData;
+            CreatorId = creatorId;
         }
 
         /// <summary>
@@ -198,25 +198,25 @@ namespace Rhisis.World.Game.Structures
         /// <param name="packet"></param>
         public void Serialize(INetPacketStream packet)
         {
-            packet.Write(this.UniqueId);
-            packet.Write(this.Id);
+            packet.Write(UniqueId);
+            packet.Write(Id);
             
             packet.Write(0); // Serial number
 
-            if (this.Data != null)
-                packet.Write(this.Data.Name.Substring(0, this.Data.Name.Length > 31 ? 31 : this.Data.Name.Length));
+            if (Data != null)
+                packet.Write(Data.Name.Substring(0, Data.Name.Length > 31 ? 31 : Data.Name.Length));
             else
                 packet.Write("Unknown");
 
-            packet.Write((short) this.Quantity);
+            packet.Write((short) Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp
             packet.Write(0); // Repair
             packet.Write<byte>(0); // flag ?
-            packet.Write((int) this.Refine);
+            packet.Write((int) Refine);
             packet.Write(0); // guild id (cloaks?)
-            packet.Write((byte)this.Element);
-            packet.Write((int)this.ElementRefine);
+            packet.Write((byte)Element);
+            packet.Write((int)ElementRefine);
             packet.Write(0); // m_nResistSMItemId
             packet.Write(0); // Piercing size
             packet.Write(0); // Ultimate piercing size
@@ -234,38 +234,38 @@ namespace Rhisis.World.Game.Structures
         /// <returns></returns>
         public Item Clone()
         {
-            return new Item(this.Id, this.Refine, this.Element, this.ElementRefine, this.Data, this.CreatorId)
+            return new Item(Id, Refine, Element, ElementRefine, Data, CreatorId)
             {
-                ExtraUsed = this.ExtraUsed,
-                Slot = this.Slot,
-                UniqueId = this.UniqueId,
-                Quantity = this.Quantity
+                ExtraUsed = ExtraUsed,
+                Slot = Slot,
+                UniqueId = UniqueId,
+                Quantity = Quantity
             };
         }
 
-        public bool IsEquipped() => this.Slot > InventorySystem.EquipOffset;
+        public bool IsEquipped() => Slot > InventorySystem.EquipOffset;
 
         /// <summary>
         /// Reset the item.
         /// </summary>
         public void Reset()
         {
-            this.Id = -1;
-            this.DbId = -1;
-            this.Quantity = 0;
-            this.CreatorId = -1;
-            this.Refine = 0;
-            this.Element = 0;
-            this.ElementRefine = 0;
-            this.ExtraUsed = 0;
-            this.Slot = -1;
-            this.Data = null;
+            Id = -1;
+            DbId = -1;
+            Quantity = 0;
+            CreatorId = -1;
+            Refine = 0;
+            Element = 0;
+            ElementRefine = 0;
+            ExtraUsed = 0;
+            Slot = -1;
+            Data = null;
         }
 
         /// <summary>
         /// Returns the current <see cref="Item"/> on string format
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $"{this.Data?.Name}";
+        public override string ToString() => $"{Data?.Name}";
     }
 }

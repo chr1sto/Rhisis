@@ -59,7 +59,7 @@ namespace Rhisis.Database.Entities
         /// Gets the total play time of this user in seconds.
         /// </summary>
         [NotMapped]
-        public long PlayTime => this.Characters.Sum(x => x.PlayTime);
+        public long PlayTime => Characters.Sum(x => x.PlayTime);
 
         /// <summary>
         /// Gets or sets the user's characters list.
@@ -71,8 +71,8 @@ namespace Rhisis.Database.Entities
         /// </summary>
         public DbUser()
         {
-            this.CreatedAt = DateTime.UtcNow;
-            this.Characters = new HashSet<DbCharacter>();
+            CreatedAt = DateTime.UtcNow;
+            Characters = new HashSet<DbCharacter>();
         }
     }
 }

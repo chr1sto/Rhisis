@@ -25,8 +25,8 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="packet">Incoming packet</param>
         public PartyChangeItemModePacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.ItemMode = packet.Read<int>();
+            PlayerId = packet.Read<uint>();
+            ItemMode = packet.Read<int>();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="other">Other <see cref="PartyChangeItemModePacket"/></param>
         public bool Equals(PartyChangeItemModePacket other)
         {
-            return this.PlayerId == other.PlayerId && this.ItemMode == other.ItemMode;
+            return PlayerId == other.PlayerId && ItemMode == other.ItemMode;
         }
     }
 }

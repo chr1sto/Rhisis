@@ -16,13 +16,13 @@ namespace Rhisis.World.Game.Components
 
         public long RespawnTime { get; set; }
 
-        public bool HasOwner => this.Owner != null && this.OwnershipTime > 0;
+        public bool HasOwner => Owner != null && OwnershipTime > 0;
 
-        public bool IsTemporary => this.DespawnTime > 0;
+        public bool IsTemporary => DespawnTime > 0;
 
-        public bool IsGold => this.Item?.Id == DefineItem.II_GOLD_SEED1 || 
-            this.Item?.Id == DefineItem.II_GOLD_SEED2 || 
-            this.Item?.Id == DefineItem.II_GOLD_SEED3 || 
-            this.Item?.Id == DefineItem.II_GOLD_SEED4;
+        public bool IsGold => Item?.Id == DefineItem.II_GOLD_SEED1 || 
+            Item?.Id == DefineItem.II_GOLD_SEED2 || 
+            Item?.Id == DefineItem.II_GOLD_SEED3 || 
+            Item?.Id == DefineItem.II_GOLD_SEED4;
     }
 }

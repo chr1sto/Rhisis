@@ -18,8 +18,8 @@ namespace Rhisis.World.Handlers
 
         public QuestHandler(ILogger<QuestHandler> logger, IQuestSystem questSystem)
         {
-            this._logger = logger;
-            this._questSystem = questSystem;
+            _logger = logger;
+            _questSystem = questSystem;
         }
 
         [HandlerAction(PacketType.QUEST_CHECK)]
@@ -27,11 +27,11 @@ namespace Rhisis.World.Handlers
         {
             if (questCheckPacket.QuestId <= 0)
             {
-                this._logger.LogError($"OnQuestCheck(): Invalid quest id.");
+                _logger.LogError($"OnQuestCheck(): Invalid quest id.");
                 return;
             }
 
-            this._questSystem.CheckQuest(client.Player, questCheckPacket.QuestId, questCheckPacket.Checked);
+            _questSystem.CheckQuest(client.Player, questCheckPacket.QuestId, questCheckPacket.Checked);
         }
     }
 }

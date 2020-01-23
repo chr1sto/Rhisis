@@ -17,8 +17,8 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="logger">Logger</param>
         public DefineLoader(ILogger<DefineLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
+            _logger = logger;
+            _cache = cache;
         }
 
         /// <inheritdoc />
@@ -41,15 +41,15 @@ namespace Rhisis.Core.Resources.Loaders
                             defines.TryAdd(define.Key, intValue);
                         else
                         {
-                            this._logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Define", define.Key,
+                            _logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Define", define.Key,
                                 isIntValue ? "already declared" : $"'{define.Value}' is not a integer value");
                         }
                     }
                 }
             }
 
-            this._cache.Set(GameResourcesConstants.Defines, defines);
-            this._logger.LogInformation("-> {0} defines found.", defines.Count);
+            _cache.Set(GameResourcesConstants.Defines, defines);
+            _logger.LogInformation("-> {0} defines found.", defines.Count);
         }
     }
 }

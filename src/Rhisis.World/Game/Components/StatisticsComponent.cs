@@ -14,8 +14,8 @@ namespace Rhisis.World.Game.Components
 
         public StatisticsComponent(DbCharacter character)
         {
-            this.StatPoints = (ushort)character.StatPoints;
-            this.SkillPoints = (ushort)character.SkillPoints;
+            StatPoints = (ushort)character.StatPoints;
+            SkillPoints = (ushort)character.SkillPoints;
         }
     }
 }

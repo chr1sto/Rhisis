@@ -29,7 +29,7 @@ namespace Rhisis.CLI.Commands.Database
         /// <param name="consoleHelper">Console helper.</param>
         public DatabaseConfigureCommand(ConsoleHelper consoleHelper)
         {
-            this._consoleHelper = consoleHelper;
+            _consoleHelper = consoleHelper;
         }
 
         /// <summary>
@@ -37,15 +37,15 @@ namespace Rhisis.CLI.Commands.Database
         /// </summary>
         public void OnExecute()
         {
-            if (string.IsNullOrEmpty(this.DatabaseConfigurationFile))
-                this.DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(this.DatabaseConfigurationFile);
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
             var dbConfiguration = new ObjectConfigurationFiller<DatabaseConfiguration>(databaseConfiguration);
 
             dbConfiguration.Fill();
 
-            bool useEncryption = this._consoleHelper.AskConfirmation("Use encryption?");
+            bool useEncryption = _consoleHelper.AskConfirmation("Use encryption?");
 
             if (useEncryption)
             {
@@ -66,8 +66,8 @@ namespace Rhisis.CLI.Commands.Database
 
             if (response)
             {
-                ConfigurationHelper.Save(this.DatabaseConfigurationFile, dbConfiguration.Value);
-                Console.WriteLine($"Database configuration saved in '{this.DatabaseConfigurationFile}'.");
+                ConfigurationHelper.Save(DatabaseConfigurationFile, dbConfiguration.Value);
+                Console.WriteLine($"Database configuration saved in '{DatabaseConfigurationFile}'.");
             }
         }
     }

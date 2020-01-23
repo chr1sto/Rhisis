@@ -48,36 +48,36 @@ namespace Rhisis.World.Game.Behaviors
             IMoverPacketFactory moverPacketFactory, 
             ITextPacketFactory textPacketFactory)
         {
-            this._player = player;
-            this._mobilitySystem = mobilitySystem;
-            this._inventorySystem = inventorySystem;
-            this._playerDataSystem = playerDataSystem;
-            this._recoverySystem = recoverySystem;
-            this._regionTriggerSystem = regionTriggerSystem;
-            this._questSystem = questSystem;
-            this._moverPacketFactory = moverPacketFactory;
-            this._textPacketFactory = textPacketFactory;
+            _player = player;
+            _mobilitySystem = mobilitySystem;
+            _inventorySystem = inventorySystem;
+            _playerDataSystem = playerDataSystem;
+            _recoverySystem = recoverySystem;
+            _regionTriggerSystem = regionTriggerSystem;
+            _questSystem = questSystem;
+            _moverPacketFactory = moverPacketFactory;
+            _textPacketFactory = textPacketFactory;
         }
 
         /// <inheritdoc />
         public void Update()
         {
-            if (!this._player.Object.Spawned || this._player.Health.IsDead)
+            if (!_player.Object.Spawned || _player.Health.IsDead)
                 return;
 
-            this._mobilitySystem.CalculatePosition(this._player);
-            this._regionTriggerSystem.CheckWrapzones(this._player);
-            this.ProcessIdleHeal();
+            _mobilitySystem.CalculatePosition(_player);
+            _regionTriggerSystem.CheckWrapzones(_player);
+            ProcessIdleHeal();
         }
 
         /// <inheritdoc />
         public void OnArrived()
         {
-            if (this._player.Follow.IsFollowing && this._player.Follow.Target.Type == WorldEntityType.Drop)
+            if (_player.Follow.IsFollowing && _player.Follow.Target.Type == WorldEntityType.Drop)
             {
-                if (this._player.Follow.Target is IItemEntity target)
-                    this.PickUpDroppedItem(target);
-                this._player.Follow.Reset();
+                if (_player.Follow.Target is IItemEntity target)
+                    PickUpDroppedItem(target);
+                _player.Follow.Reset();
             }
         }
 
@@ -87,7 +87,7 @@ namespace Rhisis.World.Game.Behaviors
             if (killedEntity is IMonsterEntity deadMonster)
             {
                 // Quest check
-                this._questSystem.UpdateQuestDiary(_player, QuestActionType.KillMonster, deadMonster.Data.Id, 1);
+                _questSystem.UpdateQuestDiary(_player, QuestActionType.KillMonster, deadMonster.Data.Id, 1);
             }
         }
 
@@ -99,9 +99,9 @@ namespace Rhisis.World.Game.Behaviors
         {
             // TODO: check if drop belongs to a party.
 
-            if (droppedItem.Drop.HasOwner && droppedItem.Drop.Owner != this._player)
+            if (droppedItem.Drop.HasOwner && droppedItem.Drop.Owner != _player)
             {
-                this._textPacketFactory.SendDefinedText(this._player, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{droppedItem.Object.Name}\"");
+                _textPacketFactory.SendDefinedText(_player, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{droppedItem.Object.Name}\"");
                 return;
             }
 
@@ -109,18 +109,18 @@ namespace Rhisis.World.Game.Behaviors
             {
                 int droppedGoldAmount = droppedItem.Drop.Item.Quantity;
 
-                if (this._playerDataSystem.IncreaseGold(this._player, droppedGoldAmount))
+                if (_playerDataSystem.IncreaseGold(_player, droppedGoldAmount))
                 {
-                    this._textPacketFactory.SendDefinedText(this._player, DefineText.TID_GAME_REAPMONEY, droppedGoldAmount.ToString("###,###,###,###"), this._player.PlayerData.Gold.ToString("###,###,###,###"));
+                    _textPacketFactory.SendDefinedText(_player, DefineText.TID_GAME_REAPMONEY, droppedGoldAmount.ToString("###,###,###,###"), _player.PlayerData.Gold.ToString("###,###,###,###"));
                 }
             }
             else
             {
-                this._inventorySystem.CreateItem(this._player, droppedItem.Drop.Item, droppedItem.Drop.Item.Quantity);
-                this._textPacketFactory.SendDefinedText(this._player, DefineText.TID_GAME_REAPITEM, $"\"{droppedItem.Object.Name}\"");
+                _inventorySystem.CreateItem(_player, droppedItem.Drop.Item, droppedItem.Drop.Item.Quantity);
+                _textPacketFactory.SendDefinedText(_player, DefineText.TID_GAME_REAPITEM, $"\"{droppedItem.Object.Name}\"");
             }
 
-            this._moverPacketFactory.SendMotion(this._player, ObjectMessageType.OBJMSG_PICKUP);
+            _moverPacketFactory.SendMotion(_player, ObjectMessageType.OBJMSG_PICKUP);
             droppedItem.Delete();
         }
 
@@ -130,11 +130,11 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="player"></param>
         private void ProcessIdleHeal()
         {
-            if (this._player.Timers.NextHealTime <= Time.TimeInSeconds())
+            if (_player.Timers.NextHealTime <= Time.TimeInSeconds())
             {
-                if (!this._player.Battle.IsFighting)
+                if (!_player.Battle.IsFighting)
                 {
-                    this._recoverySystem.IdleRecevory(this._player, isSitted: false);
+                    _recoverySystem.IdleRecevory(_player, isSitted: false);
                 }
             }
         }

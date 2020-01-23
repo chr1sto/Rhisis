@@ -28,15 +28,15 @@ namespace Rhisis.Scripting.Quests
         /// <param name="cache">Memory cache.</param>
         public QuestLoader(ILogger<QuestLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            _logger = logger;
+            _cache = cache;
+            _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
         }
 
         /// <inheritdoc />
         public void Load()
         {
-            this._logger.LogLoading("Loading quests...");
+            _logger.LogLoading("Loading quests...");
 
             using var lua = new Lua();
 
@@ -45,7 +45,7 @@ namespace Rhisis.Scripting.Quests
                                            .ToDictionary(x => x.ToString(), x => (int)x);
 
             var quests = new ConcurrentDictionary<int, IQuestScript>();
-            IEnumerable<string> questsDefinition = this.LoadQuestsDefinitions();
+            IEnumerable<string> questsDefinition = LoadQuestsDefinitions();
             IEnumerable<string> questFiles = Directory.GetFiles(GameResourcesConstants.Paths.QuestsPath, "*.*", SearchOption.AllDirectories).Where(x => x != QuestDefinitionPath);
 
             foreach (string questFile in questFiles)
@@ -55,15 +55,15 @@ namespace Rhisis.Scripting.Quests
 
             foreach (var questName in questsDefinition)
             {
-                this._logger.LogLoading($"Loading quests '{questName}': {quests.Count} / {questsDefinition.Count()}");
+                _logger.LogLoading($"Loading quests '{questName}': {quests.Count} / {questsDefinition.Count()}");
 
                 var questTable = lua[questName] as LuaTable;
 
-                if (!this._defines.TryGetValue(questName, out int questId))
+                if (!_defines.TryGetValue(questName, out int questId))
                 {
                     if (questName.StartsWith(QuestScriptConstants.QuestPrefix) && !int.TryParse(questName.Replace(QuestScriptConstants.QuestPrefix, ""), out questId))
                     {
-                        this._logger.LogWarning($"Cannot find quest id for quest: '{questName}'.");
+                        _logger.LogWarning($"Cannot find quest id for quest: '{questName}'.");
                         continue;
                     }
                 }
@@ -71,9 +71,9 @@ namespace Rhisis.Scripting.Quests
                 quests.TryAdd(questId, new QuestScript(questId, questName, questTable));
             }
 
-            this._logger.ClearCurrentConsoleLine();
-            this._logger.LogInformation($"-> {quests.Count} quests loaded.");
-            this._cache.Set(GameResourcesConstants.Quests, quests);
+            _logger.ClearCurrentConsoleLine();
+            _logger.LogInformation($"-> {quests.Count} quests loaded.");
+            _cache.Set(GameResourcesConstants.Quests, quests);
         }
 
         /// <summary>

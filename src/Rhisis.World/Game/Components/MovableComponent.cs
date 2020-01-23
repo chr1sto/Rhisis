@@ -26,9 +26,9 @@ namespace Rhisis.World.Game.Components
 
         public MovableComponent()
         {
-            this.DestinationPosition = new Vector3();
-            this.BeginPosition = new Vector3();
-            this.SpeedFactor = 1f;
+            DestinationPosition = new Vector3();
+            BeginPosition = new Vector3();
+            SpeedFactor = 1f;
         }
     }
 }

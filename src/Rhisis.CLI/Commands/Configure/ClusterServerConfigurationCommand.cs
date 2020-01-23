@@ -23,7 +23,7 @@ namespace Rhisis.CLI.Commands.Configure
         /// <summary>
         /// Gets the real configuration file.
         /// </summary>
-        private string ConfigurationFile => !string.IsNullOrEmpty(this.ClusterConfigurationFile) ? this.ClusterConfigurationFile : ConfigurationConstants.ClusterServerPath;
+        private string ConfigurationFile => !string.IsNullOrEmpty(ClusterConfigurationFile) ? ClusterConfigurationFile : ConfigurationConstants.ClusterServerPath;
 
         /// <summary>
         /// Creates a new <see cref="ClusterServerConfigurationCommand"/> instance.
@@ -31,7 +31,7 @@ namespace Rhisis.CLI.Commands.Configure
         /// <param name="consoleHelper">Console helpers.</param>
         public ClusterServerConfigurationCommand(ConsoleHelper consoleHelper)
         {
-            this._consoleHelper = consoleHelper;
+            _consoleHelper = consoleHelper;
         }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace Rhisis.CLI.Commands.Configure
         /// </summary>
         public void OnExecute()
         {
-            var clusterServerConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(this.ConfigurationFile, ConfigurationConstants.ClusterServer);
-            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
+            var clusterServerConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(ConfigurationFile, ConfigurationConstants.ClusterServer);
+            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
             var clusterConfiguration = new ObjectConfigurationFiller<ClusterConfiguration>(clusterServerConfiguration);
             var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
 
@@ -54,7 +54,7 @@ namespace Rhisis.CLI.Commands.Configure
             clusterConfiguration.Show("Cluster Server configuration");
             coreConfiguration.Show("Core server configuration");
 
-            bool response = this._consoleHelper.AskConfirmation("Save this configuration?");
+            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
             if (response)
             {
@@ -64,8 +64,8 @@ namespace Rhisis.CLI.Commands.Configure
                     { ConfigurationConstants.CoreServer, coreConfiguration.Value }
                 };
 
-                ConfigurationHelper.Save(this.ConfigurationFile, configuration);
-                Console.WriteLine($"Cluster Server configuration saved in {this.ConfigurationFile}!");
+                ConfigurationHelper.Save(ConfigurationFile, configuration);
+                Console.WriteLine($"Cluster Server configuration saved in {ConfigurationFile}!");
             }
         }
     }

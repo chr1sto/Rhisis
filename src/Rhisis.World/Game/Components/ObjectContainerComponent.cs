@@ -27,7 +27,7 @@ namespace Rhisis.World.Game.Components
         /// <param name="maxCapacity">Maximum capacity.</param>
         protected ObjectContainerComponent(int maxCapacity)
         {
-            this.MaxCapacity = maxCapacity;
+            MaxCapacity = maxCapacity;
         }
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace Rhisis.World.Game.Components
         /// <returns>True if the slot is available, false otherwise.</returns>
         public virtual bool IsSlotAvailable(int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex >= this.MaxCapacity)
+            if (slotIndex < 0 || slotIndex >= MaxCapacity)
                 return false;
 
-            return this.Objects[slotIndex] == null;
+            return Objects[slotIndex] == null;
         }
     }
 }

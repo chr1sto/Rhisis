@@ -15,7 +15,7 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// <param name="language"></param>
         public DialogSet(string language)
         {
-            this.Language = language;
+            Language = language;
         }
     }
 }

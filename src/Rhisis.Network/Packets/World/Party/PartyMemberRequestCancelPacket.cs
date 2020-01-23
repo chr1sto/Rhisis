@@ -29,9 +29,9 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="packet">Incoming packet</param>
         public PartyMemberRequestCancelPacket(INetPacketStream packet)
         {
-            this.LeaderId = packet.Read<uint>();
-            this.MemberId = packet.Read<uint>();
-            this.Mode = packet.Read<int>();
+            LeaderId = packet.Read<uint>();
+            MemberId = packet.Read<uint>();
+            Mode = packet.Read<int>();
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="other">Other <see cref="PartyMemberRequestCancelPacket"/></param>
         public bool Equals(PartyMemberRequestCancelPacket other)
         {
-            return this.LeaderId == other.LeaderId && this.MemberId == other.MemberId && this.Mode == other.Mode;
+            return LeaderId == other.LeaderId && MemberId == other.MemberId && Mode == other.Mode;
         }
     }
 }

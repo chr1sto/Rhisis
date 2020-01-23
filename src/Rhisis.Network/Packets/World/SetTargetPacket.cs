@@ -21,8 +21,8 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.TargetId = packet.Read<uint>();
-            this.TargetMode = (TargetModeType)packet.Read<byte>();
+            TargetId = packet.Read<uint>();
+            TargetMode = (TargetModeType)packet.Read<byte>();
         }
     }
 }

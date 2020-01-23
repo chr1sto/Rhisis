@@ -31,10 +31,10 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.ObjectId = packet.Read<uint>();
-            this.FaceNumber = packet.Read<uint>();
-            this.Cost = packet.Read<int>();
-            this.UseCoupon = Convert.ToBoolean(packet.Read<int>());
+            ObjectId = packet.Read<uint>();
+            FaceNumber = packet.Read<uint>();
+            Cost = packet.Read<int>();
+            UseCoupon = Convert.ToBoolean(packet.Read<int>());
         }
     }
 }

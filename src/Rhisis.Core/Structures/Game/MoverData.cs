@@ -195,11 +195,11 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         public MoverData()
         {
-            this.DropItems = new List<DropItemData>();
-            this.DropItemsKind = new List<DropItemKindData>();
+            DropItems = new List<DropItemData>();
+            DropItemsKind = new List<DropItemKindData>();
         }
 
         /// <inheritdoc />
-        public override string ToString() => this.Name;
+        public override string ToString() => Name;
     }
 }

@@ -17,7 +17,7 @@ namespace Rhisis.World.Handlers
         /// <param name="npcShopSystem"></param>
         public NpcShopHandler(INpcShopSystem npcShopSystem)
         {
-            this._npcShopSystem = npcShopSystem;
+            _npcShopSystem = npcShopSystem;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.OPENSHOPWND)]
         public void OnOpenShopWindow(IWorldClient client, OpenShopWindowPacket packet)
         {
-            this._npcShopSystem.OpenShop(client.Player, packet.ObjectId);
+            _npcShopSystem.OpenShop(client.Player, packet.ObjectId);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.CLOSESHOPWND)]
         public void OnCloseShopWindow(IWorldClient client)
         {
-            this._npcShopSystem.CloseShop(client.Player);
+            _npcShopSystem.CloseShop(client.Player);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Rhisis.World.Handlers
                 Tab = packet.Tab
             };
 
-            this._npcShopSystem.BuyItem(client.Player, npcShopItem, packet.Quantity);
+            _npcShopSystem.BuyItem(client.Player, npcShopItem, packet.Quantity);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.SELLITEM)]
         public void OnSellItem(IWorldClient client, SellItemPacket packet)
         {
-            this._npcShopSystem.SellItem(client.Player, packet.ItemUniqueId, packet.Quantity);
+            _npcShopSystem.SellItem(client.Player, packet.ItemUniqueId, packet.Quantity);
         }
     }
 }

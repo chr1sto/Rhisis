@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public CorrReqPacket(INetPacketStream packet)
         {
-            this.ObjectId = packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="CorrReqPacket"/></param>
         public bool Equals(CorrReqPacket other)
         {
-            return this.ObjectId == other.ObjectId;
+            return ObjectId == other.ObjectId;
         }
     }
 }

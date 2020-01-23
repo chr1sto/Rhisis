@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public QueryPlayerDataPacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.Version = packet.Read<int>();
+            PlayerId = packet.Read<uint>();
+            Version = packet.Read<int>();
         }
 
         /// <summary>
@@ -33,6 +33,6 @@ namespace Rhisis.Network.Packets.World
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(QueryPlayerDataPacket other) => this.PlayerId == other.PlayerId && this.Version == other.Version;
+        public bool Equals(QueryPlayerDataPacket other) => PlayerId == other.PlayerId && Version == other.Version;
     }
 }

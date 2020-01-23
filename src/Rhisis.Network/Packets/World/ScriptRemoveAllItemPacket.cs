@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ScriptRemoveAllItemPacket(INetPacketStream packet)
         {
-            this.ItemId = packet.Read<uint>();
+            ItemId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ScriptRemoveAllItemPacket"/></param>
         public bool Equals(ScriptRemoveAllItemPacket other)
         {
-            return this.ItemId == other.ItemId;
+            return ItemId == other.ItemId;
         }
     }
 }

@@ -20,9 +20,9 @@ namespace Rhisis.Login.Core.Handlers
         /// <param name="corePacketFactory">Core packet factory.</param>
         public CommonCoreHandler(ILogger<CommonCoreHandler> logger, ICoreServer coreServer, ICorePacketFactory corePacketFactory)
         {
-            this._logger = logger;
-            this._coreServer = coreServer;
-            this._corePacketFactory = corePacketFactory;
+            _logger = logger;
+            _coreServer = coreServer;
+            _corePacketFactory = corePacketFactory;
         }
 
         /// <summary>
@@ -35,23 +35,23 @@ namespace Rhisis.Login.Core.Handlers
             switch (client.ServerInfo)
             {
                 case ClusterServerInfo cluster:
-                    this._logger.LogInformation($"Cluster server '{cluster.Name}' disconnected from core server.");
+                    _logger.LogInformation($"Cluster server '{cluster.Name}' disconnected from core server.");
                     cluster.Worlds.Clear();
                     break;
                 case WorldServerInfo world:
-                    this._logger.LogInformation($"World server '{world.Name}' disconnected from core server.");
-                    ICoreServerClient clusterClient = this._coreServer.GetClusterServer(world.ParentClusterId);
+                    _logger.LogInformation($"World server '{world.Name}' disconnected from core server.");
+                    ICoreServerClient clusterClient = _coreServer.GetClusterServer(world.ParentClusterId);
                     var clusterServerInfo = clusterClient.ServerInfo as ClusterServerInfo;
 
                     if (clusterServerInfo != null)
                     {
                         clusterServerInfo.Worlds.Remove(world);
-                        this._corePacketFactory.SendUpdateWorldList(clusterClient, clusterServerInfo.Worlds);
+                        _corePacketFactory.SendUpdateWorldList(clusterClient, clusterServerInfo.Worlds);
                     }
 
                     break;
                 default:
-                    this._logger.LogInformation("Unknown server disconnected from core server.");
+                    _logger.LogInformation("Unknown server disconnected from core server.");
                     break;
             }
         }

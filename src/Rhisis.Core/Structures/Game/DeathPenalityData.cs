@@ -31,14 +31,14 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         /// <param name="level">Level.</param>
         /// <returns>Revival penality expressed as a percentage.</returns>
-        public decimal GetRevivalPenality(int level) => this.GetPenality(this.RevivalPenality, level).Value;
+        public decimal GetRevivalPenality(int level) => GetPenality(RevivalPenality, level).Value;
 
         /// <summary>
         /// Gets the experience penality by a level.
         /// </summary>
         /// <param name="level">Level.</param>
         /// <returns>Experience penality expressed as a percentage.</returns>
-        public decimal GetDecExpPenality(int level) => this.GetPenality(this.DecExpPenality, level).Value;
+        public decimal GetDecExpPenality(int level) => GetPenality(DecExpPenality, level).Value;
 
         /// <summary>
         /// Gets the level down penality by a level.
@@ -46,7 +46,7 @@ namespace Rhisis.Core.Structures.Game
         /// <param name="level">Level</param>
         /// <returns>Boolean value that indicates if level should go down.</returns>
         public bool GetLevelDownPenality(int level)
-            => Convert.ToBoolean(this.GetPenality(this.LevelDownPenality, level).Value);
+            => Convert.ToBoolean(GetPenality(LevelDownPenality, level).Value);
 
         /// <summary>
         /// Gets a <see cref="PenalityData"/> from a collection of penalities and a level.

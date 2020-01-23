@@ -15,7 +15,7 @@ namespace Rhisis.Scripting
         /// <param name="luaScriptTable">Lua script.</param>
         protected ScriptBase(LuaTable luaScriptTable)
         {
-            this.ScriptTable = luaScriptTable;
+            ScriptTable = luaScriptTable;
         }
     }
 }

@@ -20,8 +20,8 @@ namespace Rhisis.Login
         /// <param name="loginServer">Login Server instance.</param>
         public LoginServerService(ILogger<LoginServerService> logger, ILoginServer loginServer)
         {
-            this._logger = logger;
-            this._loginServer = loginServer;
+            _logger = logger;
+            _loginServer = loginServer;
         }
 
         /// <summary>
@@ -31,8 +31,8 @@ namespace Rhisis.Login
         /// <returns></returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation("Starting LoginServer");
-            this._loginServer.Start();
+            _logger.LogInformation("Starting LoginServer");
+            _loginServer.Start();
 
             return Task.CompletedTask;
         }
@@ -44,7 +44,7 @@ namespace Rhisis.Login
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._loginServer.Stop();
+            _loginServer.Stop();
 
             return Task.CompletedTask;
         }

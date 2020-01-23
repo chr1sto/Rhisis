@@ -20,18 +20,18 @@ namespace Rhisis.World.Game.Maps.Regions
         public MapRespawnRegion(int x, int z, int width, int length, int time, WorldObjectType type, int modelId, int count) 
             : base(x, z, width, length)
         {
-            this.ModelId = modelId;
-            this.Time = time;
-            this.ObjectType = type;
-            this.Count = count;
-            this.Entities = new List<IWorldEntity>();
+            ModelId = modelId;
+            Time = time;
+            ObjectType = type;
+            Count = count;
+            Entities = new List<IWorldEntity>();
         }
 
         public override object Clone()
         {
-            var region = new MapRespawnRegion(this.X, this.Z, this.Width, this.Length, this.Time, this.ObjectType, this.ModelId, this.Count)
+            var region = new MapRespawnRegion(X, Z, Width, Length, Time, ObjectType, ModelId, Count)
             {
-                IsActive = this.IsActive
+                IsActive = IsActive
             };
             
             return region;

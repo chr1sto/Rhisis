@@ -37,21 +37,21 @@ namespace Rhisis.World
         /// </summary>
         public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IServiceProvider serviceProvider, IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager)
         {
-            this._logger = logger;
-            this._worldConfiguration = worldConfiguration.Value;
-            this._gameResources = gameResources;
-            this._serviceProvider = serviceProvider;
-            this._mapManager = mapManager;
-            this._behaviorManager = behaviorManager;
-            this._chatCommandManager = chatCommandManager;
-            this.PacketProcessor = new FlyffPacketProcessor();
-            this.ServerConfiguration = new NetServerConfiguration(this._worldConfiguration.Host, this._worldConfiguration.Port, ClientBacklog, ClientBufferSize);
+            _logger = logger;
+            _worldConfiguration = worldConfiguration.Value;
+            _gameResources = gameResources;
+            _serviceProvider = serviceProvider;
+            _mapManager = mapManager;
+            _behaviorManager = behaviorManager;
+            _chatCommandManager = chatCommandManager;
+            PacketProcessor = new FlyffPacketProcessor();
+            ServerConfiguration = new NetServerConfiguration(_worldConfiguration.Host, _worldConfiguration.Port, ClientBacklog, ClientBufferSize);
         }
 
         /// <inheritdoc />
         protected override void OnBeforeStart()
         {
-            this._gameResources.Load(typeof(DefineLoader),
+            _gameResources.Load(typeof(DefineLoader),
                 typeof(TextLoader),
                 typeof(MoverLoader),
                 typeof(ItemLoader),
@@ -63,32 +63,32 @@ namespace Rhisis.World
                 typeof(NpcLoader),
                 typeof(QuestLoader));
 
-            this._chatCommandManager.Load();
-            this._behaviorManager.Load();
-            this._mapManager.Load();
+            _chatCommandManager.Load();
+            _behaviorManager.Load();
+            _mapManager.Load();
         }
 
         /// <inheritdoc />
         protected override void OnAfterStart()
         {
-            this._logger.LogInformation("'{0}' world server is started and listen on {1}:{2}.",
-                this._worldConfiguration.Name, this.ServerConfiguration.Host, this.ServerConfiguration.Port);
+            _logger.LogInformation("'{0}' world server is started and listen on {1}:{2}.",
+                _worldConfiguration.Name, ServerConfiguration.Host, ServerConfiguration.Port);
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(WorldClient client)
         {
-            client.Initialize(this._serviceProvider.GetRequiredService<ILogger<WorldClient>>(),
-                this._serviceProvider.GetRequiredService<IHandlerInvoker>());
+            client.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldClient>>(),
+                _serviceProvider.GetRequiredService<IHandlerInvoker>());
             CommonPacketFactory.SendWelcome(client, client.SessionId);
 
-            this._logger.LogInformation("New client connected from {0}.", client.Socket.RemoteEndPoint);
+            _logger.LogInformation("New client connected from {0}.", client.Socket.RemoteEndPoint);
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(WorldClient client)
         {
-            this._logger.LogInformation("Client disconnected from {0}.", client.Socket.RemoteEndPoint);
+            _logger.LogInformation("Client disconnected from {0}.", client.Socket.RemoteEndPoint);
         }
 
         /// <inheritdoc />
@@ -98,14 +98,14 @@ namespace Rhisis.World
         //}
 
         /// <inheritdoc />
-        public IPlayerEntity GetPlayerEntity(uint id) => this.Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;
+        public IPlayerEntity GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;
 
         /// <inheritdoc />
         public IPlayerEntity GetPlayerEntity(string name) 
-            => this.Clients.FirstOrDefault(x => x.Player.Object.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Player;
+            => Clients.FirstOrDefault(x => x.Player.Object.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Player;
 
         /// <inheritdoc />
         public IPlayerEntity GetPlayerEntityByCharacterId(uint id) 
-            => this.Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id)?.Player;
+            => Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id)?.Player;
     }
 }

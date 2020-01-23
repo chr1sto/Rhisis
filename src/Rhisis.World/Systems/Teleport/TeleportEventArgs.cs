@@ -72,11 +72,11 @@ namespace Rhisis.World.Systems.Teleport
         /// <param name="angle">Target angle.</param>
         public TeleportEventArgs(int mapId, float positionX, float positionZ, float? positionY, float angle)
         {
-            this.MapId = mapId;
-            this.PositionX = positionX;
-            this.PositionZ = positionZ;
-            this.PositionY = positionY;
-            this.Angle = angle;
+            MapId = mapId;
+            PositionX = positionX;
+            PositionZ = positionZ;
+            PositionY = positionY;
+            Angle = angle;
         }
     }
 }

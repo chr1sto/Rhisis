@@ -39,20 +39,20 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <param name="behaviorManager">Behavior manager.</param>
         public PlayerFactory(IServiceProvider serviceProvider, IDatabase database, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager)
         {
-            this._serviceProvider = serviceProvider;
-            this._database = database;
-            this._gameResources = gameResources;
-            this._mapManager = mapManager;
-            this._behaviorManager = behaviorManager;
-            this._playerFactory = ActivatorUtilities.CreateFactory(typeof(PlayerEntity), Type.EmptyTypes);
+            _serviceProvider = serviceProvider;
+            _database = database;
+            _gameResources = gameResources;
+            _mapManager = mapManager;
+            _behaviorManager = behaviorManager;
+            _playerFactory = ActivatorUtilities.CreateFactory(typeof(PlayerEntity), Type.EmptyTypes);
         }
 
         /// <inheritdoc />
         public IPlayerEntity CreatePlayer(DbCharacter character)
         {
-            var player = this._playerFactory(this._serviceProvider, null) as IPlayerEntity;
+            var player = _playerFactory(_serviceProvider, null) as IPlayerEntity;
 
-            IMapInstance map = this._mapManager.GetMap(character.MapId);
+            IMapInstance map = _mapManager.GetMap(character.MapId);
 
             if (map == null)
             {
@@ -101,12 +101,12 @@ namespace Rhisis.World.Game.Factories.Internal
                 Gold = character.Gold,
                 Authority = (AuthorityType)character.User.Authority,
                 Experience = character.Experience,
-                JobData = this._gameResources.Jobs[character.ClassId]
+                JobData = _gameResources.Jobs[character.ClassId]
             };
 
             player.Moves = new MovableComponent
             {
-                Speed = this._gameResources.Movers[player.Object.ModelId].Speed,
+                Speed = _gameResources.Movers[player.Object.ModelId].Speed,
                 DestinationPosition = player.Object.Position.Clone(),
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
@@ -120,7 +120,7 @@ namespace Rhisis.World.Game.Factories.Internal
             player.Statistics = new StatisticsComponent(character);
             player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
 
-            player.Behavior = this._behaviorManager.GetDefaultBehavior(BehaviorType.Player, player);
+            player.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, player);
 
             var gameServices = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>().OrderBy(x => x.Order);
 
@@ -140,7 +140,7 @@ namespace Rhisis.World.Game.Factories.Internal
             if (player == null)
                 return;
 
-            DbCharacter character = this._database.Characters.Get(player.PlayerData.Id);
+            DbCharacter character = _database.Characters.Get(player.PlayerData.Id);
 
             if (character != null)
             {
@@ -174,7 +174,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.Mp = player.Health.Mp;
                 character.Fp = player.Health.Fp;
 
-                this._database.Complete();
+                _database.Complete();
 
                 var gameSystems = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>().OrderBy(x => x.Order);
 

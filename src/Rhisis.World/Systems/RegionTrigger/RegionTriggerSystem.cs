@@ -17,7 +17,7 @@ namespace Rhisis.World.Systems
         /// <param name="teleportSystem">Teleport system.</param>
         public RegionTriggerSystem(ITeleportSystem teleportSystem)
         {
-            this._teleportSystem = teleportSystem;
+            _teleportSystem = teleportSystem;
         }
 
         /// <inheritdoc />
@@ -30,7 +30,7 @@ namespace Rhisis.World.Systems
 
             if (triggerRegion != null && triggerRegion.IsWrapzone)
             {
-                this._teleportSystem.Teleport(player, triggerRegion.DestinationMapId, 
+                _teleportSystem.Teleport(player, triggerRegion.DestinationMapId, 
                     triggerRegion.DestinationMapPosition.X, 
                     triggerRegion.DestinationMapPosition.Y, 
                     triggerRegion.DestinationMapPosition.Z);   

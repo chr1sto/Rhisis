@@ -54,10 +54,10 @@ namespace Rhisis.Network.Core
         /// <param name="port">Server listening port.</param>
         protected ServerInfo(int id, string name, string host, int port)
         {
-            this.Id = id;
-            this.Name = name;
-            this.Host = host;
-            this.Port = port;
+            Id = id;
+            Name = name;
+            Host = host;
+            Port = port;
         }
     }
 
@@ -78,7 +78,7 @@ namespace Rhisis.Network.Core
         public ClusterServerInfo(int id, string name, string host, int port) 
             : base(id, name, host, port)
         {
-            this.Worlds = new List<WorldServerInfo>();
+            Worlds = new List<WorldServerInfo>();
         }
     }
     public sealed class WorldServerInfo : ServerInfo
@@ -99,7 +99,7 @@ namespace Rhisis.Network.Core
         public WorldServerInfo(int id, string name, string host, int port, int parentClusterId) 
             : base(id, name, host, port)
         {
-            this.ParentClusterId = parentClusterId;
+            ParentClusterId = parentClusterId;
         }
     }
 }

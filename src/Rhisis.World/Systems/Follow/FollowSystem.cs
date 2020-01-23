@@ -17,7 +17,7 @@ namespace Rhisis.World.Systems.Follow
         /// <param name="moverPacketFactory">Mover packet factory.</param>
         public FollowSystem(IMoverPacketFactory moverPacketFactory)
         {
-            this._moverPacketFactory = moverPacketFactory;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
@@ -27,7 +27,7 @@ namespace Rhisis.World.Systems.Follow
             livingEntity.Moves.DestinationPosition = targetEntity.Object.Position.Clone();
             livingEntity.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
 
-            this._moverPacketFactory.SendFollowTarget(livingEntity, targetEntity, distance);
+            _moverPacketFactory.SendFollowTarget(livingEntity, targetEntity, distance);
         }
 
         /// <inheritdoc />
@@ -40,7 +40,7 @@ namespace Rhisis.World.Systems.Follow
                 throw new ArgumentNullException(nameof(entityToFollow), $"Cannot find entity with object id: {targetId} around {livingEntity.Object.Name}");
             }
 
-            this.Follow(livingEntity, entityToFollow, distance);
+            Follow(livingEntity, entityToFollow, distance);
         }
     }
 }

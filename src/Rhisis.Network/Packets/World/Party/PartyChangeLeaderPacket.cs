@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World.Packet
         /// <param name="packet">Incoming packet</param>
         public PartyChangeLeaderPacket(INetPacketStream packet)
         {
-            this.LeaderId = packet.Read<uint>();
-            this.NewLeaderId = packet.Read<uint>();
+            LeaderId = packet.Read<uint>();
+            NewLeaderId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World.Packet
         /// <param name="other">Other <see cref="PartyChangeLeaderPacket"/></param>
         public bool Equals(PartyChangeLeaderPacket other)
         {
-            return this.LeaderId == other.LeaderId && this.NewLeaderId == other.NewLeaderId;
+            return LeaderId == other.LeaderId && NewLeaderId == other.NewLeaderId;
         }
     }
 }

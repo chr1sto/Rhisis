@@ -21,7 +21,7 @@ namespace Rhisis.World.Handlers
         /// <param name="taskbarSystem">Taskbar system.</param>
         public TaskbarHandler(ITaskbarSystem taskbarSystem)
         {
-            this._taskbarSystem = taskbarSystem;
+            _taskbarSystem = taskbarSystem;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.World.Handlers
         {
             var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, packet.ObjectId, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
 
-            this._taskbarSystem.AddApplet(client.Player, shortcutToAdd);
+            _taskbarSystem.AddApplet(client.Player, shortcutToAdd);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.REMOVEAPPLETTASKBAR)]
         public void OnRemoveTaskbarApplet(IWorldClient client, RemoveTaskbarAppletPacket packet)
         {
-            this._taskbarSystem.RemoveApplet(client.Player, packet.SlotIndex);
+            _taskbarSystem.RemoveApplet(client.Player, packet.SlotIndex);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Rhisis.World.Handlers
         {
             var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, packet.ObjectId, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
 
-            this._taskbarSystem.AddItem(client.Player, shortcutToAdd, packet.SlotLevelIndex);
+            _taskbarSystem.AddItem(client.Player, shortcutToAdd, packet.SlotLevelIndex);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.REMOVEITEMTASKBAR)]
         public void OnRemoveTaskbarItem(IWorldClient client, RemoveTaskbarItemPacket packet)
         {
-            this._taskbarSystem.RemoveItem(client.Player, packet.SlotLevelIndex, packet.SlotIndex);
+            _taskbarSystem.RemoveItem(client.Player, packet.SlotLevelIndex, packet.SlotIndex);
         }
     }
 }

@@ -29,9 +29,9 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="packet">Incoming packet</param>
         public PutItemBankPacket(INetPacketStream packet)
         {
-            this.Slot = packet.Read<byte>();
-            this.Id = packet.Read<byte>();
-            this.ItemNumber = packet.Read<short>();
+            Slot = packet.Read<byte>();
+            Id = packet.Read<byte>();
+            ItemNumber = packet.Read<short>();
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="other">Other <see cref="PutItemBankPacket"/></param>
         public bool Equals(PutItemBankPacket other)
         {
-            return this.Slot == other.Slot && this.Id == other.Id && this.ItemNumber == other.ItemNumber;
+            return Slot == other.Slot && Id == other.Id && ItemNumber == other.ItemNumber;
         }
     }
 }

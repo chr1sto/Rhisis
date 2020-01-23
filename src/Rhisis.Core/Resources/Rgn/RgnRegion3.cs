@@ -51,33 +51,33 @@ namespace Rhisis.Core.Resources
 
         public RgnRegion3(string[] regionData)
         {
-            this.Type = int.Parse(regionData[1]);
-            this.Index = int.Parse(regionData[2]);
-            this.Position = new Vector3(regionData[3], regionData[4], regionData[5]);
-            this.Attribute = int.Parse(regionData[6].Replace("0x", string.Empty), System.Globalization.NumberStyles.AllowHexSpecifier);
-            this.MusicId = int.Parse(regionData[7]);
-            this.DirectMusic = int.Parse(regionData[8]) == 1;
-            this.Script = regionData[9];
-            this.Sound = regionData[10];
-            this.TeleportWorldId = int.Parse(regionData[11]);
-            this.TeleportPosition = new Vector3(regionData[12], regionData[13], regionData[14]);
-            this.Left = int.Parse(regionData[15]);
-            this.Top = int.Parse(regionData[16]);
-            this.Right = int.Parse(regionData[17]);
-            this.Bottom = int.Parse(regionData[18]);
-            this.Key = regionData[19].Trim('"');
-            this.TargetKey = int.Parse(regionData[20]) == 1;
-            this.ItemId = int.Parse(regionData[21]);
-            this.ItemCount = int.Parse(regionData[22]);
-            this.MinLevel = int.Parse(regionData[23]);
-            this.MaxLevel = int.Parse(regionData[24]);
-            this.QuestId = int.Parse(regionData[25]);
-            this.QuestFlag = int.Parse(regionData[26]);
-            this.Job = int.Parse(regionData[27]);
-            this.Gender = int.Parse(regionData[28]);
-            this.CheckParty = int.Parse(regionData[29]) == 1;
-            this.CheckGuild = int.Parse(regionData[30]) == 1;
-            this.ChaoKey = int.Parse(regionData[31]) == 1;
+            Type = int.Parse(regionData[1]);
+            Index = int.Parse(regionData[2]);
+            Position = new Vector3(regionData[3], regionData[4], regionData[5]);
+            Attribute = int.Parse(regionData[6].Replace("0x", string.Empty), System.Globalization.NumberStyles.AllowHexSpecifier);
+            MusicId = int.Parse(regionData[7]);
+            DirectMusic = int.Parse(regionData[8]) == 1;
+            Script = regionData[9];
+            Sound = regionData[10];
+            TeleportWorldId = int.Parse(regionData[11]);
+            TeleportPosition = new Vector3(regionData[12], regionData[13], regionData[14]);
+            Left = int.Parse(regionData[15]);
+            Top = int.Parse(regionData[16]);
+            Right = int.Parse(regionData[17]);
+            Bottom = int.Parse(regionData[18]);
+            Key = regionData[19].Trim('"');
+            TargetKey = int.Parse(regionData[20]) == 1;
+            ItemId = int.Parse(regionData[21]);
+            ItemCount = int.Parse(regionData[22]);
+            MinLevel = int.Parse(regionData[23]);
+            MaxLevel = int.Parse(regionData[24]);
+            QuestId = int.Parse(regionData[25]);
+            QuestFlag = int.Parse(regionData[26]);
+            Job = int.Parse(regionData[27]);
+            Gender = int.Parse(regionData[28]);
+            CheckParty = int.Parse(regionData[29]) == 1;
+            CheckGuild = int.Parse(regionData[30]) == 1;
+            ChaoKey = int.Parse(regionData[31]) == 1;
         }
     }
 }

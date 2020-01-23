@@ -22,14 +22,14 @@ namespace Rhisis.World.Game.Behaviors
 
         public DefaultNpcBehavior(INpcEntity npcEntity, IChatPacketFactory chatPacketFactory)
         {
-            this._npc = npcEntity;
-            this._chatPacketFactory = chatPacketFactory;
+            _npc = npcEntity;
+            _chatPacketFactory = chatPacketFactory;
         }
 
         /// <inheritdoc />
         public void Update()
         {
-            this.UpdateOralText();
+            UpdateOralText();
         }
 
         /// <inheritdoc />
@@ -49,26 +49,26 @@ namespace Rhisis.World.Game.Behaviors
         /// </summary>
         private void UpdateOralText()
         {
-            if (this._npc.Data == null)
+            if (_npc.Data == null)
                 return;
 
-            if (this._npc.Timers.LastSpeakTime <= Time.TimeInSeconds())
+            if (_npc.Timers.LastSpeakTime <= Time.TimeInSeconds())
             {
-                if (this._npc.Data.HasDialog && !string.IsNullOrEmpty(this._npc.Data.Dialog.OralText))
+                if (_npc.Data.HasDialog && !string.IsNullOrEmpty(_npc.Data.Dialog.OralText))
                 {
-                    IEnumerable<IPlayerEntity> playersArount = from x in this._npc.Object.Entities
-                                                               where x.Object.Position.IsInCircle(this._npc.Object.Position, OralTextRadius) &&
+                    IEnumerable<IPlayerEntity> playersArount = from x in _npc.Object.Entities
+                                                               where x.Object.Position.IsInCircle(_npc.Object.Position, OralTextRadius) &&
                                                                x is IPlayerEntity
                                                                select x as IPlayerEntity;
 
                     foreach (IPlayerEntity player in playersArount)
                     {
-                        string text = this._npc.Data.Dialog.OralText.Replace(DialogVariables.PlayerNameText, player.Object.Name);
+                        string text = _npc.Data.Dialog.OralText.Replace(DialogVariables.PlayerNameText, player.Object.Name);
 
-                        this._chatPacketFactory.SendChatTo(this._npc, player, text);
+                        _chatPacketFactory.SendChatTo(_npc, player, text);
                     }
 
-                    this._npc.Timers.LastSpeakTime = Time.TimeInSeconds() + RandomHelper.Random(10, 15);
+                    _npc.Timers.LastSpeakTime = Time.TimeInSeconds() + RandomHelper.Random(10, 15);
                 }
             }
         }

@@ -20,7 +20,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public TeleSkillPacket(INetPacketStream packet)
         {
-            this.Position = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            Position = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="TeleSkillPacket"/></param>
         public bool Equals(TeleSkillPacket other)
         {
-            return this.Position == other.Position;
+            return Position == other.Position;
         }
     }
 }

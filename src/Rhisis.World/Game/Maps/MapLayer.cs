@@ -25,16 +25,16 @@ namespace Rhisis.World.Game.Maps
         /// <param name="visibilitySystem">Visibility system.qvisual</param>
         public MapLayer(IMapInstance parentMapInstance, int layerId, IVisibilitySystem visibilitySystem, IRespawnSystem respawnSystem)
         {
-            this.Id = layerId;
-            this.ParentMap = parentMapInstance;
-            this._visibilitySystem = visibilitySystem;
-            this._respawnSystem = respawnSystem;
+            Id = layerId;
+            ParentMap = parentMapInstance;
+            _visibilitySystem = visibilitySystem;
+            _respawnSystem = respawnSystem;
         }
 
         /// <inheritdoc />
         public void Update()
         {
-            foreach (var entity in this.Entities)
+            foreach (var entity in Entities)
             {
                 IWorldEntity layerEntity = entity.Value;
 
@@ -43,8 +43,8 @@ namespace Rhisis.World.Game.Maps
                     livingEntity.Behavior?.Update();
                 }
 
-                this._visibilitySystem.Execute(layerEntity);
-                this._respawnSystem.Execute(layerEntity);
+                _visibilitySystem.Execute(layerEntity);
+                _respawnSystem.Execute(layerEntity);
             }
         }
 
@@ -52,7 +52,7 @@ namespace Rhisis.World.Game.Maps
         public override void DeleteEntity(IWorldEntity entityToDelete)
         {
             base.DeleteEntity(entityToDelete);
-            this._visibilitySystem.DespawnEntity(entityToDelete);
+            _visibilitySystem.DespawnEntity(entityToDelete);
         }
     }
 }

@@ -111,7 +111,7 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         public WorldConfiguration()
         {
-            this.Systems = new Dictionary<string, bool>();
+            Systems = new Dictionary<string, bool>();
         }
     }
 }

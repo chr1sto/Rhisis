@@ -57,28 +57,28 @@ namespace Rhisis.Scripting.Quests
         public QuestScript(int questId, string questName, LuaTable luaScriptTable)
             : base(luaScriptTable)
         {
-            this.Id = questId;
-            this.Name = questName;
-            this.Title = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.Title);
-            this.StartCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.StartCharacter);
-            this.EndCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.EndCharacter);
+            Id = questId;
+            Name = questName;
+            Title = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.Title);
+            StartCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.StartCharacter);
+            EndCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.EndCharacter);
 
             if (string.IsNullOrEmpty(EndCharacter))
             {
-                this.EndCharacter = this.StartCharacter;
+                EndCharacter = StartCharacter;
             }
 
-            this.Rewards = new QuestRewards(luaScriptTable, this.ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
-            this.StartRequirements = new QuestStartRequirements(this.ScriptTable[QuestScriptConstants.StartRequirements] as LuaTable);
-            this.EndConditions = new QuestEndConditions(this.ScriptTable[QuestScriptConstants.EndConditions] as LuaTable);
+            Rewards = new QuestRewards(luaScriptTable, ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
+            StartRequirements = new QuestStartRequirements(ScriptTable[QuestScriptConstants.StartRequirements] as LuaTable);
+            EndConditions = new QuestEndConditions(ScriptTable[QuestScriptConstants.EndConditions] as LuaTable);
 
-            if (this.ScriptTable[QuestScriptConstants.Dialogs] is LuaTable dialogsTable)
+            if (ScriptTable[QuestScriptConstants.Dialogs] is LuaTable dialogsTable)
             {
-                this.BeginDialogs = this.GetDialogs(dialogsTable, QuestScriptConstants.BeginDialogs);
-                this.AcceptedDialogs = this.GetDialogs(dialogsTable, QuestScriptConstants.BeginYesDialogs);
-                this.DeclinedDialogs = this.GetDialogs(dialogsTable, QuestScriptConstants.BeginNoDialogs);
-                this.CompletedDialogs = this.GetDialogs(dialogsTable, QuestScriptConstants.CompletedDialogs);
-                this.NotFinishedDialogs = this.GetDialogs(dialogsTable, QuestScriptConstants.NotFinishedDialogs);
+                BeginDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginDialogs);
+                AcceptedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginYesDialogs);
+                DeclinedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginNoDialogs);
+                CompletedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.CompletedDialogs);
+                NotFinishedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.NotFinishedDialogs);
             }
         }
 

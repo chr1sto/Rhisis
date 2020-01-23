@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="LocalPosFromIAPacket"/></param>
         public bool Equals(LocalPosFromIAPacket other)
         {
-            return this.LocalPosition == other.LocalPosition && this.IAId == other.IAId;
+            return LocalPosition == other.LocalPosition && IAId == other.IAId;
         }
     }
 }

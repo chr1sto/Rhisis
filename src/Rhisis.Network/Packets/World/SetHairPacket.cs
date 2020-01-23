@@ -36,11 +36,11 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.HairId = packet.Read<byte>();
-            this.R = packet.Read<byte>();
-            this.G = packet.Read<byte>();
-            this.B = packet.Read<byte>();
-            this.UseCoupon = Convert.ToBoolean(packet.Read<int>());
+            HairId = packet.Read<byte>();
+            R = packet.Read<byte>();
+            G = packet.Read<byte>();
+            B = packet.Read<byte>();
+            UseCoupon = Convert.ToBoolean(packet.Read<int>());
         }
     }
 }

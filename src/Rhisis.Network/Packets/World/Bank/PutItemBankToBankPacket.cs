@@ -39,11 +39,11 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="packet">Incoming packet</param>
         public PutItemBankToBankPacket(INetPacketStream packet)
         {
-            this.Flag = packet.Read<byte>();
-            this.DestinationSlot = packet.Read<byte>();
-            this.SourceSlot = packet.Read<byte>();
-            this.Id = packet.Read<byte>();
-            this.ItemNumber = packet.Read<short>();
+            Flag = packet.Read<byte>();
+            DestinationSlot = packet.Read<byte>();
+            SourceSlot = packet.Read<byte>();
+            Id = packet.Read<byte>();
+            ItemNumber = packet.Read<short>();
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="other">Other <see cref="PutItemBankToBankPacket"/></param>
         public bool Equals(PutItemBankToBankPacket other)
         {
-            return this.Flag == other.Flag && this.DestinationSlot == other.DestinationSlot && this.SourceSlot == other.SourceSlot && this.Id == other.Id && this.ItemNumber == other.ItemNumber;
+            return Flag == other.Flag && DestinationSlot == other.DestinationSlot && SourceSlot == other.SourceSlot && Id == other.Id && ItemNumber == other.ItemNumber;
         }
     }
 }

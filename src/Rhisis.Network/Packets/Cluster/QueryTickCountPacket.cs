@@ -8,7 +8,7 @@ namespace Rhisis.Network.Packets.Cluster
 
         public void Deserialize(INetPacketStream packet)
         {
-            this.Time = packet.Read<uint>();
+            Time = packet.Read<uint>();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Rhisis.Network
         /// <param name="header"></param>
         public PacketHandlerAttribute(object header)
         {
-            this.Header = header;
+            Header = header;
         }
     }
 }

@@ -30,10 +30,10 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.UniqueItemId = (packet.Read<int>() >> 16) & 0xFFFF;
-            this.ObjectId = packet.Read<int>();
-            this.Part = packet.Read<int>();
-            this.FlightSpeed = packet.Read<float>();
+            UniqueItemId = (packet.Read<int>() >> 16) & 0xFFFF;
+            ObjectId = packet.Read<int>();
+            Part = packet.Read<int>();
+            FlightSpeed = packet.Read<float>();
         }
     }
 }

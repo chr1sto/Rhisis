@@ -206,10 +206,10 @@ namespace Rhisis.Database.Entities
 
         public DbCharacter()
         {
-            this.Items = new HashSet<DbItem>();
-            this.ReceivedMails = new HashSet<DbMail>();
-            this.SentMails = new HashSet<DbMail>();
-            this.TaskbarShortcuts = new HashSet<DbShortcut>();
+            Items = new HashSet<DbItem>();
+            ReceivedMails = new HashSet<DbMail>();
+            SentMails = new HashSet<DbMail>();
+            TaskbarShortcuts = new HashSet<DbShortcut>();
         }
     }
 }

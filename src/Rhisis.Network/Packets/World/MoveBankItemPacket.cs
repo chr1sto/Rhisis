@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public MoveBankItemPacket(INetPacketStream packet)
         {
-            this.SourceIndex = packet.Read<int>();
-            this.Destinationindex = packet.Read<int>();
+            SourceIndex = packet.Read<int>();
+            Destinationindex = packet.Read<int>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="MoveBankItemPacket"/></param>
         public bool Equals(MoveBankItemPacket other)
         {
-            return this.SourceIndex == other.SourceIndex && this.Destinationindex == other.Destinationindex;
+            return SourceIndex == other.SourceIndex && Destinationindex == other.Destinationindex;
         }
     }
 }

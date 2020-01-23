@@ -22,9 +22,9 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         /// <param name="clusterServer">Cluster server instance.</param>
         public CommonCoreHandlers(ILogger<CommonCoreHandlers> logger, ICorePacketFactory corePacketFactory, IClusterServer clusterServer)
         {
-            this._logger = logger;
-            this._corePacketFactory = corePacketFactory;
-            this._clusterServer = clusterServer;
+            _logger = logger;
+            _corePacketFactory = corePacketFactory;
+            _clusterServer = clusterServer;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         [HandlerAction(CorePacketType.Welcome)]
         public void OnWelcome(IClusterCoreClient client)
         {
-            this._corePacketFactory.SendAuthentication(client, this._clusterServer.ClusterConfiguration);
+            _corePacketFactory.SendAuthentication(client, _clusterServer.ClusterConfiguration);
         }
 
         /// <summary>
@@ -50,17 +50,17 @@ namespace Rhisis.Cluster.CoreClient.Handlers
             switch (authenticationResult)
             {
                 case CoreAuthenticationResultType.Success:
-                    this._logger.LogInformation("Cluster Core client authenticated succesfully.");
+                    _logger.LogInformation("Cluster Core client authenticated succesfully.");
                     return;
                 case CoreAuthenticationResultType.FailedClusterExists:
-                    this._logger.LogCritical("Unable to authenticate Cluster Core client. Reason: an other Cluster server (with the same id) is already connected.");
+                    _logger.LogCritical("Unable to authenticate Cluster Core client. Reason: an other Cluster server (with the same id) is already connected.");
                     break;
                 case CoreAuthenticationResultType.FailedUnknownServer:
-                    this._logger.LogCritical("Unable to authenticate Cluster Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
+                    _logger.LogCritical("Unable to authenticate Cluster Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
                     break;
                 default:
-                    this._logger.LogTrace("Core authentification result: {0}", authenticationResult);
-                    this._logger.LogCritical("Unable to authenticate Cluster Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
+                    _logger.LogTrace("Core authentification result: {0}", authenticationResult);
+                    _logger.LogCritical("Unable to authenticate Cluster Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
                     break;
             }
 
@@ -80,7 +80,7 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         {
             int numberOfWorldServers = packet.Read<int>();
 
-            this._clusterServer.WorldServers.Clear();
+            _clusterServer.WorldServers.Clear();
 
             for (var i = 0; i < numberOfWorldServers; ++i)
             {
@@ -90,15 +90,15 @@ namespace Rhisis.Cluster.CoreClient.Handlers
                 int serverPort = packet.Read<int>();
                 int parentClusterId = packet.Read<int>();
 
-                if (parentClusterId != this._clusterServer.ClusterConfiguration.Id)
+                if (parentClusterId != _clusterServer.ClusterConfiguration.Id)
                 {
-                    this._logger.LogCritical($"Cannot add server '{serverName}' to current cluster. Ids doesn't match.");
+                    _logger.LogCritical($"Cannot add server '{serverName}' to current cluster. Ids doesn't match.");
                     continue;
                 }
 
                 var worldServer = new WorldServerInfo(serverId, serverName, serverHost, serverPort, parentClusterId);
 
-                this._clusterServer.WorldServers.Add(worldServer);
+                _clusterServer.WorldServers.Add(worldServer);
             }
         }
     }

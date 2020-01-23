@@ -54,14 +54,14 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="packet">Incoming packet</param>
         public PartyAddMemberPacket(INetPacketStream packet)
         {
-            this.LeaderId = packet.Read<uint>();
-            this.LeaderLevel = packet.Read<int>();
-            this.LeaderJob = packet.Read<int>();
-            this.LeaderSex = packet.Read<uint>();
-            this.MemberId = packet.Read<uint>();
-            this.MemberLevel = packet.Read<int>();
-            this.MemberJob = packet.Read<int>();
-            this.MemberSex = packet.Read<uint>();
+            LeaderId = packet.Read<uint>();
+            LeaderLevel = packet.Read<int>();
+            LeaderJob = packet.Read<int>();
+            LeaderSex = packet.Read<uint>();
+            MemberId = packet.Read<uint>();
+            MemberLevel = packet.Read<int>();
+            MemberJob = packet.Read<int>();
+            MemberSex = packet.Read<uint>();
         }
 
         /// <summary>
@@ -70,10 +70,10 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="other">Other <see cref="PartyAddMemberPacket"/></param>
         public bool Equals(PartyAddMemberPacket other)
         {
-            return this.LeaderId == other.LeaderId && this.LeaderLevel == other.LeaderLevel &&
-                   this.LeaderJob == other.LeaderJob && this.LeaderSex == other.LeaderSex &&
-                   this.MemberId == other.MemberId && this.MemberLevel == other.MemberLevel &&
-                   this.MemberJob == other.MemberJob && this.MemberSex == other.MemberSex;
+            return LeaderId == other.LeaderId && LeaderLevel == other.LeaderLevel &&
+                   LeaderJob == other.LeaderJob && LeaderSex == other.LeaderSex &&
+                   MemberId == other.MemberId && MemberLevel == other.MemberLevel &&
+                   MemberJob == other.MemberJob && MemberSex == other.MemberSex;
         }
     }
 }

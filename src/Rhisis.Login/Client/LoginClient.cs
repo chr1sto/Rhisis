@@ -23,7 +23,7 @@ namespace Rhisis.Login.Client
         public string Username { get; private set; }
 
         /// <inheritdoc />
-        public bool IsConnected => !string.IsNullOrEmpty(this.Username);
+        public bool IsConnected => !string.IsNullOrEmpty(Username);
 
         /// <summary>
         /// Creates a new <see cref="LoginClient"/> instance.
@@ -31,7 +31,7 @@ namespace Rhisis.Login.Client
         public LoginClient(Socket socketConnection)
             : base(socketConnection)
         {
-            this.SessionId = RandomHelper.GenerateSessionKey();
+            SessionId = RandomHelper.GenerateSessionKey();
         }
 
         /// <summary>
@@ -43,33 +43,33 @@ namespace Rhisis.Login.Client
         /// <param name="loginPacketFactory">Login packet factory.</param>
         public void Initialize(ILoginServer loginServer, ILogger<LoginClient> logger, IHandlerInvoker handlerInvoker, ILoginPacketFactory loginPacketFactory)
         {
-            this._loginServer = loginServer;
-            this._logger = logger;
-            this._handlerInvoker = handlerInvoker;
+            _loginServer = loginServer;
+            _logger = logger;
+            _handlerInvoker = handlerInvoker;
 
-            loginPacketFactory.SendWelcome(this, this.SessionId);
+            loginPacketFactory.SendWelcome(this, SessionId);
         }
 
         /// <inheritdoc />
         public void Disconnect()
         {
-            this._loginServer.DisconnectClient(this.Id);
-            this.Dispose();
+            _loginServer.DisconnectClient(Id);
+            Dispose();
         }
 
         /// <inheritdoc />
         public void SetClientUsername(string username)
         {
-            if (!string.IsNullOrEmpty(this.Username))
+            if (!string.IsNullOrEmpty(Username))
                 throw new InvalidOperationException("Client username already set.");
 
-            this.Username = username;
+            Username = username;
         }
 
         /// <inheritdoc />
         public override void Send(INetPacketStream packet)
         {
-            this._logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packet.Buffer, 5), this.Socket.RemoteEndPoint);
+            _logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packet.Buffer, 5), Socket.RemoteEndPoint);
             base.Send(packet);
         }
 
@@ -80,7 +80,7 @@ namespace Rhisis.Login.Client
 
             if (Socket == null)
             {
-                this._logger.LogTrace("Skip to handle login packet. Reason: client is not connected.");
+                _logger.LogTrace("Skip to handle login packet. Reason: client is not connected.");
                 return;
             }
 
@@ -88,29 +88,29 @@ namespace Rhisis.Login.Client
             {
                 packetHeaderNumber = packet.Read<uint>();
 
-                this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.Socket.RemoteEndPoint);
-                this._handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
+                _logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, Socket.RemoteEndPoint);
+                _handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentException)
             {
                 if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
                 {
-                    this._logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.",
+                    _logger.LogWarning("Received an unimplemented Login packet {0} (0x{1}) from {2}.",
                         Enum.GetName(typeof(PacketType), packetHeaderNumber),
                         packetHeaderNumber.ToString("X2"),
-                        this.Socket.RemoteEndPoint);
+                        Socket.RemoteEndPoint);
                 }
                 else
                 {
-                    this._logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", 
+                    _logger.LogWarning("Received an unknown Login packet 0x{0} from {1}.", 
                         packetHeaderNumber.ToString("X2"), 
-                        this.Socket.RemoteEndPoint);
+                        Socket.RemoteEndPoint);
                 }
             }
             catch (Exception exception)
             {
-                this._logger.LogError(exception, $"An error occured while handling a login packet.");
-                this._logger.LogDebug(exception.InnerException?.StackTrace);
+                _logger.LogError(exception, $"An error occured while handling a login packet.");
+                _logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
     }

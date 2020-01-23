@@ -75,18 +75,18 @@ namespace Rhisis.Database.Entities
 
         public DbMail(DbCharacter sender, DbCharacter receiver, uint gold, DbItem item, short itemQuantity, string title, string text, bool hasBeenRead, bool hasReceivedItem, bool hasReceivedGold, bool isDeleted, DateTime createTime)
         {
-            this.Sender = sender;
-            this.Receiver = receiver;
-            this.Gold = gold;
-            this.Item = item;
-            this.ItemQuantity = itemQuantity;
-            this.Title = title;
-            this.Text = text;
-            this.HasBeenRead = hasBeenRead;
-            this.IsDeleted = isDeleted;
-            this.HasReceivedItem = hasReceivedItem;
-            this.HasReceivedGold = hasReceivedGold;
-            this.CreateTime = createTime;
+            Sender = sender;
+            Receiver = receiver;
+            Gold = gold;
+            Item = item;
+            ItemQuantity = itemQuantity;
+            Title = title;
+            Text = text;
+            HasBeenRead = hasBeenRead;
+            IsDeleted = isDeleted;
+            HasReceivedItem = hasReceivedItem;
+            HasReceivedGold = hasReceivedGold;
+            CreateTime = createTime;
         }
     }
 }

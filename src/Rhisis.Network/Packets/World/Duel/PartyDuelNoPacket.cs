@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World.Duel
         /// <param name="packet">Incoming packet</param>
         public PartyDuelNoPacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
+            PlayerId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World.Duel
         /// <param name="other">Other <see cref="PartyDuelNoPacket"/></param>
         public bool Equals(PartyDuelNoPacket other)
         {
-            return this.PlayerId == other.PlayerId;
+            return PlayerId == other.PlayerId;
         }
     }
 }

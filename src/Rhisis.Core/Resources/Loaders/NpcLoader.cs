@@ -29,11 +29,11 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="worldConfiguration">World configuration.</param>
         public NpcLoader(ILogger<NpcLoader> logger, IMemoryCache cache, IGameResources gameResources, IOptions<WorldConfiguration> worldConfiguration)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._gameResources = gameResources;
-            this._configuration = worldConfiguration.Value;
-            this._texts = this._cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
+            _logger = logger;
+            _cache = cache;
+            _gameResources = gameResources;
+            _configuration = worldConfiguration.Value;
+            _texts = _cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
         }
 
         /// <inheritdoc />
@@ -62,7 +62,7 @@ namespace Rhisis.Core.Resources.Loaders
                             {
                                 if (instruction.Parameters.Count > 0)
                                 {
-                                    npcName = this._texts[instruction.Parameters.First().ToString()];
+                                    npcName = _texts[instruction.Parameters.First().ToString()];
                                 }
                             }
                         }
@@ -70,10 +70,10 @@ namespace Rhisis.Core.Resources.Loaders
                         //      + constants for statement (like SetName)
 
                         // We gets shop and dialog of this npc.
-                        this._gameResources.Shops.TryGetValue(npcId, out ShopData shop);
+                        _gameResources.Shops.TryGetValue(npcId, out ShopData shop);
 
                         DialogData dialogData = null;
-                        if (this._gameResources.Dialogs.TryGetValue(this._configuration.Language, out DialogSet dialogSet))
+                        if (_gameResources.Dialogs.TryGetValue(_configuration.Language, out DialogSet dialogSet))
                         {
                             dialogSet.TryGetValue(npcId, out dialogData);
                         }
@@ -83,7 +83,7 @@ namespace Rhisis.Core.Resources.Loaders
                         if (npcData.ContainsKey(npc.Id))
                         {
                             npcData[npc.Id] = npc;
-                            this._logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "NPC", npc.Id, "already declared");
+                            _logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "NPC", npc.Id, "already declared");
                         }
                         else
                         {
@@ -93,8 +93,8 @@ namespace Rhisis.Core.Resources.Loaders
                 }
             }
 
-            this._cache.Set(GameResourcesConstants.Npcs, npcData);
-            this._logger.LogInformation($"-> {npcData.Count} NPCs loaded.");
+            _cache.Set(GameResourcesConstants.Npcs, npcData);
+            _logger.LogInformation($"-> {npcData.Count} NPCs loaded.");
         }
     }
 }

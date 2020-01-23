@@ -18,15 +18,15 @@ namespace Rhisis.Network
 
             public PacketMethodHandler(MethodInfo method, PacketHandlerAttribute attribute)
             {
-                this.Method = method;
-                this.Attribute = attribute;
+                Method = method;
+                Attribute = attribute;
             }
 
             public bool Equals(PacketMethodHandler other)
             {
-                return this.Attribute.Header == other.Attribute.Header
-                    && this.Attribute.TypeId == other.Attribute.TypeId
-                    && this.Method == other.Method;
+                return Attribute.Header == other.Attribute.Header
+                    && Attribute.TypeId == other.Attribute.TypeId
+                    && Method == other.Method;
             }
         }
 

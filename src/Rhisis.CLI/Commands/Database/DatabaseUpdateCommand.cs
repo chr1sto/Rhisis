@@ -27,7 +27,7 @@ namespace Rhisis.CLI.Commands.Database
         /// <param name="databaseFactory">Database factory.</param>
         public DatabaseUpdateCommand(DatabaseFactory databaseFactory)
         {
-            this._databaseFactory = databaseFactory;
+            _databaseFactory = databaseFactory;
         }
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace Rhisis.CLI.Commands.Database
         {
             try
             {
-                if (string.IsNullOrEmpty(this.DatabaseConfigurationFile))
-                    this.DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
+                if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                    DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
                 DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
                 if (dbConfig is null)
@@ -47,7 +47,7 @@ namespace Rhisis.CLI.Commands.Database
                     return;
                 }
 
-                using (IDatabase database = this._databaseFactory.GetDatabase(dbConfig))
+                using (IDatabase database = _databaseFactory.GetDatabase(dbConfig))
                 {
                     Console.WriteLine("Starting database structure update...");
                     DatabaseContext rhisisDbContext = database.DatabaseContext;

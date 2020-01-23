@@ -31,10 +31,10 @@ namespace Rhisis.Network.Packets.World
         /// <inhertidoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.ItemType = packet.Read<uint>();
-            this.ItemUniqueId = packet.Read<int>();
-            this.ItemQuantity = packet.Read<short>();
-            this.Position = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            ItemType = packet.Read<uint>();
+            ItemUniqueId = packet.Read<int>();
+            ItemQuantity = packet.Read<short>();
+            Position = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
         }
     }
 }

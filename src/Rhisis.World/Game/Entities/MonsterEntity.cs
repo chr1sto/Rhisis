@@ -53,13 +53,13 @@ namespace Rhisis.World.Game.Entities
         /// <param name="context"></param>
         public MonsterEntity()
         {
-            this.Moves = new MovableComponent();
-            this.Timers = new TimerComponent();
-            this.Follow = new FollowComponent();
-            this.Interaction = new InteractionComponent();
-            this.Battle = new BattleComponent();
-            this.Health = new HealthComponent();
-            this.Attributes = new AttributeComponent();
+            Moves = new MovableComponent();
+            Timers = new TimerComponent();
+            Follow = new FollowComponent();
+            Interaction = new InteractionComponent();
+            Battle = new BattleComponent();
+            Health = new HealthComponent();
+            Attributes = new AttributeComponent();
         }
     }
 }

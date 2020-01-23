@@ -19,25 +19,25 @@ namespace Rhisis.World.Game.Maps
         /// </summary>
         protected MapContext()
         {
-            this._entities = new ConcurrentDictionary<uint, IWorldEntity>();
+            _entities = new ConcurrentDictionary<uint, IWorldEntity>();
         }
 
         /// <inheritdoc />
         public virtual void AddEntity(IWorldEntity entityToAdd)
         {
-            this._entities.TryAdd(entityToAdd.Id, entityToAdd);
+            _entities.TryAdd(entityToAdd.Id, entityToAdd);
         }
 
         /// <inheritdoc />
         public virtual void DeleteEntity(IWorldEntity entityToDelete)
         {
-            this._entities.TryRemove(entityToDelete.Id, out _);
+            _entities.TryRemove(entityToDelete.Id, out _);
         }
 
         /// <inheritdoc />
         public TEntity GetEntity<TEntity>(uint id) where TEntity : IWorldEntity
         {
-            return this._entities.TryGetValue(id, out IWorldEntity entity) ? (TEntity)entity : default;
+            return _entities.TryGetValue(id, out IWorldEntity entity) ? (TEntity)entity : default;
         }
     }
 }

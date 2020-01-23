@@ -37,6 +37,6 @@ namespace Rhisis.World.Packets.Internal
 
         /// <inheritdoc />
         public void SendSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect, bool sfxNoFollow)
-            => this.SendSpecialEffect(entity, (int)specialEffect, sfxNoFollow);
+            => SendSpecialEffect(entity, (int)specialEffect, sfxNoFollow);
     }
 }

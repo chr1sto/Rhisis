@@ -35,11 +35,11 @@ namespace Rhisis.World.Game.Maps.Regions
         public MapRevivalRegion(int x, int z, int width, int length, int mapId, string key, Vector3 position, bool isChao, bool targetRevivalKey)
             : base(x, z, width, length)
         {
-            this.MapId = mapId;
-            this.Key = key;
-            this.RevivalPosition = position;
-            this.IsChaoRegion = isChao;
-            this.TargetRevivalKey = targetRevivalKey;
+            MapId = mapId;
+            Key = key;
+            RevivalPosition = position;
+            IsChaoRegion = isChao;
+            TargetRevivalKey = targetRevivalKey;
         }
 
         /// <summary>

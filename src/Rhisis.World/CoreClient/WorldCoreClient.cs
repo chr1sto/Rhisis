@@ -24,7 +24,7 @@ namespace Rhisis.World.CoreClient
         public CoreConfiguration CoreClientConfiguration { get; }
 
         /// <inheritdoc />
-        public string RemoteEndPoint => this.Socket.RemoteEndPoint.ToString();
+        public string RemoteEndPoint => Socket.RemoteEndPoint.ToString();
 
         /// <summary>
         /// Creates a new <see cref="WorldCoreClient"/> instance.
@@ -35,23 +35,23 @@ namespace Rhisis.World.CoreClient
         /// <param name="handlerInvoker">Handler invoker.</param>
         public WorldCoreClient(ILogger<WorldCoreClient> logger, IOptions<WorldConfiguration> worldConfiguration, IOptions<CoreConfiguration> coreConfiguration, IHandlerInvoker handlerInvoker)
         {
-            this._logger = logger;
-            this.WorldServerConfiguration = worldConfiguration.Value;
-            this.CoreClientConfiguration = coreConfiguration.Value;
-            this._handlerInvoker = handlerInvoker;
-            this.ClientConfiguration = new NetClientConfiguration(this.CoreClientConfiguration.Host, this.CoreClientConfiguration.Port, BufferSize);
+            _logger = logger;
+            WorldServerConfiguration = worldConfiguration.Value;
+            CoreClientConfiguration = coreConfiguration.Value;
+            _handlerInvoker = handlerInvoker;
+            ClientConfiguration = new NetClientConfiguration(CoreClientConfiguration.Host, CoreClientConfiguration.Port, BufferSize);
         }
 
         /// <inheritdoc />
         protected override void OnConnected()
         {
-            this._logger.LogInformation($"{nameof(WorldCoreClient)} connected to core server.");
+            _logger.LogInformation($"{nameof(WorldCoreClient)} connected to core server.");
         }
 
         /// <inheritdoc />
         protected override void OnDisconnected()
         {
-            this._logger.LogInformation($"{nameof(WorldCoreClient)} disconnected from core server.");
+            _logger.LogInformation($"{nameof(WorldCoreClient)} disconnected from core server.");
 
             // TODO: try to reconnect.
         }
@@ -67,28 +67,28 @@ namespace Rhisis.World.CoreClient
         {
             uint packetHeaderNumber = 0;
 
-            if (this.Socket == null)
+            if (Socket == null)
             {
-                this._logger.LogError($"Skip to handle core packet from server. Reason: {nameof(WorldCoreClient)} is not connected.");
+                _logger.LogError($"Skip to handle core packet from server. Reason: {nameof(WorldCoreClient)} is not connected.");
                 return;
             }
 
             try
             {
                 packetHeaderNumber = packet.Read<uint>();
-                this._handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
+                _handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentNullException)
             {
                 if (Enum.IsDefined(typeof(CorePacketType), packetHeaderNumber))
-                    this._logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(CorePacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                    _logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(CorePacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), RemoteEndPoint);
                 else
-                    this._logger.LogWarning("[SECURITY] Received an unknown Core packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.RemoteEndPoint);
+                    _logger.LogWarning("[SECURITY] Received an unknown Core packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), RemoteEndPoint);
             }
             catch (Exception exception)
             {
-                this._logger.LogError(exception, $"An error occured while handling a core packet.");
-                this._logger.LogDebug(exception.InnerException?.StackTrace);
+                _logger.LogError(exception, $"An error occured while handling a core packet.");
+                _logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
     }

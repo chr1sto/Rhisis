@@ -40,8 +40,8 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public Item this[int slot]
         {
-            get => this.Items[slot];
-            set => this.Items[slot] = value;
+            get => Items[slot];
+            set => Items[slot] = value;
         }
 
         /// <summary>
@@ -56,10 +56,10 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public ItemContainerComponent(int maxCapacity, int maxStorageCapacity)
         {
-            this.MaxCapacity = maxCapacity;
-            this.MaxStorageCapacity = maxStorageCapacity;
-            this.Items = new List<Item>(new Item[this.MaxCapacity]);
-            this.Reset();
+            MaxCapacity = maxCapacity;
+            MaxStorageCapacity = maxStorageCapacity;
+            Items = new List<Item>(new Item[MaxCapacity]);
+            Reset();
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace Rhisis.World.Game.Components
         {
             var count = 0;
 
-            for (var i = 0; i < this.MaxStorageCapacity; i++)
+            for (var i = 0; i < MaxStorageCapacity; i++)
             {
-                if (this.Items[i] != null && this.Items[i].Slot != -1)
+                if (Items[i] != null && Items[i].Slot != -1)
                     count++;
             }
 
@@ -84,21 +84,21 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="uniqueId"></param>
         /// <returns></returns>
-        public Item GetItem(int uniqueId) => this.Items.FirstOrDefault(x => x.UniqueId == uniqueId);
+        public Item GetItem(int uniqueId) => Items.FirstOrDefault(x => x.UniqueId == uniqueId);
 
         /// <summary>
         /// Gets the item by the given predicate
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public Item GetItem(Func<Item, bool> predicate) => this.Items.FirstOrDefault(predicate);
+        public Item GetItem(Func<Item, bool> predicate) => Items.FirstOrDefault(predicate);
 
         /// <summary>
         /// Gets the items matching the predicate.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns>Collection of <see cref="Item"/>.</returns>
-        public IEnumerable<Item> GetItems(Func<Item, bool> predicate) => this.Items.Where(predicate);
+        public IEnumerable<Item> GetItems(Func<Item, bool> predicate) => Items.Where(predicate);
 
         /// <summary>
         /// Gets the item by item id
@@ -112,7 +112,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="itemId">Item id.</param>
         /// <returns>Colletion of <see cref="Item"/>.</returns>
-        public IEnumerable<Item> GetItemsById(int itemId) => this.GetItems(x => x.Id == itemId);
+        public IEnumerable<Item> GetItemsById(int itemId) => GetItems(x => x.Id == itemId);
 
         /// <summary>
         /// Gets whether the container contains at least one item of the specified item id.
@@ -121,7 +121,7 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public bool HasItem(int itemId)
         {
-            var item = this.GetItemById(itemId);
+            var item = GetItemById(itemId);
 
             return item == null ? false : item.Quantity > 0;
         }
@@ -132,9 +132,9 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public int GetAvailableSlot()
         {
-            for (var i = 0; i < this.MaxStorageCapacity; i++)
+            for (var i = 0; i < MaxStorageCapacity; i++)
             {
-                if (this.Items[i] != null && this.Items[i].Slot == -1)
+                if (Items[i] != null && Items[i].Slot == -1)
                     return i;
             }
 
@@ -145,7 +145,7 @@ namespace Rhisis.World.Game.Components
         /// Check if there is any available slots.
         /// </summary>
         /// <returns></returns>
-        public bool HasAvailableSlots() => this.GetAvailableSlot() != -1;
+        public bool HasAvailableSlots() => GetAvailableSlot() != -1;
 
         /// <summary>
         /// Checks if the given slot is available.
@@ -159,7 +159,7 @@ namespace Rhisis.World.Game.Components
                 throw new ArgumentOutOfRangeException(nameof(slot), $"The slot '{slot}' is out of range.");
             }
 
-            return this.Items[slot] != null && this.Items[slot].UniqueId != -1;
+            return Items[slot] != null && Items[slot].UniqueId != -1;
         }
 
         /// <summary>
@@ -172,14 +172,14 @@ namespace Rhisis.World.Game.Components
             if (item?.Data == null)
                 return false;
 
-            int availableSlot = this.GetAvailableSlot();
+            int availableSlot = GetAvailableSlot();
 
             if (availableSlot < 0)
                 return false;
 
             item.Slot = availableSlot;
-            item.UniqueId = this.Items[availableSlot].UniqueId;
-            this.Items[availableSlot] = item;
+            item.UniqueId = Items[availableSlot].UniqueId;
+            Items[availableSlot] = item;
 
             return true;
         }
@@ -190,22 +190,22 @@ namespace Rhisis.World.Game.Components
         /// <param name="packet"></param>
         public void Serialize(INetPacketStream packet)
         {
-            for (var i = 0; i < this.MaxCapacity; ++i)
-                packet.Write(this.Items[i].UniqueId);
+            for (var i = 0; i < MaxCapacity; ++i)
+                packet.Write(Items[i].UniqueId);
 
-            packet.Write((byte)this.Items.Count(x => x.Id != -1));
+            packet.Write((byte)Items.Count(x => x.Id != -1));
 
-            for (var i = 0; i < this.MaxCapacity; ++i)
+            for (var i = 0; i < MaxCapacity; ++i)
             {
-                if (this.Items[i].Id > 0)
+                if (Items[i].Id > 0)
                 {
-                    packet.Write((byte)this.Items[i].Slot);
-                    this.Items[i].Serialize(packet);
+                    packet.Write((byte)Items[i].Slot);
+                    Items[i].Serialize(packet);
                 }
             }
 
-            for (var i = 0; i < this.MaxCapacity; ++i)
-                packet.Write(this.Items[i].UniqueId);
+            for (var i = 0; i < MaxCapacity; ++i)
+                packet.Write(Items[i].UniqueId);
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool ItemHasCoolTime(Item item) => this.GetItemCoolTimeGroup(item).HasValue;
+        public bool ItemHasCoolTime(Item item) => GetItemCoolTimeGroup(item).HasValue;
 
         /// <summary>
         /// Check if the given item is a cooltime item and can be used.
@@ -240,9 +240,9 @@ namespace Rhisis.World.Game.Components
         /// <returns>Returns true if the item with cooltime can be used; false otherwise.</returns>
         public bool CanUseItemWithCoolTime(Item item)
         {
-            int? group = this.GetItemCoolTimeGroup(item);
+            int? group = GetItemCoolTimeGroup(item);
 
-            return group.HasValue && this._itemsCoolTimes[group.Value] < Time.GetElapsedTime();
+            return group.HasValue && _itemsCoolTimes[group.Value] < Time.GetElapsedTime();
         }
 
         /// <summary>
@@ -252,10 +252,10 @@ namespace Rhisis.World.Game.Components
         /// <param name="cooltime">Cooltime.</param>
         public void SetCoolTime(Item item, int cooltime)
         {
-            int? group = this.GetItemCoolTimeGroup(item);
+            int? group = GetItemCoolTimeGroup(item);
 
             if (group.HasValue)
-                this._itemsCoolTimes[group.Value] = Time.GetElapsedTime() + cooltime;
+                _itemsCoolTimes[group.Value] = Time.GetElapsedTime() + cooltime;
         }
 
         /// <summary>
@@ -263,9 +263,9 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public void Reset()
         {
-            for (var i = 0; i < this.MaxCapacity; i++)
+            for (var i = 0; i < MaxCapacity; i++)
             {
-                this.Items[i] = new Item
+                Items[i] = new Item
                 {
                     UniqueId = i
                 };

@@ -18,8 +18,8 @@ namespace Rhisis.World.Systems.SpecialEffect
         /// <param name="specialEffectPacketFactory"></param>
         public SpecialEffectSystem(ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
-            this._specialEffectPacketFactory = specialEffectPacketFactory;
-            this._moverPacketFactory = moverPacketFactory;
+            _specialEffectPacketFactory = specialEffectPacketFactory;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
@@ -34,13 +34,13 @@ namespace Rhisis.World.Systems.SpecialEffect
                 entity.Object.StateMode &= ~StateMode.BASEMOTION_MODE;
             }
 
-            this._moverPacketFactory.SendStateMode(entity, motionState, item);
+            _moverPacketFactory.SendStateMode(entity, motionState, item);
         }
 
         /// <inheritdoc />
         public void StartSpecialEffect(IWorldEntity entity, DefineSpecialEffects specialEffect, bool noFollowSfx)
         {
-            this._specialEffectPacketFactory.SendSpecialEffect(entity, specialEffect, noFollowSfx);
+            _specialEffectPacketFactory.SendSpecialEffect(entity, specialEffect, noFollowSfx);
         }
     }
 }

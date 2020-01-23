@@ -20,7 +20,7 @@ namespace Rhisis.World.Handlers
         /// <param name="inventorySystem">Inventory System.</param>
         public InventoryHandler(IInventorySystem inventorySystem)
         {
-            this._inventorySystem = inventorySystem;
+            _inventorySystem = inventorySystem;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.MOVEITEM)]
         public void OnMoveItem(IWorldClient client, MoveItemPacket packet)
         {
-            this._inventorySystem.MoveItem(client.Player, packet.SourceSlot, packet.DestinationSlot);
+            _inventorySystem.MoveItem(client.Player, packet.SourceSlot, packet.DestinationSlot);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.DOEQUIP)]
         public void OnDoEquip(IWorldClient client, EquipItemPacket packet)
         {
-            this._inventorySystem.EquipItem(client.Player, packet.UniqueId, packet.Part);
+            _inventorySystem.EquipItem(client.Player, packet.UniqueId, packet.Part);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.DROPITEM)]
         public void OnDropItem(IWorldClient client, DropItemPacket packet)
         {
-            this._inventorySystem.DropItem(client.Player, packet.ItemUniqueId, packet.ItemQuantity);
+            _inventorySystem.DropItem(client.Player, packet.ItemUniqueId, packet.ItemQuantity);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.REMOVEINVENITEM)]
         public void OnDeleteItem(IWorldClient client, RemoveInventoryItemPacket packet)
         {
-            this._inventorySystem.DeleteItem(client.Player, packet.ItemUniqueId, packet.ItemQuantity);
+            _inventorySystem.DeleteItem(client.Player, packet.ItemUniqueId, packet.ItemQuantity);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.DOUSEITEM)]
         public void OnUseItem(IWorldClient client, DoUseItemPacket packet)
         {
-            this._inventorySystem.UseItem(client.Player, packet.UniqueItemId, packet.Part);
+            _inventorySystem.UseItem(client.Player, packet.UniqueItemId, packet.Part);
         }
     }
 }

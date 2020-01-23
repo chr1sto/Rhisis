@@ -34,20 +34,20 @@ namespace Rhisis.Network.Packets.Cluster
 
         public void Deserialize(INetPacketStream packet)
         {
-            this.Username = packet.Read<string>();
-            this.Password = packet.Read<string>();
-            this.Slot = packet.Read<byte>();
-            this.Name = packet.Read<string>();
-            this.FaceId = packet.Read<byte>();
-            this.CostumeId = packet.Read<byte>();
-            this.SkinSet = packet.Read<byte>();
-            this.HairMeshId = packet.Read<byte>();
-            this.HairColor = packet.Read<uint>();
-            this.Gender = packet.Read<byte>();
-            this.Job = packet.Read<byte>();
-            this.HeadMesh = packet.Read<byte>();
-            this.BankPassword = packet.Read<int>();
-            this.AuthenticationKey = packet.Read<int>();
+            Username = packet.Read<string>();
+            Password = packet.Read<string>();
+            Slot = packet.Read<byte>();
+            Name = packet.Read<string>();
+            FaceId = packet.Read<byte>();
+            CostumeId = packet.Read<byte>();
+            SkinSet = packet.Read<byte>();
+            HairMeshId = packet.Read<byte>();
+            HairColor = packet.Read<uint>();
+            Gender = packet.Read<byte>();
+            Job = packet.Read<byte>();
+            HeadMesh = packet.Read<byte>();
+            BankPassword = packet.Read<int>();
+            AuthenticationKey = packet.Read<int>();
         }
     }
 }

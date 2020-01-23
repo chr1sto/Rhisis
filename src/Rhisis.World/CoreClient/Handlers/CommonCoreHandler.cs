@@ -20,8 +20,8 @@ namespace Rhisis.World.CoreClient.Handlers
         /// <param name="corePacketFactory">Core packet factory.</param>
         public CommonCoreHandler(ILogger<CommonCoreHandler> logger, ICorePacketFactory corePacketFactory)
         {
-            this._logger = logger;
-            this._corePacketFactory = corePacketFactory;
+            _logger = logger;
+            _corePacketFactory = corePacketFactory;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Rhisis.World.CoreClient.Handlers
         [HandlerAction(CorePacketType.Welcome)]
         public void OnWelcome(IWorldCoreClient client, INetPacketStream _)
         {
-            this._corePacketFactory.SendAuthentication(client, client.WorldServerConfiguration);
+            _corePacketFactory.SendAuthentication(client, client.WorldServerConfiguration);
         }
 
         /// <summary>
@@ -48,17 +48,17 @@ namespace Rhisis.World.CoreClient.Handlers
             switch (authenticationResult)
             {
                 case CoreAuthenticationResultType.Success:
-                    this._logger.LogInformation("World Core client authenticated succesfully.");
+                    _logger.LogInformation("World Core client authenticated succesfully.");
                     return;
                 case CoreAuthenticationResultType.FailedClusterExists:
-                    this._logger.LogCritical("Unable to authenticate World Core client. Reason: an other Cluster server (with the same id) is already connected.");
+                    _logger.LogCritical("Unable to authenticate World Core client. Reason: an other Cluster server (with the same id) is already connected.");
                     break;
                 case CoreAuthenticationResultType.FailedUnknownServer:
-                    this._logger.LogCritical("Unable to authenticate World Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
+                    _logger.LogCritical("Unable to authenticate World Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
                     break;
                 default:
-                    this._logger.LogTrace("Core authentification result: {0}", authenticationResult);
-                    this._logger.LogCritical("Unable to authenticate World Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
+                    _logger.LogTrace("Core authentification result: {0}", authenticationResult);
+                    _logger.LogCritical("Unable to authenticate World Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
                     break;
             }
 

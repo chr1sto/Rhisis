@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ScriptAddGoldPacket(INetPacketStream packet)
         {
-            this.Gold = packet.Read<int>();
+            Gold = packet.Read<int>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ScriptAddGoldPacket"/></param>
         public bool Equals(ScriptAddGoldPacket other)
         {
-            return this.Gold == other.Gold;
+            return Gold == other.Gold;
         }
     }
 }

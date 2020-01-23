@@ -25,9 +25,9 @@ namespace Rhisis.World.Systems.Chat
         /// <param name="chatPacketFactory">Chat packet factory.</param>
         public ChatSystem(ILogger<ChatSystem> logger, IChatCommandManager chatCommandManager, IChatPacketFactory chatPacketFactory)
         {
-            this._logger = logger;
-            this._chatCommandManager = chatCommandManager;
-            this._chatPacketFactory = chatPacketFactory;
+            _logger = logger;
+            _chatCommandManager = chatCommandManager;
+            _chatPacketFactory = chatPacketFactory;
         }
 
         /// <inheritdoc />
@@ -40,8 +40,8 @@ namespace Rhisis.World.Systems.Chat
 
             if (chatMessage.StartsWith(ChatCommandPrefix))
             {
-                (string, string[]) commandInfo = this.GetCommandParameters(chatMessage);
-                IChatCommand chatCommand = this._chatCommandManager.GetChatCommand(commandInfo.Item1, player.PlayerData.Authority);
+                (string, string[]) commandInfo = GetCommandParameters(chatMessage);
+                IChatCommand chatCommand = _chatCommandManager.GetChatCommand(commandInfo.Item1, player.PlayerData.Authority);
 
                 if (chatCommand == null)
                 {
@@ -52,7 +52,7 @@ namespace Rhisis.World.Systems.Chat
             }
             else
             {
-                this._chatPacketFactory.SendChat(player, chatMessage);
+                _chatPacketFactory.SendChat(player, chatMessage);
             }
         }
 

@@ -10,9 +10,9 @@
 
         public BaseServerInfo(int id, string host, string name)
         {
-            this.Id = id;
-            this.Host = host;
-            this.Name = name;
+            Id = id;
+            Host = host;
+            Name = name;
         }
     }
 }

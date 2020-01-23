@@ -22,28 +22,28 @@ namespace Rhisis.World.Systems.Experience
         /// <param name="playerPacketFactory">Player packet factory.</param>
         public ExperienceSystem(IGameResources gameResources, IMoverPacketFactory moverPacketFactory, IPlayerPacketFactory playerPacketFactory)
         {
-            this._gameResources = gameResources;
-            this._moverPacketFactory = moverPacketFactory;
-            this._playerPacketFactory = playerPacketFactory;
+            _gameResources = gameResources;
+            _moverPacketFactory = moverPacketFactory;
+            _playerPacketFactory = playerPacketFactory;
         }
 
         /// <inheritdoc />
         public void GiveExeperience(IPlayerEntity player, long experience)
         {
-            var exp = this.CalculateExtraExperience(player, experience);
+            var exp = CalculateExtraExperience(player, experience);
 
             // TODO: experience to party
 
-            if (this.GiveExperienceToPlayer(player, exp))
+            if (GiveExperienceToPlayer(player, exp))
             {
-                this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-                this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-                this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
-                this._playerPacketFactory.SendPlayerSetLevel(player, player.Object.Level);
-                this._playerPacketFactory.SendPlayerStatsPoints(player);
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+                _playerPacketFactory.SendPlayerSetLevel(player, player.Object.Level);
+                _playerPacketFactory.SendPlayerStatsPoints(player);
             }
 
-            this._playerPacketFactory.SendPlayerExperience(player);
+            _playerPacketFactory.SendPlayerExperience(player);
             // TODO: send packet to friends, messenger, guild, couple, party, etc...
         }
 
@@ -56,17 +56,17 @@ namespace Rhisis.World.Systems.Experience
         private bool GiveExperienceToPlayer(IPlayerEntity player, long experience)
         {
             var nextLevel = player.Object.Level + 1;
-            CharacterExpTableData nextLevelExpTable = this._gameResources.ExpTables.GetCharacterExp(nextLevel);
+            CharacterExpTableData nextLevelExpTable = _gameResources.ExpTables.GetCharacterExp(nextLevel);
             player.PlayerData.Experience += experience;
 
             if (player.PlayerData.Experience >= nextLevelExpTable.Exp) // Level up
             {
                 var remainingExp = player.PlayerData.Experience - nextLevelExpTable.Exp;
 
-                this.ProcessLevelUp(player, (ushort)nextLevelExpTable.Gp);
+                ProcessLevelUp(player, (ushort)nextLevelExpTable.Gp);
 
                 if (remainingExp > 0)
-                    this.GiveExperienceToPlayer(player, remainingExp); // Multiple level up
+                    GiveExperienceToPlayer(player, remainingExp); // Multiple level up
 
                 return true;
             }

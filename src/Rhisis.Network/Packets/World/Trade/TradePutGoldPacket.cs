@@ -12,7 +12,7 @@ namespace Rhisis.Network.Packets.World.Trade
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.Gold = packet.Read<int>();
+            Gold = packet.Read<int>();
         }
     }
 }

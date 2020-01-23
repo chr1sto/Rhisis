@@ -26,10 +26,10 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="texts">Texts data</param>
         public MoverLoader(ILogger<MoverLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
-            this._texts = this._cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
+            _logger = logger;
+            _cache = cache;
+            _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            _texts = _cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
         }
 
         /// <inheritdoc />
@@ -40,19 +40,19 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (!File.Exists(propMoverPath))
             {
-                this._logger.LogWarning("Unable to load movers. Reason: cannot find '{0}' file.", propMoverPath);
+                _logger.LogWarning("Unable to load movers. Reason: cannot find '{0}' file.", propMoverPath);
                 return;
             }
 
             if (!File.Exists(propMoverExPath))
             {
-                this._logger.LogWarning("Unable to load movers extras. Reason: cannot find '{0}' file.", propMoverExPath);
+                _logger.LogWarning("Unable to load movers extras. Reason: cannot find '{0}' file.", propMoverExPath);
                 return;
             }
 
             var moversData = new ConcurrentDictionary<int, MoverData>();
 
-            using (var moversPropFile = new ResourceTableFile(propMoverPath, 1, this._defines, this._texts))
+            using (var moversPropFile = new ResourceTableFile(propMoverPath, 1, _defines, _texts))
             {
                 var movers = moversPropFile.GetRecords<MoverData>();
 
@@ -61,7 +61,7 @@ namespace Rhisis.Core.Resources.Loaders
                     if (moversData.ContainsKey(mover.Id))
                     {
                         moversData[mover.Id] = mover;
-                        this._logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "Mover", mover.Id, "already declared");
+                        _logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "Mover", mover.Id, "already declared");
                     }
                     else
                         moversData.TryAdd(mover.Id, mover);
@@ -75,11 +75,11 @@ namespace Rhisis.Core.Resources.Loaders
                     if (!(statement is Block moverBlock))
                         continue;
 
-                    if (this._defines.TryGetValue(moverBlock.Name, out int moverId) && moversData.TryGetValue(moverId, out MoverData mover))
+                    if (_defines.TryGetValue(moverBlock.Name, out int moverId) && moversData.TryGetValue(moverId, out MoverData mover))
                     {
-                        this.LoadDropGold(mover, moverBlock.GetInstruction("DropGold"));
-                        this.LoadDropItems(mover, moverBlock.GetInstructions("DropItem"));
-                        this.LoadDropItemsKind(mover, moverBlock.GetInstructions("DropKind"));
+                        LoadDropGold(mover, moverBlock.GetInstruction("DropGold"));
+                        LoadDropItems(mover, moverBlock.GetInstructions("DropItem"));
+                        LoadDropItemsKind(mover, moverBlock.GetInstructions("DropKind"));
 
                         var maxDropVariable = moverBlock.GetVariable("Maxitem");
                         if (maxDropVariable is null)
@@ -90,8 +90,8 @@ namespace Rhisis.Core.Resources.Loaders
                 }
             }
 
-            this._cache.Set(GameResourcesConstants.Movers, moversData);
-            this._logger.LogInformation($"-> {moversData.Count} movers loaded.");
+            _cache.Set(GameResourcesConstants.Movers, moversData);
+            _logger.LogInformation($"-> {moversData.Count} movers loaded.");
         }
 
         /// <summary>
@@ -106,18 +106,18 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (dropGoldInstruction.Parameters.Count < 2)
             {
-                this._logger.LogWarning($"Cannot load 'DropGold' instruction for mover {mover.Name}. Reason: Missing parameters.");
+                _logger.LogWarning($"Cannot load 'DropGold' instruction for mover {mover.Name}. Reason: Missing parameters.");
                 return;
             }
 
             if (!int.TryParse(dropGoldInstruction.Parameters.ElementAt(0).ToString(), out int minGold))
             {
-                this._logger.LogWarning($"Cannot load min gold amount for mover {mover.Name}.");
+                _logger.LogWarning($"Cannot load min gold amount for mover {mover.Name}.");
             }
 
             if (!int.TryParse(dropGoldInstruction.Parameters.ElementAt(1).ToString(), out int maxGold))
             {
-                this._logger.LogWarning($"Cannot load max gold amount for mover {mover.Name}.");
+                _logger.LogWarning($"Cannot load max gold amount for mover {mover.Name}.");
             }
 
             mover.DropGoldMin = minGold;
@@ -139,11 +139,11 @@ namespace Rhisis.Core.Resources.Loaders
                 var dropItem = new DropItemData();
 
                 string dropItemName = dropItemInstruction.Parameters.ElementAt(0).ToString();
-                if (this._defines.TryGetValue(dropItemName, out int itemId))
+                if (_defines.TryGetValue(dropItemName, out int itemId))
                     dropItem.ItemId = itemId;
                 else
                 {
-                    this._logger.LogWarning($"Cannot find drop item id: {dropItemName} for mover {mover.Name}.");
+                    _logger.LogWarning($"Cannot find drop item id: {dropItemName} for mover {mover.Name}.");
                     continue;
                 }
 
@@ -151,18 +151,18 @@ namespace Rhisis.Core.Resources.Loaders
                     dropItem.Probability = probability;
                 else
                 {
-                    this._logger.LogWarning($"Cannot read drop item probability for item {dropItemName} and mover {mover.Name}.");
+                    _logger.LogWarning($"Cannot read drop item probability for item {dropItemName} and mover {mover.Name}.");
                 }
 
                 if (int.TryParse(dropItemInstruction.Parameters.ElementAt(2).ToString(), out int itemMaxRefine))
                     dropItem.ItemMaxRefine = itemMaxRefine;
                 else
-                    this._logger.LogWarning($"Cannot read drop item refine max for item {dropItemName} and mover {mover.Name}.");
+                    _logger.LogWarning($"Cannot read drop item refine max for item {dropItemName} and mover {mover.Name}.");
 
                 if (int.TryParse(dropItemInstruction.Parameters.ElementAt(3).ToString(), out int itemCount))
                     dropItem.Count = itemCount;
                 else
-                    this._logger.LogWarning($"Cannot read drop item count for item {dropItemName} and mover {mover.Name}.");
+                    _logger.LogWarning($"Cannot read drop item count for item {dropItemName} and mover {mover.Name}.");
 
                 mover.DropItems.Add(dropItem);
             }
@@ -184,7 +184,7 @@ namespace Rhisis.Core.Resources.Loaders
 
                 if (dropItemKindInstruction.Parameters.Count < 0 || dropItemKindInstruction.Parameters.Count > 3)
                 {
-                    this._logger.LogWarning($"Cannot load 'DropKind' instruction for mover {mover.Name}. Reason: Missing parameters.");
+                    _logger.LogWarning($"Cannot load 'DropKind' instruction for mover {mover.Name}. Reason: Missing parameters.");
                     continue;
                 }
 

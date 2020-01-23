@@ -31,30 +31,30 @@ namespace Rhisis.Database
         /// </summary>
         public Database(DatabaseContext databaseContext)
         {
-            this.DatabaseContext = databaseContext;
-            this.InitializeRepositories();
+            DatabaseContext = databaseContext;
+            InitializeRepositories();
         }
 
         /// <inheritdoc />
-        public void Complete() => this.DatabaseContext.SaveChanges();
+        public void Complete() => DatabaseContext.SaveChanges();
 
         /// <inheritdoc />
-        public async Task CompleteAsync() => await this.DatabaseContext.SaveChangesAsync();
+        public async Task CompleteAsync() => await DatabaseContext.SaveChangesAsync();
 
         /// <inheritdoc />
-        public void Dispose() => this.DatabaseContext.Dispose();
+        public void Dispose() => DatabaseContext.Dispose();
 
         /// <summary>
         /// Initializes the repositories.
         /// </summary>
         private void InitializeRepositories()
         {
-            this.Users = new UserRepository(this.DatabaseContext);
-            this.Characters = new CharacterRepository(this.DatabaseContext);
-            this.Items = new ItemRepository(this.DatabaseContext);
-            this.Mails = new MailRepository(this.DatabaseContext);
-            this.TaskbarShortcuts = new ShortcutRepository(this.DatabaseContext);
-            this.Quests = new QuestRepository(this.DatabaseContext);
+            Users = new UserRepository(DatabaseContext);
+            Characters = new CharacterRepository(DatabaseContext);
+            Items = new ItemRepository(DatabaseContext);
+            Mails = new MailRepository(DatabaseContext);
+            TaskbarShortcuts = new ShortcutRepository(DatabaseContext);
+            Quests = new QuestRepository(DatabaseContext);
         }
     }
 }

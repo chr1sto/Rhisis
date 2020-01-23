@@ -25,7 +25,7 @@ namespace Rhisis.Core.Test.Extensions
         {
             var faker = new Faker();
 
-            this._dictionary = Enumerable.Range(0, 10)
+            _dictionary = Enumerable.Range(0, 10)
                 .Select(x => new KeyValuePair<int, int>(faker.Random.Int(), faker.Random.Int()))
                 .ToDictionary(x => x.Key, x => x.Value);
         }
@@ -82,11 +82,11 @@ namespace Rhisis.Core.Test.Extensions
     {
         public int Id { get; set; }
 
-        public string Value => $"Value {this.Id}";
+        public string Value => $"Value {Id}";
 
         public SomeData(int id)
         {
-            this.Id = id;
+            Id = id;
         }
 
         public static IEnumerable<SomeData> Generate(int count, bool hasDuplicates = false)

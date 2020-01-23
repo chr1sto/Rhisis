@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ErrorPacket(INetPacketStream packet)
         {
-            this.Code = packet.Read<int>();
-            this.Data = packet.Read<int>();
+            Code = packet.Read<int>();
+            Data = packet.Read<int>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ErrorPacket"/></param>
         public bool Equals(ErrorPacket other)
         {
-            return this.Code == other.Code && this.Data == other.Data;
+            return Code == other.Code && Data == other.Data;
         }
     }
 }

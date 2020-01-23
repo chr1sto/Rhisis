@@ -21,8 +21,8 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="cache">Memory cache.</param>
         public ExpTableLoader(ILogger<ExpTableLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
+            _logger = logger;
+            _cache = cache;
         }
 
         /// <inheritdoc />
@@ -32,7 +32,7 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (!File.Exists(expTablePath))
             {
-                this._logger.LogWarning("Unable to load exp table. Reason: Cannot find '{0}' file.", expTablePath);
+                _logger.LogWarning("Unable to load exp table. Reason: Cannot find '{0}' file.", expTablePath);
                 return;
             }
 
@@ -41,24 +41,24 @@ namespace Rhisis.Core.Resources.Loaders
                 var dropLuckBlock = expTableFile.GetBlock("expDropLuck");
                 if (dropLuckBlock is null)
                 {
-                    this._logger.LogWarning("Unable to load exp table. Reason: Cannot find drop luck data.");
+                    _logger.LogWarning("Unable to load exp table. Reason: Cannot find drop luck data.");
                     return;
                 }
                 
                 var expCharacterBlock = expTableFile.GetBlock("expCharacter");
                 if (expCharacterBlock is null)
                 {
-                    this._logger.LogWarning("Unable to load exp table. Reason: Cannot find character experience data.");
+                    _logger.LogWarning("Unable to load exp table. Reason: Cannot find character experience data.");
                     return;
                 }
 
-                IEnumerable<long[]> dropLuck = this.LoadDropLuck(dropLuckBlock);
-                IReadOnlyDictionary<int, CharacterExpTableData> characterExperience = this.LoadCharacterExperience(expCharacterBlock);
+                IEnumerable<long[]> dropLuck = LoadDropLuck(dropLuckBlock);
+                IReadOnlyDictionary<int, CharacterExpTableData> characterExperience = LoadCharacterExperience(expCharacterBlock);
                 var expTableData = new ExpTableData(dropLuck, characterExperience);
-                this._cache.Set(GameResourcesConstants.ExpTables, expTableData);
+                _cache.Set(GameResourcesConstants.ExpTables, expTableData);
             }
 
-            this._logger.LogInformation("-> Experience tables loaded.");
+            _logger.LogInformation("-> Experience tables loaded.");
         }
 
         /// <summary>

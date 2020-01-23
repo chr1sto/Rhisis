@@ -19,14 +19,14 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets a value that indicates if the object is currently fighting.
         /// </summary>
-        public bool IsFighting => this.Target != null || this.Targets.Any();
+        public bool IsFighting => Target != null || Targets.Any();
 
         /// <summary>
         /// Creates and initializes the <see cref="BattleComponent"/>.
         /// </summary>
         public BattleComponent()
         {
-            this.Targets = new List<ILivingEntity>();
+            Targets = new List<ILivingEntity>();
         }
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public void Reset()
         {
-            this.Target = null;
-            this.Targets.Clear();
+            Target = null;
+            Targets.Clear();
         }
     }
 }

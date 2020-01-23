@@ -17,7 +17,7 @@ namespace Rhisis.World.Handlers
         /// <param name="statisticsSystem">Statistics system.</param>
         public StatisticsHandler(IStatisticsSystem statisticsSystem)
         {
-            this._statisticsSystem = statisticsSystem;
+            _statisticsSystem = statisticsSystem;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.MODIFY_STATUS)]
         public void OnModifyStatus(IWorldClient client, ModifyStatusPacket packet)
         {
-            this._statisticsSystem.UpdateStatistics(client.Player, 
+            _statisticsSystem.UpdateStatistics(client.Player, 
                 packet.Strenght, packet.Stamina, packet.Dexterity, packet.Intelligence);
         }
     }

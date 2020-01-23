@@ -15,7 +15,7 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.ObjectId = packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
         }
     }
 }

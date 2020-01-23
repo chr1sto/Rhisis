@@ -22,9 +22,9 @@ namespace Rhisis.World.Systems.Visibility
         /// <param name="worldSpawnPacketFactory">World spawn packet factory.</param>
         public VisibilitySystem(ILogger<VisibilitySystem> logger, IWorldSpawnPacketFactory worldSpawnPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
-            this._logger = logger;
-            this._worldSpawnPacketFactory = worldSpawnPacketFactory;
-            this._moverPacketFactory = moverPacketFactory;
+            _logger = logger;
+            _worldSpawnPacketFactory = worldSpawnPacketFactory;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
@@ -33,8 +33,8 @@ namespace Rhisis.World.Systems.Visibility
             if (!worldEntity.Object.Spawned || worldEntity.Type != WorldEntityType.Player)
                 return;
 
-            this.UpdateVisibility(worldEntity, worldEntity.Object.CurrentMap.Entities);
-            this.UpdateVisibility(worldEntity, worldEntity.Object.CurrentLayer.Entities);
+            UpdateVisibility(worldEntity, worldEntity.Object.CurrentMap.Entities);
+            UpdateVisibility(worldEntity, worldEntity.Object.CurrentLayer.Entities);
         }
 
         /// <inheritdoc />
@@ -46,7 +46,7 @@ namespace Rhisis.World.Systems.Visibility
                 {
                     if (entity.Type == WorldEntityType.Player)
                     {
-                        this._worldSpawnPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, worldEntity);
+                        _worldSpawnPacketFactory.SendDespawnObjectTo(entity as IPlayerEntity, worldEntity);
                     }
 
                     entity.Object.Entities.Remove(worldEntity);
@@ -95,7 +95,7 @@ namespace Rhisis.World.Systems.Visibility
             entity.Object.Entities.Add(otherEntity);
 
             if (entity is IPlayerEntity player)
-                this._worldSpawnPacketFactory.SendSpawnObjectTo(player, otherEntity);
+                _worldSpawnPacketFactory.SendSpawnObjectTo(player, otherEntity);
 
             if (otherEntity.Type != WorldEntityType.Player && !otherEntity.Object.Entities.Contains(entity))
                 otherEntity.Object.Entities.Add(entity);
@@ -103,7 +103,7 @@ namespace Rhisis.World.Systems.Visibility
             if (otherEntity is IMovableEntity movableEntity &&
                 movableEntity.Moves.DestinationPosition != movableEntity.Object.Position)
             {
-                this._moverPacketFactory.SendDestinationPosition(movableEntity);
+                _moverPacketFactory.SendDestinationPosition(movableEntity);
             }
         }
 
@@ -115,7 +115,7 @@ namespace Rhisis.World.Systems.Visibility
         private void DespawnOtherEntity(IWorldEntity entity, IWorldEntity otherEntity)
         {
             if (entity is IPlayerEntity player)
-                this._worldSpawnPacketFactory.SendDespawnObjectTo(player, otherEntity);
+                _worldSpawnPacketFactory.SendDespawnObjectTo(player, otherEntity);
 
             entity.Object.Entities.Remove(otherEntity);
 

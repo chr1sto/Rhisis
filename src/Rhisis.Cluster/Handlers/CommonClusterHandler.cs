@@ -20,7 +20,7 @@ namespace Rhisis.Cluster.Handlers
         /// <param name="clusterPacketFactory">Cluster packet factory.</param>
         public CommonClusterHandler(IClusterPacketFactory clusterPacketFactory)
         {
-            this._clusterPacketFactory = clusterPacketFactory;
+            _clusterPacketFactory = clusterPacketFactory;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Rhisis.Cluster.Handlers
         public void OnPing(IClusterClient client, PingPacket pingPacket)
         {
             if (!pingPacket.IsTimeOut)
-                this._clusterPacketFactory.SendPong(client, pingPacket.Time);
+                _clusterPacketFactory.SendPong(client, pingPacket.Time);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Rhisis.Cluster.Handlers
         [HandlerAction(PacketType.QUERYTICKCOUNT)]
         public void OnQueryTickCount(IClusterClient client, QueryTickCountPacket packet)
         {
-            this._clusterPacketFactory.SendQueryTickCount(client, packet.Time);
+            _clusterPacketFactory.SendQueryTickCount(client, packet.Time);
         }
     }
 }

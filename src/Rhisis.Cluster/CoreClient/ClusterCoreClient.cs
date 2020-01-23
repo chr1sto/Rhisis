@@ -33,24 +33,24 @@ namespace Rhisis.Cluster.CoreClient
         /// <param name="coreConfiguration">Core server configuration.</param>
         public ClusterCoreClient(ILogger<ClusterCoreClient> logger, IHandlerInvoker handlerInvoker, IOptions<ClusterConfiguration> clusterConfiguration, IOptions<CoreConfiguration> coreConfiguration)
         {
-            this._logger = logger;
-            this._handlerInvoker = handlerInvoker;
-            this._coreConfiguration = coreConfiguration.Value;
-            this.ClusterConfiguration = clusterConfiguration.Value;
-            this.ClientConfiguration = new NetClientConfiguration(this._coreConfiguration.Host, this._coreConfiguration.Port, BufferSize);
-            this.WorldServers = new List<WorldServerInfo>();
+            _logger = logger;
+            _handlerInvoker = handlerInvoker;
+            _coreConfiguration = coreConfiguration.Value;
+            ClusterConfiguration = clusterConfiguration.Value;
+            ClientConfiguration = new NetClientConfiguration(_coreConfiguration.Host, _coreConfiguration.Port, BufferSize);
+            WorldServers = new List<WorldServerInfo>();
         }
 
         /// <inheritdoc />
         protected override void OnConnected()
         {
-            this._logger.LogInformation("Cluster core client connected to core server.");
+            _logger.LogInformation("Cluster core client connected to core server.");
         }
 
         /// <inheritdoc />
         protected override void OnDisconnected()
         {
-            this._logger.LogInformation("Disconnected from core server.");
+            _logger.LogInformation("Disconnected from core server.");
 
             // TODO: try to reconnect.
         }
@@ -66,28 +66,28 @@ namespace Rhisis.Cluster.CoreClient
         {
             uint packetHeaderNumber = 0;
 
-            if (this.Socket == null)
+            if (Socket == null)
             {
-                this._logger.LogError("Skip to handle core packet from server. Reason: socket is not connected.");
+                _logger.LogError("Skip to handle core packet from server. Reason: socket is not connected.");
                 return;
             }
 
             try
             {
                 packetHeaderNumber = packet.Read<uint>();
-                this._handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
+                _handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentNullException)
             {
                 if (Enum.IsDefined(typeof(CorePacketType), packetHeaderNumber))
-                    this._logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(CorePacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.Socket.RemoteEndPoint);
+                    _logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(CorePacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 else
-                    this._logger.LogWarning("[SECURITY] Received an unknown Core packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.Socket.RemoteEndPoint);
+                    _logger.LogWarning("[SECURITY] Received an unknown Core packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
             }
             catch (Exception exception)
             {
-                this._logger.LogError(exception, $"An error occured while handling a core packet.");
-                this._logger.LogDebug(exception.InnerException?.StackTrace);
+                _logger.LogError(exception, $"An error occured while handling a core packet.");
+                _logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
     }

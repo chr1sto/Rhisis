@@ -26,12 +26,12 @@ namespace Rhisis.World.Handlers
 
         public PlayerHandler(ILogger<PlayerHandler> logger, ISpecialEffectSystem specialEffectSystem, IInteractionSystem interationSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory, IDeathSystem deathSystem)
         {
-            this._logger = logger;
-            this._specialEffectSystem = specialEffectSystem;
-            this._interationSystem = interationSystem;
-            this._followSystem = followSystem;
-            this._moverPacketFactory = moverPacketFactory;
-            this._deathSystem = deathSystem;
+            _logger = logger;
+            _specialEffectSystem = specialEffectSystem;
+            _interationSystem = interationSystem;
+            _followSystem = followSystem;
+            _moverPacketFactory = moverPacketFactory;
+            _deathSystem = deathSystem;
         }
 
         [HandlerAction(PacketType.STATEMODE)]
@@ -41,7 +41,7 @@ namespace Rhisis.World.Handlers
             {
                 if (packet.Flag == StateModeBaseMotion.BASEMOTION_CANCEL)
                 {
-                    this._specialEffectSystem.SetStateModeBaseMotion(client.Player, packet.Flag);
+                    _specialEffectSystem.SetStateModeBaseMotion(client.Player, packet.Flag);
                     client.Player.Delayer.CancelAction(client.Player.Inventory.ItemInUseActionId);
                     client.Player.Inventory.ItemInUseActionId = Guid.Empty;
                 }
@@ -51,13 +51,13 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.SETTARGET)]
         public void OnSetTarget(IWorldClient client, SetTargetPacket packet)
         {
-            this._interationSystem.SetTarget(client.Player, packet.TargetId, packet.TargetMode);
+            _interationSystem.SetTarget(client.Player, packet.TargetId, packet.TargetMode);
         }
 
         [HandlerAction(PacketType.PLAYERSETDESTOBJ)]
         public void OnPlayerSetDestObject(IWorldClient client, PlayerDestObjectPacket packet)
         {
-            this._followSystem.Follow(client.Player, packet.TargetObjectId, packet.Distance);
+            _followSystem.Follow(client.Player, packet.TargetObjectId, packet.Distance);
         }
 
         [HandlerAction(PacketType.QUERY_PLAYER_DATA)]
@@ -75,7 +75,7 @@ namespace Rhisis.World.Handlers
         {
             if (client.Player.Health.IsDead)
             {
-                this._logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
+                _logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
                 return;
             }
 
@@ -91,7 +91,7 @@ namespace Rhisis.World.Handlers
                 client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE);
             client.Player.Moves.DestinationPosition = packet.BeginPosition + packet.DestinationPosition;
 
-            this._moverPacketFactory.SendMoverMoved(client.Player,
+            _moverPacketFactory.SendMoverMoved(client.Player,
                 packet.BeginPosition,
                 packet.DestinationPosition,
                 client.Player.Object.Angle, 
@@ -109,7 +109,7 @@ namespace Rhisis.World.Handlers
         {
             if (client.Player.Health.IsDead)
             {
-                this._logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
+                _logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
                 return;
             }
 
@@ -123,7 +123,7 @@ namespace Rhisis.World.Handlers
                 client.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE);
             client.Player.Moves.DestinationPosition = packet.BeginPosition + packet.DestinationPosition;
 
-            this._moverPacketFactory.SendMoverBehavior(client.Player,
+            _moverPacketFactory.SendMoverBehavior(client.Player,
                 packet.BeginPosition,
                 packet.DestinationPosition,
                 client.Player.Object.Angle,
@@ -141,11 +141,11 @@ namespace Rhisis.World.Handlers
         {
             if (!client.Player.Health.IsDead)
             {
-                this._logger.LogWarning($"Player '{client.Player.Object.Name}' tried to revival to lodestar without being dead.");
+                _logger.LogWarning($"Player '{client.Player.Object.Name}' tried to revival to lodestar without being dead.");
                 return;
             }
 
-            this._deathSystem.ResurectLodelight(client.Player);
+            _deathSystem.ResurectLodelight(client.Player);
         }
     }
 }

@@ -30,10 +30,10 @@ namespace Rhisis.World.Systems.Dialog
         /// <param name="questSystem">Quest system.</param>
         public DialogSystem(ILogger<DialogSystem> logger, IChatPacketFactory chatPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, IQuestSystem questSystem)
         {
-            this._logger = logger;
-            this._chatPacketFactory = chatPacketFactory;
-            this._npcDialogPacketFactory = npcDialogPacketFactory;
-            this._questSystem = questSystem;
+            _logger = logger;
+            _chatPacketFactory = chatPacketFactory;
+            _npcDialogPacketFactory = npcDialogPacketFactory;
+            _questSystem = questSystem;
         }
 
         /// <inheritdoc />
@@ -43,24 +43,24 @@ namespace Rhisis.World.Systems.Dialog
 
             if (npc == null)
             {
-                this._logger.LogError($"Cannot find NPC with id: {npcObjectId}.");
+                _logger.LogError($"Cannot find NPC with id: {npcObjectId}.");
                 return;
             }
 
-            this._logger.LogTrace($"{npc.Object.Name}: '{dialogKey}'/{questId}");
+            _logger.LogTrace($"{npc.Object.Name}: '{dialogKey}'/{questId}");
 
             if (string.IsNullOrEmpty(dialogKey))
             {
                 if (npc.Quests.Any())
                 {
-                    IEnumerable<IQuestScript> availableQuests = npc.Quests.Where(x => this._questSystem.CanStartQuest(player, npc, x));
+                    IEnumerable<IQuestScript> availableQuests = npc.Quests.Where(x => _questSystem.CanStartQuest(player, npc, x));
 
                     if (availableQuests.Count() == 1)
                     {
                         IQuestScript firstQuest = availableQuests.First();
-                        var questState = this._questSystem.CanStartQuest(player, npc, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
+                        var questState = _questSystem.CanStartQuest(player, npc, firstQuest) ? QuestStateType.Suggest : QuestStateType.End;
 
-                        this._questSystem.ProcessQuest(player, npc, firstQuest, questState);
+                        _questSystem.ProcessQuest(player, npc, firstQuest, questState);
                         return;
                     }
                 }
@@ -69,17 +69,17 @@ namespace Rhisis.World.Systems.Dialog
 
                 if (questsToBeFinished.Any())
                 {
-                    this._questSystem.ProcessQuest(player, npc, questsToBeFinished.First(), QuestStateType.End);
+                    _questSystem.ProcessQuest(player, npc, questsToBeFinished.First(), QuestStateType.End);
                     return;
                 }
 
                 if (!npc.Data.HasDialog)
                 {
-                    this._logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
+                    _logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
                     return;
                 }
 
-                this.SendNpcDialog(player, npc, npc.Data.Dialog.IntroText, npc.Data.Dialog.Links);
+                SendNpcDialog(player, npc, npc.Data.Dialog.IntroText, npc.Data.Dialog.Links);
             }
             else
             {
@@ -95,25 +95,25 @@ namespace Rhisis.World.Systems.Dialog
 
                         if (quest == null)
                         {
-                            this._logger.LogError($"Cannot find quest with id '{questId}' at npc '{npc}' for player '{player}'.");
+                            _logger.LogError($"Cannot find quest with id '{questId}' at npc '{npc}' for player '{player}'.");
                             return;
                         }
                     }
 
-                    this._questSystem.ProcessQuest(player, npc, quest, dialogKey.ToEnum<QuestStateType>());
+                    _questSystem.ProcessQuest(player, npc, quest, dialogKey.ToEnum<QuestStateType>());
                 }
                 else
                 {
                     if (!npc.Data.HasDialog)
                     {
-                        this._logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
+                        _logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
                         return;
                     }
 
                     if (dialogKey == DialogConstants.Bye)
                     {
-                        this._chatPacketFactory.SendChatTo(npc, player, npc.Data.Dialog.ByeText);
-                        this._npcDialogPacketFactory.SendCloseDialog(player);
+                        _chatPacketFactory.SendChatTo(npc, player, npc.Data.Dialog.ByeText);
+                        _npcDialogPacketFactory.SendCloseDialog(player);
                         return;
                     }
                     else
@@ -122,11 +122,11 @@ namespace Rhisis.World.Systems.Dialog
 
                         if (dialogLink == null)
                         {
-                            this._logger.LogError($"Cannot find dialog key: '{dialogKey}' for NPC '{npc.Object.Name}'.");
+                            _logger.LogError($"Cannot find dialog key: '{dialogKey}' for NPC '{npc.Object.Name}'.");
                             return;
                         }
 
-                        this.SendNpcDialog(player, npc, dialogLink.Texts, npc.Data.Dialog.Links);
+                        SendNpcDialog(player, npc, dialogLink.Texts, npc.Data.Dialog.Links);
                     }
                 }
             }
@@ -142,8 +142,8 @@ namespace Rhisis.World.Systems.Dialog
         /// <param name="links">Npc dialog links.</param>
         private void SendNpcDialog(IPlayerEntity player, INpcEntity npc, IEnumerable<string> texts, IEnumerable<DialogLink> links)
         {
-            this._npcDialogPacketFactory.SendDialog(player, texts, links);
-            this._questSystem.SendQuestsInfo(player, npc);
+            _npcDialogPacketFactory.SendDialog(player, texts, links);
+            _questSystem.SendQuestsInfo(player, npc);
         }
     }
 }

@@ -29,10 +29,10 @@ namespace Rhisis.World.Handlers
         /// <param name="moverPacketFactory">Mover packet factory.</param>
         public BattleHandler(ILogger<BattleHandler> logger, IBattleSystem battleSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory)
         {
-            this._logger = logger;
-            this._battleSystem = battleSystem;
-            this._followSystem = followSystem;
-            this._moverPacketFactory = moverPacketFactory;
+            _logger = logger;
+            _battleSystem = battleSystem;
+            _followSystem = followSystem;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Rhisis.World.Handlers
 
             if (target == null)
             {
-                this._logger.LogError($"Cannot find target with object id {packet.ObjectId}");
+                _logger.LogError($"Cannot find target with object id {packet.ObjectId}");
                 return;
             }
 
@@ -55,7 +55,7 @@ namespace Rhisis.World.Handlers
 
             if (weaponItem != null && weaponItem.Data?.AttackSpeed != packet.WeaponAttackSpeed)
             {
-                this._logger.LogCritical($"Player {client.Player.Object.Name} has changed his weapon speed.");
+                _logger.LogCritical($"Player {client.Player.Object.Name} has changed his weapon speed.");
                 return;
             }
 
@@ -64,13 +64,13 @@ namespace Rhisis.World.Handlers
                 if (target.Moves.SpeedFactor != 2f)
                 {
                     target.Moves.SpeedFactor = 2f;
-                    this._moverPacketFactory.SendSpeedFactor(target, target.Moves.SpeedFactor);
+                    _moverPacketFactory.SendSpeedFactor(target, target.Moves.SpeedFactor);
                 }
 
-                this._followSystem.Follow(target, client.Player);
+                _followSystem.Follow(target, client.Player);
             }
 
-            this._battleSystem.MeleeAttack(client.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
+            _battleSystem.MeleeAttack(client.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Rhisis.World.Handlers
         /// <param name="customizationSystem">Customization system.</param>
         public CustomizationHandler(ICustomizationSystem customizationSystem)
         {
-            this._customizationSystem = customizationSystem;
+            _customizationSystem = customizationSystem;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.CHANGEFACE)]
         public void OnChangeFace(IWorldClient client, ChangeFacePacket packet)
         {
-            this._customizationSystem.ChangeFace(client.Player, packet.ObjectId, packet.FaceNumber, packet.UseCoupon);
+            _customizationSystem.ChangeFace(client.Player, packet.ObjectId, packet.FaceNumber, packet.UseCoupon);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.SET_HAIR)]
         public void OnSetHair(IWorldClient client, SetHairPacket packet)
         {
-            this._customizationSystem.ChangeHair(client.Player, packet.HairId, packet.R, packet.G, packet.B, packet.UseCoupon);
+            _customizationSystem.ChangeHair(client.Player, packet.HairId, packet.R, packet.G, packet.B, packet.UseCoupon);
         }
     }
 }

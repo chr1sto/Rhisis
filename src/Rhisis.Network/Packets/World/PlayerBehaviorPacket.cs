@@ -61,16 +61,16 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            this.DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            this.Angle = packet.Read<float>();
-            this.State = packet.Read<uint>();
-            this.StateFlag = packet.Read<uint>();
-            this.Motion = packet.Read<uint>();
-            this.MotionEx = packet.Read<int>();
-            this.Loop = packet.Read<int>();
-            this.MotionOption = packet.Read<uint>();
-            this.TickCount = packet.Read<long>();
+            BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            Angle = packet.Read<float>();
+            State = packet.Read<uint>();
+            StateFlag = packet.Read<uint>();
+            Motion = packet.Read<uint>();
+            MotionEx = packet.Read<int>();
+            Loop = packet.Read<int>();
+            MotionOption = packet.Read<uint>();
+            TickCount = packet.Read<long>();
         }
     }
 }

@@ -32,12 +32,12 @@ namespace Rhisis.Login.Core
         /// <param name="serviceProvider">Service provider.</param>
         public CoreServer(ILogger<CoreServer> logger, IOptions<CoreConfiguration> configuration, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker)
         {
-            this._logger = logger;
-            this._configuration = configuration.Value;
-            this._serviceProvider = serviceProvider;
-            this._handlerInvoker = handlerInvoker;
-            this.ServerConfiguration = new NetServerConfiguration(this._configuration.Host, 
-                this._configuration.Port, 
+            _logger = logger;
+            _configuration = configuration.Value;
+            _serviceProvider = serviceProvider;
+            _handlerInvoker = handlerInvoker;
+            ServerConfiguration = new NetServerConfiguration(_configuration.Host, 
+                _configuration.Port, 
                 ClientBacklog, 
                 ClientBufferSize);
         }
@@ -45,25 +45,25 @@ namespace Rhisis.Login.Core
         /// <inheritdoc />
         protected override void OnAfterStart()
         {
-            this._logger.LogInformation($"{nameof(CoreServer)} started!");
+            _logger.LogInformation($"{nameof(CoreServer)} started!");
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(CoreServerClient connection)
         {
-            var corePacketFactory = this._serviceProvider.GetRequiredService<ICorePacketFactory>();
+            var corePacketFactory = _serviceProvider.GetRequiredService<ICorePacketFactory>();
 
-            connection.Initialize(this._serviceProvider.GetRequiredService<ILogger<CoreServerClient>>(), this._handlerInvoker);
+            connection.Initialize(_serviceProvider.GetRequiredService<ILogger<CoreServerClient>>(), _handlerInvoker);
 
             corePacketFactory.SendWelcome(connection);
 
-            this._logger.LogTrace($"New incoming Core client connection from {connection.Socket.RemoteEndPoint}.");
+            _logger.LogTrace($"New incoming Core client connection from {connection.Socket.RemoteEndPoint}.");
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(CoreServerClient connection)
         {
-            this._handlerInvoker.Invoke(CorePacketType.Disconnect, connection);
+            _handlerInvoker.Invoke(CorePacketType.Disconnect, connection);
         }
 
         /// <inheritdoc />
@@ -75,24 +75,24 @@ namespace Rhisis.Login.Core
         /// <inheritdoc />
         public CoreServerClient GetClusterServer(int clusterId)
         {
-            return this.Clients.FirstOrDefault(x => x.ServerInfo is ClusterServerInfo cluster && cluster.Id == clusterId);
+            return Clients.FirstOrDefault(x => x.ServerInfo is ClusterServerInfo cluster && cluster.Id == clusterId);
         }
 
         /// <inheritdoc />
-        public bool HasCluster(int clusterId) => this.GetClusterServer(clusterId) != null;
+        public bool HasCluster(int clusterId) => GetClusterServer(clusterId) != null;
 
         /// <inheritdoc />
         public CoreServerClient GetWorldServer(int parentClusterId, int worldId)
         {
-            return this.Clients.FirstOrDefault(x => x.ServerInfo is WorldServerInfo world && 
+            return Clients.FirstOrDefault(x => x.ServerInfo is WorldServerInfo world && 
                 world.ParentClusterId == parentClusterId && world.Id == worldId);
         }
 
         /// <inheritdoc />
-        public bool HasWorld(int parentClusterId, int worldId) => this.GetWorldServer(parentClusterId, worldId) != null;
+        public bool HasWorld(int parentClusterId, int worldId) => GetWorldServer(parentClusterId, worldId) != null;
 
         /// <inheritdoc />
         public IEnumerable<ClusterServerInfo> GetConnectedClusters() 
-            => this.Clients.Where(x => x.ServerInfo.GetType() == typeof(ClusterServerInfo)).Select(x => x.ServerInfo as ClusterServerInfo);
+            => Clients.Where(x => x.ServerInfo.GetType() == typeof(ClusterServerInfo)).Select(x => x.ServerInfo as ClusterServerInfo);
     }
 }

@@ -19,7 +19,7 @@ namespace Rhisis.World.Handlers
         /// <param name="moverPacketFactory">Mover packet factory.</param>
         public MovementHandler(IMoverPacketFactory moverPacketFactory)
         {
-            this._moverPacketFactory = moverPacketFactory;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Rhisis.World.Handlers
             client.Player.Object.Angle = Vector3.AngleBetween(client.Player.Object.Position, client.Player.Moves.DestinationPosition);
             client.Player.Follow.Target = null;
 
-            this._moverPacketFactory.SendDestinationPosition(client.Player);
+            _moverPacketFactory.SendDestinationPosition(client.Player);
         }
     }
 }

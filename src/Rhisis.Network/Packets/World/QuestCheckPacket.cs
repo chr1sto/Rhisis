@@ -17,8 +17,8 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.QuestId = packet.Read<int>();
-            this.Checked = packet.Read<bool>();
+            QuestId = packet.Read<int>();
+            Checked = packet.Read<bool>();
         }
     }
 }

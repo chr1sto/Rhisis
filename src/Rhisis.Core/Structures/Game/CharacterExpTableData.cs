@@ -42,11 +42,11 @@ namespace Rhisis.Core.Structures.Game
         /// <param name="limitExperience"></param>
         public CharacterExpTableData(int level, long experience, long pxp, long gp, long limitExperience)
         {
-            this.Level = level;
-            this.Exp = experience;
-            this.Pxp = pxp;
-            this.Gp = gp;
-            this.LimExp = limitExperience;
+            Level = level;
+            Exp = experience;
+            Pxp = pxp;
+            Gp = gp;
+            LimExp = limitExperience;
         }
 
         /// <summary>
@@ -55,6 +55,6 @@ namespace Rhisis.Core.Structures.Game
         /// <param name="other">Other <see cref="CharacterExpTableData"/>.</param>
         /// <returns>True if the same; false otherwise.</returns>
         public bool Equals(CharacterExpTableData other) 
-            => (this.Level, this.Exp, this.Pxp, this.Gp, this.LimExp) == (other.Level, other.Exp, other.Pxp, other.Gp, other.LimExp);
+            => (Level, Exp, Pxp, Gp, LimExp) == (other.Level, other.Exp, other.Pxp, other.Gp, other.LimExp);
     }
 }

@@ -40,19 +40,19 @@ namespace Rhisis.World.Systems.Inventory
 
         public InventorySystem(ILogger<InventorySystem> logger, IDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
         {
-            this._logger = logger;
-            this._database = database;
-            this._itemFactory = itemFactory;
-            this._inventoryPacketFactory = inventoryPacketFactory;
-            this._inventoryItemUsage = inventoryItemUsage;
-            this._dropSystem = dropSystem;
-            this._textPacketFactory = textPacketFactory;
+            _logger = logger;
+            _database = database;
+            _itemFactory = itemFactory;
+            _inventoryPacketFactory = inventoryPacketFactory;
+            _inventoryItemUsage = inventoryItemUsage;
+            _dropSystem = dropSystem;
+            _textPacketFactory = textPacketFactory;
         }
 
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<DbItem> items = this._database.Items.GetAll(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
+            IEnumerable<DbItem> items = _database.Items.GetAll(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
 
             player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
 
@@ -63,7 +63,7 @@ namespace Rhisis.World.Systems.Inventory
             {
                 int uniqueId = player.Inventory.Items[item.ItemSlot].UniqueId;
 
-                player.Inventory.Items[item.ItemSlot] = this._itemFactory.CreateItem(item);
+                player.Inventory.Items[item.ItemSlot] = _itemFactory.CreateItem(item);
                 player.Inventory.Items[item.ItemSlot].UniqueId = uniqueId;
             }
         }
@@ -71,7 +71,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            DbCharacter character = this._database.Characters.Get(player.PlayerData.Id);
+            DbCharacter character = _database.Characters.Get(player.PlayerData.Id);
             IEnumerable<DbItem> itemsToDelete = from dbItem in character.Items
                                                 let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id)
                                                 where !dbItem.IsDeleted && inventoryItem == null || (inventoryItem != null && inventoryItem.Id == -1)
@@ -81,7 +81,7 @@ namespace Rhisis.World.Systems.Inventory
             {
                 dbItem.IsDeleted = true;
 
-                this._database.Items.Update(dbItem);
+                _database.Items.Update(dbItem);
             }
 
             // Add or update items
@@ -104,7 +104,7 @@ namespace Rhisis.World.Systems.Inventory
                     dbItem.Element = (byte)item.Element;
                     dbItem.ElementRefine = item.ElementRefine;
 
-                    this._database.Items.Update(dbItem);
+                    _database.Items.Update(dbItem);
                 }
                 else
                 {
@@ -120,11 +120,11 @@ namespace Rhisis.World.Systems.Inventory
                         ElementRefine = item.ElementRefine
                     };
 
-                    this._database.Items.Create(dbItem);
+                    _database.Items.Create(dbItem);
                 }
             }
 
-            this._database.Complete();
+            _database.Complete();
         }
 
         /// <inheritdoc />
@@ -156,7 +156,7 @@ namespace Rhisis.World.Systems.Inventory
                         }
 
                         if (sendToPlayer)
-                            this._inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
+                            _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
                     }
                 }
 
@@ -164,13 +164,13 @@ namespace Rhisis.World.Systems.Inventory
                 {
                     if (!player.Inventory.HasAvailableSlots())
                     {
-                        this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+                        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                     }
                     else
                     {
                         int availableSlot = player.Inventory.GetAvailableSlot();
 
-                        Item newItem = this._itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
+                        Item newItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
 
                         if (newItem == null)
                         {
@@ -183,7 +183,7 @@ namespace Rhisis.World.Systems.Inventory
                         player.Inventory[availableSlot] = newItem;
 
                         if (sendToPlayer)
-                            this._inventoryPacketFactory.SendItemCreation(player, newItem);
+                            _inventoryPacketFactory.SendItemCreation(player, newItem);
 
                         createdAmount += quantity;
                     }
@@ -195,13 +195,13 @@ namespace Rhisis.World.Systems.Inventory
                 {
                     if (!player.Inventory.HasAvailableSlots())
                     {
-                        this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+                        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                         break;
                     }
 
                     int availableSlot = player.Inventory.GetAvailableSlot();
 
-                    Item newItem = this._itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
+                    Item newItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
 
                     if (newItem == null)
                     {
@@ -214,7 +214,7 @@ namespace Rhisis.World.Systems.Inventory
                     player.Inventory[availableSlot] = newItem;
 
                     if (sendToPlayer)
-                        this._inventoryPacketFactory.SendItemCreation(player, newItem);
+                        _inventoryPacketFactory.SendItemCreation(player, newItem);
 
                     createdAmount++;
                     quantity--;
@@ -235,7 +235,7 @@ namespace Rhisis.World.Systems.Inventory
             if (itemToDelete == null)
                 throw new ArgumentNullException(nameof(itemToDelete), $"Cannot find item with unique id: '{itemUniqueId}' in '{player.Object.Name}''s inventory.");
 
-            return this.DeleteItem(player, itemToDelete, quantity, sendToPlayer);
+            return DeleteItem(player, itemToDelete, quantity, sendToPlayer);
         }
 
         /// <inheritdoc />
@@ -246,7 +246,7 @@ namespace Rhisis.World.Systems.Inventory
             itemToDelete.Quantity -= quantityToDelete;
 
             if (sendToPlayer)
-                this._inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToDelete.UniqueId, itemToDelete.Quantity);
+                _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToDelete.UniqueId, itemToDelete.Quantity);
 
             if (itemToDelete.Quantity <= 0)
                 itemToDelete.Reset();
@@ -285,14 +285,14 @@ namespace Rhisis.World.Systems.Inventory
                     destinationItem.Quantity = destinationItem.Data.PackMax;
                     sourceItem.Quantity = newQuantity - sourceItem.Data.PackMax;
 
-                    this._inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, sourceItem.UniqueId, sourceItem.Quantity);
-                    this._inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, sourceItem.UniqueId, sourceItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity);
                 }
                 else
                 {
                     destinationItem.Quantity = newQuantity;
-                    this.DeleteItem(player, sourceItem.UniqueId, sourceItem.Quantity);
-                    this._inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity);
+                    DeleteItem(player, sourceItem.UniqueId, sourceItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity);
                 }
             }
             else
@@ -305,7 +305,7 @@ namespace Rhisis.World.Systems.Inventory
                 player.Inventory.Items.Swap(sourceSlot, destinationSlot);
 
                 if (sendToPlayer)
-                    this._inventoryPacketFactory.SendItemMove(player, sourceSlot, destinationSlot);
+                    _inventoryPacketFactory.SendItemMove(player, sourceSlot, destinationSlot);
             }
         }
 
@@ -321,7 +321,7 @@ namespace Rhisis.World.Systems.Inventory
 
             if (!player.Inventory.HasAvailableSlots())
             {
-                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
 
@@ -329,14 +329,14 @@ namespace Rhisis.World.Systems.Inventory
 
             if (shouldEquip)
             {
-                if (this.IsItemEquipable(player, itemToEquip))
+                if (IsItemEquipable(player, itemToEquip))
                 {
                     int sourceSlot = itemToEquip.Slot;
                     int equipSlot = itemToEquip.Data.Parts + EquipOffset;
 
-                    this.MoveItem(player, (byte)sourceSlot, (byte)equipSlot, sendToPlayer: false);
-                    this.MoveItem(player, (byte)sourceSlot, (byte)player.Inventory.GetAvailableSlot(), sendToPlayer: false);
-                    this._inventoryPacketFactory.SendItemEquip(player, itemToEquip, itemToEquip.Data.Parts, true);
+                    MoveItem(player, (byte)sourceSlot, (byte)equipSlot, sendToPlayer: false);
+                    MoveItem(player, (byte)sourceSlot, (byte)player.Inventory.GetAvailableSlot(), sendToPlayer: false);
+                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, itemToEquip.Data.Parts, true);
                 }
             }
             else
@@ -350,8 +350,8 @@ namespace Rhisis.World.Systems.Inventory
                         throw new InvalidOperationException($"Equipement parts doesn't match.");
                     }
 
-                    this.MoveItem(player, (byte)itemToEquip.Slot, (byte)player.Inventory.GetAvailableSlot(), sendToPlayer: false);
-                    this._inventoryPacketFactory.SendItemEquip(player, itemToEquip, targetPart, false);
+                    MoveItem(player, (byte)itemToEquip.Slot, (byte)player.Inventory.GetAvailableSlot(), sendToPlayer: false);
+                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, targetPart, false);
                 }
             }
         }
@@ -375,18 +375,18 @@ namespace Rhisis.World.Systems.Inventory
 
                 if (!player.Battle.IsFighting)
                 {
-                    this.EquipItem(player, itemUniqueId, part);
+                    EquipItem(player, itemUniqueId, part);
                 }
             }
             else
             {
                 if (itemToUse.Data.IsUseable && itemToUse.Quantity > 0)
                 {
-                    this._logger.LogTrace($"{player.Object.Name} want to use {itemToUse.Data.Name}.");
+                    _logger.LogTrace($"{player.Object.Name} want to use {itemToUse.Data.Name}.");
 
                     if (player.Inventory.ItemHasCoolTime(itemToUse) && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
                     {
-                        this._logger.LogDebug($"Player '{player.Object.Name}' cannot use item {itemToUse.Data.Name}: CoolTime.");
+                        _logger.LogDebug($"Player '{player.Object.Name}' cannot use item {itemToUse.Data.Name}: CoolTime.");
                         return;
                     }
 
@@ -395,56 +395,56 @@ namespace Rhisis.World.Systems.Inventory
                         case ItemKind2.REFRESHER:
                         case ItemKind2.POTION:
                         case ItemKind2.FOOD:
-                            this._inventoryItemUsage.UseFoodItem(player, itemToUse);
+                            _inventoryItemUsage.UseFoodItem(player, itemToUse);
                             break;
                         case ItemKind2.MAGIC:
-                            this._inventoryItemUsage.UseMagicItem(player, itemToUse);
+                            _inventoryItemUsage.UseMagicItem(player, itemToUse);
                             break;
                         case ItemKind2.SYSTEM:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.GMTEXT:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.GENERAL:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.BUFF:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.BUFF2:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.AIRFUEL:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.FURNITURE:
                         case ItemKind2.PAPERING:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.GUILDHOUSE_FURNITURE:
                         case ItemKind2.GUILDHOUSE_NPC:
                         case ItemKind2.GUILDHOUSE_PAPERING:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.GUILDHOUES_COMEBACK:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                         case ItemKind2.BLINKWING:
-                            this._inventoryItemUsage.UseBlinkwingItem(player, itemToUse);
+                            _inventoryItemUsage.UseBlinkwingItem(player, itemToUse);
                             break;
                         default:
-                            this._logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            this._textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
                             break;
                     }
                 }
@@ -474,8 +474,8 @@ namespace Rhisis.World.Systems.Inventory
             }
 
             itemToDrop.Quantity = quantityToDrop;
-            this._dropSystem.DropItem(player, itemToDrop, owner: null);
-            this.DeleteItem(player, itemUniqueId, quantityToDrop);
+            _dropSystem.DropItem(player, itemToDrop, owner: null);
+            DeleteItem(player, itemUniqueId, quantityToDrop);
         }
 
         /// <summary>
@@ -488,15 +488,15 @@ namespace Rhisis.World.Systems.Inventory
         {
             if (item.Data.ItemSex != int.MaxValue && item.Data.ItemSex != player.VisualAppearance.Gender)
             {
-                this._logger.LogDebug("Wrong sex for armor");
-                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGSEX, item.Data.Name);
+                _logger.LogDebug("Wrong sex for armor");
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGSEX, item.Data.Name);
                 return false;
             }
 
             if (player.Object.Level < item.Data.LimitLevel)
             {
-                this._logger.LogDebug("Player level to low");
-                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQLEVEL, item.Data.LimitLevel.ToString());
+                _logger.LogDebug("Player level to low");
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQLEVEL, item.Data.LimitLevel.ToString());
                 return false;
             }
 

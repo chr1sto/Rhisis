@@ -25,8 +25,8 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         public WorldDrops()
         {
-            this.OwnershipTime = DefaultOwnershipTime;
-            this.DespawnTime = DefaultDespawnTime;
+            OwnershipTime = DefaultOwnershipTime;
+            DespawnTime = DefaultDespawnTime;
         }
     }
 }

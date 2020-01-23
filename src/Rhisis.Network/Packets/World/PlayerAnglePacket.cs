@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public PlayerAnglePacket(INetPacketStream packet)
         {
-            this.Angle = packet.Read<float>();
-            this.AngleX = packet.Read<float>();
+            Angle = packet.Read<float>();
+            AngleX = packet.Read<float>();
         }
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="PlayerAnglePacket"/></param>
         public bool Equals(PlayerAnglePacket other)
         {
-            return this.Angle == other.Angle &&
-                   this.AngleX == other.AngleX;
+            return Angle == other.Angle &&
+                   AngleX == other.AngleX;
         }
     }
 }

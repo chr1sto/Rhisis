@@ -125,10 +125,10 @@ namespace Rhisis.Core.Structures.Game
         public int SkillReadyType { get; set; }
 
         [IgnoreDataMember]
-        public WeaponType WeaponType => (WeaponType)Enum.ToObject(typeof(WeaponType), this.WeaponTypeId);
+        public WeaponType WeaponType => (WeaponType)Enum.ToObject(typeof(WeaponType), WeaponTypeId);
 
         [IgnoreDataMember]
-        public bool IsStackable => this.PackMax > 1;
+        public bool IsStackable => PackMax > 1;
 
         [IgnoreDataMember]
         public IReadOnlyDictionary<DefineAttributes, int> Params { get; internal set; }

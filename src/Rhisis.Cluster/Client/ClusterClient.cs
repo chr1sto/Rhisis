@@ -29,8 +29,8 @@ namespace Rhisis.Cluster.Client
         public ClusterClient(Socket socketConnection)
             : base(socketConnection)
         {
-            this.SessionId = RandomHelper.GenerateSessionKey();
-            this.LoginProtectValue = new Random().Next(0, 1000);
+            SessionId = RandomHelper.GenerateSessionKey();
+            LoginProtectValue = new Random().Next(0, 1000);
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace Rhisis.Cluster.Client
         /// <param name="clusterPacketFactory">Cluster packet factory.</param>
         public void Initialize(IClusterServer clusterServer, ILogger<ClusterClient> logger, IHandlerInvoker handlerInvoker, IClusterPacketFactory clusterPacketFactory)
         {
-            this._clusterServer = clusterServer;
-            this._logger = logger;
-            this._handlerInvoker = handlerInvoker;
+            _clusterServer = clusterServer;
+            _logger = logger;
+            _handlerInvoker = handlerInvoker;
 
             clusterPacketFactory.SendWelcome(this);
         }
@@ -52,8 +52,8 @@ namespace Rhisis.Cluster.Client
         /// <inheritdoc />
         public void Disconnect()
         {
-            this.Dispose();
-            this._clusterServer.DisconnectClient(this.Id);
+            Dispose();
+            _clusterServer.DisconnectClient(Id);
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace Rhisis.Cluster.Client
         /// <param name="packet"></param>
         public override void Send(INetPacketStream packet)
         {
-            this._logger.LogTrace("Send {0} packet to {1}.",
+            _logger.LogTrace("Send {0} packet to {1}.",
                     (PacketType)BitConverter.ToUInt32(packet.Buffer, 5),
-                    this.Socket.RemoteEndPoint);
+                    Socket.RemoteEndPoint);
 
             base.Send(packet);
         }
@@ -77,9 +77,9 @@ namespace Rhisis.Cluster.Client
         {
             uint packetHeaderNumber = 0;
 
-            if (this.Socket == null)
+            if (Socket == null)
             {
-                this._logger.LogTrace("Skip to handle cluster packet from null socket. Reason: client is not connected.");
+                _logger.LogTrace("Skip to handle cluster packet from null socket. Reason: client is not connected.");
                 return;
             }
 
@@ -89,21 +89,21 @@ namespace Rhisis.Cluster.Client
                 packetHeaderNumber = packet.Read<uint>();
 
 #if DEBUG
-                this._logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, this.Socket.RemoteEndPoint);
+                _logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, Socket.RemoteEndPoint);
 #endif
-                this._handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
+                _handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentNullException)
             {
                 if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                    this._logger.LogWarning("Received an unimplemented Cluster packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), this.Socket.RemoteEndPoint);
+                    _logger.LogWarning("Received an unimplemented Cluster packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 else
-                    this._logger.LogWarning("[SECURITY] Received an unknown Cluster packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), this.Socket.RemoteEndPoint);
+                    _logger.LogWarning("[SECURITY] Received an unknown Cluster packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
             }
             catch (Exception exception)
             {
-                this._logger.LogError(exception, $"An error occured while handling a cluster packet.");
-                this._logger.LogDebug(exception.InnerException?.StackTrace);
+                _logger.LogError(exception, $"An error occured while handling a cluster packet.");
+                _logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
     }

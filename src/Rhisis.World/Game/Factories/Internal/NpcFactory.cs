@@ -29,9 +29,9 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <param name="itemFactory">Item Factory.</param>
         public NpcFactory(IGameResources gameResources, IBehaviorManager behaviorManager, IItemFactory itemFactory)
         {
-            this._gameResources = gameResources;
+            _gameResources = gameResources;
             this.behaviorManager = behaviorManager;
-            this._itemFactory = itemFactory;
+            _itemFactory = itemFactory;
         }
 
         /// <inheritdoc />
@@ -55,9 +55,9 @@ namespace Rhisis.World.Game.Factories.Internal
             };
             npc.Behavior = behaviorManager.GetBehavior(BehaviorType.Npc, npc, npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
-            npc.Quests = this._gameResources.Quests.Values.Where(x => !string.IsNullOrEmpty(x.StartCharacter) && x.StartCharacter.Equals(npc.Object.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+            npc.Quests = _gameResources.Quests.Values.Where(x => !string.IsNullOrEmpty(x.StartCharacter) && x.StartCharacter.Equals(npc.Object.Name, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            if (this._gameResources.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
+            if (_gameResources.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
                 npc.Data = npcData;
             }
@@ -75,7 +75,7 @@ namespace Rhisis.World.Game.Factories.Internal
                     {
                         ItemDescriptor item = npcShopData.Items[i][j];
 
-                        npc.Shop[i].Items[j] = this._itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
+                        npc.Shop[i].Items[j] = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
                         npc.Shop[i].Items[j].Slot = j;
                         npc.Shop[i].Items[j].UniqueId = j;
                         npc.Shop[i].Items[j].Quantity = npc.Shop[i].Items[j].Data.PackMax;

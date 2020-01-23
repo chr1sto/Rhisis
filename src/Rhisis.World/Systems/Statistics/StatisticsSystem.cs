@@ -18,21 +18,21 @@ namespace Rhisis.World.Systems.Statistics
         /// <param name="logger">Logger.</param>
         public StatisticsSystem(ILogger<StatisticsSystem> logger, IPlayerPacketFactory playerPacketFactory)
         {
-            this._logger = logger;
-            this._playerPacketFactory = playerPacketFactory;
+            _logger = logger;
+            _playerPacketFactory = playerPacketFactory;
         }
 
         /// <inheritdoc />
         public void UpdateStatistics(IPlayerEntity player, ushort strength, ushort stamina, ushort dexterity, ushort intelligence)
         {
-            this._logger.LogDebug("Modify sttus");
+            _logger.LogDebug("Modify sttus");
 
             var total = strength + stamina + dexterity + intelligence;
 
             var statsPoints = player.Statistics.StatPoints;
             if (statsPoints <= 0 || total > statsPoints)
             {
-                this._logger.LogError("No statspoints available, but trying to upgrade {0}.", player.Object.Name);
+                _logger.LogError("No statspoints available, but trying to upgrade {0}.", player.Object.Name);
                 return;
             }
 
@@ -40,7 +40,7 @@ namespace Rhisis.World.Systems.Statistics
                 dexterity > statsPoints || intelligence > statsPoints || total <= 0 ||
                 total > ushort.MaxValue)
             {
-                this._logger.LogError("Invalid upgrade request due to bad total calculation (trying to dupe) {0}.",
+                _logger.LogError("Invalid upgrade request due to bad total calculation (trying to dupe) {0}.",
                     player.Object.Name);
                 return;
             }
@@ -51,7 +51,7 @@ namespace Rhisis.World.Systems.Statistics
             player.Attributes.IncreaseAttribute(DefineAttributes.INT, intelligence);
             player.Statistics.StatPoints -= (ushort)total;
 
-            this._playerPacketFactory.SendPlayerUpdateState(player);
+            _playerPacketFactory.SendPlayerUpdateState(player);
         }
     }
 }

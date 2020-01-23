@@ -13,13 +13,13 @@ namespace Rhisis.Network.Packets
         {
             try
             {
-                this.Time = packet.Read<int>();
-                this.IsTimeOut = false;
+                Time = packet.Read<int>();
+                IsTimeOut = false;
             }
             catch (Exception)
             {
-                this.Time = 0;
-                this.IsTimeOut = true;
+                Time = 0;
+                IsTimeOut = true;
             }
         }
     }

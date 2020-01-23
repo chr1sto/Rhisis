@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ExpBoxInfoPacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.ObjectId = packet.Read<uint>();
+            PlayerId = packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ExpBoxInfoPacket"/></param>
         public bool Equals(ExpBoxInfoPacket other)
         {
-            return this.PlayerId == other.PlayerId && this.ObjectId == other.ObjectId;
+            return PlayerId == other.PlayerId && ObjectId == other.ObjectId;
         }
     }
 }

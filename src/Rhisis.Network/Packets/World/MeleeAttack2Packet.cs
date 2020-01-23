@@ -35,10 +35,10 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public MeleeAttack2Packet(INetPacketStream packet)
         {
-            this.AttackMessage = (ObjectMessageType) packet.Read<uint>();
-            this.ObjectId = packet.Read<uint>();
-            this.Parameter2 = packet.Read<int>();
-            this.Parameter3 = packet.Read<int>();
+            AttackMessage = (ObjectMessageType) packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
+            Parameter2 = packet.Read<int>();
+            Parameter3 = packet.Read<int>();
         }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="MeleeAttack2Packet"/></param>
         public bool Equals(MeleeAttack2Packet other)
         {
-            return this.AttackMessage == other.AttackMessage 
-                && this.ObjectId == other.ObjectId 
-                && this.Parameter2 == other.Parameter2 
-                && this.Parameter3 == other.Parameter3;
+            return AttackMessage == other.AttackMessage 
+                && ObjectId == other.ObjectId 
+                && Parameter2 == other.Parameter2 
+                && Parameter3 == other.Parameter3;
         }
     }
 }

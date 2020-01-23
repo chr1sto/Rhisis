@@ -36,11 +36,11 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.Target = packet.Read<uint>();
-            this.IdSfxHit = packet.Read<int>();
-            this.Type = packet.Read<uint>();
-            this.Skill = packet.Read<uint>();
-            this.MaxDamageCount = packet.Read<int>();
+            Target = packet.Read<uint>();
+            IdSfxHit = packet.Read<int>();
+            Type = packet.Read<uint>();
+            Skill = packet.Read<uint>();
+            MaxDamageCount = packet.Read<int>();
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Rhisis.World.Systems.Mobility
                 }
             }
 
-            this.Walk(entity);
+            Walk(entity);
         }
 
         /// <summary>

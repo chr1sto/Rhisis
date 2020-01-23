@@ -9,7 +9,7 @@ namespace Rhisis.Network.ISC.Structures
         public ClusterServerInfo(int id, string host, string name)
             : base(id, host, name)
         {
-            this.WorldServers = new List<WorldServerInfo>();
+            WorldServers = new List<WorldServerInfo>();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Rhisis.World.Systems
         /// <param name="logger">Logger.</param>
         public RespawnSystem(ILogger<RespawnSystem> logger)
         {
-            this._logger = logger;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -27,7 +27,7 @@ namespace Rhisis.World.Systems
             {
                 if (monster.Object.Spawned && monster.Timers.DespawnTime < Time.TimeInSeconds())
                 {
-                    this._logger.LogDebug($"Despawning {monster.Object.Name}...");
+                    _logger.LogDebug($"Despawning {monster.Object.Name}...");
                     monster.Object.Spawned = false;
                     if (monster.Object.AbleRespawn != true) {
                         monster.Timers.RespawnTime = Time.TimeInSeconds() + monster.Region.Time;
@@ -35,8 +35,8 @@ namespace Rhisis.World.Systems
                 }
                 else if (!monster.Object.Spawned && monster.Timers.RespawnTime < Time.TimeInSeconds() && monster.Object.AbleRespawn != true )
                 {
-                    this._logger.LogDebug($"Respawning {monster.Object.Name}...");
-                    this.ResetMonster(monster);
+                    _logger.LogDebug($"Respawning {monster.Object.Name}...");
+                    ResetMonster(monster);
                 }
             }
 
@@ -44,12 +44,12 @@ namespace Rhisis.World.Systems
             {
                 if (dropItem.Drop.HasOwner && dropItem.Drop.OwnershipTime <= Time.TimeInSeconds())
                 {
-                    this.ResetDropOwnership(dropItem);
+                    ResetDropOwnership(dropItem);
                 }
 
                 if (dropItem.Drop.IsTemporary && dropItem.Drop.DespawnTime <= Time.TimeInSeconds())
                 {
-                    this.ResetDropOwnership(dropItem);
+                    ResetDropOwnership(dropItem);
                     dropItem.Object.Spawned = false;
                     dropItem.Delete();
                 }

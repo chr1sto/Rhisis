@@ -15,7 +15,7 @@ namespace Rhisis.World.Game.Maps.Regions
         public Vector3 DestinationMapPosition { get; }
 
         /// <inheritdoc />
-        public bool IsWrapzone => this.DestinationMapId > 0;
+        public bool IsWrapzone => DestinationMapId > 0;
 
         /// <summary>
         /// Creates a new <see cref="MapTriggerRegion"/> instance.
@@ -29,8 +29,8 @@ namespace Rhisis.World.Game.Maps.Regions
         public MapTriggerRegion(int x, int z, int width, int length, int destinationMapId, Vector3 destinationMapPosition) 
             : base(x, z, width, length)
         {
-            this.DestinationMapId = destinationMapId;
-            this.DestinationMapPosition = destinationMapPosition;
+            DestinationMapId = destinationMapId;
+            DestinationMapPosition = destinationMapPosition;
         }
 
         /// <summary>

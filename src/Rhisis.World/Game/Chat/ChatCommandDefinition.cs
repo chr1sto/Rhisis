@@ -31,9 +31,9 @@ namespace Rhisis.World.Game.Chat
         /// <param name="minimumAuthority">Command minimum authority to execute.</param>
         public ChatCommandDefinition(string command, ObjectFactory factory, AuthorityType minimumAuthority)
         {
-            this.Command = command;
-            this.ChatCommandFactory = factory;
-            this.Authority = minimumAuthority;
+            Command = command;
+            ChatCommandFactory = factory;
+            Authority = minimumAuthority;
         }
     }
 }

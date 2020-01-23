@@ -14,7 +14,7 @@ namespace Rhisis.World
         /// <param name="worldServer">World Server.</param>
         public WorldServerService(IWorldServer worldServer)
         {
-            this._worldServer = worldServer;
+            _worldServer = worldServer;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Rhisis.World
         /// <returns></returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._worldServer.Start();
+            _worldServer.Start();
 
             return Task.CompletedTask;
         }
@@ -36,7 +36,7 @@ namespace Rhisis.World
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._worldServer.Stop();
+            _worldServer.Stop();
 
             return Task.CompletedTask;
         }

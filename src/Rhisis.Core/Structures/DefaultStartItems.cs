@@ -50,11 +50,11 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public DefaultStartItems()
         {
-            this.StartWeapon = -1;
-            this.StartSuit = -1;
-            this.StartHand = -1;
-            this.StartShoes = -1;
-            this.StartHat = -1;
+            StartWeapon = -1;
+            StartSuit = -1;
+            StartHand = -1;
+            StartShoes = -1;
+            StartHat = -1;
         }
 
         /// <summary>
@@ -65,19 +65,19 @@ namespace Rhisis.Core.Structures
         {
             if (gender == GenderType.Male)
             {
-                this.StartWeapon = 21;
-                this.StartSuit = 502;
-                this.StartHand = 506;
-                this.StartShoes = 510;
-                this.StartHat = -1;
+                StartWeapon = 21;
+                StartSuit = 502;
+                StartHand = 506;
+                StartShoes = 510;
+                StartHat = -1;
             }
             else
             {
-                this.StartWeapon = 21;
-                this.StartSuit = 504;
-                this.StartHand = 508;
-                this.StartShoes = 512;
-                this.StartHat = -1;
+                StartWeapon = 21;
+                StartSuit = 504;
+                StartHand = 508;
+                StartShoes = 512;
+                StartHat = -1;
             }
         }
     }

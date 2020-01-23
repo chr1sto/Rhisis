@@ -45,12 +45,12 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public MagicAttackPacket(INetPacketStream packet)
         {
-            this.AttackMessage = (ObjectMessageType)packet.Read<uint>();
-            this.ObjectId = packet.Read<uint>();
-            this.Parameter2 = packet.Read<int>();
-            this.Parameter3 = packet.Read<int>();
-            this.MagicPower = packet.Read<int>();
-            this.IdSfxHit = packet.Read<int>();
+            AttackMessage = (ObjectMessageType)packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
+            Parameter2 = packet.Read<int>();
+            Parameter3 = packet.Read<int>();
+            MagicPower = packet.Read<int>();
+            IdSfxHit = packet.Read<int>();
         }
 
         /// <summary>
@@ -60,12 +60,12 @@ namespace Rhisis.Network.Packets.World
         /// <returns></returns>
         public bool Equals(MagicAttackPacket other)
         {
-            return this.AttackMessage == other.AttackMessage &&
-                   this.ObjectId == other.ObjectId &&
-                   this.Parameter2 == other.Parameter2 &&
-                   this.Parameter3 == other.Parameter3 &&
-                   this.MagicPower == other.MagicPower &&
-                   this.IdSfxHit == other.IdSfxHit;
+            return AttackMessage == other.AttackMessage &&
+                   ObjectId == other.ObjectId &&
+                   Parameter2 == other.Parameter2 &&
+                   Parameter3 == other.Parameter3 &&
+                   MagicPower == other.MagicPower &&
+                   IdSfxHit == other.IdSfxHit;
         }
     }
 }

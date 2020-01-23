@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World.Trade
         /// <param name="other">Other <see cref="TradePullPacket"/></param>
         public bool Equals(TradePullPacket other)
         {
-            return this.Slot == other.Slot;
+            return Slot == other.Slot;
         }
     }
 }

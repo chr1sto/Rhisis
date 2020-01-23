@@ -23,7 +23,7 @@ namespace Rhisis.CLI.Commands.Configure
         /// <summary>
         /// Gets the real configuration file.
         /// </summary>
-        private string ConfigurationFile => !string.IsNullOrEmpty(this.LoginConfigurationFile) ? this.LoginConfigurationFile : ConfigurationConstants.LoginServerPath;
+        private string ConfigurationFile => !string.IsNullOrEmpty(LoginConfigurationFile) ? LoginConfigurationFile : ConfigurationConstants.LoginServerPath;
 
         /// <summary>
         /// Creates a new <see cref="LoginServerConfigurationCommand"/> instance.
@@ -31,7 +31,7 @@ namespace Rhisis.CLI.Commands.Configure
         /// <param name="consoleHelper"></param>
         public LoginServerConfigurationCommand(ConsoleHelper consoleHelper)
         {
-            this._consoleHelper = consoleHelper;
+            _consoleHelper = consoleHelper;
         }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace Rhisis.CLI.Commands.Configure
         /// </summary>
         public void OnExecute()
         {
-            var loginServerConfiguration = ConfigurationHelper.Load<LoginConfiguration>(this.ConfigurationFile, ConfigurationConstants.LoginServer);
-            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
+            var loginServerConfiguration = ConfigurationHelper.Load<LoginConfiguration>(ConfigurationFile, ConfigurationConstants.LoginServer);
+            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
             var loginConfiguration = new ObjectConfigurationFiller<LoginConfiguration>(loginServerConfiguration);
             var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
 
@@ -54,17 +54,17 @@ namespace Rhisis.CLI.Commands.Configure
             loginConfiguration.Show("Login Server configuration");
             coreConfiguration.Show("Core server configuration");
 
-            bool response = this._consoleHelper.AskConfirmation("Save this configuration?");
+            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
             if (!response) 
                 return;
 
-            ConfigurationHelper.Save(this.ConfigurationFile, new LoginServerConfigurationModel
+            ConfigurationHelper.Save(ConfigurationFile, new LoginServerConfigurationModel
             {
                 CoreConfiguration = coreConfiguration.Value,
                 LoginConfiguration = loginConfiguration.Value
             });
-            Console.WriteLine($"Login Server configuration saved in {this.ConfigurationFile}!");
+            Console.WriteLine($"Login Server configuration saved in {ConfigurationFile}!");
         }
     }
 }

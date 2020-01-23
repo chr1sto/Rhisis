@@ -80,19 +80,19 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public PlayerMoved2Packet(INetPacketStream packet)
         {
-            this.BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            this.DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            this.Angle = packet.Read<float>();
-            this.AngleX = packet.Read<float>();
-            this.AccPower = packet.Read<float>();
-            this.TurnAngle = packet.Read<float>();
-            this.State = packet.Read<uint>();
-            this.StateFlag = packet.Read<uint>();
-            this.Motion = packet.Read<uint>();
-            this.MotionEx = packet.Read<int>();
-            this.Loop = packet.Read<int>();
-            this.MotionOption = packet.Read<uint>();
-            this.TickCount = packet.Read<long>();
+            BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            Angle = packet.Read<float>();
+            AngleX = packet.Read<float>();
+            AccPower = packet.Read<float>();
+            TurnAngle = packet.Read<float>();
+            State = packet.Read<uint>();
+            StateFlag = packet.Read<uint>();
+            Motion = packet.Read<uint>();
+            MotionEx = packet.Read<int>();
+            Loop = packet.Read<int>();
+            MotionOption = packet.Read<uint>();
+            TickCount = packet.Read<long>();
         }
 
         /// <summary>
@@ -101,19 +101,19 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="PlayerMoved2Packet"/></param>
         public bool Equals(PlayerMoved2Packet other)
         {
-            return this.BeginPosition == other.BeginPosition &&
-                   this.DestinationPosition == other.DestinationPosition &&
-                   this.Angle == other.Angle &&
-                   this.AngleX == other.AngleX &&
-                   this.AccPower == other.AccPower &&
-                   this.TurnAngle == other.TurnAngle &&
-                   this.State == other.State &&
-                   this.StateFlag == other.StateFlag &&
-                   this.Motion == other.Motion &&
-                   this.MotionEx == other.MotionEx &&
-                   this.Loop == other.Loop &&
-                   this.MotionOption == other.MotionOption &&
-                   this.TickCount == other.TickCount;
+            return BeginPosition == other.BeginPosition &&
+                   DestinationPosition == other.DestinationPosition &&
+                   Angle == other.Angle &&
+                   AngleX == other.AngleX &&
+                   AccPower == other.AccPower &&
+                   TurnAngle == other.TurnAngle &&
+                   State == other.State &&
+                   StateFlag == other.StateFlag &&
+                   Motion == other.Motion &&
+                   MotionEx == other.MotionEx &&
+                   Loop == other.Loop &&
+                   MotionOption == other.MotionOption &&
+                   TickCount == other.TickCount;
         }
     }
 }

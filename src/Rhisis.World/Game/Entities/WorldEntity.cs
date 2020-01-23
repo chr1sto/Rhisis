@@ -28,24 +28,24 @@ namespace Rhisis.World.Game.Entities
         /// </summary>
         protected WorldEntity()
         {
-            this.Id = RandomHelper.GenerateUniqueId();
-            this.Object = new ObjectComponent();
-            this.Delayer = new Delayer();
+            Id = RandomHelper.GenerateUniqueId();
+            Object = new ObjectComponent();
+            Delayer = new Delayer();
         }
 
         /// <inheritdoc />
         public TEntity FindEntity<TEntity>(uint id) where TEntity : IWorldEntity 
-            => (TEntity)this.Object.Entities.FirstOrDefault(x => x is TEntity && x.Id == id);
+            => (TEntity)Object.Entities.FirstOrDefault(x => x is TEntity && x.Id == id);
 
         /// <inheritdoc />
         public TEntity FindEntity<TEntity>(Func<TEntity, bool> predicate) where TEntity : IWorldEntity
-            => (TEntity)this.Object.Entities.FirstOrDefault(x => x is TEntity entity && predicate(entity));
+            => (TEntity)Object.Entities.FirstOrDefault(x => x is TEntity entity && predicate(entity));
 
         /// <inheritdoc />
         public void Delete()
         {
-            this.Object.CurrentMap.DeleteEntity(this);
-            this.Object.CurrentLayer.DeleteEntity(this);
+            Object.CurrentMap.DeleteEntity(this);
+            Object.CurrentLayer.DeleteEntity(this);
         }
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public bool Equals(IWorldEntity other)
-            => (this.Id, this.Type, this.Object.MapId, this.Object.LayerId) == (other.Id, other.Type, other.Object.MapId, other.Object.LayerId);
+            => (Id, Type, Object.MapId, Object.LayerId) == (other.Id, other.Type, other.Object.MapId, other.Object.LayerId);
 
         /// <inheritdoc />
         public int GetHashCode(IWorldEntity obj) => (obj.Id, obj.Type, obj.Object.Name, obj.Object.Type).GetHashCode();
@@ -64,20 +64,20 @@ namespace Rhisis.World.Game.Entities
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this._disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    this.Delayer.Dispose();
+                    Delayer.Dispose();
                 }
 
-                this._disposedValue = true;
+                _disposedValue = true;
             }
         }
 
         /// <summary>
         /// Dispose resources.
         /// </summary>
-        public void Dispose() => this.Dispose(true);
+        public void Dispose() => Dispose(true);
     }
 }

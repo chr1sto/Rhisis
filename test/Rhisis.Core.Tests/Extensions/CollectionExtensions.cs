@@ -15,18 +15,18 @@ namespace Rhisis.Core.Test.Extensions
         {
             var faker = new Faker();
 
-            this._data = Enumerable.Range(0, faker.Random.Byte() + 1).Select(x => faker.Random.Int()).ToArray();
-            this._collection = new ArrayList(this._data);
+            _data = Enumerable.Range(0, faker.Random.Byte() + 1).Select(x => faker.Random.Int()).ToArray();
+            _collection = new ArrayList(_data);
         }
 
         [Fact]
         public void ConvertCollectionToArrayTest()
         {
-            int[] arrayOfData = this._collection.ToArray<int>();
+            int[] arrayOfData = _collection.ToArray<int>();
 
             Assert.NotNull(arrayOfData);
-            Assert.Equal(this._data.Length, arrayOfData.Length);
-            Assert.Equal(this._data, arrayOfData);
+            Assert.Equal(_data.Length, arrayOfData.Length);
+            Assert.Equal(_data, arrayOfData);
         }
     }
 }

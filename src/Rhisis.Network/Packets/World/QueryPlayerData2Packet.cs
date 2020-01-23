@@ -26,8 +26,8 @@ namespace Rhisis.Network.Packets.World
         public QueryPlayerData2Packet(INetPacketStream packet)
         {
             PlayerDictionary = new Dictionary<uint, int>();
-            this.Size = packet.Read<uint>();
-            for (uint i = 0; i < this.Size; i++)
+            Size = packet.Read<uint>();
+            for (uint i = 0; i < Size; i++)
                 PlayerDictionary.Add(packet.Read<uint>(), packet.Read<int>());
         }
 
@@ -36,6 +36,6 @@ namespace Rhisis.Network.Packets.World
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(QueryPlayerData2Packet other) => this.Size == other.Size && this.PlayerDictionary == other.PlayerDictionary;
+        public bool Equals(QueryPlayerData2Packet other) => Size == other.Size && PlayerDictionary == other.PlayerDictionary;
     }
 }
