@@ -93,8 +93,8 @@ namespace Rhisis.World.Systems.Quest
                     {
                         quest.Monsters = new Dictionary<int, short>
                         {
-                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters?.ElementAtOrDefault(0)?.Id), (short)x.MonsterKilled1 },
-                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters?.ElementAtOrDefault(1)?.Id), (short)x.MonsterKilled2 }
+                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters.ElementAtOrDefault(0)?.Id), (short)x.MonsterKilled1 },
+                            { _gameResources.GetDefinedValue(questScript.EndConditions.Monsters.ElementAtOrDefault(1)?.Id), (short)x.MonsterKilled2 }
                         };
                     }
 
@@ -215,7 +215,7 @@ namespace Rhisis.World.Systems.Quest
                         {
                             Item inventoryItem = player.Inventory.GetItemById(this._gameResources.GetDefinedValue(questItem.Id));
 
-                            if (inventoryItem == null || (inventoryItem != null && inventoryItem.Quantity < questItem.Quantity))
+                            if (inventoryItem == null || inventoryItem.Quantity < questItem.Quantity)
                             {
                                 return false;
                             }

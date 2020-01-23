@@ -79,7 +79,7 @@ namespace Rhisis.Cluster.Client
 
             if (this.Socket == null)
             {
-                this._logger.LogTrace("Skip to handle cluster packet from {0}. Reason: client is not connected.", this.Socket.RemoteEndPoint);
+                this._logger.LogTrace("Skip to handle cluster packet from null socket. Reason: client is not connected.");
                 return;
             }
 

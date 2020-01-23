@@ -32,16 +32,29 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (!File.Exists(expTablePath))
             {
-                this._logger.LogWarning("Unable to load exp table. Reason: cannot find '{0}' file.", expTablePath);
+                this._logger.LogWarning("Unable to load exp table. Reason: Cannot find '{0}' file.", expTablePath);
                 return;
             }
 
             using (var expTableFile = new IncludeFile(expTablePath, @"([(){}=,;\n\r\t ])"))
             {
-                var expTableData = new ExpTableData(
-                    this.LoadDropLuck(expTableFile.GetBlock("expDropLuck")),
-                    this.LoadCharacterExperience(expTableFile.GetBlock("expCharacter")));
+                var dropLuckBlock = expTableFile.GetBlock("expDropLuck");
+                if (dropLuckBlock is null)
+                {
+                    this._logger.LogWarning("Unable to load exp table. Reason: Cannot find drop luck data.");
+                    return;
+                }
+                
+                var expCharacterBlock = expTableFile.GetBlock("expCharacter");
+                if (expCharacterBlock is null)
+                {
+                    this._logger.LogWarning("Unable to load exp table. Reason: Cannot find character experience data.");
+                    return;
+                }
 
+                IEnumerable<long[]> dropLuck = this.LoadDropLuck(dropLuckBlock);
+                IReadOnlyDictionary<int, CharacterExpTableData> characterExperience = this.LoadCharacterExperience(expCharacterBlock);
+                var expTableData = new ExpTableData(dropLuck, characterExperience);
                 this._cache.Set(GameResourcesConstants.ExpTables, expTableData);
             }
 

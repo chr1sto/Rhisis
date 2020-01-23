@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -19,7 +20,7 @@ using Xunit;
 
 namespace Rhisis.Login.Tests
 {
-    public class LoginHandlerTest
+    public class LoginHandlerTest : IDisposable
     {
         private const string BuildVersion = "20072019";
         private const string IncorrectBuildVersion = "23462378";
@@ -144,6 +145,12 @@ namespace Rhisis.Login.Tests
             {
                 this._loginPacketFactoryMock.Verify(x => x.SendPong(this._loginClient, pingPacketMock.Object.Time));
             }
+        }
+
+        public void Dispose()
+        {
+            _socket?.Dispose();
+            _loginClient?.Dispose();
         }
     }
 }

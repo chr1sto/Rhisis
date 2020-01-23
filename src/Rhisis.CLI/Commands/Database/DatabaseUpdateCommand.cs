@@ -41,6 +41,11 @@ namespace Rhisis.CLI.Commands.Database
                     this.DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
                 DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+                if (dbConfig is null)
+                {
+                    Console.WriteLine("Couldn't load database configuration file during execution of update command.");
+                    return;
+                }
 
                 using (IDatabase database = this._databaseFactory.GetDatabase(dbConfig))
                 {

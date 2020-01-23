@@ -77,6 +77,12 @@ namespace Rhisis.Login.Core.Handlers
                 }
 
                 var cluster = parentClusterServer.ServerInfo as ClusterServerInfo;
+                if (cluster is null)
+                {
+                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: Parent cluster server is not a cluster server.");
+                    return;
+                }
+
                 var worldInfo = new WorldServerInfo(id, name, host, port, parentClusterId);
 
                 cluster.Worlds.Add(worldInfo);

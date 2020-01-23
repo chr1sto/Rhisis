@@ -103,56 +103,43 @@ namespace Rhisis.CLI.Commands.Game.Quests
             // Load items
             IEnumerable<Instruction> questEndItems = settingsBlock.GetInstructions("SetEndCondItem");
 
-            if (questEndItems != null && questEndItems.Any())
+            IEnumerable<QuestItem> itemsToRemove = settingsBlock.GetInstructions("SetEndRemoveItem").Select(x => new QuestItem
             {
-                IEnumerable<QuestItem> itemsToRemove = settingsBlock.GetInstructions("SetEndRemoveItem").Select(x => new QuestItem
-                {
-                    Id = x.GetParameter<string>(1)
-                });
-
-                quest.EndQuestItems = questEndItems.Select(x => new QuestItem
-                {
-                    Sex = x.GetParameter<GenderType>(0),
-                    Id = x.GetParameter<string>(3),
-                    Quantity = x.GetParameter<int>(4),
-                    Remove = itemsToRemove.Any(y => y.Id == x.GetParameter<string>(3))
-                }).ToList();
-            }
+                Id = x.GetParameter<string>(1)
+            });
+            quest.EndQuestItems = questEndItems.Select(x => new QuestItem
+            {
+                Sex = x.GetParameter<GenderType>(0),
+                Id = x.GetParameter<string>(3),
+                Quantity = x.GetParameter<int>(4),
+                Remove = itemsToRemove.Any(y => y.Id == x.GetParameter<string>(3))
+            }).ToList();
 
             // Load kill monsters
 
             IEnumerable<Instruction> questKillNpcs = settingsBlock.GetInstructions("SetEndCondKillNPC");
-
-            if (questKillNpcs != null && questKillNpcs.Any())
+            quest.EndQuestMonsters = questKillNpcs.OrderBy(x => x.GetParameter<int>(0)).Select(x => new QuestMonster
             {
-                quest.EndQuestMonsters = questKillNpcs.OrderBy(x => x.GetParameter<int>(0)).Select(x => new QuestMonster
-                {
-                    Id = x.GetParameter<string>(1),
-                    Amount = x.GetParameter<int>(2)
-                });
-            }
+                Id = x.GetParameter<string>(1),
+                Amount = x.GetParameter<int>(2)
+            });
 
             // Load patrols
 
             IEnumerable<Instruction> questPatrols = settingsBlock.GetInstructions("SetEndCondPatrolZone");
-
-            if (questPatrols != null && questPatrols.Any())
+            quest.EndQuestPatrols = questPatrols.Select(x => new QuestPatrol
             {
-                quest.EndQuestPatrols = questPatrols.Select(x => new QuestPatrol
-                {
-                    MapId = x.GetParameter<string>(0),
-                    Left = x.GetParameter<int>(1),
-                    Top = x.GetParameter<int>(2),
-                    Right = x.GetParameter<int>(3),
-                    Bottom = x.GetParameter<int>(4)
-                });
-            }
+                MapId = x.GetParameter<string>(0),
+                Left = x.GetParameter<int>(1),
+                Top = x.GetParameter<int>(2),
+                Right = x.GetParameter<int>(3),
+                Bottom = x.GetParameter<int>(4)
+            });
         }
 
         private void LoadQuestRewards(QuestData quest, Block settingsBlock)
         {
             Instruction goldReward = settingsBlock.GetInstruction("SetEndRewardGold");
-
             if (goldReward != null)
             {
                 quest.MinGold = goldReward.GetParameter<int>(0);
@@ -160,7 +147,6 @@ namespace Rhisis.CLI.Commands.Game.Quests
             }
 
             Instruction experienceReward = settingsBlock.GetInstruction("SetEndRewardExp");
-
             if (experienceReward != null)
             {
                 quest.MinExp = experienceReward.GetParameter<int>(0);
@@ -169,17 +155,13 @@ namespace Rhisis.CLI.Commands.Game.Quests
 
             // Load items
             IEnumerable<Instruction> questRewardItems = settingsBlock.GetInstructions("SetEndRewardItem").Concat(settingsBlock.GetInstructions("SetEndRewardItemWithAbilityOption"));
-
-            if (questRewardItems != null && questRewardItems.Any())
+            quest.RewardItems = questRewardItems.Select(x => new QuestItem
             {
-                quest.RewardItems = questRewardItems.Select(x => new QuestItem
-                {
-                    Sex = x.GetParameter<GenderType>(0),
-                    Id = x.GetParameter<string>(3),
-                    Quantity = x.GetParameter<int>(4),
-                    Refine = x.Parameters.Count > 5 ? x.GetParameter<byte>(5) : default
-                }).ToList();
-            }
+                Sex = x.GetParameter<GenderType>(0),
+                Id = x.GetParameter<string>(3),
+                Quantity = x.GetParameter<int>(4),
+                Refine = x.Parameters.Count > 5 ? x.GetParameter<byte>(5) : default
+            }).ToList();
         }
 
         private void LoadQuestDialogs(QuestData quest, Block questBlock)
@@ -210,7 +192,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
                 return false;
             }
 
-            if (quest.StartJobs == null || (quest.StartJobs != null && !quest.StartJobs.Any()))
+            if (quest.StartJobs == null || !quest.StartJobs.Any())
             {
                 Console.WriteLine($"{quest.Name}: A quest must be linked to a job.");
                 return false;

@@ -45,7 +45,7 @@ namespace Rhisis.Login.Core
 
             if (this.Socket == null)
             {
-                this._logger.LogTrace("Skip to handle core packet from {0}. Reason: socket is not connected.", this.Socket.RemoteEndPoint);
+                this._logger.LogTrace("Skip to handle core packet from null socket. Reason: socket is not connected.");
                 return;
             }
 

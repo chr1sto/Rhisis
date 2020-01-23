@@ -310,6 +310,9 @@ namespace Rhisis.World.Systems.Battle
                 // TODO: range attack probability
 
                 var player = this._defender as IPlayerEntity;
+                if (player is null)
+                    return 0f;
+
                 int blockRate = (int)((defenderDexterity / 8.0f) * player.PlayerData.JobData.Blocking + blockProbability);
 
                 if (blockRate < 0)

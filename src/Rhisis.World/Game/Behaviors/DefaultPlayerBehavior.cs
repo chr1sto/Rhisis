@@ -75,7 +75,8 @@ namespace Rhisis.World.Game.Behaviors
         {
             if (this._player.Follow.IsFollowing && this._player.Follow.Target.Type == WorldEntityType.Drop)
             {
-                this.PickUpDroppedItem(this._player.Follow.Target as IItemEntity);
+                if (this._player.Follow.Target is IItemEntity target)
+                    this.PickUpDroppedItem(target);
                 this._player.Follow.Reset();
             }
         }

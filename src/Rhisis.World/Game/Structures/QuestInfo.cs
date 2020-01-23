@@ -59,7 +59,15 @@ namespace Rhisis.World.Game.Structures
 
         public bool Equals([AllowNull] QuestInfo other)
         {
+            if (other is null)
+                return false;
+
             return QuestId == other.QuestId && CharacterId == other.CharacterId;
+        }
+
+        public override int GetHashCode()
+        {
+            return (QuestId, CharacterId).GetHashCode();
         }
     }
 }

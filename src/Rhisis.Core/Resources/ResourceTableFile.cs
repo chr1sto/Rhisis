@@ -261,6 +261,7 @@ namespace Rhisis.Core.Resources
             {
                 this._headers?.Clear();
                 this._datas?.Clear();
+                this._reader?.Dispose();
             }
 
             base.Dispose(disposing);

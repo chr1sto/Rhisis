@@ -176,7 +176,7 @@ namespace Rhisis.World.Packets.Internal
                 for (var i = 0; i < 6; i++)
                     packet.Write(i);
                 packet.Write<byte>(0); // Base bag item count
-                for (var i = 0; i < 0; i++)
+                for (var i = 0; i < 0; i++) // TODO
                 {
                     packet.Write((byte)i); // Slot
                     packet.Write(i); // Slot
@@ -234,6 +234,11 @@ namespace Rhisis.World.Packets.Internal
             if (entityToSpawn.Type == WorldEntityType.Player)
             {
                 var playerEntity = entityToSpawn as IPlayerEntity;
+                if (playerEntity is null)
+                {
+                    packet.Dispose();
+                    return;
+                }
 
                 packet.Write<short>(0);
                 packet.Write<byte>(1); // is player?
@@ -305,6 +310,11 @@ namespace Rhisis.World.Packets.Internal
             else if (entityToSpawn.Type == WorldEntityType.Monster)
             {
                 var monsterEntity = entityToSpawn as IMonsterEntity;
+                if (monsterEntity is null)
+                {
+                    packet.Dispose();
+                    return;
+                }
 
                 packet.Write<short>(5);
                 packet.Write<byte>(0);
@@ -353,6 +363,11 @@ namespace Rhisis.World.Packets.Internal
             else if (entityToSpawn.Type == WorldEntityType.Drop)
             {
                 var dropItemEntity = entityToSpawn as IItemEntity;
+                if (dropItemEntity is null)
+                {
+                    packet.Dispose();
+                    return;
+                }
 
                 dropItemEntity.Drop.Item.Serialize(packet);
             }

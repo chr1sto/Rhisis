@@ -281,6 +281,12 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public static bool operator ==(Vector3 a, Vector3 b)
         {
+            if (a is null && b is null)
+                return true;
+
+            if (a is null || b is null)
+                return false;
+
             return Math.Ceiling(a.X - b.X) < 0.01 && Math.Ceiling(a.Y - b.Y) < 0.01 && Math.Ceiling(a.Z - b.Z) < 0.01;
         }
 

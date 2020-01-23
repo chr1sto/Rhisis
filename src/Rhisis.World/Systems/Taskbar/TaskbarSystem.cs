@@ -52,6 +52,8 @@ namespace Rhisis.World.Systems.Taskbar
                 if (dbShortcut.Type == ShortcutType.Item)
                 {
                     var item = player.Inventory.GetItem(x => x.Slot == dbShortcut.ObjectId);
+                    if (item is null)
+                        return;
 
                     shortcut = new Shortcut(dbShortcut.SlotIndex, dbShortcut.Type, (uint)item.UniqueId, dbShortcut.ObjectType, dbShortcut.ObjectIndex, dbShortcut.UserId, dbShortcut.ObjectData, dbShortcut.Text);
                 }
@@ -89,6 +91,9 @@ namespace Rhisis.World.Systems.Taskbar
                 if (applet.Type == ShortcutType.Item)
                 {
                     var item = player.Inventory.GetItem((int)applet.ObjectId);
+                    if (item is null)
+                        continue;
+
                     dbApplet.ObjectId = (uint)item.Slot;
                 }
 
@@ -111,6 +116,9 @@ namespace Rhisis.World.Systems.Taskbar
                     if (itemShortcut.Type == ShortcutType.Item)
                     {
                         var item = player.Inventory.GetItem((int)itemShortcut.ObjectId);
+                        if (item is null)
+                            continue;
+
                         dbItem.ObjectId = (uint)item.Slot;
                     }
 

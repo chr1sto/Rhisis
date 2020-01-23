@@ -32,6 +32,12 @@ namespace Rhisis.CLI.Commands.User
                 this.DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
             var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(this.DatabaseConfigurationFile);
+            if (dbConfig is null)
+            {
+                Console.WriteLine("Couldn't load database configuration file during execution of user create command.'");
+                return;
+            }
+
             var user = new DbUser();
 
             Console.Write("Username: ");

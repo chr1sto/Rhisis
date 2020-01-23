@@ -56,7 +56,7 @@ namespace Rhisis.World.Systems.Inventory
 
             player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
 
-            if (items == null || (items != null && !items.Any()))
+            if (items == null)
                 return;
 
             foreach (DbItem item in items)
@@ -257,12 +257,12 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void MoveItem(IPlayerEntity player, byte sourceSlot, byte destinationSlot, bool sendToPlayer = true)
         {
-            if (sourceSlot < 0 || sourceSlot >= MaxItems)
+            if (sourceSlot >= MaxItems)
             {
                 throw new InvalidOperationException("Source slot is out of inventory range.");
             }
 
-            if (destinationSlot < 0 || destinationSlot >= MaxItems)
+            if (destinationSlot >= MaxItems)
             {
                 throw new InvalidOperationException("Destination slot is out of inventory range.");
             }

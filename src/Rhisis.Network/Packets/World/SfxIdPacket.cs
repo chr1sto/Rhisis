@@ -6,7 +6,7 @@ namespace Rhisis.Network.Packets.World
     /// <summary>
     /// Defines the <see cref="SfxIdPacket"/> structure.
     /// </summary>
-    public struct SfxIdPacket : IEquatable<SfxIdPacket>
+    public class SfxIdPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the target id.
@@ -33,26 +33,14 @@ namespace Rhisis.Network.Packets.World
         /// </summary>
         public int MaxDamageCount { get; set; }
 
-        /// <summary>
-        /// Creates a new <see cref="SfxIdPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public SfxIdPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             this.Target = packet.Read<uint>();
             this.IdSfxHit = packet.Read<int>();
             this.Type = packet.Read<uint>();
             this.Skill = packet.Read<uint>();
             this.MaxDamageCount = packet.Read<int>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="SfxIdPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="SfxIdPacket"/></param>
-        public bool Equals(SfxIdPacket other)
-        {
-            return this.Type == other.Type && this.IdSfxHit == other.IdSfxHit && this.Type == other.Type && this.Skill == other.Skill && this.MaxDamageCount == other.MaxDamageCount;
         }
     }
 }

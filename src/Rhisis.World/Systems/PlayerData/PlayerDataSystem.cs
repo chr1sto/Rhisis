@@ -26,7 +26,8 @@ namespace Rhisis.World.Systems.PlayerData
         /// <inheritdoc />
         public bool IncreaseGold(IPlayerEntity player, int goldAmount)
         {
-            long gold = player.PlayerData.Gold + goldAmount;
+            // We cast player gold to long because otherwise it would use Int32 arithmetic and would overflow
+            long gold = (long)player.PlayerData.Gold + goldAmount;
 
             if (gold > int.MaxValue || gold < 0) // Check gold overflow
             {

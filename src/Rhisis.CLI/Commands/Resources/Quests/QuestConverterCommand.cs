@@ -96,7 +96,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             using var writer = new StreamWriter(fileStream);
 
-            if (quests == null || (quests != null && !quests.Any()))
+            if (quests == null || !quests.Any())
             {
                 writer.WriteLine($"{QuestScriptConstants.QuestDefinitionKey} = nil");
             }
@@ -272,7 +272,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
         /// <param name="dialogs">Dialogs string enumerable/array.</param>
         private void WriteDialogSection(StreamWriter writer, int level, string sectionName, IEnumerable<string> dialogs)
         {
-            if (dialogs == null || (dialogs != null && !dialogs.Any()))
+            if (dialogs == null || !dialogs.Any())
             {
                 WriteAtLevel(writer, level, $"{sectionName} = nil");
             }

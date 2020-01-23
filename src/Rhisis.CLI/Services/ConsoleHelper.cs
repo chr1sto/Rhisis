@@ -124,9 +124,9 @@ namespace Rhisis.CLI.Services
             string response = Console.ReadLine();
 
             Debug.Assert(response != null, nameof(response) + " != null");
-            return response.Equals("y", StringComparison.OrdinalIgnoreCase)
-                || response.Equals("yes", StringComparison.OrdinalIgnoreCase)
-                || string.IsNullOrEmpty(response);
+            return string.IsNullOrEmpty(response) || 
+                   response.Equals("y", StringComparison.OrdinalIgnoreCase) ||
+                   response.Equals("yes", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

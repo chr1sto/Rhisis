@@ -70,15 +70,22 @@ namespace Rhisis.Core.Resources.Loaders
 
             using (var moversPropExFile = new IncludeFile(propMoverExPath))
             {
-                foreach (Block moverBlock in moversPropExFile.Statements)
+                foreach (var statement in moversPropExFile.Statements)
                 {
+                    if (!(statement is Block moverBlock))
+                        continue;
+
                     if (this._defines.TryGetValue(moverBlock.Name, out int moverId) && moversData.TryGetValue(moverId, out MoverData mover))
                     {
                         this.LoadDropGold(mover, moverBlock.GetInstruction("DropGold"));
                         this.LoadDropItems(mover, moverBlock.GetInstructions("DropItem"));
                         this.LoadDropItemsKind(mover, moverBlock.GetInstructions("DropKind"));
-                        
-                        mover.MaxDropItem = int.Parse(moverBlock.GetVariable("Maxitem").Value.ToString());
+
+                        var maxDropVariable = moverBlock.GetVariable("Maxitem");
+                        if (maxDropVariable is null)
+                            continue;
+
+                        mover.MaxDropItem = int.Parse(maxDropVariable.Value.ToString());
                     }
                 }
             }

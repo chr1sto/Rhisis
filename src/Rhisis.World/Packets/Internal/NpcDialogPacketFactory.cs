@@ -68,7 +68,7 @@ namespace Rhisis.World.Packets.Internal
             {
                 using var packet = new FFPacket();
 
-                if (newQuests.Any())
+                if (newQuests != null)
                 {
                     foreach (DialogLink newQuestLink in newQuests)
                     {
@@ -81,7 +81,7 @@ namespace Rhisis.World.Packets.Internal
                     }
                 }
 
-                if (currentQuests.Any())
+                if (currentQuests != null)
                 {
                     foreach (DialogLink currentQuestLink in currentQuests)
                     {
