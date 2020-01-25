@@ -3,9 +3,6 @@ using Rhisis.Core.Structures;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="DropItemPacket"/> structure.
-    /// </summary>
     public class DropItemPacket : IPacketDeserializer
     {
         /// <summary>

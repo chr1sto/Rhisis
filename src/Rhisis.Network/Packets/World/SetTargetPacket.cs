@@ -3,9 +3,6 @@ using Rhisis.Core.Common;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="SetTargetPacket"/> structure.
-    /// </summary>
     public class SetTargetPacket : IPacketDeserializer
     {
         /// <summary>

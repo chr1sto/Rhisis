@@ -2,7 +2,7 @@
 
 namespace Rhisis.Network.Packets.World.Taskbar
 {
-    public class RemoveTaskbarItemPacket : RemoveTaskbarAppletPacket, IPacketDeserializer
+    public class RemoveTaskbarItemPacket : RemoveTaskbarAppletPacket
     {
         /// <summary>
         ///  Gets the slot level index from the item taskbar to be removed.

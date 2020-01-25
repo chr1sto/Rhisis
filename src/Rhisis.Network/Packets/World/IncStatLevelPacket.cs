@@ -1,34 +1,18 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="IncStatLevelPacket"/> structure.
-    /// </summary>
-    public struct IncStatLevelPacket : IEquatable<IncStatLevelPacket>
+    public class IncStatLevelPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the id.
         /// </summary>
-        public byte Id { get; set; }
+        public byte Id { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="IncStatLevelPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public IncStatLevelPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             Id = packet.Read<byte>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="IncStatLevelPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="IncStatLevelPacket"/></param>
-        public bool Equals(IncStatLevelPacket other)
-        {
-            return Id == other.Id;
         }
     }
 }

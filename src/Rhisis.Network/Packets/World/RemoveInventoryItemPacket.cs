@@ -2,9 +2,6 @@
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="RemoveInventoryItemPacket"/> structure.
-    /// </summary>
     public class RemoveInventoryItemPacket : IPacketDeserializer
     {
         /// <summary>

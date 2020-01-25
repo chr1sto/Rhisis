@@ -2,9 +2,6 @@
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="JoinPacket"/> structure.
-    /// </summary>
     public class JoinPacket : IPacketDeserializer
     {
         /// <summary>

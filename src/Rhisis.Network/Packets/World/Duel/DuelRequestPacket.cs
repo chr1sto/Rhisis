@@ -1,40 +1,24 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Duel
 {
-    /// <summary>
-    /// Defines the <see cref="DuelRequestPacket"/> structure.
-    /// </summary>
-    public struct DuelRequestPacket : IEquatable<DuelRequestPacket>
+    public class DuelRequestPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the source player id.
         /// </summary>
-        public uint SourcePlayerId { get; set; }
+        public uint SourcePlayerId { get; private set; }
 
         /// <summary>
         /// Gets the destination player id.
         /// </summary>
-        public uint DestinationPlayerId { get; set; }
+        public uint DestinationPlayerId { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="DuelRequestPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public DuelRequestPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             SourcePlayerId = packet.Read<uint>();
             DestinationPlayerId = packet.Read<uint>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="DuelRequestPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="DuelRequestPacket"/></param>
-        public bool Equals(DuelRequestPacket other)
-        {
-            return SourcePlayerId == other.SourcePlayerId && DestinationPlayerId == other.DestinationPlayerId;
         }
     }
 }

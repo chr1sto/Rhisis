@@ -1,40 +1,24 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Bank
 {
-    /// <summary>
-    /// Defines the <see cref="PutGoldBankPacket"/> structure.
-    /// </summary>
-    public struct PutGoldBankPacket : IEquatable<PutGoldBankPacket>
+    public class PutGoldBankPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the slot.
         /// </summary>
-        public byte Slot { get; set; }
+        public byte Slot { get; private set; }
 
         /// <summary>
         /// Gets the amount of gold.
         /// </summary>
-        public uint Gold { get; set; }
+        public uint Gold { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="PutGoldBankPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public PutGoldBankPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             Slot = packet.Read<byte>();
             Gold = packet.Read<uint>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="PutGoldBankPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="PutGoldBankPacket"/></param>
-        public bool Equals(PutGoldBankPacket other)
-        {
-            return Slot == other.Slot && Gold == other.Gold;
         }
     }
 }

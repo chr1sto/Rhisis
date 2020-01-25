@@ -3,9 +3,6 @@ using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="ChangeFacePacket"/> structure.
-    /// </summary>
     public class ChangeFacePacket : IPacketDeserializer
     {
         /// <summary>

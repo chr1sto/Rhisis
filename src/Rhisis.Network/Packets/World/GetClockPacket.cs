@@ -1,40 +1,24 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="GetClockPacket"/> structure.
-    /// </summary>
-    public struct GetClockPacket : IEquatable<GetClockPacket>
+    public class GetClockPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the SetBaseOfClient.
         /// </summary>
-        public byte SetBaseOfClient { get; set; }
+        public byte SetBaseOfClient { get; private set; }
 
         /// <summary>
         /// Gets the client time
         /// </summary>
-        public uint ClientTime { get; set; }
+        public uint ClientTime { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="GetClockPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public GetClockPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             SetBaseOfClient = packet.Read<byte>();
             ClientTime = packet.Read<uint>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="GetClockPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="GetClockPacket"/></param>
-        public bool Equals(GetClockPacket other)
-        {
-            return SetBaseOfClient == other.SetBaseOfClient && ClientTime == other.ClientTime;
         }
     }
 }

@@ -3,9 +3,6 @@ using Rhisis.Core.Structures;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="PlayerMovedPacket"/> structure.
-    /// </summary>
     public class PlayerMovedPacket : IPacketDeserializer
     {
         /// <summary>

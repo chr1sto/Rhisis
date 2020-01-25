@@ -1,35 +1,19 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Party
 {
-    /// <summary>
-    /// Defines the <see cref="PartyRemoveMemberPacket"/> structure.
-    /// </summary>
-    public struct PartyRemoveMemberPacket : IEquatable<PartyRemoveMemberPacket>
+    public class PartyRemoveMemberPacket : IPacketDeserializer
     {
 
-        public uint LeaderId { get; set; }
+        public uint LeaderId { get; private set; }
 
-        public uint MemberId { get; set; }
+        public uint MemberId { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="PartyRemoveMemberPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public PartyRemoveMemberPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             LeaderId = packet.Read<uint>();
             MemberId = packet.Read<uint>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="PartyRemoveMemberPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="PartyRemoveMemberPacket"/></param>
-        public bool Equals(PartyRemoveMemberPacket other)
-        {
-            return LeaderId == other.LeaderId && MemberId == other.MemberId;
         }
     }
 }

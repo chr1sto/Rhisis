@@ -2,17 +2,18 @@
 
 namespace Rhisis.Network.Packets
 {
-    public class PacketHeader
+    public class PacketHeader : IPacketDeserializer
     {
-        public byte Header { get; }
+        public byte Header { get; private set; }
 
-        public int HashLength { get; }
+        public int HashLength { get; private set; }
 
-        public int Length { get; }
+        public int Length { get; private set; }
 
-        public int HashData { get; }
+        public int HashData { get; private set; }
 
-        public PacketHeader(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             Header = packet.Read<byte>();
             HashLength = packet.Read<int>();

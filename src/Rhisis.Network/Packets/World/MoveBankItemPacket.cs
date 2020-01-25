@@ -1,40 +1,24 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="MoveBankItemPacket"/> structure.
-    /// </summary>
-    public struct MoveBankItemPacket : IEquatable<MoveBankItemPacket>
+    public class MoveBankItemPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the source index.
         /// </summary>
-        public int SourceIndex { get; set; }
+        public int SourceIndex { get; private set; }
 
         /// <summary>
         /// Gets the destination index.
         /// </summary>
-        public int Destinationindex { get; set; }
+        public int DestinationIndex { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="MoveBankItemPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public MoveBankItemPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             SourceIndex = packet.Read<int>();
-            Destinationindex = packet.Read<int>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="MoveBankItemPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="MoveBankItemPacket"/></param>
-        public bool Equals(MoveBankItemPacket other)
-        {
-            return SourceIndex == other.SourceIndex && Destinationindex == other.Destinationindex;
+            DestinationIndex = packet.Read<int>();
         }
     }
 }
