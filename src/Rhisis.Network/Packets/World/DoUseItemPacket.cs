@@ -2,9 +2,6 @@
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Describes the packet structure of the <see cref="PacketType.DOUSEITEM"/>.
-    /// </summary>
     public class DoUseItemPacket : IPacketDeserializer
     {
         /// <summary>

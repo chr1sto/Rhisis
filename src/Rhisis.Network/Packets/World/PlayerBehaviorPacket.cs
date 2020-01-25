@@ -3,9 +3,6 @@ using Rhisis.Core.Structures;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="PlayerBehaviorPacket"/> structure.
-    /// </summary>
     public class PlayerBehaviorPacket : IPacketDeserializer
     {
         /// <summary>

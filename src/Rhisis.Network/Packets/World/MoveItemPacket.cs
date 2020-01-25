@@ -2,9 +2,6 @@
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="MoveItemPacket"/> structure.
-    /// </summary>
     public class MoveItemPacket : IPacketDeserializer
     {
         /// <summary>

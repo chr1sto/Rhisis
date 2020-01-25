@@ -1,33 +1,18 @@
-﻿using System;
-using Sylver.Network.Data;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.GuildCombat
 {
-    /// <summary>
-    /// Defines the <see cref="SelectMapGuildCombatPacket"/> structure.
-    /// </summary>
-    public struct SelectMapGuildCombatPacket : IEquatable<SelectMapGuildCombatPacket>
+    public class SelectMapGuildCombatPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the map id.
         /// </summary>
-        public int Map { get; set; }
-        /// <summary>
-        /// Creates a new <see cref="SelectMapGuildCombatPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public SelectMapGuildCombatPacket(INetPacketStream packet)
+        public int Map { get; private set; }
+
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             Map = packet.Read<int>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="SelectMapGuildCombatPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="SelectMapGuildCombatPacket"/></param>
-        public bool Equals(SelectMapGuildCombatPacket other)
-        {
-            return Map == other.Map;
         }
     }
 }

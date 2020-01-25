@@ -8,36 +8,20 @@ namespace Rhisis.Core.Structures
     /// </summary>
     public class Vector3 : IEquatable<Vector3>
     {
-        private float _x;
-        private float _y;
-        private float _z;
-
         /// <summary>
         /// Gets or sets the X position in the world.
         /// </summary>
-        public float X
-        {
-            get => _x;
-            set => _x = value;
-        }
+        public float X { get; set; }
 
         /// <summary>
         /// Gets or sets the Y position in the world.
         /// </summary>
-        public float Y
-        {
-            get => _y;
-            set => _y = value;
-        }
+        public float Y { get; set; }
 
         /// <summary>
         /// Gets or sets the Z position in the world.
         /// </summary>
-        public float Z
-        {
-            get => _z;
-            set => _z = value;
-        }
+        public float Z { get; set; }
 
         /// <summary>
         /// Gets the vector length.
@@ -47,7 +31,7 @@ namespace Rhisis.Core.Structures
         /// <summary>
         /// Gets the vector squared length.
         /// </summary>
-        public float SquaredLength => (_x * _x) + (_y * _y) + (_z * _z);
+        public float SquaredLength => (X * X) + (Y * Y) + (Z * Z);
 
         /// <summary>
         /// Creates a new Vector3 initialized to 0.
@@ -65,9 +49,9 @@ namespace Rhisis.Core.Structures
         /// <param name="z"></param>
         public Vector3(float x, float y, float z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
+            X = x;
+            Y = y;
+            Z = z;
         }
 
         /// <summary>
@@ -78,9 +62,9 @@ namespace Rhisis.Core.Structures
         /// <param name="z"></param>
         public Vector3(string x, string y, string z)
         {
-            float.TryParse(x, out _x);
-            float.TryParse(y, out _y);
-            float.TryParse(z, out _z);
+            X = Convert.ToSingle(x);
+            Y = Convert.ToSingle(y);
+            Z = Convert.ToSingle(z);
         }
 
         /// <summary>
@@ -90,7 +74,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public double GetDistance2D(Vector3 otherPosition)
         {
-            return Math.Sqrt(Math.Pow(otherPosition.X - _x, 2) + Math.Pow(otherPosition.Z - _z, 2));
+            return Math.Sqrt(Math.Pow(otherPosition.X - X, 2) + Math.Pow(otherPosition.Z - Z, 2));
         }
 
         /// <summary>
@@ -100,7 +84,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public double GetDistance3D(Vector3 otherPosition)
         {
-            return Math.Sqrt(Math.Pow(otherPosition.X - _x, 2) + Math.Pow(otherPosition.Y - _y, 2) + Math.Pow(otherPosition.Z - _z, 2));
+            return Math.Sqrt(Math.Pow(otherPosition.X - X, 2) + Math.Pow(otherPosition.Y - Y, 2) + Math.Pow(otherPosition.Z - Z, 2));
         }
 
         /// <summary>
@@ -111,19 +95,19 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public bool IsInCircle(Vector3 otherPosition, float circleRadius)
         {
-            return Math.Pow(otherPosition.X - _x, 2) + Math.Pow(otherPosition.Z - _z, 2) < Math.Pow(circleRadius, 2);
+            return Math.Pow(otherPosition.X - X, 2) + Math.Pow(otherPosition.Z - Z, 2) < Math.Pow(circleRadius, 2);
         }
 
         /// <summary>
-        /// Check if this <see cref="Vector3"/> instersects a <see cref="Rectangle"/>.
+        /// Check if this <see cref="Vector3"/> intersects a <see cref="Rectangle"/>.
         /// </summary>
         /// <param name="rectangle"></param>
         /// <param name="radius"></param>
         /// <returns></returns>
         public bool Intersects(Rectangle rectangle, float radius)
         {
-            var deltaX = _x - Math.Max(rectangle.X, Math.Min(_x, rectangle.X + rectangle.Width));
-            var deltaY = _z - Math.Max(rectangle.Z, Math.Min(_z, rectangle.Z + rectangle.Length));
+            var deltaX = X - Math.Max(rectangle.X, Math.Min(X, rectangle.X + rectangle.Width));
+            var deltaY = Z - Math.Max(rectangle.Z, Math.Min(Z, rectangle.Z + rectangle.Length));
 
             return (deltaX * deltaX + deltaY * deltaY) < (radius * radius);
         }
@@ -146,16 +130,16 @@ namespace Rhisis.Core.Structures
         /// Clones this Vector3 instance.
         /// </summary>
         /// <returns></returns>
-        public Vector3 Clone() => new Vector3(_x, _y, _z);
+        public Vector3 Clone() => new Vector3(X, Y, Z);
 
         /// <summary>
         /// Reset to 0 this Vector3.
         /// </summary>
         public void Reset()
         {
-            _x = 0;
-            _y = 0;
-            _z = 0;
+            X = 0;
+            Y = 0;
+            Z = 0;
         }
 
         /// <summary>
@@ -170,7 +154,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("Vector3: {0}:{1}:{2}", _x, _y, _z);
+            return $"Vector3: {X}:{Y}:{Z}";
         }
 
         /// <summary>
@@ -181,9 +165,9 @@ namespace Rhisis.Core.Structures
         /// </returns> 
         public override int GetHashCode()
         {
-            return _x.GetHashCode() ^
-                   _y.GetHashCode() ^
-                   _z.GetHashCode();
+            return X.GetHashCode() ^
+                   Y.GetHashCode() ^
+                   Z.GetHashCode();
         }
 
         /// <summary>
@@ -223,7 +207,7 @@ namespace Rhisis.Core.Structures
         }
 
         /// <summary>
-        /// Add two Vecto3.
+        /// Add two Vector3.
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -231,7 +215,7 @@ namespace Rhisis.Core.Structures
         public static Vector3 operator +(Vector3 a, Vector3 b) => new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
 
         /// <summary>
-        /// Substract two Vector3.
+        /// Subtract two Vector3.
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -258,7 +242,7 @@ namespace Rhisis.Core.Structures
         /// Divides two Vector3.
         /// </summary>
         /// <remarks>
-        /// Be carefull with the <see cref="DivideByZeroException"/>.
+        /// Be careful with the <see cref="DivideByZeroException"/>.
         /// </remarks>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -266,7 +250,7 @@ namespace Rhisis.Core.Structures
         public static Vector3 operator /(Vector3 a, Vector3 b) => new Vector3(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
 
         /// <summary>
-        /// Devides a vector by a scalar number.
+        /// Divides a vector by a scalar number.
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>

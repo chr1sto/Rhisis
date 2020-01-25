@@ -7,22 +7,22 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the tab.
         /// </summary>
-        public byte Tab { get; set; }
+        public byte Tab { get; private set; }
 
         /// <summary>
         /// Gets the slot of the item.
         /// </summary>
-        public byte Slot { get; set; }
+        public byte Slot { get; private set; }
 
         /// <summary>
         /// Gets the quantity of items.
         /// </summary>
-        public short Quantity { get; set; }
+        public short Quantity { get; private set; }
 
         /// <summary>
         /// Gets the Item Id.
         /// </summary>
-        public int ItemId { get; set; }
+        public int ItemId { get; private set; }
 
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)

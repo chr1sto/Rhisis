@@ -2,9 +2,6 @@
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="PlayerDestObjectPacket"/> structure.
-    /// </summary>
     public class PlayerDestObjectPacket : IPacketDeserializer
     {
         /// <summary>

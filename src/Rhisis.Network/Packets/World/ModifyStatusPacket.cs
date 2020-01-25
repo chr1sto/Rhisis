@@ -7,7 +7,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the strength.
         /// </summary>
-        public ushort Strenght { get; private set; }
+        public ushort Strength { get; private set; }
 
         /// <summary>
         /// Gets the stamina.
@@ -27,7 +27,7 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            Strenght = (ushort)packet.Read<int>();
+            Strength = (ushort)packet.Read<int>();
             Stamina = (ushort)packet.Read<int>();
             Dexterity = (ushort)packet.Read<int>();
             Intelligence = (ushort)packet.Read<int>();

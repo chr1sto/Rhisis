@@ -2,9 +2,6 @@
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="ChatPacket"/> structure.
-    /// </summary>
     public class ChatPacket : IPacketDeserializer
     {
         /// <summary>

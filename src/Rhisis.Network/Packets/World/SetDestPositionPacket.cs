@@ -1,11 +1,8 @@
-﻿using Sylver.Network.Data;
-using System;
+﻿using System;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="SetDestPositionPacket"/> packet structure.
-    /// </summary>
     public class SetDestPositionPacket : IPacketDeserializer
     {
         /// <summary>

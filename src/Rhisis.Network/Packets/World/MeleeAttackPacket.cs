@@ -3,9 +3,6 @@ using Rhisis.Core.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="MeleeAttackPacket"/> structure.
-    /// </summary>
     public class MeleeAttackPacket : IPacketDeserializer
     {
         /// <summary>

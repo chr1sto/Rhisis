@@ -2,7 +2,7 @@
 
 namespace Rhisis.Network.Packets.World.Taskbar
 {
-    public class AddTaskbarItemPacket : AddTaskbarAppletPacket, IPacketDeserializer
+    public class AddTaskbarItemPacket : AddTaskbarAppletPacket
     {
         /// <summary>
         /// Gets the slot level index.

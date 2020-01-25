@@ -2,9 +2,6 @@
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="ExperiencePacket"/> structure.
-    /// </summary>
     public class ExperiencePacket : IPacketDeserializer
     {
         /// <summary>
@@ -16,15 +13,6 @@ namespace Rhisis.Network.Packets.World
         public void Deserialize(INetPacketStream packet)
         {
             Experience = packet.Read<long>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="ExperiencePacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="ExperiencePacket"/></param>
-        public bool Equals(ExperiencePacket other)
-        {
-            return Experience == other.Experience;
         }
     }
 }

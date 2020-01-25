@@ -29,7 +29,7 @@ namespace Rhisis.World.Handlers
         public void OnModifyStatus(IWorldClient client, ModifyStatusPacket packet)
         {
             _statisticsSystem.UpdateStatistics(client.Player, 
-                packet.Strenght, packet.Stamina, packet.Dexterity, packet.Intelligence);
+                packet.Strength, packet.Stamina, packet.Dexterity, packet.Intelligence);
         }
     }
 }
