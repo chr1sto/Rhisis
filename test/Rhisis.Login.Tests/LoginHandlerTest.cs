@@ -44,49 +44,49 @@ namespace Rhisis.Login.Tests
 
         public LoginHandlerTest()
         {
-            this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            this._loginClient = new LoginClient(_socket);
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _loginClient = new LoginClient(_socket);
 
-            this._users = new UserGenerator().Generate(100);
+            _users = new UserGenerator().Generate(100);
 
-            this._loggerMock = new Mock<ILogger<LoginHandler>>();
-            this._loginServerMock = new Mock<ILoginServer>();
-            this._coreServerMock = new Mock<ICoreServer>();
-            this._loginPacketFactoryMock = new Mock<ILoginPacketFactory>();
+            _loggerMock = new Mock<ILogger<LoginHandler>>();
+            _loginServerMock = new Mock<ILoginServer>();
+            _coreServerMock = new Mock<ICoreServer>();
+            _loginPacketFactoryMock = new Mock<ILoginPacketFactory>();
 
-            this._loginConfigurationMock = new Mock<IOptions<LoginConfiguration>>();
-            this._loginConfigurationMock.Setup(x => x.Value).Returns(this._loginConfiguration);
+            _loginConfigurationMock = new Mock<IOptions<LoginConfiguration>>();
+            _loginConfigurationMock.Setup(x => x.Value).Returns(_loginConfiguration);
 
-            this._databaseUserRepository = new Mock<IUserRepository>();
-            this._databaseUserRepository.Setup(x => x.GetUser(It.IsAny<string>()))
-                .Returns<string>(x => this._users.AsQueryable().FirstOrDefault(y => y.Username == x));
+            _databaseUserRepository = new Mock<IUserRepository>();
+            _databaseUserRepository.Setup(x => x.GetUser(It.IsAny<string>()))
+                .Returns<string>(x => _users.AsQueryable().FirstOrDefault(y => y.Username == x));
 
-            this._database = new Mock<IDatabase>();
-            this._database.SetupGet(x => x.Users).Returns(this._databaseUserRepository.Object);
+            _database = new Mock<IDatabase>();
+            _database.SetupGet(x => x.Users).Returns(_databaseUserRepository.Object);
 
-            this._loginHandler = new LoginHandler(
-                this._loggerMock.Object,
-                this._loginConfigurationMock.Object,
-                this._loginServerMock.Object,
-                this._database.Object,
-                this._coreServerMock.Object,
-                this._loginPacketFactoryMock.Object);
+            _loginHandler = new LoginHandler(
+                _loggerMock.Object,
+                _loginConfigurationMock.Object,
+                _loginServerMock.Object,
+                _database.Object,
+                _coreServerMock.Object,
+                _loginPacketFactoryMock.Object);
 
-            this._loginClient.Initialize(this._loginServerMock.Object,
+            _loginClient.Initialize(_loginServerMock.Object,
                 new Mock<ILogger<LoginClient>>().Object,
                 new Mock<IHandlerInvoker>().Object,
-                this._loginPacketFactoryMock.Object);
+                _loginPacketFactoryMock.Object);
         }
 
         [Fact]
         public void OnCertifyFailedWithIncorrectBuildVersionTest()
         {
-            var certifyPacket = new Mock<CertifyPacket>(this._loginConfigurationMock.Object);
+            var certifyPacket = new Mock<CertifyPacket>(_loginConfigurationMock.Object);
             certifyPacket.SetupGet(x => x.BuildVersion).Returns(IncorrectBuildVersion);
 
-            this._loginHandler.OnCertify(this._loginClient, certifyPacket.Object);
+            _loginHandler.OnCertify(_loginClient, certifyPacket.Object);
 
-            this._loginPacketFactoryMock.Verify(x => x.SendLoginError(this._loginClient, ErrorType.ILLEGAL_VER), Times.Once());
+            _loginPacketFactoryMock.Verify(x => x.SendLoginError(_loginClient, ErrorType.ILLEGAL_VER), Times.Once());
         }
 
         public static IEnumerable<object[]> UserData => new List<object[]>
@@ -101,27 +101,27 @@ namespace Rhisis.Login.Tests
         [MemberData(nameof(UserData))]
         public void OnCertifyTest(string username, string password, AuthenticationResult authenticationResult, ErrorType errorType)
         {
-            var certifyPacket = new Mock<CertifyPacket>(this._loginConfigurationMock.Object);
+            var certifyPacket = new Mock<CertifyPacket>(_loginConfigurationMock.Object);
             certifyPacket.SetupGet(x => x.BuildVersion).Returns(BuildVersion);
             certifyPacket.SetupGet(x => x.Username).Returns(username);
             certifyPacket.SetupGet(x => x.Password).Returns(password);
 
-            this._loginHandler.OnCertify(this._loginClient, certifyPacket.Object);
+            _loginHandler.OnCertify(_loginClient, certifyPacket.Object);
 
             if (authenticationResult == AuthenticationResult.Success)
             {
-                DbUser user = this._users.FirstOrDefault(x => x.Username == username && x.Password == password);
+                DbUser user = _users.FirstOrDefault(x => x.Username == username && x.Password == password);
 
-                this._databaseUserRepository.Verify(x => x.Update(user), Times.Once());
-                this._database.Verify(x => x.Complete());
+                _databaseUserRepository.Verify(x => x.Update(user), Times.Once());
+                _database.Verify(x => x.Complete());
 
-                Assert.NotNull(this._loginClient.Username);
-                Assert.Equal(username, this._loginClient.Username);
+                Assert.NotNull(_loginClient.Username);
+                Assert.Equal(username, _loginClient.Username);
             }
             else
             {
-                Assert.Null(this._loginClient.Username);
-                this._loginPacketFactoryMock.Verify(x => x.SendLoginError(this._loginClient, errorType), Times.Once());
+                Assert.Null(_loginClient.Username);
+                _loginPacketFactoryMock.Verify(x => x.SendLoginError(_loginClient, errorType), Times.Once());
             }
         }
 
@@ -139,11 +139,11 @@ namespace Rhisis.Login.Tests
             pingPacketMock.SetupGet(x => x.Time).Returns(time);
             pingPacketMock.SetupGet(x => x.IsTimeOut).Returns(timeout);
 
-            this._loginHandler.OnPing(this._loginClient, pingPacketMock.Object);
+            _loginHandler.OnPing(_loginClient, pingPacketMock.Object);
 
             if (!timeout)
             {
-                this._loginPacketFactoryMock.Verify(x => x.SendPong(this._loginClient, pingPacketMock.Object.Time));
+                _loginPacketFactoryMock.Verify(x => x.SendPong(_loginClient, pingPacketMock.Object.Time));
             }
         }
 

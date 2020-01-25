@@ -20,8 +20,8 @@ namespace Rhisis.World.Game.Chat
         /// <param name="playerDataSystem">Player data system.</param>
         public GetGoldChatCommand(ILogger<GetGoldChatCommand> logger, IPlayerDataSystem playerDataSystem)
         {
-            this._logger = logger;
-            this._playerDataSystem = playerDataSystem;
+            _logger = logger;
+            _playerDataSystem = playerDataSystem;
         }
 
         /// <inheritdoc />
@@ -31,13 +31,13 @@ namespace Rhisis.World.Game.Chat
             {
                 int gold = Convert.ToInt32(parameters[0]);
 
-                if (!this._playerDataSystem.IncreaseGold(player, gold))
+                if (!_playerDataSystem.IncreaseGold(player, gold))
                 {
-                    this._logger.LogTrace($"Failed to create {gold} for player '{player.Object.Name}'.");
+                    _logger.LogTrace($"Failed to create {gold} for player '{player.Object.Name}'.");
                 }
                 else
                 {
-                    this._logger.LogTrace($"Player '{player.Object.Name}' created {gold} gold.");
+                    _logger.LogTrace($"Player '{player.Object.Name}' created {gold} gold.");
                 }
             }
         }

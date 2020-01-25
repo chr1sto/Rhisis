@@ -25,9 +25,9 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.ItemType = packet.Read<byte>();
-            this.SourceSlot = packet.Read<byte>();
-            this.DestinationSlot = packet.Read<byte>();
+            ItemType = packet.Read<byte>();
+            SourceSlot = packet.Read<byte>();
+            DestinationSlot = packet.Read<byte>();
         }
     }
 }

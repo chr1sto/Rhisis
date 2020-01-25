@@ -15,7 +15,7 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.Experience = packet.Read<long>();
+            Experience = packet.Read<long>();
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ExperiencePacket"/></param>
         public bool Equals(ExperiencePacket other)
         {
-            return this.Experience == other.Experience;
+            return Experience == other.Experience;
         }
     }
 }

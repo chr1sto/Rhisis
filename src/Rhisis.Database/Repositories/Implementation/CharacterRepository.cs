@@ -22,7 +22,7 @@ namespace Rhisis.Database.Repositories.Implementation
         /// <inheritdoc />
         public IEnumerable<DbCharacter> GetCharacters(int userId, bool includeDeletedCharacters = false)
         {
-            IQueryable<DbCharacter> query = this.GetQueryable().Include(x => x.Items).AsNoTracking();
+            IQueryable<DbCharacter> query = GetQueryable().Include(x => x.Items).AsNoTracking();
 
             query = query.Where(x => x.UserId == userId);
 
@@ -35,7 +35,7 @@ namespace Rhisis.Database.Repositories.Implementation
         /// <inheritdoc />
         public DbCharacter GetCharacter(int characterId)
         {
-            IQueryable<DbCharacter> query = this._context.Set<DbCharacter>().AsNoTracking();
+            IQueryable<DbCharacter> query = _context.Set<DbCharacter>().AsNoTracking();
 
             return query.FirstOrDefault(x => x.Id == characterId);
         }

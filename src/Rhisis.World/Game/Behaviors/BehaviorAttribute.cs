@@ -37,8 +37,8 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="moverId"></param>
         public BehaviorAttribute(BehaviorType behaviorType, int moverId, bool IsDefault = false)
         {
-            this.Type = behaviorType;
-            this.MoverId = moverId;
+            Type = behaviorType;
+            MoverId = moverId;
             this.IsDefault = IsDefault;
         }
     }

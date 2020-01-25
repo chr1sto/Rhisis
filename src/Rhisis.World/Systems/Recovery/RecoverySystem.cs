@@ -34,8 +34,8 @@ namespace Rhisis.World.Systems.Recovery
         /// <param name="moverPacketFactory">Mover packet factory.</param>
         public RecoverySystem(ILogger<RecoverySystem> logger, IMoverPacketFactory moverPacketFactory)
         {
-            this._logger = logger;
-            this._moverPacketFactory = moverPacketFactory;
+            _logger = logger;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
@@ -71,9 +71,9 @@ namespace Rhisis.World.Systems.Recovery
             if (player.Health.Fp > maxFp)
                 player.Health.Fp = maxFp;
 
-            this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-            this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-            this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
         }
     }
 }

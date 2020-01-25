@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public AwakeningPacket(INetPacketStream packet)
         {
-            this.Item = packet.Read<int>();
+            Item = packet.Read<int>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="AwakeningPacket"/></param>
         public bool Equals(AwakeningPacket other)
         {
-            return this.Item == other.Item;
+            return Item == other.Item;
         }
     }
 }

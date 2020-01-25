@@ -21,8 +21,8 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="cache">Memory cache.</param>
         public ShopLoader(ILogger<ShopLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
+            _logger = logger;
+            _cache = cache;
         }
 
         /// <inheritdoc />
@@ -32,7 +32,7 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (!Directory.Exists(shopPath))
             {
-                this._logger.LogWarning("Unable to load shops. Reason: cannot find '{0}' directory.", shopPath);
+                _logger.LogWarning("Unable to load shops. Reason: cannot find '{0}' directory.", shopPath);
                 return;
             }
 
@@ -42,23 +42,23 @@ namespace Rhisis.Core.Resources.Loaders
             foreach (string shopFile in shopsFiles)
             {
                 string shopFileContent = File.ReadAllText(shopFile);
-                var shopsParsed = JToken.Parse(shopFileContent, this._jsonSettings);
+                var shopsParsed = JToken.Parse(shopFileContent, _jsonSettings);
 
                 if (shopsParsed.Type == JTokenType.Array)
                 {
                     var shops = shopsParsed.ToObject<ShopData[]>();
 
                     foreach (ShopData shop in shops)
-                        this.AddShop(shopData, shop);
+                        AddShop(shopData, shop);
                 }
                 else
                 {
-                    this.AddShop(shopData, shopsParsed.ToObject<ShopData>());
+                    AddShop(shopData, shopsParsed.ToObject<ShopData>());
                 }
             }
 
-            this._cache.Set(GameResourcesConstants.Shops, shopData);
-            this._logger.LogInformation("-> {0} shops loaded.", shopData.Count);
+            _cache.Set(GameResourcesConstants.Shops, shopData);
+            _logger.LogInformation("-> {0} shops loaded.", shopData.Count);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Rhisis.Core.Resources.Loaders
         private void AddShop(IDictionary<string, ShopData> shopData, ShopData shop)
         {
             if (shopData.ContainsKey(shop.Name))
-                this._logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Shop", shop.Name, "already declared");
+                _logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Shop", shop.Name, "already declared");
             else
                 shopData.Add(shop.Name, shop);
         }

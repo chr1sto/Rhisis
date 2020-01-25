@@ -40,7 +40,7 @@ namespace Rhisis.Core.Structures.Game
         /// Gets the items refine options.
         /// </summary>
         [IgnoreDataMember]
-        public int Refines => this.Refine & (byte)this.Element & this.ElementRefine;
+        public int Refines => Refine & (byte)Element & ElementRefine;
 
         /// <summary>
         /// Gets the item data informations.

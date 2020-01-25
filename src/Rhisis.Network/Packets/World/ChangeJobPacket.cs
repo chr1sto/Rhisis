@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ChangeJobPacket(INetPacketStream packet)
         {
-            this.Job = packet.Read<int>();
-            this.Gama = packet.Read<int>() == 1;
+            Job = packet.Read<int>();
+            Gama = packet.Read<int>() == 1;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ChangeJobPacket"/></param>
         public bool Equals(ChangeJobPacket other)
         {
-            return this.Job == other.Job && this.Gama == other.Gama;
+            return Job == other.Job && Gama == other.Gama;
         }
     }
 }

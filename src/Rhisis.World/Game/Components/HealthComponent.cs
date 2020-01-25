@@ -20,6 +20,6 @@
         /// <summary>
         /// Gets a value that indicates if the object is dead.
         /// </summary>
-        public bool IsDead => this.Hp <= 0;
+        public bool IsDead => Hp <= 0;
     }
 }

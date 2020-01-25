@@ -19,8 +19,8 @@ namespace Rhisis.Core.Resources
 
         public int Bottom { get; protected set; }
 
-        public int Width => this.Right - this.Left;
+        public int Width => Right - Left;
 
-        public int Length => this.Bottom - this.Top;
+        public int Length => Bottom - Top;
     }
 }

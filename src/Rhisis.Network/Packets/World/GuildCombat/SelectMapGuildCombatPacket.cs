@@ -18,7 +18,7 @@ namespace Rhisis.Network.Packets.World.GuildCombat
         /// <param name="packet">Incoming packet</param>
         public SelectMapGuildCombatPacket(INetPacketStream packet)
         {
-            this.Map = packet.Read<int>();
+            Map = packet.Read<int>();
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Rhisis.Network.Packets.World.GuildCombat
         /// <param name="other">Other <see cref="SelectMapGuildCombatPacket"/></param>
         public bool Equals(SelectMapGuildCombatPacket other)
         {
-            return this.Map == other.Map;
+            return Map == other.Map;
         }
     }
 }

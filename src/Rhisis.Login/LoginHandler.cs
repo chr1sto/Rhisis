@@ -35,12 +35,12 @@ namespace Rhisis.Login
         /// <param name="loginPacketFactory">Login server packet factory.</param>
         public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, ICoreServer coreServer, ILoginPacketFactory loginPacketFactory)
         {
-            this._logger = logger;
-            this._loginConfiguration = loginConfiguration.Value;
-            this._loginServer = loginServer;
-            this._database = database;
-            this._coreServer = coreServer;
-            this._loginPacketFactory = loginPacketFactory;
+            _logger = logger;
+            _loginConfiguration = loginConfiguration.Value;
+            _loginServer = loginServer;
+            _database = database;
+            _coreServer = coreServer;
+            _loginPacketFactory = loginPacketFactory;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Rhisis.Login
         {
             if (!pingPacket.IsTimeOut)
             {
-                this._loginPacketFactory.SendPong(client, pingPacket.Time);
+                _loginPacketFactory.SendPong(client, pingPacket.Time);
             }
         }
 
@@ -65,14 +65,14 @@ namespace Rhisis.Login
         [HandlerAction(PacketType.CERTIFY)]
         public void OnCertify(ILoginClient client, CertifyPacket certifyPacket)
         {
-            if (certifyPacket.BuildVersion != this._loginConfiguration.BuildVersion)
+            if (certifyPacket.BuildVersion != _loginConfiguration.BuildVersion)
             {
                 AuthenticationFailed(client, ErrorType.ILLEGAL_VER, "bad client build version");
                 return;
             }
 
-            DbUser user = this._database.Users.GetUser(certifyPacket.Username);
-            AuthenticationResult authenticationResult = this.Authenticate(user, certifyPacket.Password);
+            DbUser user = _database.Users.GetUser(certifyPacket.Username);
+            AuthenticationResult authenticationResult = Authenticate(user, certifyPacket.Password);
 
             switch (authenticationResult)
             {
@@ -92,19 +92,19 @@ namespace Rhisis.Login
                     AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "logged in with deleted account");
                     break;
                 case AuthenticationResult.Success:
-                    if (this._loginServer.IsClientConnected(certifyPacket.Username))
+                    if (_loginServer.IsClientConnected(certifyPacket.Username))
                     {
                         AuthenticationFailed(client, ErrorType.DUPLICATE_ACCOUNT, "client already connected", disconnectClient: false);
                         return;
                     }
 
                     user.LastConnectionTime = DateTime.UtcNow;
-                    this._database.Users.Update(user);
-                    this._database.Complete();
+                    _database.Users.Update(user);
+                    _database.Complete();
 
-                    this._loginPacketFactory.SendServerList(client, certifyPacket.Username, this._coreServer.GetConnectedClusters());
+                    _loginPacketFactory.SendServerList(client, certifyPacket.Username, _coreServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);
-                    this._logger.LogInformation($"User '{client.Username}' logged succesfully from {client.Socket.RemoteEndPoint}.");
+                    _logger.LogInformation($"User '{client.Username}' logged succesfully from {client.Socket.RemoteEndPoint}.");
                     break;
                 default:
                     break;
@@ -119,11 +119,11 @@ namespace Rhisis.Login
         [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
         public void OnCloseExistingConnection(ILoginClient client, CloseConnectionPacket closeConnectionPacket)
         {
-            var otherConnectedClient = this._loginServer.GetClientByUsername(closeConnectionPacket.Username);
+            var otherConnectedClient = _loginServer.GetClientByUsername(closeConnectionPacket.Username);
 
             if (otherConnectedClient == null)
             {
-                this._logger.LogWarning($"Cannot find user with username '{closeConnectionPacket.Username}'.");
+                _logger.LogWarning($"Cannot find user with username '{closeConnectionPacket.Username}'.");
                 return;
             }
 
@@ -139,8 +139,8 @@ namespace Rhisis.Login
         /// <param name="disconnectClient">A boolean value that indicates if we disconnect the client or not.</param>
         private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason, bool disconnectClient = true)
         {
-            this._logger.LogWarning($"Unable to authenticate user from {client.Socket.RemoteEndPoint}. Reason: {reason}");
-            this._loginPacketFactory.SendLoginError(client, error);
+            _logger.LogWarning($"Unable to authenticate user from {client.Socket.RemoteEndPoint}. Reason: {reason}");
+            _loginPacketFactory.SendLoginError(client, error);
 
             if (disconnectClient)
                 client.Disconnect();

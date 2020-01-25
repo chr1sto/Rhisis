@@ -60,10 +60,10 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// <param name="questId">Dialog link quest id.</param>
         public DialogLink(string id, string title, int? questId)
         {
-            this.Id = id;
-            this.Title = title;
-            this.QuestId = questId;
-            this.Texts = new List<string>();
+            Id = id;
+            Title = title;
+            QuestId = questId;
+            Texts = new List<string>();
         }
     }
 }

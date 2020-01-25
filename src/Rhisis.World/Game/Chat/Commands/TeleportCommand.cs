@@ -21,8 +21,8 @@ namespace Rhisis.World.Game.Chat
         /// <param name="teleportSystem">Teleport system.</param>
         public TeleportationCommand(ILogger<TeleportationCommand> logger, ITeleportSystem teleportSystem)
         {
-            this._logger = logger;
-            this._teleportSystem = teleportSystem;
+            _logger = logger;
+            _teleportSystem = teleportSystem;
         }
 
         /// <inheritdoc />
@@ -51,7 +51,7 @@ namespace Rhisis.World.Game.Chat
                 default: throw new ArgumentException("Too many or not enough arguments.");
             }
 
-            this._teleportSystem.Teleport(player, destinationMapId, destinationPosition.X, destinationPosition.Y, destinationPosition.Z, player.Object.Angle);
+            _teleportSystem.Teleport(player, destinationMapId, destinationPosition.X, destinationPosition.Y, destinationPosition.Z, player.Object.Angle);
         }
     }
 }

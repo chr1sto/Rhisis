@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="packet">Incoming packet</param>
         public OpenBankWindowPacket(INetPacketStream packet)
         {
-            this.Id = packet.Read<uint>();
-            this.ItemId = packet.Read<uint>();
+            Id = packet.Read<uint>();
+            ItemId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="other">Other <see cref="OpenBankWindowPacket"/></param>
         public bool Equals(OpenBankWindowPacket other)
         {
-            return this.Id == other.Id && this.ItemId == other.ItemId;
+            return Id == other.Id && ItemId == other.ItemId;
         }
     }
 }

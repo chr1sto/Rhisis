@@ -27,13 +27,13 @@ namespace Rhisis.CLI.Commands.Database
         /// <param name="consoleHelper">Console helper.</param>
         public DatabaseInitializationCommand(DatabaseFactory databaseFactory, ConsoleHelper consoleHelper)
         {
-            this._configurationCommand = new DatabaseConfigureCommand(consoleHelper)
+            _configurationCommand = new DatabaseConfigureCommand(consoleHelper)
             {
-                DatabaseConfigurationFile = this.DatabaseConfigurationFile
+                DatabaseConfigurationFile = DatabaseConfigurationFile
             };
-            this._updateCommand = new DatabaseUpdateCommand(databaseFactory)
+            _updateCommand = new DatabaseUpdateCommand(databaseFactory)
             {
-                DatabaseConfigurationFile = this.DatabaseConfigurationFile
+                DatabaseConfigurationFile = DatabaseConfigurationFile
             };
         }
 
@@ -42,8 +42,8 @@ namespace Rhisis.CLI.Commands.Database
         /// </summary>
         public void OnExecute()
         {
-            this._configurationCommand.OnExecute();
-            this._updateCommand.OnExecute();
+            _configurationCommand.OnExecute();
+            _updateCommand.OnExecute();
         }
     }
 }

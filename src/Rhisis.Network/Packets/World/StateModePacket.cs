@@ -18,8 +18,8 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.StateMode = (StateMode)packet.Read<int>();
-            this.Flag = (StateModeBaseMotion)packet.Read<byte>();
+            StateMode = (StateMode)packet.Read<int>();
+            Flag = (StateModeBaseMotion)packet.Read<byte>();
         }
     }
 }

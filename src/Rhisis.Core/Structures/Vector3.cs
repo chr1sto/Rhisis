@@ -17,8 +17,8 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float X
         {
-            get => this._x;
-            set => this._x = value;
+            get => _x;
+            set => _x = value;
         }
 
         /// <summary>
@@ -26,8 +26,8 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float Y
         {
-            get => this._y;
-            set => this._y = value;
+            get => _y;
+            set => _y = value;
         }
 
         /// <summary>
@@ -35,19 +35,19 @@ namespace Rhisis.Core.Structures
         /// </summary>
         public float Z
         {
-            get => this._z;
-            set => this._z = value;
+            get => _z;
+            set => _z = value;
         }
 
         /// <summary>
         /// Gets the vector length.
         /// </summary>
-        public float Length => (float)Math.Sqrt(this.SquaredLength);
+        public float Length => (float)Math.Sqrt(SquaredLength);
 
         /// <summary>
         /// Gets the vector squared length.
         /// </summary>
-        public float SquaredLength => (this._x * this._x) + (this._y * this._y) + (this._z * this._z);
+        public float SquaredLength => (_x * _x) + (_y * _y) + (_z * _z);
 
         /// <summary>
         /// Creates a new Vector3 initialized to 0.
@@ -65,9 +65,9 @@ namespace Rhisis.Core.Structures
         /// <param name="z"></param>
         public Vector3(float x, float y, float z)
         {
-            this._x = x;
-            this._y = y;
-            this._z = z;
+            _x = x;
+            _y = y;
+            _z = z;
         }
 
         /// <summary>
@@ -78,9 +78,9 @@ namespace Rhisis.Core.Structures
         /// <param name="z"></param>
         public Vector3(string x, string y, string z)
         {
-            float.TryParse(x, out this._x);
-            float.TryParse(y, out this._y);
-            float.TryParse(z, out this._z);
+            float.TryParse(x, out _x);
+            float.TryParse(y, out _y);
+            float.TryParse(z, out _z);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public double GetDistance2D(Vector3 otherPosition)
         {
-            return Math.Sqrt(Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2));
+            return Math.Sqrt(Math.Pow(otherPosition.X - _x, 2) + Math.Pow(otherPosition.Z - _z, 2));
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public double GetDistance3D(Vector3 otherPosition)
         {
-            return Math.Sqrt(Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Y - this._y, 2) + Math.Pow(otherPosition.Z - this._z, 2));
+            return Math.Sqrt(Math.Pow(otherPosition.X - _x, 2) + Math.Pow(otherPosition.Y - _y, 2) + Math.Pow(otherPosition.Z - _z, 2));
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public bool IsInCircle(Vector3 otherPosition, float circleRadius)
         {
-            return Math.Pow(otherPosition.X - this._x, 2) + Math.Pow(otherPosition.Z - this._z, 2) < Math.Pow(circleRadius, 2);
+            return Math.Pow(otherPosition.X - _x, 2) + Math.Pow(otherPosition.Z - _z, 2) < Math.Pow(circleRadius, 2);
         }
 
         /// <summary>
@@ -122,8 +122,8 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public bool Intersects(Rectangle rectangle, float radius)
         {
-            var deltaX = this._x - Math.Max(rectangle.X, Math.Min(this._x, rectangle.X + rectangle.Width));
-            var deltaY = this._z - Math.Max(rectangle.Z, Math.Min(this._z, rectangle.Z + rectangle.Length));
+            var deltaX = _x - Math.Max(rectangle.X, Math.Min(_x, rectangle.X + rectangle.Width));
+            var deltaY = _z - Math.Max(rectangle.Z, Math.Min(_z, rectangle.Z + rectangle.Length));
 
             return (deltaX * deltaX + deltaY * deltaY) < (radius * radius);
         }
@@ -134,7 +134,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public Vector3 Normalize()
         {
-            var sqLength = this.SquaredLength;
+            var sqLength = SquaredLength;
 
             if (sqLength <= 0)
                 throw new InvalidOperationException("Cannot normalize a vector of zero length.");
@@ -146,23 +146,23 @@ namespace Rhisis.Core.Structures
         /// Clones this Vector3 instance.
         /// </summary>
         /// <returns></returns>
-        public Vector3 Clone() => new Vector3(this._x, this._y, this._z);
+        public Vector3 Clone() => new Vector3(_x, _y, _z);
 
         /// <summary>
         /// Reset to 0 this Vector3.
         /// </summary>
         public void Reset()
         {
-            this._x = 0;
-            this._y = 0;
-            this._z = 0;
+            _x = 0;
+            _y = 0;
+            _z = 0;
         }
 
         /// <summary>
         /// Check if the Vector3 is zero.
         /// </summary>
         /// <returns></returns>
-        public bool IsZero() => this.SquaredLength <= 0;
+        public bool IsZero() => SquaredLength <= 0;
 
         /// <summary>
         /// Returns a vector3 under string format.
@@ -170,7 +170,7 @@ namespace Rhisis.Core.Structures
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("Vector3: {0}:{1}:{2}", this._x, this._y, this._z);
+            return string.Format("Vector3: {0}:{1}:{2}", _x, _y, _z);
         }
 
         /// <summary>
@@ -181,9 +181,9 @@ namespace Rhisis.Core.Structures
         /// </returns> 
         public override int GetHashCode()
         {
-            return this._x.GetHashCode() ^
-                   this._y.GetHashCode() ^
-                   this._z.GetHashCode();
+            return _x.GetHashCode() ^
+                   _y.GetHashCode() ^
+                   _z.GetHashCode();
         }
 
         /// <summary>

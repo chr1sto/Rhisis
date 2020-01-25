@@ -30,16 +30,16 @@ namespace Rhisis.World.Game.Chat
         /// <param name="textPacketFactory">Text packet factory.</param>
         public CreateItemChatCommand(ILogger<CreateItemChatCommand> logger, IInventorySystem inventorySystem, IItemFactory itemFactory, ITextPacketFactory textPacketFactory)
         {
-            this._logger = logger;
-            this._inventorySystem = inventorySystem;
-            this._itemFactory = itemFactory;
-            this._textPacketFactory = textPacketFactory;
+            _logger = logger;
+            _inventorySystem = inventorySystem;
+            _itemFactory = itemFactory;
+            _textPacketFactory = textPacketFactory;
         }
 
         /// <inheritdoc />
         public void Execute(IPlayerEntity player, object[] parameters)
         {
-            this._logger.LogTrace($"{player.Object.Name} wants to create an item");
+            _logger.LogTrace($"{player.Object.Name} wants to create an item");
 
             if (parameters.Length <= 0)
             {
@@ -48,7 +48,7 @@ namespace Rhisis.World.Game.Chat
 
             if (!player.Inventory.HasAvailableSlots())
             {
-                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                 return;
             }
             int quantity = parameters.Length >= 2 ? Convert.ToInt32(parameters[1]) : 1;
@@ -60,15 +60,15 @@ namespace Rhisis.World.Game.Chat
             Item itemToCreate;
             if (!int.TryParse(itemInput, out int itemId))
             {
-                itemToCreate = this._itemFactory.CreateItem(itemInput, refine, element, elementRefine, player.PlayerData.Id);
+                itemToCreate = _itemFactory.CreateItem(itemInput, refine, element, elementRefine, player.PlayerData.Id);
             }
             else
             {
-                itemToCreate = this._itemFactory.CreateItem(itemId, refine, element, elementRefine, player.PlayerData.Id);
+                itemToCreate = _itemFactory.CreateItem(itemId, refine, element, elementRefine, player.PlayerData.Id);
             }
 
             if(itemToCreate != null)
-                this._inventorySystem.CreateItem(player, itemToCreate, quantity, player.PlayerData.Id);
+                _inventorySystem.CreateItem(player, itemToCreate, quantity, player.PlayerData.Id);
         }
     }
 }

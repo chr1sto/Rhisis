@@ -21,9 +21,9 @@ namespace Rhisis.Login.Core.Handlers
         /// <param name="corePacketFactory">Core server packet factory.</param>
         public AuthenticationHandler(ILogger<AuthenticationHandler> logger, ICoreServer coreServer, ICorePacketFactory corePacketFactory)
         {
-            this._logger = logger;
-            this._coreServer = coreServer;
-            this._corePacketFactory = corePacketFactory;
+            _logger = logger;
+            _coreServer = coreServer;
+            _corePacketFactory = corePacketFactory;
         }
 
         /// <summary>
@@ -42,44 +42,44 @@ namespace Rhisis.Login.Core.Handlers
 
             if (type == ServerType.Cluster)
             {
-                if (this._coreServer.HasCluster(id))
+                if (_coreServer.HasCluster(id))
                 {
-                    this._logger.LogWarning($"Cluster Server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: An other Cluster server with id '{id}' is already connected.");
-                    this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedClusterExists);
-                    this._coreServer.DisconnectClient(client.Id);
+                    _logger.LogWarning($"Cluster Server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: An other Cluster server with id '{id}' is already connected.");
+                    _corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedClusterExists);
+                    _coreServer.DisconnectClient(client.Id);
                     return;
                 }
 
                 client.ServerInfo = new ClusterServerInfo(id, name, host, port);
-                this._logger.LogInformation($"Cluster server '{name}' connected to ISC server from {client.Socket.RemoteEndPoint}.");
+                _logger.LogInformation($"Cluster server '{name}' connected to ISC server from {client.Socket.RemoteEndPoint}.");
             }
             else if (type == ServerType.World)
             {
                 var parentClusterId = packet.Read<int>();
 
-                CoreServerClient parentClusterServer = this._coreServer.GetClusterServer(parentClusterId);
+                CoreServerClient parentClusterServer = _coreServer.GetClusterServer(parentClusterId);
 
                 if (parentClusterServer == null)
                 {
-                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: Cluster server with id '{parentClusterId}' is not connected.");
+                    _logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: Cluster server with id '{parentClusterId}' is not connected.");
 
-                    this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedNoCluster);
-                    this._coreServer.DisconnectClient(client.Id);
+                    _corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedNoCluster);
+                    _coreServer.DisconnectClient(client.Id);
                     return;
                 }
 
-                if (this._coreServer.HasWorld(parentClusterId, id))
+                if (_coreServer.HasWorld(parentClusterId, id))
                 {
-                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: An other World server with id '{id}' is already connected to Cluster Server '{parentClusterServer.ServerInfo.Name}'.");
-                    this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedWorldExists);
-                    this._coreServer.DisconnectClient(client.Id);
+                    _logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: An other World server with id '{id}' is already connected to Cluster Server '{parentClusterServer.ServerInfo.Name}'.");
+                    _corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedWorldExists);
+                    _coreServer.DisconnectClient(client.Id);
                     return;
                 }
 
                 var cluster = parentClusterServer.ServerInfo as ClusterServerInfo;
                 if (cluster is null)
                 {
-                    this._logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: Parent cluster server is not a cluster server.");
+                    _logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: Parent cluster server is not a cluster server.");
                     return;
                 }
 
@@ -87,18 +87,18 @@ namespace Rhisis.Login.Core.Handlers
 
                 cluster.Worlds.Add(worldInfo);
                 client.ServerInfo = worldInfo;
-                this._corePacketFactory.SendUpdateWorldList(parentClusterServer, cluster.Worlds);
-                this._logger.LogInformation($"World server '{name}' join cluster '{cluster.Name}' and is connected to ISC server from {client.Socket.RemoteEndPoint}.");
+                _corePacketFactory.SendUpdateWorldList(parentClusterServer, cluster.Worlds);
+                _logger.LogInformation($"World server '{name}' join cluster '{cluster.Name}' and is connected to ISC server from {client.Socket.RemoteEndPoint}.");
             }
             else
             {
-                this._logger.LogWarning($"Incoming core connection from {client.Socket.RemoteEndPoint} refused. Reason: server type is unknown.");
-                this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedUnknownServer);
-                this._coreServer.DisconnectClient(client.Id);
+                _logger.LogWarning($"Incoming core connection from {client.Socket.RemoteEndPoint} refused. Reason: server type is unknown.");
+                _corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.FailedUnknownServer);
+                _coreServer.DisconnectClient(client.Id);
                 return;
             }
 
-            this._corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.Success);
+            _corePacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.Success);
         }
     }
 }

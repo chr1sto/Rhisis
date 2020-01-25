@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ScriptEquipItemPacket(INetPacketStream packet)
         {
-            this.ItemId = packet.Read<uint>();
-            this.Option = packet.Read<int>();
+            ItemId = packet.Read<uint>();
+            Option = packet.Read<int>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ScriptEquipItemPacket"/></param>
         public bool Equals(ScriptEquipItemPacket other)
         {
-            return this.ItemId == other.ItemId && this.Option == other.Option;
+            return ItemId == other.ItemId && Option == other.Option;
         }
     }
 }

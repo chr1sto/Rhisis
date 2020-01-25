@@ -38,22 +38,22 @@ namespace Rhisis.World.Game.Structures
 
         public QuestInfo(int questId, int characterId, IQuestScript script, int? databaseQuestId)
         {
-            this.QuestId = questId;
-            this.CharacterId = characterId;
-            this.Script = script;
-            this.DatabaseQuestId = databaseQuestId;
-            this.Monsters = new Dictionary<int, short>();
+            QuestId = questId;
+            CharacterId = characterId;
+            Script = script;
+            DatabaseQuestId = databaseQuestId;
+            Monsters = new Dictionary<int, short>();
         }
 
         public void Serialize(INetPacketStream packet)
         {
-            packet.Write<short>((short)this.State); // state
+            packet.Write<short>((short)State); // state
             packet.Write<short>(0); // time limit
-            packet.Write((short)this.QuestId);
+            packet.Write((short)QuestId);
 
             packet.Write<short>(Monsters?.ElementAtOrDefault(0).Value ?? 0); // monster 1 killed
             packet.Write<short>(Monsters?.ElementAtOrDefault(1).Value ?? 0); // monster 2 killed
-            packet.Write<byte>(Convert.ToByte(this.IsPatrolDone)); // patrol done
+            packet.Write<byte>(Convert.ToByte(IsPatrolDone)); // patrol done
             packet.Write<byte>(0); // dialog done
         }
 

@@ -35,10 +35,10 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public RangeAttackPacket(INetPacketStream packet)
         {
-            this.AttackMessage = (ObjectMessageType)packet.Read<uint>();
-            this.ObjectId = packet.Read<uint>();
-            this.ItemId = packet.Read<uint>();
-            this.IdSfxHit = packet.Read<int>();
+            AttackMessage = (ObjectMessageType)packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
+            ItemId = packet.Read<uint>();
+            IdSfxHit = packet.Read<int>();
         }
 
         /// <summary>
@@ -48,10 +48,10 @@ namespace Rhisis.Network.Packets.World
         /// <returns></returns>
         public bool Equals(RangeAttackPacket other)
         {
-            return this.AttackMessage == other.AttackMessage &&
-                   this.ObjectId == other.ObjectId &&
-                   this.ItemId == other.ItemId &&
-                   this.IdSfxHit == other.IdSfxHit;
+            return AttackMessage == other.AttackMessage &&
+                   ObjectId == other.ObjectId &&
+                   ItemId == other.ItemId &&
+                   IdSfxHit == other.IdSfxHit;
         }
     }
 }

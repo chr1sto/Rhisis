@@ -32,14 +32,14 @@ namespace Rhisis.World.Systems.Taskbar
         /// <param name="database">Rhisis database access layer.</param>
         public TaskbarSystem(ILogger<TaskbarSystem> logger, IDatabase database)
         {
-            this._logger = logger;
-            this._database = database;
+            _logger = logger;
+            _database = database;
         }
 
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<DbShortcut> shortcuts = this._database.TaskbarShortcuts.GetAll(x => x.CharacterId == player.PlayerData.Id);
+            IEnumerable<DbShortcut> shortcuts = _database.TaskbarShortcuts.GetAll(x => x.CharacterId == player.PlayerData.Id);
 
             player.Taskbar.Applets = new TaskbarAppletContainerComponent(MaxTaskbarApplets);
             player.Taskbar.Items = new TaskbarItemContainerComponent(MaxTaskbarItems, MaxTaskbarItemLevels);
@@ -64,11 +64,11 @@ namespace Rhisis.World.Systems.Taskbar
 
                 if (dbShortcut.TargetTaskbar == ShortcutTaskbarTarget.Applet)
                 {
-                    this.AddApplet(player, shortcut);
+                    AddApplet(player, shortcut);
                 }
                 else if (dbShortcut.TargetTaskbar == ShortcutTaskbarTarget.Item)
                 {
-                    this.AddItem(player, shortcut, dbShortcut.SlotLevelIndex.GetValueOrDefault(int.MaxValue));
+                    AddItem(player, shortcut, dbShortcut.SlotLevelIndex.GetValueOrDefault(int.MaxValue));
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace Rhisis.World.Systems.Taskbar
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            DbCharacter character = this._database.Characters.Get(player.PlayerData.Id);
+            DbCharacter character = _database.Characters.Get(player.PlayerData.Id);
 
             character.TaskbarShortcuts.Clear();
 
@@ -136,7 +136,7 @@ namespace Rhisis.World.Systems.Taskbar
                     queueItem.ObjectData, queueItem.Text));
             }
 
-            this._database.Complete();
+            _database.Complete();
         }
 
         /// <inheritdoc />
@@ -150,7 +150,7 @@ namespace Rhisis.World.Systems.Taskbar
 
             player.Taskbar.Applets.Objects[shortcutToAdd.SlotIndex] = shortcutToAdd;
 
-            this._logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Applet Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.SlotIndex, player.Object.Name);
+            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Applet Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.SlotIndex, player.Object.Name);
         }
 
         /// <inheritdoc />
@@ -164,7 +164,7 @@ namespace Rhisis.World.Systems.Taskbar
 
             player.Taskbar.Items.Objects[slotLevelIndex][shortcutToAdd.SlotIndex] = shortcutToAdd;
 
-            this._logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Item Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.SlotIndex, player.Object.Name);
+            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Item Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.SlotIndex, player.Object.Name);
         }
 
         /// <inheritdoc />
@@ -175,7 +175,7 @@ namespace Rhisis.World.Systems.Taskbar
 
             player.Taskbar.Applets.Objects[slotIndex] = null;
 
-            this._logger.LogDebug("Removed Shortcut on slot {0} of player {1} on the Applet Taskbar", slotIndex, player.Object.Name);
+            _logger.LogDebug("Removed Shortcut on slot {0} of player {1} on the Applet Taskbar", slotIndex, player.Object.Name);
         }
 
         /// <inheritdoc />
@@ -189,7 +189,7 @@ namespace Rhisis.World.Systems.Taskbar
 
             player.Taskbar.Items.Objects[slotLevelIndex][slotIndex] = null;
 
-            this._logger.LogDebug($"Removed Shortcut on slot {slotLevelIndex}-{slotIndex} of player {player.Object.Name} on the Item Taskbar");
+            _logger.LogDebug($"Removed Shortcut on slot {slotLevelIndex}-{slotIndex} of player {player.Object.Name} on the Item Taskbar");
         }
     }
 }

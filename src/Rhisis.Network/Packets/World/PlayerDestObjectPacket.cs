@@ -20,8 +20,8 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.TargetObjectId = packet.Read<uint>();
-            this.Distance = packet.Read<float>();
+            TargetObjectId = packet.Read<uint>();
+            Distance = packet.Read<float>();
         }
     }
 }

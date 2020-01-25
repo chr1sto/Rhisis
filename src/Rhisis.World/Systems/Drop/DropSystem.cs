@@ -30,24 +30,24 @@ namespace Rhisis.World.Systems.Drop
         /// <param name="worldServerConfiguration">World server configuration.</param>
         public DropSystem(IItemFactory itemFactory, IOptions<WorldConfiguration> worldServerConfiguration)
         {
-            this._itemFactory = itemFactory;
-            this._worldServerConfiguration = worldServerConfiguration.Value;
+            _itemFactory = itemFactory;
+            _worldServerConfiguration = worldServerConfiguration.Value;
         }
 
         /// <inheritdoc />
         public void DropItem(IWorldEntity entity, ItemDescriptor item, IWorldEntity owner)
         {
-            Item droppedItem = this._itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
+            Item droppedItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
             droppedItem.Quantity = 1;
 
-            IItemEntity newItem = this._itemFactory.CreateItemEntity(entity.Object.CurrentMap, entity.Object.CurrentLayer, droppedItem, owner);
+            IItemEntity newItem = _itemFactory.CreateItemEntity(entity.Object.CurrentMap, entity.Object.CurrentLayer, droppedItem, owner);
 
             newItem.Object.Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, DropCircleRadius);
 
             if (newItem.Drop.HasOwner)
             {
-                newItem.Drop.OwnershipTime = Time.TimeInSeconds() + this._worldServerConfiguration.Drops.OwnershipTime;
-                newItem.Drop.DespawnTime = Time.TimeInSeconds() + this._worldServerConfiguration.Drops.DespawnTime;
+                newItem.Drop.OwnershipTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.OwnershipTime;
+                newItem.Drop.DespawnTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.DespawnTime;
             }
         }
 
@@ -55,19 +55,19 @@ namespace Rhisis.World.Systems.Drop
         public void DropGold(IWorldEntity entity, int goldAmount, IWorldEntity owner)
         {
             int goldItemId = DefineItem.II_GOLD_SEED1;
-            int gold = goldAmount * this._worldServerConfiguration.Rates.Gold;
+            int gold = goldAmount * _worldServerConfiguration.Rates.Gold;
 
             if (gold <= 0)
                 return;
 
-            if (gold > (DropGoldLimit1 * this._worldServerConfiguration.Rates.Gold))
+            if (gold > (DropGoldLimit1 * _worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED2;
-            else if (gold > (DropGoldLimit2 * this._worldServerConfiguration.Rates.Gold))
+            else if (gold > (DropGoldLimit2 * _worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED3;
-            else if (gold > (DropGoldLimit3 * this._worldServerConfiguration.Rates.Gold))
+            else if (gold > (DropGoldLimit3 * _worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED4;
 
-            this.DropItem(entity, new Item(goldItemId, gold), owner);
+            DropItem(entity, new Item(goldItemId, gold), owner);
         }
     }
 }

@@ -98,7 +98,7 @@ namespace Rhisis.World.Game.Components
         /// <param name="item"></param>
         public void Add(QuestInfo item)
         {
-            if (this.Contains(item))
+            if (Contains(item))
             {
                 throw new InvalidOperationException($"Quest '{item.QuestId}' for player with id '{item.CharacterId}' already exists.");
             }

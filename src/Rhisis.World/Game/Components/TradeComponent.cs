@@ -34,7 +34,7 @@
         /// <summary>
         /// Gets a value that indicates if the current entity is already trading.
         /// </summary>
-        public bool IsTrading => this.TargetId != 0;
+        public bool IsTrading => TargetId != 0;
 
         /// <summary>
         /// Creates a new <see cref="TradeComponent"/> instance.
@@ -42,7 +42,7 @@
         /// <param name="maxItemCapacity">Maximum amount of items in trade window.</param>
         public TradeComponent(int maxItemCapacity)
         {
-            this.Items = new ItemContainerComponent(maxItemCapacity);
+            Items = new ItemContainerComponent(maxItemCapacity);
         }
 
         /// <summary>
@@ -50,15 +50,15 @@
         /// </summary>
         public void Reset()
         {
-            this.TargetId = 0;
-            this.ItemCount = 0;
-            this.Gold = 0;
-            this.State = TradeState.Item;
+            TargetId = 0;
+            ItemCount = 0;
+            Gold = 0;
+            State = TradeState.Item;
 
-            foreach (var tradeItem in this.Items.Items)
+            foreach (var tradeItem in Items.Items)
                 tradeItem.ExtraUsed = 0;
 
-            this.Items.Reset();
+            Items.Reset();
         }
     }
 }

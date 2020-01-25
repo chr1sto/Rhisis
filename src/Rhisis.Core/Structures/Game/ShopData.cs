@@ -33,12 +33,12 @@ namespace Rhisis.Core.Structures.Game
         /// <param name="shopTabs">Npc shop tabs data</param>
         public ShopData(string shopName, int shopTabs = DefaultTabCount)
         {
-            this.Name = shopName;
-            this.Items = new List<ItemDescriptor>[shopTabs];
+            Name = shopName;
+            Items = new List<ItemDescriptor>[shopTabs];
 
             for (var i = 0; i < shopTabs; i++)
             {
-                this.Items[i] = new List<ItemDescriptor>();
+                Items[i] = new List<ItemDescriptor>();
             }
         }
     }

@@ -17,8 +17,8 @@ namespace Rhisis.Cluster
         /// <param name="clusterServer">Cluster Server instance.</param>
         public ClusterServerService(ILogger<ClusterServerService> logger, IClusterServer clusterServer)
         {
-            this._logger = logger;
-            this._clusterServer = clusterServer;
+            _logger = logger;
+            _clusterServer = clusterServer;
         }
 
         /// <summary>
@@ -28,8 +28,8 @@ namespace Rhisis.Cluster
         /// <returns></returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation($"Starting {nameof(ClusterServer)}.");
-            this._clusterServer.Start();
+            _logger.LogInformation($"Starting {nameof(ClusterServer)}.");
+            _clusterServer.Start();
 
             return Task.CompletedTask;
         }
@@ -41,8 +41,8 @@ namespace Rhisis.Cluster
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation($"Stopping {nameof(ClusterServer)}.");
-            this._clusterServer.Stop();
+            _logger.LogInformation($"Stopping {nameof(ClusterServer)}.");
+            _clusterServer.Stop();
 
             return Task.CompletedTask;
         }

@@ -20,7 +20,7 @@ namespace Rhisis.World.Handlers
         /// <param name="chatSystem">Chat system.</param>
         public ChatHandler(IChatSystem chatSystem)
         {
-            this._chatSystem = chatSystem;
+            _chatSystem = chatSystem;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.CHAT)]
         public void OnChat(IWorldClient client, ChatPacket packet)
         {
-            this._chatSystem.Chat(client.Player, packet.Message);
+            _chatSystem.Chat(client.Player, packet.Message);
         }
     }
 }

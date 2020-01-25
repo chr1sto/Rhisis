@@ -24,12 +24,12 @@ namespace Rhisis.CLI.Commands.Game.Quests
         /// </summary>
         public void OnExecute()
         {
-            if (this.InputFiles == null)
+            if (InputFiles == null)
             {
                 return;
             }
 
-            this.Output = string.IsNullOrEmpty(this.Output) ? Directory.GetCurrentDirectory() : Path.GetDirectoryName(this.Output);
+            Output = string.IsNullOrEmpty(Output) ? Directory.GetCurrentDirectory() : Path.GetDirectoryName(Output);
             
             IEnumerable<string> questFiles = GetFilesFromInput();
             var questLoader = new LegacyQuestLoader();
@@ -68,7 +68,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
         /// <param name="quest">Quest to save.</param>
         private void SaveQuestDataAsLua(QuestData quest)
         {
-            string filePath = Path.Combine(this.Output, $"{quest.Name}.lua");
+            string filePath = Path.Combine(Output, $"{quest.Name}.lua");
 
             Console.Write($"Saving quest: '{quest.Name}' into '{filePath}'...\r");
 
@@ -92,7 +92,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
         /// <param name="quests">Quests to save.</param>
         private void SaveQuestDefinition(IEnumerable<string> quests)
         {
-            string filePath = Path.Combine(this.Output, QuestScriptConstants.QuestDefinitionFile);
+            string filePath = Path.Combine(Output, QuestScriptConstants.QuestDefinitionFile);
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             using var writer = new StreamWriter(fileStream);
 

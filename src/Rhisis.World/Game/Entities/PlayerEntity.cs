@@ -68,17 +68,17 @@ namespace Rhisis.World.Game.Entities
         /// <param name="context"></param>
         public PlayerEntity(IPlayerFactory playerFactory)
         {
-            this.Moves = new MovableComponent();
-            this.PlayerData = new PlayerDataComponent();
-            this.Taskbar = new TaskbarComponent();
-            this.Follow = new FollowComponent();
-            this.Interaction = new InteractionComponent();
-            this.Battle = new BattleComponent();
-            this.Health = new HealthComponent();
-            this.Timers = new TimerComponent();
-            this.Attributes = new AttributeComponent();
-            this.QuestDiary = new QuestDiaryComponent();
-            this._playerFactory = playerFactory;
+            Moves = new MovableComponent();
+            PlayerData = new PlayerDataComponent();
+            Taskbar = new TaskbarComponent();
+            Follow = new FollowComponent();
+            Interaction = new InteractionComponent();
+            Battle = new BattleComponent();
+            Health = new HealthComponent();
+            Timers = new TimerComponent();
+            Attributes = new AttributeComponent();
+            QuestDiary = new QuestDiaryComponent();
+            _playerFactory = playerFactory;
         }
 
         /// <summary>
@@ -87,11 +87,11 @@ namespace Rhisis.World.Game.Entities
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            this._playerFactory.SavePlayer(this);
+            _playerFactory.SavePlayer(this);
 
             base.Dispose(disposing);
         }
 
-        public override string ToString() => this.Object.Name;
+        public override string ToString() => Object.Name;
     }
 }

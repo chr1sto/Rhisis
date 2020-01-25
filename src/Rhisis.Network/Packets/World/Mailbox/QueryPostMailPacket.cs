@@ -42,12 +42,12 @@ namespace Rhisis.Network.Packets.World.Mailbox
         /// <param name="packet">Incoming packet</param>
         public QueryPostMailPacket(INetPacketStream packet)
         {
-            this.ItemSlot = packet.Read<byte>();
-            this.ItemQuantity = packet.Read<short>();
-            this.Receiver = packet.Read<string>();
-            this.Gold = packet.Read<int>();
-            this.Title = packet.Read<string>();
-            this.Text = packet.Read<string>();
+            ItemSlot = packet.Read<byte>();
+            ItemQuantity = packet.Read<short>();
+            Receiver = packet.Read<string>();
+            Gold = packet.Read<int>();
+            Title = packet.Read<string>();
+            Text = packet.Read<string>();
         }
 
         /// <summary>

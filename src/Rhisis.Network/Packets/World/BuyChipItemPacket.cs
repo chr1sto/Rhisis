@@ -34,10 +34,10 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public BuyChipItemPacket(INetPacketStream packet)
         {
-            this.Tab = packet.Read<byte>();
-            this.Id = packet.Read<byte>();
-            this.Quantity = packet.Read<short>();
-            this.ItemId = packet.Read<uint>();
+            Tab = packet.Read<byte>();
+            Id = packet.Read<byte>();
+            Quantity = packet.Read<short>();
+            ItemId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="BuyChipItemPacket"/></param>
         public bool Equals(BuyChipItemPacket other)
         {
-            return this.Tab == other.Tab && this.Id == other.Id && this.Quantity == other.Quantity && this.ItemId == other.ItemId;
+            return Tab == other.Tab && Id == other.Id && Quantity == other.Quantity && ItemId == other.ItemId;
         }
     }
 }

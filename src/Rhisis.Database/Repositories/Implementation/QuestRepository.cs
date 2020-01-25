@@ -18,7 +18,7 @@ namespace Rhisis.Database.Repositories.Implementation
         /// <inheritdoc />
         public IEnumerable<DbQuest> GetCharactersQuests(int characterId)
         {
-            return this.GetAll(x => x.CharacterId == characterId);
+            return GetAll(x => x.CharacterId == characterId);
         }
     }
 }

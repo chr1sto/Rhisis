@@ -11,7 +11,7 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets the number of applets in the container.
         /// </summary>
-        public override int Count => this.Objects.Count(x => x != null && x.Type != ShortcutType.None);
+        public override int Count => Objects.Count(x => x != null && x.Type != ShortcutType.None);
 
         /// <summary>
         /// Creates a new <see cref="TaskbarAppletContainerComponent"/> instance.
@@ -20,19 +20,19 @@ namespace Rhisis.World.Game.Components
         public TaskbarAppletContainerComponent(int maxCapacity)
             : base(maxCapacity)
         {
-            this.Objects = new List<Shortcut>(new Shortcut[maxCapacity]);
+            Objects = new List<Shortcut>(new Shortcut[maxCapacity]);
         }
 
         /// <inheritdoc />
         public override void Serialize(INetPacketStream packet)
         {
-            packet.Write(this.Count);
+            packet.Write(Count);
 
-            for (int i = 0; i < this.MaxCapacity; i++)
+            for (int i = 0; i < MaxCapacity; i++)
             {
-                if (this.Objects[i] != null && this.Objects[i].Type != ShortcutType.None)
+                if (Objects[i] != null && Objects[i].Type != ShortcutType.None)
                 {
-                    this.Objects[i].Serialize(packet);
+                    Objects[i].Serialize(packet);
                 }
             }
         }

@@ -27,28 +27,28 @@ namespace Rhisis.Core.Resources.Dyo
 
         public DyoElement()
         {
-            this.Axis = new Vector3();
-            this.Position = new Vector3();
-            this.Scale = new Vector3();
+            Axis = new Vector3();
+            Position = new Vector3();
+            Scale = new Vector3();
         }
 
         public virtual void Read(BinaryReader reader)
         {
-            this.Angle = reader.ReadSingle();
-            this.Axis.X = reader.ReadSingle();
-            this.Axis.Y = reader.ReadSingle();
-            this.Axis.Z = reader.ReadSingle();
-            this.Position.X = reader.ReadSingle() * 4f;
-            this.Position.Y = reader.ReadSingle();
-            this.Position.Z = reader.ReadSingle() * 4f;
-            this.Scale.X = reader.ReadSingle();
-            this.Scale.Y = reader.ReadSingle();
-            this.Scale.Z = reader.ReadSingle();
-            this.Type = reader.ReadInt32();
-            this.Index = reader.ReadInt32();
-            this.Motion = reader.ReadInt32();
-            this.IAInterface = reader.ReadInt32();
-            this.IA2 = reader.ReadInt32();
+            Angle = reader.ReadSingle();
+            Axis.X = reader.ReadSingle();
+            Axis.Y = reader.ReadSingle();
+            Axis.Z = reader.ReadSingle();
+            Position.X = reader.ReadSingle() * 4f;
+            Position.Y = reader.ReadSingle();
+            Position.Z = reader.ReadSingle() * 4f;
+            Scale.X = reader.ReadSingle();
+            Scale.Y = reader.ReadSingle();
+            Scale.Z = reader.ReadSingle();
+            Type = reader.ReadInt32();
+            Index = reader.ReadInt32();
+            Motion = reader.ReadInt32();
+            IAInterface = reader.ReadInt32();
+            IA2 = reader.ReadInt32();
         }
     }
 }

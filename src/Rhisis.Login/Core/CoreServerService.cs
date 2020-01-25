@@ -20,15 +20,15 @@ namespace Rhisis.Login.Core
         /// <param name="coreServer">Core server.</param>
         public CoreServerService(ILogger<CoreServerService> logger, ICoreServer coreServer)
         {
-            this._logger = logger;
-            this._coreServer = coreServer;
+            _logger = logger;
+            _coreServer = coreServer;
         }
 
         /// <inheritdoc />
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation($"Starting {nameof(CoreServer)}.");
-            this._coreServer.Start();
+            _logger.LogInformation($"Starting {nameof(CoreServer)}.");
+            _coreServer.Start();
 
             return Task.CompletedTask;
         }
@@ -36,8 +36,8 @@ namespace Rhisis.Login.Core
         /// <inheritdoc />
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._logger.LogInformation($"Stopping {nameof(CoreServer)}.");
-            this._coreServer.Stop();
+            _logger.LogInformation($"Stopping {nameof(CoreServer)}.");
+            _coreServer.Stop();
 
             return Task.CompletedTask;
         }

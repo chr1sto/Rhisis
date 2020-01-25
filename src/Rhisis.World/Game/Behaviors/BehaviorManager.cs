@@ -24,9 +24,9 @@ namespace Rhisis.World.Game.Behaviors
 
             public BehaviorEntryCache(TypeInfo behaviorTypeInfo, bool isDefault, int moverId = -1)
             {
-                this.BehaviorTypeInfo = behaviorTypeInfo;
-                this.IsDefault = isDefault;
-                this.MoverId = moverId;
+                BehaviorTypeInfo = behaviorTypeInfo;
+                IsDefault = isDefault;
+                MoverId = moverId;
             }
         }
 
@@ -44,9 +44,9 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="serviceProvider">Service provider.</param>
         public BehaviorManager(ILogger<BehaviorManager> logger, IServiceProvider serviceProvider)
         {
-            this._logger = logger;
-            this._serviceProvider = serviceProvider;
-            this._behaviors = new ConcurrentDictionary<BehaviorType, IList<BehaviorEntryCache>>();
+            _logger = logger;
+            _serviceProvider = serviceProvider;
+            _behaviors = new ConcurrentDictionary<BehaviorType, IList<BehaviorEntryCache>>();
         }
 
         /// <inheritdoc />
@@ -62,10 +62,10 @@ namespace Rhisis.World.Game.Behaviors
                 {
                     foreach (BehaviorAttribute attribute in behaviorAttributes)
                     {
-                        if (!this._behaviors.TryGetValue(attribute.Type, out IList<BehaviorEntryCache> behaviorsCache))
+                        if (!_behaviors.TryGetValue(attribute.Type, out IList<BehaviorEntryCache> behaviorsCache))
                         {
                             behaviorsCache = new List<BehaviorEntryCache>();
-                            this._behaviors.TryAdd(attribute.Type, behaviorsCache);
+                            _behaviors.TryAdd(attribute.Type, behaviorsCache);
                         }
 
                         if (attribute.IsDefault)
@@ -83,7 +83,7 @@ namespace Rhisis.World.Game.Behaviors
                         {
                             if (behaviorsCache.Any(x => x.MoverId == attribute.MoverId))
                             {
-                                this._logger.LogWarning($"Behavior for mover id {attribute.MoverId} and type {type} is already set.");
+                                _logger.LogWarning($"Behavior for mover id {attribute.MoverId} and type {type} is already set.");
                                 continue;
                             }
 
@@ -95,7 +95,7 @@ namespace Rhisis.World.Game.Behaviors
                 }
             }
 
-            foreach (var behaviorsForType in this._behaviors)
+            foreach (var behaviorsForType in _behaviors)
             {
                 if (!behaviorsForType.Value.Any(x => x.IsDefault))
                 {
@@ -103,29 +103,29 @@ namespace Rhisis.World.Game.Behaviors
                 }
             }
 
-            this.Count = this._behaviors.Aggregate(0, (current, next) => current + next.Value.Count);
-            this._logger.LogInformation("-> {0} behaviors loaded.", this.Count);
+            Count = _behaviors.Aggregate(0, (current, next) => current + next.Value.Count);
+            _logger.LogInformation("-> {0} behaviors loaded.", Count);
         }
 
         /// <inheritdoc />
         public IBehavior GetBehavior(BehaviorType type, IWorldEntity entity, int moverId)
         {
-            BehaviorEntryCache behaviorEntry = this.GetBehaviorEntry(type, x => x.MoverId == moverId);
+            BehaviorEntryCache behaviorEntry = GetBehaviorEntry(type, x => x.MoverId == moverId);
 
-            return behaviorEntry == null ? this.GetDefaultBehavior(type, entity) : this.CreateBehaviorInstance(behaviorEntry, entity);
+            return behaviorEntry == null ? GetDefaultBehavior(type, entity) : CreateBehaviorInstance(behaviorEntry, entity);
         }
 
         /// <inheritdoc />
         public IBehavior GetDefaultBehavior(BehaviorType type, IWorldEntity entity)
         {
-            BehaviorEntryCache behaviorEntry = this.GetBehaviorEntry(type, x => x.IsDefault);
+            BehaviorEntryCache behaviorEntry = GetBehaviorEntry(type, x => x.IsDefault);
 
             if (behaviorEntry == null)
             {
                 throw new ArgumentNullException(nameof(behaviorEntry), $"Cannot find default behavior for type {type}.");
             }
 
-            return this.CreateBehaviorInstance(behaviorEntry, entity);
+            return CreateBehaviorInstance(behaviorEntry, entity);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <returns></returns>
         private BehaviorEntryCache GetBehaviorEntry(BehaviorType type, Func<BehaviorEntryCache, bool> predicate)
         {
-            if (!this._behaviors.TryGetValue(type, out IList<BehaviorEntryCache> behaviors))
+            if (!_behaviors.TryGetValue(type, out IList<BehaviorEntryCache> behaviors))
             {
                 throw new KeyNotFoundException($"No behaviors for type {type}.");
             }
@@ -151,6 +151,6 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="entity">Entity.</param>
         /// <returns>Behavior.</returns>
         private IBehavior CreateBehaviorInstance(BehaviorEntryCache behaviorEntry, IWorldEntity entity) 
-            => ActivatorUtilities.CreateInstance(this._serviceProvider, behaviorEntry.BehaviorTypeInfo, entity) as IBehavior;
+            => ActivatorUtilities.CreateInstance(_serviceProvider, behaviorEntry.BehaviorTypeInfo, entity) as IBehavior;
     }
 }

@@ -26,44 +26,44 @@ namespace Rhisis.World.Game.Behaviors
 
         public DefaultMonsterBehavior(IMonsterEntity monster, IMobilitySystem mobilitySystem, IBattleSystem battleSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory)
         {
-            this._monster = monster;
-            this._mobilitySystem = mobilitySystem;
-            this._battleSystem = battleSystem;
-            this._followSystem = followSystem;
-            this._moverPacketFactory = moverPacketFactory;
+            _monster = monster;
+            _mobilitySystem = mobilitySystem;
+            _battleSystem = battleSystem;
+            _followSystem = followSystem;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
         public virtual void Update()
         {
-            if (!this._monster.Object.Spawned || this._monster.Health.IsDead)
+            if (!_monster.Object.Spawned || _monster.Health.IsDead)
                 return;
 
-            if (this._monster.Timers.LastAICheck > Time.GetElapsedTime())
+            if (_monster.Timers.LastAICheck > Time.GetElapsedTime())
                 return;
 
-            this._mobilitySystem.CalculatePosition(this._monster);
+            _mobilitySystem.CalculatePosition(_monster);
 
-            if (this._monster.Battle.IsFighting)
-                this.ProcessMonsterFight(this._monster);
+            if (_monster.Battle.IsFighting)
+                ProcessMonsterFight(_monster);
             else
-                this.ProcessMonsterMovements(this._monster);
+                ProcessMonsterMovements(_monster);
 
-            this._monster.Timers.LastAICheck = Time.GetElapsedTime() + (long)(this._monster.Moves.Speed * 100f);
+            _monster.Timers.LastAICheck = Time.GetElapsedTime() + (long)(_monster.Moves.Speed * 100f);
         }
 
         /// <inheritdoc />
         public virtual void OnArrived()
         {
-            if (!this._monster.Battle.IsFighting)
-                this._monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 10);
+            if (!_monster.Battle.IsFighting)
+                _monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 10);
         }
 
         /// <inheritdoc />
         public void OnTargetKilled(ILivingEntity killedEntity)
         {
-            this._monster.Battle.Target = null;
-            this._monster.Battle.Targets.Clear();
+            _monster.Battle.Target = null;
+            _monster.Battle.Targets.Clear();
         }
 
         /// <summary>
@@ -75,14 +75,14 @@ namespace Rhisis.World.Game.Behaviors
             if (monster.Timers.NextMoveTime <= Time.TimeInSeconds() &&
                 monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
             {
-                this.MoveToPosition(monster, monster.Region.GetRandomPosition());   
+                MoveToPosition(monster, monster.Region.GetRandomPosition());   
             }
             else if (monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
             {
                 if (monster.Moves.ReturningToOriginalPosition)
                 {
                     monster.Health.Hp = monster.Data.AddHp;
-                    this._moverPacketFactory.SendUpdateAttributes(monster, DefineAttributes.HP, monster.Health.Hp);
+                    _moverPacketFactory.SendUpdateAttributes(monster, DefineAttributes.HP, monster.Health.Hp);
                     monster.Moves.ReturningToOriginalPosition = false;
                 }
                 else
@@ -90,7 +90,7 @@ namespace Rhisis.World.Game.Behaviors
                     if (monster.Moves.SpeedFactor >= 2f)
                     {
                         monster.Moves.SpeedFactor = 1f;
-                        this._moverPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
+                        _moverPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
                     }
                 }
             }
@@ -107,8 +107,8 @@ namespace Rhisis.World.Game.Behaviors
             monster.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
             monster.Moves.DestinationPosition = destPosition.Clone();
 
-            this._moverPacketFactory.SendDestinationPosition(monster);
-            this._moverPacketFactory.SendDestinationAngle(monster, false);
+            _moverPacketFactory.SendDestinationPosition(monster);
+            _moverPacketFactory.SendDestinationAngle(monster, false);
         }
 
         /// <summary>
@@ -132,13 +132,13 @@ namespace Rhisis.World.Game.Behaviors
                 if (monster.Moves.SpeedFactor != 2f)
                 {
                     monster.Moves.SpeedFactor = 2;
-                    this._moverPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
+                    _moverPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
                 }
 
                 if (!monster.Object.Position.IsInCircle(monster.Moves.DestinationPosition, 1f))
                 {
                     monster.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
-                    this._followSystem.Follow(monster, monster.Battle.Target);
+                    _followSystem.Follow(monster, monster.Battle.Target);
                 }
                 else
                 {
@@ -146,7 +146,7 @@ namespace Rhisis.World.Game.Behaviors
                     {
                         monster.Timers.NextAttackTime = (long)(Time.TimeInMilliseconds() + monster.Data.ReAttackDelay);
 
-                        this._battleSystem.MeleeAttack(monster, monster.Battle.Target, ObjectMessageType.OBJMSG_ATK1, monster.Data.AttackSpeed);
+                        _battleSystem.MeleeAttack(monster, monster.Battle.Target, ObjectMessageType.OBJMSG_ATK1, monster.Data.AttackSpeed);
                     }
                 }
             }

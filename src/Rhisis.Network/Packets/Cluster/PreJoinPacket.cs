@@ -14,10 +14,10 @@ namespace Rhisis.Network.Packets.Cluster
 
         public void Deserialize(INetPacketStream packet)
         {
-            this.Username = packet.Read<string>();
-            this.CharacterId = packet.Read<int>();
-            this.CharacterName = packet.Read<string>();
-            this.BankCode = packet.Read<int>();
+            Username = packet.Read<string>();
+            CharacterId = packet.Read<int>();
+            CharacterName = packet.Read<string>();
+            BankCode = packet.Read<int>();
         }
     }
 }

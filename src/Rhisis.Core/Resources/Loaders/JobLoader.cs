@@ -20,9 +20,9 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="cache">Application memory cache.</param>
         public JobLoader(ILogger<JobLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            _logger = logger;
+            _cache = cache;
+            _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
         }
 
         /// <inheritdoc />
@@ -32,12 +32,12 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (!File.Exists(propJobFile))
             {
-                this._logger.LogWarning($"Unable to load job properties. Reason: cannot find '{propJobFile}' file.");
+                _logger.LogWarning($"Unable to load job properties. Reason: cannot find '{propJobFile}' file.");
                 return;
             }
 
             var jobData = new ConcurrentDictionary<int, JobData>();
-            using (var propJob = new ResourceTableFile(propJobFile, -1, new [] { '\t', ' ', '\r' }, this._defines, null))
+            using (var propJob = new ResourceTableFile(propJobFile, -1, new [] { '\t', ' ', '\r' }, _defines, null))
             {
                 var jobs = propJob.GetRecords<JobData>();
 
@@ -46,15 +46,15 @@ namespace Rhisis.Core.Resources.Loaders
                     if (jobData.ContainsKey(job.Id))
                     {
                         jobData[job.Id] = job;
-                        this._logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "JobData", job.Id, "already delcared");
+                        _logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "JobData", job.Id, "already delcared");
                     }
                     else
                         jobData.TryAdd(job.Id, job);
                 }
             }
 
-            this._cache.Set(GameResourcesConstants.Jobs, jobData);
-            this._logger.LogInformation($"-> {jobData.Count} jobs data loaded.");
+            _cache.Set(GameResourcesConstants.Jobs, jobData);
+            _logger.LogInformation($"-> {jobData.Count} jobs data loaded.");
         }
     }
 }

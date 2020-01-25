@@ -34,8 +34,8 @@ namespace Rhisis.Login.Core
         /// <param name="handlerInvoker">Handler Invoker.</param>
         public void Initialize(ILogger<CoreServerClient> logger, IHandlerInvoker handlerInvoker)
         {
-            this._logger = logger;
-            this._handlerInvoker = handlerInvoker;
+            _logger = logger;
+            _handlerInvoker = handlerInvoker;
         }
 
         /// <inheritdoc />
@@ -43,35 +43,35 @@ namespace Rhisis.Login.Core
         {
             uint packetHeaderNumber = 0;
 
-            if (this.Socket == null)
+            if (Socket == null)
             {
-                this._logger.LogTrace("Skip to handle core packet from null socket. Reason: socket is not connected.");
+                _logger.LogTrace("Skip to handle core packet from null socket. Reason: socket is not connected.");
                 return;
             }
 
             try
             {
                 packetHeaderNumber = packet.Read<uint>();
-                this._handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
+                _handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentException)
             {
                 if (Enum.IsDefined(typeof(CorePacketType), packetHeaderNumber))
                 {
-                    this._logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.",
+                    _logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.",
                         Enum.GetName(typeof(CorePacketType), packetHeaderNumber),
                         packetHeaderNumber.ToString("X2"),
-                        this.Socket.RemoteEndPoint);
+                        Socket.RemoteEndPoint);
                 }
                 else
                 {
-                    this._logger.LogWarning($"Received an unknown Core packet 0x{packetHeaderNumber.ToString("X2")} from {this.Socket.RemoteEndPoint}.");
+                    _logger.LogWarning($"Received an unknown Core packet 0x{packetHeaderNumber.ToString("X2")} from {Socket.RemoteEndPoint}.");
                 }
             }
             catch (Exception exception)
             {
-                this._logger.LogError(exception, $"An error occured while handling a CoreServer packet.");
-                this._logger.LogDebug(exception.InnerException?.StackTrace);
+                _logger.LogError(exception, $"An error occured while handling a CoreServer packet.");
+                _logger.LogDebug(exception.InnerException?.StackTrace);
             }
         }
     }

@@ -27,10 +27,10 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.Strenght = (ushort)packet.Read<int>();
-            this.Stamina = (ushort)packet.Read<int>();
-            this.Dexterity = (ushort)packet.Read<int>();
-            this.Intelligence = (ushort)packet.Read<int>();
+            Strenght = (ushort)packet.Read<int>();
+            Stamina = (ushort)packet.Read<int>();
+            Dexterity = (ushort)packet.Read<int>();
+            Intelligence = (ushort)packet.Read<int>();
         }
     }
 }

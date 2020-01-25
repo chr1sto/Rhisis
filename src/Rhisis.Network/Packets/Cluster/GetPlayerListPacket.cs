@@ -16,11 +16,11 @@ namespace Rhisis.Network.Packets.Cluster
 
         public void Deserialize(INetPacketStream packet)
         {
-            this.BuildVersion = packet.Read<string>();
-            this.AuthenticationKey = packet.Read<int>();
-            this.Username = packet.Read<string>();
-            this.Password = packet.Read<string>();
-            this.ServerId = packet.Read<int>();
+            BuildVersion = packet.Read<string>();
+            AuthenticationKey = packet.Read<int>();
+            Username = packet.Read<string>();
+            Password = packet.Read<string>();
+            ServerId = packet.Read<int>();
         }
     }
 }

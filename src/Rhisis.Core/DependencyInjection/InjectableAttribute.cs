@@ -20,7 +20,7 @@ namespace Rhisis.Core.DependencyInjection
         /// <param name="serviceLifeTime"></param>
         public InjectableAttribute(ServiceLifetime serviceLifeTime = ServiceLifetime.Transient)
         {
-            this.LifeTime = serviceLifeTime;
+            LifeTime = serviceLifeTime;
         }
     }
 }

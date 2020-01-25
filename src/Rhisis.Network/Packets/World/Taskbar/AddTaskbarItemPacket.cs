@@ -12,7 +12,7 @@ namespace Rhisis.Network.Packets.World.Taskbar
         /// <inheritdoc />
         public override void Deserialize(INetPacketStream packet)
         {
-            this.SlotLevelIndex = packet.Read<byte>();
+            SlotLevelIndex = packet.Read<byte>();
             base.Deserialize(packet);
         }
     }

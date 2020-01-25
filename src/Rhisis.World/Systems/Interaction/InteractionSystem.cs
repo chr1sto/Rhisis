@@ -16,7 +16,7 @@ namespace Rhisis.World.Systems.Interaction
         /// <param name="logger">Logger.</param>
         public InteractionSystem(ILogger<InteractionSystem> logger)
         {
-            this._logger = logger;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -30,16 +30,16 @@ namespace Rhisis.World.Systems.Interaction
             if (targetMode == TargetModeType.Selected)
             {
                 player.Interaction.TargetEntity = targetEntity;
-                this._logger.LogDebug("Player {0} selected {1} as target.", player.Object.Name, targetEntity.Object.Name);
+                _logger.LogDebug("Player {0} selected {1} as target.", player.Object.Name, targetEntity.Object.Name);
             }
             else if (targetMode == TargetModeType.Unselected)
             {
                 player.Interaction.TargetEntity = null;
-                this._logger.LogDebug("Player {0} cleared selection on {1}.", player.Object.Name, targetEntity.Object.Name);
+                _logger.LogDebug("Player {0} cleared selection on {1}.", player.Object.Name, targetEntity.Object.Name);
             }
             else
             {
-                this._logger.LogWarning("Player {0} raised an invalid or unknown target mode on {1}.", player.Object.Name, targetEntity.Object.Name);
+                _logger.LogWarning("Player {0} raised an invalid or unknown target mode on {1}.", player.Object.Name, targetEntity.Object.Name);
             }
         }
     }

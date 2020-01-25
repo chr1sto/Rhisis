@@ -25,11 +25,11 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public UseSkillPacket(INetPacketStream packet)
         {
-            this.Type = packet.Read<ushort>();
-            this.Id = packet.Read<ushort>();
-            this.ObjectId = packet.Read<uint>();
-            this.UseSkill = packet.Read<int>();
-            this.Control = packet.Read<int>() == 1;
+            Type = packet.Read<ushort>();
+            Id = packet.Read<ushort>();
+            ObjectId = packet.Read<uint>();
+            UseSkill = packet.Read<int>();
+            Control = packet.Read<int>() == 1;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="UseSkillPacket"/></param>
         public bool Equals(UseSkillPacket other)
         {
-            return this.Type == other.Type && this.Id == other.Id && this.ObjectId == other.ObjectId && this.UseSkill == other.UseSkill && this.Control == other.Control;
+            return Type == other.Type && Id == other.Id && ObjectId == other.ObjectId && UseSkill == other.UseSkill && Control == other.Control;
         }
     }
 }

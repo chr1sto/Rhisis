@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public SetQuestPacket(INetPacketStream packet)
         {
-            this.QuestId = packet.Read<int>();
-            this.State = packet.Read<int>();
+            QuestId = packet.Read<int>();
+            State = packet.Read<int>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="SetQuestPacket"/></param>
         public bool Equals(SetQuestPacket other)
         {
-            return this.QuestId == other.QuestId && this.State == other.State;
+            return QuestId == other.QuestId && State == other.State;
         }
     }
 }

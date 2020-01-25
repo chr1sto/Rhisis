@@ -16,7 +16,7 @@ namespace Rhisis.Network.Packets.World.Mailbox
         /// <param name="packet">Incoming packet</param>
         public ReadMailPacket(INetPacketStream packet)
         {
-            this.MailId = packet.Read<int>();
+            MailId = packet.Read<int>();
         }
 
         /// <summary>

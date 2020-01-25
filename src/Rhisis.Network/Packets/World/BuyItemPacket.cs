@@ -27,10 +27,10 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.Tab = packet.Read<byte>();
-            this.Slot = packet.Read<byte>();
-            this.Quantity = packet.Read<short>();
-            this.ItemId = packet.Read<int>();
+            Tab = packet.Read<byte>();
+            Slot = packet.Read<byte>();
+            Quantity = packet.Read<short>();
+            ItemId = packet.Read<int>();
         }
     }
 }

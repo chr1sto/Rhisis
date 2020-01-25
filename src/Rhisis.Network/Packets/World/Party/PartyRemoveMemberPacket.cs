@@ -19,8 +19,8 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="packet">Incoming packet</param>
         public PartyRemoveMemberPacket(INetPacketStream packet)
         {
-            this.LeaderId = packet.Read<uint>();
-            this.MemberId = packet.Read<uint>();
+            LeaderId = packet.Read<uint>();
+            MemberId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="other">Other <see cref="PartyRemoveMemberPacket"/></param>
         public bool Equals(PartyRemoveMemberPacket other)
         {
-            return this.LeaderId == other.LeaderId && this.MemberId == other.MemberId;
+            return LeaderId == other.LeaderId && MemberId == other.MemberId;
         }
     }
 }

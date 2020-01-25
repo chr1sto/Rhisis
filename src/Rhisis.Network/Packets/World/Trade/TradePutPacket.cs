@@ -27,10 +27,10 @@ namespace Rhisis.Network.Packets.World.Trade
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.Position = packet.Read<byte>();
-            this.ItemType = packet.Read<byte>();
-            this.ItemUniqueId = packet.Read<byte>();
-            this.Count = packet.Read<short>();
+            Position = packet.Read<byte>();
+            ItemType = packet.Read<byte>();
+            ItemUniqueId = packet.Read<byte>();
+            Count = packet.Read<short>();
         }
     }
 }

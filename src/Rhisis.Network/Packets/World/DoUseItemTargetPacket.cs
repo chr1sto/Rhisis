@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public DoUseItemTargetPacket(INetPacketStream packet)
         {
-            this.Material = packet.Read<uint>();
-            this.Target = packet.Read<uint>();
+            Material = packet.Read<uint>();
+            Target = packet.Read<uint>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="DoUseItemTargetPacket"/></param>
         public bool Equals(DoUseItemTargetPacket other)
         {
-            return this.Material == other.Material && this.Target == other.Target;
+            return Material == other.Material && Target == other.Target;
         }
     }
 }

@@ -35,16 +35,16 @@ namespace Rhisis.World.Game.Maps
         /// <param name="mapFactory">Map factory.</param>
         public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IMemoryCache cache, IGameResources gameResources, IMapFactory mapFactory)
         {
-            this._logger = logger;
-            this._worldConfiguration = worldConfiguration.Value;
-            this._cache = cache;
-            this._gameResources = gameResources;
-            this._mapFactory = mapFactory;
-            this._maps = new ConcurrentDictionary<int, IMapInstance>();
+            _logger = logger;
+            _worldConfiguration = worldConfiguration.Value;
+            _cache = cache;
+            _gameResources = gameResources;
+            _mapFactory = mapFactory;
+            _maps = new ConcurrentDictionary<int, IMapInstance>();
         }
 
         /// <inheritdoc />
-        public IMapInstance GetMap(int id) => this._maps.TryGetValue(id, out IMapInstance map) ? map : null;
+        public IMapInstance GetMap(int id) => _maps.TryGetValue(id, out IMapInstance map) ? map : null;
 
         /// <inheritdoc />
         public void Load()
@@ -58,27 +58,27 @@ namespace Rhisis.World.Game.Maps
                     worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
             }
 
-            foreach (string mapDefineName in this._worldConfiguration.Maps)
+            foreach (string mapDefineName in _worldConfiguration.Maps)
             {
                 if (!worldsPaths.TryGetValue(mapDefineName, out string mapName))
                 {
-                    this._logger.LogWarning(GameResourcesConstants.Errors.UnableLoadMapMessage, mapDefineName, $"map is not declared inside '{worldScriptPath}' file");
+                    _logger.LogWarning(GameResourcesConstants.Errors.UnableLoadMapMessage, mapDefineName, $"map is not declared inside '{worldScriptPath}' file");
                     continue;
                 }
 
-                if (!this._gameResources.Defines.TryGetValue(mapDefineName, out int mapId))
+                if (!_gameResources.Defines.TryGetValue(mapDefineName, out int mapId))
                 {
-                    this._logger.LogWarning(GameResourcesConstants.Errors.UnableLoadMapMessage, mapDefineName, $"map has no define id inside '{GameResourcesConstants.Paths.DataSub0Path}/defineWorld.h' file");
+                    _logger.LogWarning(GameResourcesConstants.Errors.UnableLoadMapMessage, mapDefineName, $"map has no define id inside '{GameResourcesConstants.Paths.DataSub0Path}/defineWorld.h' file");
                     continue;
                 }
 
                 if (_maps.ContainsKey(mapId))
                 {
-                    this._logger.LogWarning(GameResourcesConstants.Errors.UnableLoadMapMessage, mapDefineName, $"another map with id '{mapId}' already exist.");
+                    _logger.LogWarning(GameResourcesConstants.Errors.UnableLoadMapMessage, mapDefineName, $"another map with id '{mapId}' already exist.");
                     continue;
                 }
 
-                IMapInstance map = this._mapFactory.Create(Path.Combine(GameResourcesConstants.Paths.MapsPath, mapName), mapName, mapId);
+                IMapInstance map = _mapFactory.Create(Path.Combine(GameResourcesConstants.Paths.MapsPath, mapName), mapName, mapId);
 
                 map.CreateMapLayer();
                 map.StartUpdateTask();
@@ -86,7 +86,7 @@ namespace Rhisis.World.Game.Maps
                 _maps.Add(mapId, map);
             }
 
-            this._logger.LogInformation("-> {0} maps loaded.", _maps.Count);
+            _logger.LogInformation("-> {0} maps loaded.", _maps.Count);
         }
     }
 }

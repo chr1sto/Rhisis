@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="packet">Incoming packet</param>
         public PartyChangeExperienceModePacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.ExperienceMode = packet.Read<int>();
+            PlayerId = packet.Read<uint>();
+            ExperienceMode = packet.Read<int>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="other">Other <see cref="PartyChangeExperienceModePacket"/></param>
         public bool Equals(PartyChangeExperienceModePacket other)
         {
-            return this.PlayerId == other.PlayerId && this.ExperienceMode == other.ExperienceMode;
+            return PlayerId == other.PlayerId && ExperienceMode == other.ExperienceMode;
         }
     }
 }

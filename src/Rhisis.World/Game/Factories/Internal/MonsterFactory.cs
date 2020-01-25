@@ -22,14 +22,14 @@ namespace Rhisis.World.Game.Factories.Internal
 
         public MonsterFactory(IGameResources gameResources, IBehaviorManager behaviorManager)
         {
-            this._gameResources = gameResources;
-            this._behaviorManager = behaviorManager;
+            _gameResources = gameResources;
+            _behaviorManager = behaviorManager;
         }
 
         /// <inheritdoc />
         public IMonsterEntity CreateMonster(IMapInstance currentMap, IMapLayer currentMapLayer, int moverId, IMapRespawnRegion region, bool respawn = false)
         {
-            if (!this._gameResources.Movers.TryGetValue(moverId, out MoverData moverData))
+            if (!_gameResources.Movers.TryGetValue(moverId, out MoverData moverData))
             {
                 throw new ArgumentException($"Cannot find mover with id '{moverId}' in game resources.", nameof(moverId));
             }
@@ -72,7 +72,7 @@ namespace Rhisis.World.Game.Factories.Internal
             monster.Attributes.ResetAttribute(DefineAttributes.STA, moverData.Stamina);
             monster.Attributes.ResetAttribute(DefineAttributes.DEX, moverData.Dexterity);
             monster.Attributes.ResetAttribute(DefineAttributes.INT, moverData.Intelligence);
-            monster.Behavior = this._behaviorManager.GetBehavior(BehaviorType.Monster, monster, moverId);
+            monster.Behavior = _behaviorManager.GetBehavior(BehaviorType.Monster, monster, moverId);
             monster.Data = moverData;
             monster.Region = region;
 

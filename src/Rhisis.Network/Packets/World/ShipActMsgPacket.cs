@@ -34,10 +34,10 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ShipActMsgPacket(INetPacketStream packet)
         {
-            this.Message = packet.Read<uint>();
-            this.Parameter1 = packet.Read<int>();
-            this.Parameter2 = packet.Read<int>();
-            this.Ship = packet.Read<uint>();
+            Message = packet.Read<uint>();
+            Parameter1 = packet.Read<int>();
+            Parameter2 = packet.Read<int>();
+            Ship = packet.Read<uint>();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ShipActMsgPacket"/></param>
         public bool Equals(ShipActMsgPacket other)
         {
-            return this.Message == other.Message && this.Parameter1 == other.Parameter1 && this.Parameter2 == other.Parameter2 && this.Ship == other.Ship;
+            return Message == other.Message && Parameter1 == other.Parameter1 && Parameter2 == other.Parameter2 && Ship == other.Ship;
         }
     }
 }

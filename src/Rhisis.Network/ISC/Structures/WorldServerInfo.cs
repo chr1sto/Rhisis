@@ -7,7 +7,7 @@
         public WorldServerInfo(int id, string host, string name, int parentClusterId)
             : base(id, host, name)
         {
-            this.ParentClusterId = parentClusterId;
+            ParentClusterId = parentClusterId;
         }
     }
 }

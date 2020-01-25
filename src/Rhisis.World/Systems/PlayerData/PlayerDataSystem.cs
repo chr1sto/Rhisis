@@ -19,8 +19,8 @@ namespace Rhisis.World.Systems.PlayerData
         /// <param name="textPacketFactory">Text packet factory.</param>
         public PlayerDataSystem(IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
         {
-            this._moverPacketFactory = moverPacketFactory;
-            this._textPacketFactory = textPacketFactory;
+            _moverPacketFactory = moverPacketFactory;
+            _textPacketFactory = textPacketFactory;
         }
 
         /// <inheritdoc />
@@ -31,13 +31,13 @@ namespace Rhisis.World.Systems.PlayerData
 
             if (gold > int.MaxValue || gold < 0) // Check gold overflow
             {
-                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_TOOMANYMONEY_USE_PERIN);
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_TOOMANYMONEY_USE_PERIN);
                 return false;
             }
             else
             {
                 player.PlayerData.Gold = (int)gold;
-                this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
             }
 
             return true;
@@ -48,7 +48,7 @@ namespace Rhisis.World.Systems.PlayerData
         {
             player.PlayerData.Gold = Math.Max(player.PlayerData.Gold - goldAmount, 0);
 
-            this._moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
 
             return true;
         }

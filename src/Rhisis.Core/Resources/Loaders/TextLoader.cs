@@ -19,8 +19,8 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="cache">Memory cache.</param>
         public TextLoader(ILogger<TextLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
+            _logger = logger;
+            _cache = cache;
         }
 
         /// <inheritdoc />
@@ -40,14 +40,14 @@ namespace Rhisis.Core.Resources.Loaders
                         texts.TryAdd(text.Key, text.Value);
                     else
                     {
-                        this._logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Text", text.Key,
+                        _logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Text", text.Key,
                             (text.Value == null) ? "cannot get the value" : "already declared");
                     }
                 }
             }
 
-            this._cache.Set(GameResourcesConstants.Texts, texts);
-            this._logger.LogInformation("-> {0} texts found.", texts.Count);
+            _cache.Set(GameResourcesConstants.Texts, texts);
+            _logger.LogInformation("-> {0} texts found.", texts.Count);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Rhisis.Network
         /// <summary>
         /// Gets the FFPacket buffer.
         /// </summary>
-        public override byte[] Buffer => this.BuildPacketBuffer();
+        public override byte[] Buffer => BuildPacketBuffer();
 
         /// <summary>
         /// Creates a new FFPacket in write-only mode.
@@ -43,7 +43,7 @@ namespace Rhisis.Network
         public FFPacket(object packetHeader)
             : this()
         {
-            this.WriteHeader(packetHeader);
+            WriteHeader(packetHeader);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Rhisis.Network
         /// Write packet header.
         /// </summary>
         /// <param name="packetHeader">FFPacket header</param>
-        public void WriteHeader(object packetHeader) => this.Write((uint)packetHeader);
+        public void WriteHeader(object packetHeader) => Write((uint)packetHeader);
 
         /// <summary>
         /// Builds the packet buffer.
@@ -67,11 +67,11 @@ namespace Rhisis.Network
         /// <returns></returns>
         private byte[] BuildPacketBuffer()
         {
-            long oldPointer = this.Position;
+            long oldPointer = Position;
 
-            this.Seek(1, SeekOrigin.Begin);
-            base.Write((int)this.Length - 5);
-            this.Seek(oldPointer, SeekOrigin.Begin);
+            Seek(1, SeekOrigin.Begin);
+            base.Write((int)Length - 5);
+            Seek(oldPointer, SeekOrigin.Begin);
 
             return base.Buffer;
         }
@@ -86,21 +86,21 @@ namespace Rhisis.Network
         {
             var packet = (uint)command;
 
-            if (this._mergedPacketCount == 0)
+            if (_mergedPacketCount == 0)
             {
-                this.Write((int)mainCommand);
-                this.Write(0);
-                this.Write(++this._mergedPacketCount);
+                Write((int)mainCommand);
+                Write(0);
+                Write(++_mergedPacketCount);
             }
             else
             {
-                this.Seek(13, SeekOrigin.Begin);
-                this.Write(++this._mergedPacketCount);
-                this.Seek(0, SeekOrigin.End);
+                Seek(13, SeekOrigin.Begin);
+                Write(++_mergedPacketCount);
+                Seek(0, SeekOrigin.End);
             }
 
-            this.Write(moverId);
-            this.Write((short)packet);
+            Write(moverId);
+            Write((short)packet);
         }
 
         /// <summary>
@@ -108,6 +108,6 @@ namespace Rhisis.Network
         /// </summary>
         /// <param name="moverId"></param>
         /// <param name="command"></param>
-        public void StartNewMergedPacket(uint moverId, object command) => this.StartNewMergedPacket(moverId, command, 0xFFFFFF00);
+        public void StartNewMergedPacket(uint moverId, object command) => StartNewMergedPacket(moverId, command, 0xFFFFFF00);
     }
 }

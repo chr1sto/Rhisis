@@ -86,112 +86,112 @@ namespace Rhisis.Core.Resources.Dyo
         {
             base.Read(reader);
 
-            this.Version = reader.ReadUInt32();
+            Version = reader.ReadUInt32();
 
-            if (this.Version == CommonControlVersion1)
+            if (Version == CommonControlVersion1)
             {
-                this.Set = reader.ReadUInt32();
-                this.SetItem = reader.ReadUInt32();
-                this.SetLevel = reader.ReadUInt32();
-                this.SetQuestNum = reader.ReadUInt32();
-                this.SetFlagNum = reader.ReadUInt32();
-                this.SetGender = reader.ReadUInt32();
+                Set = reader.ReadUInt32();
+                SetItem = reader.ReadUInt32();
+                SetLevel = reader.ReadUInt32();
+                SetQuestNum = reader.ReadUInt32();
+                SetFlagNum = reader.ReadUInt32();
+                SetGender = reader.ReadUInt32();
 
-                for (int i = 0; i < this.SetJob.Length; i++)
-                    this.SetJob[i] = reader.ReadInt32() == 1;
+                for (int i = 0; i < SetJob.Length; i++)
+                    SetJob[i] = reader.ReadInt32() == 1;
 
-                this.SetEndu = reader.ReadUInt32();
+                SetEndu = reader.ReadUInt32();
 
-                this.MinItemNum = reader.ReadUInt32();
-                this.MaxItemNum = reader.ReadUInt32();
+                MinItemNum = reader.ReadUInt32();
+                MaxItemNum = reader.ReadUInt32();
 
                 for (int i = 0; i < MaxControlDropItem; i++)
                 {
-                    this.InsideItemKind[i] = reader.ReadUInt32();
-                    this.InsideItemPer[i] = reader.ReadUInt32();
+                    InsideItemKind[i] = reader.ReadUInt32();
+                    InsideItemPer[i] = reader.ReadUInt32();
                 }
 
                 for (int i = 0; i < MaxControlDropMonster; i++)
                 {
-                    this.MonsterResistanceKind[i] = reader.ReadUInt32();
-                    this.MonsterResistanceNum[i] = reader.ReadUInt32();
-                    this.MonsterActionAttack[i] = reader.ReadUInt32();
+                    MonsterResistanceKind[i] = reader.ReadUInt32();
+                    MonsterResistanceNum[i] = reader.ReadUInt32();
+                    MonsterActionAttack[i] = reader.ReadUInt32();
                 }
 
-                this.TrapOperTime = reader.ReadUInt32();
-                this.TrapRandomPer = reader.ReadUInt32();
-                this.TrapDelay = reader.ReadUInt32();
+                TrapOperTime = reader.ReadUInt32();
+                TrapRandomPer = reader.ReadUInt32();
+                TrapDelay = reader.ReadUInt32();
 
                 for (int i = 0; i < MaxTrap; i++)
                 {
-                    this.TrapKind[i] = reader.ReadUInt32();
-                    this.TrapLevel[i] = reader.ReadUInt32();
+                    TrapKind[i] = reader.ReadUInt32();
+                    TrapLevel[i] = reader.ReadUInt32();
                 }
 
-                this.LinkControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
-                this.ControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
+                LinkControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
+                ControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
 
-                this.SetQuestNum1 = reader.ReadUInt32();
-                this.SetFlagNum1 = reader.ReadUInt32();
-                this.SetQuestNum2 = reader.ReadUInt32();
-                this.SetFlagNum2 = reader.ReadUInt32();
-                this.SetItemCount = reader.ReadUInt32();
-                this.TeleportWorldId = reader.ReadUInt32();
-                this.TeleportX = reader.ReadUInt32();
-                this.TeleportY = reader.ReadUInt32();
-                this.TeleportZ = reader.ReadUInt32();
+                SetQuestNum1 = reader.ReadUInt32();
+                SetFlagNum1 = reader.ReadUInt32();
+                SetQuestNum2 = reader.ReadUInt32();
+                SetFlagNum2 = reader.ReadUInt32();
+                SetItemCount = reader.ReadUInt32();
+                TeleportWorldId = reader.ReadUInt32();
+                TeleportX = reader.ReadUInt32();
+                TeleportY = reader.ReadUInt32();
+                TeleportZ = reader.ReadUInt32();
             }
-            else if (this.Version == CommonControlVersion2)
+            else if (Version == CommonControlVersion2)
             {
-                this.Set = reader.ReadUInt32();
-                this.SetItem = reader.ReadUInt32();
-                this.SetLevel = reader.ReadUInt32();
-                this.SetQuestNum = reader.ReadUInt32();
-                this.SetFlagNum = reader.ReadUInt32();
-                this.SetGender = reader.ReadUInt32();
+                Set = reader.ReadUInt32();
+                SetItem = reader.ReadUInt32();
+                SetLevel = reader.ReadUInt32();
+                SetQuestNum = reader.ReadUInt32();
+                SetFlagNum = reader.ReadUInt32();
+                SetGender = reader.ReadUInt32();
 
-                for (int i = 0; i < this.SetJob.Length; i++)
-                    this.SetJob[i] = reader.ReadInt32() == 1;
+                for (int i = 0; i < SetJob.Length; i++)
+                    SetJob[i] = reader.ReadInt32() == 1;
 
-                this.SetEndu = reader.ReadUInt32();
+                SetEndu = reader.ReadUInt32();
 
-                this.MinItemNum = reader.ReadUInt32();
-                this.MaxItemNum = reader.ReadUInt32();
+                MinItemNum = reader.ReadUInt32();
+                MaxItemNum = reader.ReadUInt32();
 
                 for (int i = 0; i < MaxControlDropItem; i++)
                 {
-                    this.InsideItemKind[i] = reader.ReadUInt32();
+                    InsideItemKind[i] = reader.ReadUInt32();
                 }
-                this.InsideItemPer[0] = reader.ReadUInt32();
+                InsideItemPer[0] = reader.ReadUInt32();
 
-                this.TrapOperTime = reader.ReadUInt32();
-                this.TrapRandomPer = reader.ReadUInt32();
-                this.TrapDelay = reader.ReadUInt32();
+                TrapOperTime = reader.ReadUInt32();
+                TrapRandomPer = reader.ReadUInt32();
+                TrapDelay = reader.ReadUInt32();
 
                 for (int i = 0; i < MaxTrap; i++)
                 {
-                    this.TrapKind[i] = reader.ReadUInt32();
-                    this.TrapLevel[i] = reader.ReadUInt32();
+                    TrapKind[i] = reader.ReadUInt32();
+                    TrapLevel[i] = reader.ReadUInt32();
                 }
 
-                this.LinkControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
-                this.ControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
+                LinkControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
+                ControlKey = Encoding.Default.GetString(reader.ReadBytes(MaxKey));
 
-                this.SetQuestNum1 = reader.ReadUInt32();
-                this.SetFlagNum1 = reader.ReadUInt32();
-                this.SetQuestNum2 = reader.ReadUInt32();
-                this.SetFlagNum2 = reader.ReadUInt32();
-                this.SetItemCount = reader.ReadUInt32();
-                this.TeleportWorldId = reader.ReadUInt32();
-                this.TeleportX = reader.ReadUInt32();
-                this.TeleportY = reader.ReadUInt32();
-                this.TeleportZ = reader.ReadUInt32();
+                SetQuestNum1 = reader.ReadUInt32();
+                SetFlagNum1 = reader.ReadUInt32();
+                SetQuestNum2 = reader.ReadUInt32();
+                SetFlagNum2 = reader.ReadUInt32();
+                SetItemCount = reader.ReadUInt32();
+                TeleportWorldId = reader.ReadUInt32();
+                TeleportX = reader.ReadUInt32();
+                TeleportY = reader.ReadUInt32();
+                TeleportZ = reader.ReadUInt32();
             }
             else
             {
-                this.Set = this.Version;
+                Set = Version;
                 reader.BaseStream.Position += Size - (sizeof(uint) * 10);
-                this.SetItem = reader.ReadUInt32();
+                SetItem = reader.ReadUInt32();
             }
         }
     }

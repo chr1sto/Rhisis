@@ -22,16 +22,16 @@ namespace Rhisis.CLI.Commands.User
 
         public UserCreateCommand(DatabaseFactory databaseFactory, ConsoleHelper consoleHelper)
         {
-            this._databaseFactory = databaseFactory;
-            this._consoleHelper = consoleHelper;
+            _databaseFactory = databaseFactory;
+            _consoleHelper = consoleHelper;
         }
 
         public void OnExecute()
         {
-            if (string.IsNullOrEmpty(this.DatabaseConfigurationFile))
-                this.DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(this.DatabaseConfigurationFile);
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
             if (dbConfig is null)
             {
                 Console.WriteLine("Couldn't load database configuration file during execution of user create command.'");
@@ -70,7 +70,7 @@ namespace Rhisis.CLI.Commands.User
 
             if (response)
             {
-                using (IDatabase database = this._databaseFactory.GetDatabase(dbConfig))
+                using (IDatabase database = _databaseFactory.GetDatabase(dbConfig))
                 {
                     if (database.Users.HasAny(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
                     {

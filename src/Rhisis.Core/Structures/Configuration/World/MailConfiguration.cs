@@ -20,7 +20,7 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         public MailConfiguration()
         {
-            this.MailShippingCost = DefaultMailShippingCost;
+            MailShippingCost = DefaultMailShippingCost;
         }
     }
 }

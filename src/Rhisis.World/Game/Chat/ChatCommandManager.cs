@@ -25,15 +25,15 @@ namespace Rhisis.World.Game.Chat
         /// <param name="serviceProvider">Service provider.</param>
         public ChatCommandManager(ILogger<ChatCommandManager> logger, IServiceProvider serviceProvider)
         {
-            this._logger = logger;
-            this._serviceProvider = serviceProvider;
-            this._chatCommands = new ConcurrentDictionary<string, ChatCommandDefinition>();
+            _logger = logger;
+            _serviceProvider = serviceProvider;
+            _chatCommands = new ConcurrentDictionary<string, ChatCommandDefinition>();
         }
 
         /// <inheritdoc />
         public void Load()
         {
-            this._logger.LogInformation($"Loading chat commands...");
+            _logger.LogInformation($"Loading chat commands...");
 
             IEnumerable<TypeInfo> chatCommandTypes = ReflectionHelper.GetClassesAssignableFrom<IChatCommand>();
 
@@ -49,7 +49,7 @@ namespace Rhisis.World.Game.Chat
                     {
                         var chatCommandDefinition = new ChatCommandDefinition(chatAttribute.Command, chatCommandFactory, chatAttribute.MinimumAuthorization);
 
-                        if (!this._chatCommands.TryAdd(chatAttribute.Command, chatCommandDefinition))
+                        if (!_chatCommands.TryAdd(chatAttribute.Command, chatCommandDefinition))
                         {
                             throw new InvalidOperationException($"Duplicate chat command: '{chatAttribute.Command}' already exists.");
                         }
@@ -57,20 +57,20 @@ namespace Rhisis.World.Game.Chat
                 }
             }
 
-            this._logger.LogInformation($"-> {this._chatCommands.Count} chat commands loaded.");
+            _logger.LogInformation($"-> {_chatCommands.Count} chat commands loaded.");
         }
 
         /// <inheritdoc />
         public IChatCommand GetChatCommand(string command, AuthorityType authority)
         {
-            if (this._chatCommands.TryGetValue(command, out ChatCommandDefinition chatCommandDefinition))
+            if (_chatCommands.TryGetValue(command, out ChatCommandDefinition chatCommandDefinition))
             {
                 if (authority < chatCommandDefinition.Authority)
                 {
                     throw new InvalidOperationException($"Player doesn't have enough authority to execute this command.");
                 }
 
-                return chatCommandDefinition.ChatCommandFactory(this._serviceProvider, null) as IChatCommand;
+                return chatCommandDefinition.ChatCommandFactory(_serviceProvider, null) as IChatCommand;
             }
             else
             {

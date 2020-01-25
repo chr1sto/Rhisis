@@ -24,13 +24,13 @@ namespace Rhisis.Database.Repositories
         /// <param name="context"></param>
         protected RepositoryBase(DbContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         /// <inheritdoc />
         public T Create(T entity)
         {
-            this._context.Set<T>().Add(entity);
+            _context.Set<T>().Add(entity);
 
             return entity;
         }
@@ -38,7 +38,7 @@ namespace Rhisis.Database.Repositories
         /// <inheritdoc />
         public async Task<T> CreateAsync(T entity)
         {
-            var trackedEntity = await this._context.Set<T>().AddAsync(entity);
+            var trackedEntity = await _context.Set<T>().AddAsync(entity);
 
             return trackedEntity.Entity;
         }
@@ -46,12 +46,12 @@ namespace Rhisis.Database.Repositories
         /// <inheritdoc />
         public T Update(T entity)
         {
-            if (this._context.Entry(entity).State == EntityState.Detached)
+            if (_context.Entry(entity).State == EntityState.Detached)
             {
-                this._context.Attach(entity);
+                _context.Attach(entity);
             }
 
-            var trackedEntity = this._context.Set<T>().Update(entity);
+            var trackedEntity = _context.Set<T>().Update(entity);
 
             return trackedEntity.Entity;
         }
@@ -59,33 +59,33 @@ namespace Rhisis.Database.Repositories
         /// <inheritdoc />
         public T Delete(T entity)
         {
-            var trackedEntity = this._context.Set<T>().Remove(entity);
+            var trackedEntity = _context.Set<T>().Remove(entity);
 
             return trackedEntity.Entity;
         }
 
         /// <inheritdoc />
-        public T Get(int id) => this.Get(x => x.Id == id);
+        public T Get(int id) => Get(x => x.Id == id);
 
         /// <inheritdoc />
-        public T Get(Expression<Func<T, bool>> func) => this.GetQueryable().FirstOrDefault(func);
+        public T Get(Expression<Func<T, bool>> func) => GetQueryable().FirstOrDefault(func);
 
         /// <inheritdoc />
-        public IEnumerable<T> GetAll() => this.GetQueryable().AsEnumerable();
+        public IEnumerable<T> GetAll() => GetQueryable().AsEnumerable();
 
         /// <inheritdoc />
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>> func) => this.GetQueryable().Where(func).AsEnumerable();
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>> func) => GetQueryable().Where(func).AsEnumerable();
 
         /// <inheritdoc />
-        public int Count() => this._context.Set<T>().AsNoTracking().Count();
+        public int Count() => _context.Set<T>().AsNoTracking().Count();
 
         /// <inheritdoc />
-        public int Count(Expression<Func<T, bool>> func) => this._context.Set<T>().AsNoTracking().Count(func);
+        public int Count(Expression<Func<T, bool>> func) => _context.Set<T>().AsNoTracking().Count(func);
 
         /// <inheritdoc />
-        public bool HasAny(Expression<Func<T, bool>> predicate) => this._context.Set<T>().AsNoTracking().Any(predicate);
+        public bool HasAny(Expression<Func<T, bool>> predicate) => _context.Set<T>().AsNoTracking().Any(predicate);
 
         /// <inheritdoc />
-        protected virtual IQueryable<T> GetQueryable() => this._context.Set<T>().AsQueryable();
+        protected virtual IQueryable<T> GetQueryable() => _context.Set<T>().AsQueryable();
     }
 }

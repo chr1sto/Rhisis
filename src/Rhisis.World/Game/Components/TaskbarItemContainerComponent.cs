@@ -11,7 +11,7 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets the number of items in the item taskbar.
         /// </summary>
-        public override int Count => this.Objects.Sum(x => x.Count(y => y != null && y.Type != ShortcutType.None));
+        public override int Count => Objects.Sum(x => x.Count(y => y != null && y.Type != ShortcutType.None));
 
         /// <summary>
         /// Gets the taskbar item max level capacity per slot.
@@ -26,26 +26,26 @@ namespace Rhisis.World.Game.Components
         public TaskbarItemContainerComponent(int maxCapacity, int maxLevelCapacity)
             : base(maxCapacity)
         {
-            this.MaxLevelCapacity = maxLevelCapacity;
-            this.Objects = new List<List<Shortcut>>(new List<Shortcut>[maxCapacity]);
+            MaxLevelCapacity = maxLevelCapacity;
+            Objects = new List<List<Shortcut>>(new List<Shortcut>[maxCapacity]);
 
-            for (int i = 0; i < this.Objects.Count; i++)
-                this.Objects[i] = new List<Shortcut>(new Shortcut[maxLevelCapacity]);
+            for (int i = 0; i < Objects.Count; i++)
+                Objects[i] = new List<Shortcut>(new Shortcut[maxLevelCapacity]);
         }
 
         /// <inheritdoc />
         public override void Serialize(INetPacketStream packet)
         {
-            packet.Write(this.Count);
+            packet.Write(Count);
 
-            for (int level = 0; level < this.MaxCapacity; level++)
+            for (int level = 0; level < MaxCapacity; level++)
             {
-                for (int slot = 0; slot < this.MaxLevelCapacity; slot++)
+                for (int slot = 0; slot < MaxLevelCapacity; slot++)
                 {
-                    if (this.Objects[level][slot] != null && this.Objects[level][slot].Type != ShortcutType.None)
+                    if (Objects[level][slot] != null && Objects[level][slot].Type != ShortcutType.None)
                     {
                         packet.Write(level);
-                        this.Objects[level][slot].Serialize(packet);
+                        Objects[level][slot].Serialize(packet);
                     }
                 }
             }

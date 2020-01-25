@@ -87,12 +87,12 @@ namespace Rhisis.Database.Entities
 
         public DbItem(int itemId, int itemSlot, int itemCount, byte refine, byte element, byte elementRefine)
         {
-            this.ItemId = itemId;
-            this.ItemSlot = itemSlot;
-            this.ItemCount = itemCount;
-            this.Refine = refine;
-            this.Element = element;
-            this.ElementRefine = elementRefine;
+            ItemId = itemId;
+            ItemSlot = itemSlot;
+            ItemCount = itemCount;
+            Refine = refine;
+            Element = element;
+            ElementRefine = elementRefine;
         }
     }
 }

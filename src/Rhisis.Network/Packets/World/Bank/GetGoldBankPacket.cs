@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="packet">Incoming packet</param>
         public GetGoldBankPacket(INetPacketStream packet)
         {
-            this.Slot = packet.Read<byte>();
-            this.Gold = packet.Read<uint>();
+            Slot = packet.Read<byte>();
+            Gold = packet.Read<uint>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="other">Other <see cref="GetGoldBankPacket"/></param>
         public bool Equals(GetGoldBankPacket other)
         {
-            return this.Slot == other.Slot && this.Gold == other.Gold;
+            return Slot == other.Slot && Gold == other.Gold;
         }
     }
 }

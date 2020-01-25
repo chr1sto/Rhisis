@@ -30,13 +30,13 @@ namespace Rhisis.World.Systems.Inventory
         /// </summary>
         public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
         {
-            this._logger = logger;
-            this._inventoryPacketFactory = inventoryPacketFactory;
-            this._mapManager = mapManager;
-            this._specialEffectSystem = specialEffectSystem;
-            this._teleportSystem = teleportSystem;
-            this._moverPacketFactory = moverPacketFactory;
-            this._textPacketFactory = textPacketFactory;
+            _logger = logger;
+            _inventoryPacketFactory = inventoryPacketFactory;
+            _mapManager = mapManager;
+            _specialEffectSystem = specialEffectSystem;
+            _teleportSystem = teleportSystem;
+            _moverPacketFactory = moverPacketFactory;
+            _textPacketFactory = textPacketFactory;
         }
 
         public void UseFoodItem(IPlayerEntity player, Item foodItemToUse)
@@ -63,9 +63,9 @@ namespace Rhisis.World.Systems.Inventory
                             {
                                 switch (parameter.Key)
                                 {
-                                    case DefineAttributes.HP: this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITHP); break;
-                                    case DefineAttributes.MP: this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITMP); break;
-                                    case DefineAttributes.FP: this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITFP); break;
+                                    case DefineAttributes.HP: _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITHP); break;
+                                    case DefineAttributes.MP: _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITMP); break;
+                                    case DefineAttributes.FP: _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LIMITFP); break;
                                 }
 
                                 currentPoints += (int)limitedRecovery;
@@ -78,25 +78,25 @@ namespace Rhisis.World.Systems.Inventory
                     }
 
                     PlayerHelper.SetPoints(player, parameter.Key, currentPoints);
-                    this._moverPacketFactory.SendUpdateAttributes(player, parameter.Key, PlayerHelper.GetPoints(player, parameter.Key));
+                    _moverPacketFactory.SendUpdateAttributes(player, parameter.Key, PlayerHelper.GetPoints(player, parameter.Key));
                 }
                 else
                 {
                     // TODO: food triggers a skill.
-                    this._logger.LogWarning($"Activating a skill throught food.");
-                    this._textPacketFactory.SendFeatureNotImplemented(player, "skill with food");
+                    _logger.LogWarning($"Activating a skill throught food.");
+                    _textPacketFactory.SendFeatureNotImplemented(player, "skill with food");
                 }
             }
 
-            this.DecreaseItem(player, foodItemToUse);
+            DecreaseItem(player, foodItemToUse);
         }
 
         public void UseBlinkwingItem(IPlayerEntity player, Item blinkwing)
         {
             if (player.Object.Level < blinkwing.Data.LimitLevel)
             {
-                this._logger.LogError($"Player {player.Object.Name} cannot use {blinkwing.Data.Name}. Level too low.");
-                this._textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_USINGNOTLEVEL);
+                _logger.LogError($"Player {player.Object.Name} cannot use {blinkwing.Data.Name}. Level too low.");
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_USINGNOTLEVEL);
                 return;
             }
 
@@ -112,16 +112,16 @@ namespace Rhisis.World.Systems.Inventory
 
                 if (revivalRegion == null)
                 {
-                    this._logger.LogError($"Cannot find any revival region for map '{player.Object.CurrentMap.Name}'.");
+                    _logger.LogError($"Cannot find any revival region for map '{player.Object.CurrentMap.Name}'.");
                     return;
                 }
                 if (player.Object.MapId != revivalRegion.MapId)
                 {
-                    IMapInstance revivalMap = this._mapManager.GetMap(revivalRegion.MapId);
+                    IMapInstance revivalMap = _mapManager.GetMap(revivalRegion.MapId);
 
                     if (revivalMap == null)
                     {
-                        this._logger.LogError($"Cannot find revival map with id '{revivalRegion.MapId}'.");
+                        _logger.LogError($"Cannot find revival map with id '{revivalRegion.MapId}'.");
                         // TODO: disconnect client
                         //player.Connection.Server.DisconnectClient(player.Connection.Id);
                         return;
@@ -146,24 +146,24 @@ namespace Rhisis.World.Systems.Inventory
 
             player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(blinkwing.Data.SkillReadyType), () =>
             {
-                this._teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ, teleportEvent.Angle);
-                this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
+                _teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ, teleportEvent.Angle);
+                _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
-                this.DecreaseItem(player, blinkwing);
+                DecreaseItem(player, blinkwing);
             });
 
-            this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
+            _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
         }
 
         public void UseMagicItem(IPlayerEntity player, Item magicItem)
         {
             player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(magicItem.Data.SkillReadyType), () =>
             {
-                this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
+                _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
-                this.DecreaseItem(player, magicItem, noFollowSfx: true);
+                DecreaseItem(player, magicItem, noFollowSfx: true);
             });
-            this._specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, magicItem);
+            _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, magicItem);
         }
 
         /// <summary>
@@ -185,10 +185,10 @@ namespace Rhisis.World.Systems.Inventory
                 item.Quantity--;
 
 
-            this._inventoryPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
+            _inventoryPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
 
             if (item.Data.SfxObject3 != 0)
-                this._specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3, noFollowSfx);
+                _specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3, noFollowSfx);
 
             if (item.Quantity <= 0)
                 item.Reset();

@@ -24,7 +24,7 @@ namespace Rhisis.CLI.Commands.Configure
         /// <summary>
         /// Gets the real configuration file.
         /// </summary>
-        private string ConfigurationFile => !string.IsNullOrEmpty(this.WorldConfigurationFile) ? this.WorldConfigurationFile : ConfigurationConstants.WorldServerPath;
+        private string ConfigurationFile => !string.IsNullOrEmpty(WorldConfigurationFile) ? WorldConfigurationFile : ConfigurationConstants.WorldServerPath;
 
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Rhisis.CLI.Commands.Configure
         /// <param name="consoleHelper">Console helpers.</param>
         public WorldServerConfigurationCommand(ConsoleHelper consoleHelper)
         {
-            this._consoleHelper = consoleHelper;
+            _consoleHelper = consoleHelper;
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace Rhisis.CLI.Commands.Configure
         /// </summary>
         public void OnExecute()
         {
-            var worldServerConfiguration = ConfigurationHelper.Load<WorldConfiguration>(this.ConfigurationFile, ConfigurationConstants.WorldServer);
-            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(this.ConfigurationFile, ConfigurationConstants.CoreServer);
+            var worldServerConfiguration = ConfigurationHelper.Load<WorldConfiguration>(ConfigurationFile, ConfigurationConstants.WorldServer);
+            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
             var worldConfiguration = new ObjectConfigurationFiller<WorldConfiguration>(worldServerConfiguration);
             var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
 
@@ -62,7 +62,7 @@ namespace Rhisis.CLI.Commands.Configure
             worldConfiguration.Show("World Server configuration");
             coreConfiguration.Show("Core server configuration");
 
-            bool response = this._consoleHelper.AskConfirmation("Save this configuration?");
+            bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
             if (response)
             {
@@ -72,8 +72,8 @@ namespace Rhisis.CLI.Commands.Configure
                     { ConfigurationConstants.CoreServer, coreConfiguration.Value }
                 };
 
-                ConfigurationHelper.Save(this.ConfigurationFile, configuration);
-                Console.WriteLine($"World Server configuration saved in {this.ConfigurationFile}!");
+                ConfigurationHelper.Save(ConfigurationFile, configuration);
+                Console.WriteLine($"World Server configuration saved in {ConfigurationFile}!");
             }
         }
     }

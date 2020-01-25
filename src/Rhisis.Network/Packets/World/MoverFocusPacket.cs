@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public MoverFocusPacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
+            PlayerId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="MoverFocusPacket"/></param>
         public bool Equals(MoverFocusPacket other)
         {
-            return this.PlayerId == other.PlayerId;
+            return PlayerId == other.PlayerId;
         }
     }
 }

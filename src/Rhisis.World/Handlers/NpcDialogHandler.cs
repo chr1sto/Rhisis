@@ -18,7 +18,7 @@ namespace Rhisis.World.Handlers
         /// <param name="dialogSystem">Dialog system.</param>
         public NpcDialogHandler(IDialogSystem dialogSystem)
         {
-            this._dialogSystem = dialogSystem;
+            _dialogSystem = dialogSystem;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.World.Handlers
                 throw new ArgumentException("Invalid object id.");
             }
 
-            this._dialogSystem.OpenNpcDialog(client.Player, packet.ObjectId, packet.Key, packet.QuestId);
+            _dialogSystem.OpenNpcDialog(client.Player, packet.ObjectId, packet.Key, packet.QuestId);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Rhisis.Cluster.CoreClient
         /// <param name="clusterCoreClient"></param>
         public ClusterCoreClientService(IClusterCoreClient clusterCoreClient)
         {
-            this._clusterCoreClient = clusterCoreClient;
+            _clusterCoreClient = clusterCoreClient;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Rhisis.Cluster.CoreClient
         /// <returns></returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._clusterCoreClient.Connect();
+            _clusterCoreClient.Connect();
 
             return Task.CompletedTask;
         }
@@ -36,7 +36,7 @@ namespace Rhisis.Cluster.CoreClient
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._clusterCoreClient.Disconnect();
+            _clusterCoreClient.Disconnect();
 
             return Task.CompletedTask;
         }

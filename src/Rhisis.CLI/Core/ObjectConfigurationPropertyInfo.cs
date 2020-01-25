@@ -36,14 +36,14 @@ namespace Rhisis.CLI.Core
             {
                 var builder = new StringBuilder();
 
-                builder.Append(this.DisplayName);
+                builder.Append(DisplayName);
 
-                if (this.Value != null && this.Type != ObjectPropertyType.YesNo && !this.IsPassword)
+                if (Value != null && Type != ObjectPropertyType.YesNo && !IsPassword)
                 {
-                    builder.Append($" ({this.Value})");
+                    builder.Append($" ({Value})");
                 }
 
-                if (this.Type == ObjectPropertyType.YesNo)
+                if (Type == ObjectPropertyType.YesNo)
                 {
                     builder.Append($" (y/n)");
                 }
@@ -58,29 +58,29 @@ namespace Rhisis.CLI.Core
 
         public object Value
         {
-            get => this._propertyInfo.GetValue(this._instance);
-            set => this._propertyInfo.SetValue(this._instance, value);
+            get => _propertyInfo.GetValue(_instance);
+            set => _propertyInfo.SetValue(_instance, value);
         }
 
-        public bool IsNullOrDefault => this.Value?.Equals(this.GetDefault()) ?? true;
+        public bool IsNullOrDefault => Value?.Equals(GetDefault()) ?? true;
 
         public ObjectConfigurationPropertyInfo(string displayName, int order, bool isPassword, object instance, PropertyInfo propertyInfo)
         {
-            this.DisplayName = displayName;
-            this.Order = order;
-            this.IsPassword = isPassword;
-            this._instance = instance;
-            this._propertyInfo = propertyInfo;
+            DisplayName = displayName;
+            Order = order;
+            IsPassword = isPassword;
+            _instance = instance;
+            _propertyInfo = propertyInfo;
 
             if (propertyInfo.PropertyType == typeof(bool))
-                this.Type = ObjectPropertyType.YesNo;
+                Type = ObjectPropertyType.YesNo;
             else if (propertyInfo.PropertyType == typeof(string))
-                this.Type = ObjectPropertyType.String;
+                Type = ObjectPropertyType.String;
             else
-                this.Type = ObjectPropertyType.Number;
+                Type = ObjectPropertyType.Number;
         }
 
 
-        private object GetDefault() => this._propertyInfo.PropertyType.IsValueType ? Activator.CreateInstance(this._propertyInfo.PropertyType) : null;
+        private object GetDefault() => _propertyInfo.PropertyType.IsValueType ? Activator.CreateInstance(_propertyInfo.PropertyType) : null;
     }
 }

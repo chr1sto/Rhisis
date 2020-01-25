@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public TagPacket(INetPacketStream packet)
         {
-            this.TargetId = packet.Read<uint>();
-            this.Message = packet.Read<string>();
+            TargetId = packet.Read<uint>();
+            Message = packet.Read<string>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="TagPacket"/></param>
         public bool Equals(TagPacket other)
         {
-            return this.TargetId == other.TargetId && this.Message == other.Message;
+            return TargetId == other.TargetId && Message == other.Message;
         }
     }
 }

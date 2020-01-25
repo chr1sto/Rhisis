@@ -48,14 +48,14 @@ namespace Rhisis.Network.Packets.World.Taskbar
         /// <inheritdoc />
         public virtual void Deserialize(INetPacketStream packet)
         {
-            this.SlotIndex = packet.Read<byte>();
-            this.Type = (ShortcutType)packet.Read<uint>();
-            this.ObjectId = packet.Read<uint>();
-            this.ObjectType = (ShortcutObjectType)packet.Read<uint>();
-            this.ObjectIndex = packet.Read<uint>();
-            this.UserId = packet.Read<uint>();
-            this.ObjectData = packet.Read<uint>();
-            this.Text = this.Type == ShortcutType.Chat ? packet.Read<string>() : string.Empty;
+            SlotIndex = packet.Read<byte>();
+            Type = (ShortcutType)packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
+            ObjectType = (ShortcutObjectType)packet.Read<uint>();
+            ObjectIndex = packet.Read<uint>();
+            UserId = packet.Read<uint>();
+            ObjectData = packet.Read<uint>();
+            Text = Type == ShortcutType.Chat ? packet.Read<string>() : string.Empty;
         }
     }
 }

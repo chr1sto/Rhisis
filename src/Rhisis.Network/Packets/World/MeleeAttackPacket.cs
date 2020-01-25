@@ -36,11 +36,11 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.AttackMessage = (ObjectMessageType)packet.Read<int>();
-            this.ObjectId = packet.Read<uint>();
-            this.UnknownParameter = packet.Read<int>(); // ??
-            this.AttackFlags = packet.Read<int>() & 0xFFFF; // Attack flags ?!
-            this.WeaponAttackSpeed = packet.Read<float>();
+            AttackMessage = (ObjectMessageType)packet.Read<int>();
+            ObjectId = packet.Read<uint>();
+            UnknownParameter = packet.Read<int>(); // ??
+            AttackFlags = packet.Read<int>() & 0xFFFF; // Attack flags ?!
+            WeaponAttackSpeed = packet.Read<float>();
         }
     }
 }

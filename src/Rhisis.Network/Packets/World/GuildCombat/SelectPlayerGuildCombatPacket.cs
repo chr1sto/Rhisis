@@ -34,8 +34,8 @@ namespace Rhisis.Network.Packets.World.GuildCombat
         /// <param name="packet">Incoming packet</param>
         public SelectPlayerGuildCombatPacket(INetPacketStream packet)
         {
-            this.Window = packet.Read<int>() == 1;
-            if (!this.Window)
+            Window = packet.Read<int>() == 1;
+            if (!Window)
             {
                 DefenderId = packet.Read<uint>();
                 Size = packet.Read<int>();
@@ -57,7 +57,7 @@ namespace Rhisis.Network.Packets.World.GuildCombat
         /// <param name="other">Other <see cref="SelectPlayerGuildCombatPacket"/></param>
         public bool Equals(SelectPlayerGuildCombatPacket other)
         {
-            return this.Window == other.Window && this.DefenderId == other.DefenderId && this.Size == other.Size && this.SelectPlayer == other.SelectPlayer;
+            return Window == other.Window && DefenderId == other.DefenderId && Size == other.Size && SelectPlayer == other.SelectPlayer;
         }
     }
 }

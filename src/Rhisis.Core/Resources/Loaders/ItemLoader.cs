@@ -24,10 +24,10 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="texts">Texts</param>
         public ItemLoader(ILogger<ItemLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
-            this._texts = this._cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
+            _logger = logger;
+            _cache = cache;
+            _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            _texts = _cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
         }
 
         /// <inheritdoc />
@@ -37,32 +37,32 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (!File.Exists(propItemPath))
             {
-                this._logger.LogWarning("Unable to load items. Reason: cannot find '{0}' file.", propItemPath);
+                _logger.LogWarning("Unable to load items. Reason: cannot find '{0}' file.", propItemPath);
                 return;
             }
 
             var itemsData = new ConcurrentDictionary<int, ItemData>();
 
-            using (var propItem = new ResourceTableFile(propItemPath, 1, this._defines, this._texts))
+            using (var propItem = new ResourceTableFile(propItemPath, 1, _defines, _texts))
             {
                 var items = propItem.GetRecords<ItemData>();
 
                 foreach (ItemData item in items)
                 {
-                    this.TransformItem(item);
+                    TransformItem(item);
 
                     if (itemsData.ContainsKey(item.Id))
                     {
                         itemsData[item.Id] = item;
-                        this._logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "Item", item.Id, "already declared");
+                        _logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "Item", item.Id, "already declared");
                     }
                     else
                         itemsData.TryAdd(item.Id, item);
                 }
             }
 
-            this._cache.Set(GameResourcesConstants.Items, itemsData);
-            this._logger.LogInformation("-> {0} items loaded.", itemsData.Count);
+            _cache.Set(GameResourcesConstants.Items, itemsData);
+            _logger.LogInformation("-> {0} items loaded.", itemsData.Count);
         }
 
         /// <summary>

@@ -14,10 +14,10 @@ namespace Rhisis.Network.Packets
 
         public PacketHeader(INetPacketStream packet)
         {
-            this.Header = packet.Read<byte>();
-            this.HashLength = packet.Read<int>();
-            this.Length = packet.Read<int>();
-            this.HashData = packet.Read<int>();
+            Header = packet.Read<byte>();
+            HashLength = packet.Read<int>();
+            Length = packet.Read<int>();
+            HashData = packet.Read<int>();
         }
     }
 }

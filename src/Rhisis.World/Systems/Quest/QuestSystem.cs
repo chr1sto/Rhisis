@@ -54,21 +54,21 @@ namespace Rhisis.World.Systems.Quest
 
         public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
-            this._logger = logger;
-            this._database = database;
-            this._gameResources = gameResources;
-            this._playerDataSystem = playerDataSystem;
-            this._inventorySystem = inventorySystem;
-            this._experienceSystem = experienceSystem;
-            this._questPacketFactory = questPacketFactory;
-            this._npcDialogPacketFactory = npcDialogPacketFactory;
-            this._textPacketFactory = textPacketFactory;
+            _logger = logger;
+            _database = database;
+            _gameResources = gameResources;
+            _playerDataSystem = playerDataSystem;
+            _inventorySystem = inventorySystem;
+            _experienceSystem = experienceSystem;
+            _questPacketFactory = questPacketFactory;
+            _npcDialogPacketFactory = npcDialogPacketFactory;
+            _textPacketFactory = textPacketFactory;
         }
 
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<QuestInfo> playerQuests = this._database.Quests.GetCharactersQuests(player.PlayerData.Id)
+            IEnumerable<QuestInfo> playerQuests = _database.Quests.GetCharactersQuests(player.PlayerData.Id)
                 .AsQueryable()
                 .AsNoTracking()
                 .AsEnumerable()
@@ -135,7 +135,7 @@ namespace Rhisis.World.Systems.Quest
             {
                 if (!quest.DatabaseQuestId.HasValue)
                 {
-                    this._database.Quests.Create(new DbQuest
+                    _database.Quests.Create(new DbQuest
                     {
                         CharacterId = player.PlayerData.Id,
                         QuestId = quest.QuestId,
@@ -148,7 +148,7 @@ namespace Rhisis.World.Systems.Quest
                 }
             }
 
-            this._database.Complete();
+            _database.Complete();
         }
 
         /// <inheritdoc />
@@ -169,23 +169,23 @@ namespace Rhisis.World.Systems.Quest
                 return false;
             }
 
-            int previousQuestId = this._gameResources.GetDefinedValue(quest.StartRequirements.PreviousQuestId);
+            int previousQuestId = _gameResources.GetDefinedValue(quest.StartRequirements.PreviousQuestId);
 
             if (previousQuestId != 0 && !player.QuestDiary.CompletedQuests.Any(x => x.QuestId == previousQuestId))
             {
-                this._logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player '{player}'. Did not finished quest '{quest.StartRequirements.PreviousQuestId}'.");
+                _logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player '{player}'. Did not finished quest '{quest.StartRequirements.PreviousQuestId}'.");
                 return false;
             }
 
             if (player.Object.Level < quest.StartRequirements.MinLevel || player.Object.Level > quest.StartRequirements.MaxLevel)
             {
-                this._logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player: '{player}'. Level too low or too high.");
+                _logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player: '{player}'. Level too low or too high.");
                 return false;
             }
 
             if (quest.StartRequirements.Jobs != null && !quest.StartRequirements.Jobs.Contains((DefineJob.Job)player.PlayerData.JobId))
             {
-                this._logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player: '{player}'. Invalid job.");
+                _logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player: '{player}'. Invalid job.");
                 return false;
             }
 
@@ -213,7 +213,7 @@ namespace Rhisis.World.Systems.Quest
                     {
                         if (questItem.Sex == GenderType.Any || questItem.Sex == player.PlayerData.Gender)
                         {
-                            Item inventoryItem = player.Inventory.GetItemById(this._gameResources.GetDefinedValue(questItem.Id));
+                            Item inventoryItem = player.Inventory.GetItemById(_gameResources.GetDefinedValue(questItem.Id));
 
                             if (inventoryItem == null || inventoryItem.Quantity < questItem.Quantity)
                             {
@@ -252,22 +252,22 @@ namespace Rhisis.World.Systems.Quest
             switch (state)
             {
                 case QuestStateType.Suggest:
-                    this.SuggestQuest(player, npc, quest);
+                    SuggestQuest(player, npc, quest);
                     break;
                 case QuestStateType.BeginYes:
-                    this.AcceptQuest(player, npc, quest);
+                    AcceptQuest(player, npc, quest);
                     break;
                 case QuestStateType.BeginNo:
-                    this.DeclineQuest(player, npc, quest);
+                    DeclineQuest(player, npc, quest);
                     break;
                 case QuestStateType.End:
-                    this.FinishQuest(player, npc, quest);
+                    FinishQuest(player, npc, quest);
                     break;
                 case QuestStateType.EndCompleted:
-                    this.FinalizeQuest(player, npc, quest);
+                    FinalizeQuest(player, npc, quest);
                     break;
                 default:
-                    this._logger.LogError($"Received unknown dialog quest state: {state}.");
+                    _logger.LogError($"Received unknown dialog quest state: {state}.");
                     break;
             }
         }
@@ -289,7 +289,7 @@ namespace Rhisis.World.Systems.Quest
 
             quest.IsChecked = !quest.IsChecked;
 
-            this._questPacketFactory.SendCheckedQuests(player, player.QuestDiary.CheckedQuests);
+            _questPacketFactory.SendCheckedQuests(player, player.QuestDiary.CheckedQuests);
         }
 
         /// <inheritdoc />
@@ -298,13 +298,13 @@ namespace Rhisis.World.Systems.Quest
             if (npc.Quests.Any())
             {
                 IEnumerable<DialogLink> newQuestsLinks = from x in npc.Quests
-                                                         where this.CanStartQuest(player, npc, x)
-                                                         select this.CreateQuestLink(x, QuestStateType.Suggest);
+                                                         where CanStartQuest(player, npc, x)
+                                                         select CreateQuestLink(x, QuestStateType.Suggest);
                 IEnumerable<DialogLink> questsInProgress = from x in npc.Quests
                                                            where player.QuestDiary.ActiveQuests.Any(y => y.QuestId == x.Id)
-                                                           select this.CreateQuestLink(x, QuestStateType.End);
+                                                           select CreateQuestLink(x, QuestStateType.End);
 
-                this._npcDialogPacketFactory.SendQuestDialogs(player, newQuestsLinks, questsInProgress);
+                _npcDialogPacketFactory.SendQuestDialogs(player, newQuestsLinks, questsInProgress);
             }
         }
 
@@ -341,7 +341,7 @@ namespace Rhisis.World.Systems.Quest
 
                 if (updateQuest)
                 {
-                    this._questPacketFactory.SendQuest(player, quest);
+                    _questPacketFactory.SendQuest(player, quest);
                 }
             }
         }
@@ -354,7 +354,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Quest to suggest.</param>
         private void SuggestQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
-            this.SendQuestDialog(player, npc, quest.Id, quest.BeginDialogs, AcceptDeclineButtons);
+            SendQuestDialog(player, npc, quest.Id, quest.BeginDialogs, AcceptDeclineButtons);
         }
 
         /// <summary>
@@ -373,9 +373,9 @@ namespace Rhisis.World.Systems.Quest
 
             player.QuestDiary.Add(acceptedQuest);
 
-            this._questPacketFactory.SendQuest(player, acceptedQuest);
-            this._textPacketFactory.SendDefinedText(player, DefineText.TID_EVE_STARTQUEST, $"\"{_gameResources.GetText(quest.Title)}\"");
-            this.SendQuestDialog(player, npc, quest.Id, quest.AcceptedDialogs, OkButtons);
+            _questPacketFactory.SendQuest(player, acceptedQuest);
+            _textPacketFactory.SendDefinedText(player, DefineText.TID_EVE_STARTQUEST, $"\"{_gameResources.GetText(quest.Title)}\"");
+            SendQuestDialog(player, npc, quest.Id, quest.AcceptedDialogs, OkButtons);
         }
 
         /// <summary>
@@ -386,7 +386,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="quest">Declined quest.</param>
         private void DeclineQuest(IPlayerEntity player, INpcEntity npc, IQuestScript quest)
         {
-            this.SendQuestDialog(player, npc, quest.Id, quest.DeclinedDialogs, OkButtons);
+            SendQuestDialog(player, npc, quest.Id, quest.DeclinedDialogs, OkButtons);
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace Rhisis.World.Systems.Quest
                     {
                         if (questItem.Sex == GenderType.Any || questItem.Sex == player.PlayerData.Gender)
                         {
-                            Item inventoryItem = player.Inventory.GetItemById(this._gameResources.GetDefinedValue(questItem.Id));
+                            Item inventoryItem = player.Inventory.GetItemById(_gameResources.GetDefinedValue(questItem.Id));
 
                             if (inventoryItem != null)
                             {
@@ -482,7 +482,7 @@ namespace Rhisis.World.Systems.Quest
 
             if (expReward > 0)
             {
-                this._experienceSystem.GiveExeperience(player, expReward);
+                _experienceSystem.GiveExeperience(player, expReward);
             }
 
             if (quest.Rewards.HasJobReward())
@@ -515,7 +515,7 @@ namespace Rhisis.World.Systems.Quest
                 }
             }
 
-            this._npcDialogPacketFactory.SendCloseDialog(player);
+            _npcDialogPacketFactory.SendCloseDialog(player);
         }
 
         /// <summary>
@@ -525,7 +525,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="questState">Quest state.</param>
         /// <returns>Quest <see cref="DialogLink"/>.</returns>
         private DialogLink CreateQuestLink(IQuestScript quest, QuestStateType questState)
-            => new DialogLink(questState.ToString(), this._gameResources.GetText(quest.Title), quest.Id);
+            => new DialogLink(questState.ToString(), _gameResources.GetText(quest.Title), quest.Id);
 
         /// <summary>
         /// Gets the quest dialog texts.
@@ -533,7 +533,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="questDialogsKeys">Quest dialog keys.</param>
         /// <returns>Quest dialog texts.</returns>
         private IEnumerable<string> GetQuestDialogsTexts(IEnumerable<string> questDialogsKeys)
-            => questDialogsKeys.Select(x => this._gameResources.GetText(x));
+            => questDialogsKeys.Select(x => _gameResources.GetText(x));
 
         /// <summary>
         /// Sends a quest dialog
@@ -545,8 +545,8 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="buttons"></param>
         private void SendQuestDialog(IPlayerEntity player, INpcEntity npc, int questId, IEnumerable<string> questTexts, IEnumerable<DialogLink> buttons)
         {
-            this._npcDialogPacketFactory.SendDialog(player, GetQuestDialogsTexts(questTexts), npc.Data.Dialog?.Links, buttons, questId);
-            this.SendQuestsInfo(player, npc);
+            _npcDialogPacketFactory.SendDialog(player, GetQuestDialogsTexts(questTexts), npc.Data.Dialog?.Links, buttons, questId);
+            SendQuestsInfo(player, npc);
         }
     }
 }

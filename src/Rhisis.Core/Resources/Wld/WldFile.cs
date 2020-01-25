@@ -21,7 +21,7 @@ namespace Rhisis.Core.Resources
         public WldFile(string filePath)
             : base(filePath, FileMode.Open, FileAccess.Read)
         {
-            this.Read();
+            Read();
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Rhisis.Core.Resources
                 switch (lineArray[0].ToLower())
                 {
                     case "size":
-                        size = this.ReadSize(lineArray);
+                        size = ReadSize(lineArray);
                         break;
                     case "indoor":
                         isIndoor = lineArray[1] == "1" ? true : false;
@@ -74,7 +74,7 @@ namespace Rhisis.Core.Resources
             if (size is null)
                 return;
 
-            this.WorldInformations = new WldFileInformations((int)size.X, (int)size.Z, mpu, isIndoor, canFly, revivalMapId, revivalKey);
+            WorldInformations = new WldFileInformations((int)size.X, (int)size.Z, mpu, isIndoor, canFly, revivalMapId, revivalKey);
         }
 
         /// <summary>

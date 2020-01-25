@@ -19,19 +19,19 @@ namespace Rhisis.Core.Resources
         /// <summary>
         /// Gets the Texts dictionnary.
         /// </summary>
-        public IReadOnlyDictionary<string, string> Texts => this._texts as IReadOnlyDictionary<string, string>;
+        public IReadOnlyDictionary<string, string> Texts => _texts as IReadOnlyDictionary<string, string>;
 
         /// <summary>
         /// Gets the text by his key.
         /// </summary>
         /// <param name="key">Text key</param>
         /// <returns></returns>
-        public string this[string key] => this.GetText(key);
+        public string this[string key] => GetText(key);
 
         /// <summary>
         /// Gets the number of texts in the <see cref="TextFile"/>.
         /// </summary>
-        public int Count => this._texts.Count;
+        public int Count => _texts.Count;
 
         /// <summary>
         /// Creates a new <see cref="TextFile"/> instance.
@@ -40,8 +40,8 @@ namespace Rhisis.Core.Resources
         public TextFile(string filePath)
             : base(filePath, FileMode.Open, FileAccess.Read)
         {
-            this._texts = new Dictionary<string, string>();
-            this.Read();
+            _texts = new Dictionary<string, string>();
+            Read();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Rhisis.Core.Resources
         /// <returns></returns>
         public string GetText(string key)
         {
-            if (this._texts.TryGetValue(key, out string value))
+            if (_texts.TryGetValue(key, out string value))
                 return value;
 
             throw new KeyNotFoundException();
@@ -87,8 +87,8 @@ namespace Rhisis.Core.Resources
                 {
                     string key = texts.First().Trim();
                     
-                    if (!string.IsNullOrEmpty(key) && !this._texts.ContainsKey(key))
-                        this._texts.Add(key, line.Replace(key, string.Empty).Trim());
+                    if (!string.IsNullOrEmpty(key) && !_texts.ContainsKey(key))
+                        _texts.Add(key, line.Replace(key, string.Empty).Trim());
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace Rhisis.Core.Resources
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            this._texts.Clear();
+            _texts.Clear();
             base.Dispose(disposing);
         }
     }

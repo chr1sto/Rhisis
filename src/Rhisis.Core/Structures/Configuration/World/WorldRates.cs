@@ -35,9 +35,9 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         public WorldRates()
         {
-            this.Gold = DefaultGoldRate;
-            this.Experience = DefaultExperienceRate;
-            this.Drop = DefaultDropRate;
+            Gold = DefaultGoldRate;
+            Experience = DefaultExperienceRate;
+            Drop = DefaultDropRate;
         }
     }
 }

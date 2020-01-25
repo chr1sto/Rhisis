@@ -25,8 +25,8 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="packet">Incoming packet</param>
         public PartySkillUsePacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.SkillId = packet.Read<int>();
+            PlayerId = packet.Read<uint>();
+            SkillId = packet.Read<int>();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Rhisis.Network.Packets.World.Party
         /// <param name="other">Other <see cref="PartySkillUsePacket"/></param>
         public bool Equals(PartySkillUsePacket other)
         {
-            return this.PlayerId == other.PlayerId && this.SkillId == other.SkillId;
+            return PlayerId == other.PlayerId && SkillId == other.SkillId;
         }
     }
 }

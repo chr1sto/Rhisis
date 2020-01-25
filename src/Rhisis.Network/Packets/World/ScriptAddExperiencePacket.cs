@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ScriptAddExperiencePacket(INetPacketStream packet)
         {
-            this.Experience = packet.Read<long>();
+            Experience = packet.Read<long>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="ScriptAddExperiencePacket"/></param>
         public bool Equals(ScriptAddExperiencePacket other)
         {
-            return this.Experience == other.Experience;
+            return Experience == other.Experience;
         }
     }
 }

@@ -23,8 +23,8 @@ namespace Rhisis.World.Game.Chat
         /// <param name="minimumAuthorization">Minimum Authorization</param>
         public ChatCommandAttribute(string command, AuthorityType minimumAuthorization)
         {
-            this.Command = command;
-            this.MinimumAuthorization = minimumAuthorization;
+            Command = command;
+            MinimumAuthorization = minimumAuthorization;
         }
     }
 }

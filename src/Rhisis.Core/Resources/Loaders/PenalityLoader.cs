@@ -21,8 +21,8 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="logger"></param>
         public PenalityLoader(ILogger<PenalityLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
+            _logger = logger;
+            _cache = cache;
         }
 
         /// <inheritdoc />
@@ -32,7 +32,7 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (!File.Exists(deathPenalityPath))
             {
-                this._logger.LogWarning("Unable to load death penality. Reason: cannot find '{0}' file.", deathPenalityPath);
+                _logger.LogWarning("Unable to load death penality. Reason: cannot find '{0}' file.", deathPenalityPath);
                 return;
             }
 
@@ -40,7 +40,7 @@ namespace Rhisis.Core.Resources.Loaders
 
             if (penalityData == null)
             {
-                this._logger.LogError(GameResourcesConstants.Errors.UnableLoadMessage, "death penality", "Json loading error.");
+                _logger.LogError(GameResourcesConstants.Errors.UnableLoadMessage, "death penality", "Json loading error.");
                 return;
             }
 
@@ -48,8 +48,8 @@ namespace Rhisis.Core.Resources.Loaders
             penalityData.DecExpPenality = penalityData.DecExpPenality.OrderBy(x => x.Level);
             penalityData.LevelDownPenality = penalityData.LevelDownPenality.OrderBy(x => x.Level);
 
-            this._cache.Set(GameResourcesConstants.PenalityData, penalityData);
-            this._logger.LogInformation("-> Penalities loaded.");
+            _cache.Set(GameResourcesConstants.PenalityData, penalityData);
+            _logger.LogInformation("-> Penalities loaded.");
         }
     }
 }

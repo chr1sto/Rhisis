@@ -18,7 +18,7 @@ namespace Rhisis.Core.Resources.Include
         /// <summary>
         /// Gets the instruction's parameters.
         /// </summary>
-        public IReadOnlyCollection<object> Parameters => this._parameters as IReadOnlyCollection<object>;
+        public IReadOnlyCollection<object> Parameters => _parameters as IReadOnlyCollection<object>;
 
         /// <summary>
         /// Gets the statement type.
@@ -40,8 +40,8 @@ namespace Rhisis.Core.Resources.Include
         /// <param name="parameters">Parameters</param>
         public Instruction(string name, ICollection<object> parameters)
         {
-            this.Name = name;
-            this._parameters = parameters;
+            Name = name;
+            _parameters = parameters;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Rhisis.Core.Resources.Include
         internal void AddParameter(object parameter)
         {
             if (parameter.ToString() != ",")
-                this._parameters.Add(parameter);
+                _parameters.Add(parameter);
         }
 
         /// <summary>
@@ -62,15 +62,15 @@ namespace Rhisis.Core.Resources.Include
         /// <returns></returns>
         public T GetParameter<T>(int parameterIndex)
         {
-            if (parameterIndex < 0 || parameterIndex >= this.Parameters.Count)
+            if (parameterIndex < 0 || parameterIndex >= Parameters.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(parameterIndex), "The instruction parameter index is out of range.");
             }
 
-            object parameter = this.Parameters.ElementAtOrDefault(parameterIndex);
+            object parameter = Parameters.ElementAtOrDefault(parameterIndex);
 
             if (parameter is string)
-                parameter = parameter.ToString().Trim(this.EscapeCharacters);
+                parameter = parameter.ToString().Trim(EscapeCharacters);
 
             if (typeof(T).IsEnum)
             {
@@ -86,11 +86,11 @@ namespace Rhisis.Core.Resources.Include
         /// <inheritdoc />
         public void Dispose()
         {
-            if (this._parameters.Any())
-                this._parameters.Clear();
+            if (_parameters.Any())
+                _parameters.Clear();
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.Name}({string.Join(", ", this.Parameters)})";
+        public override string ToString() => $"{Name}({string.Join(", ", Parameters)})";
     }
 }

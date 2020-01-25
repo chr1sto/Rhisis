@@ -14,7 +14,7 @@ namespace Rhisis.World.CoreClient
         /// <param name="worldCoreClient">World core client.</param>
         public WorldCoreClientService(IWorldCoreClient worldCoreClient)
         {
-            this._worldCoreClient = worldCoreClient;
+            _worldCoreClient = worldCoreClient;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Rhisis.World.CoreClient
         /// <returns></returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            this._worldCoreClient.Connect();
+            _worldCoreClient.Connect();
 
             return Task.CompletedTask;
         }
@@ -36,7 +36,7 @@ namespace Rhisis.World.CoreClient
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this._worldCoreClient.Disconnect();
+            _worldCoreClient.Disconnect();
 
             return Task.CompletedTask;
         }

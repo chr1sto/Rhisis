@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public GetClockPacket(INetPacketStream packet)
         {
-            this.SetBaseOfClient = packet.Read<byte>();
-            this.ClientTime = packet.Read<uint>();
+            SetBaseOfClient = packet.Read<byte>();
+            ClientTime = packet.Read<uint>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="GetClockPacket"/></param>
         public bool Equals(GetClockPacket other)
         {
-            return this.SetBaseOfClient == other.SetBaseOfClient && this.ClientTime == other.ClientTime;
+            return SetBaseOfClient == other.SetBaseOfClient && ClientTime == other.ClientTime;
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="DropGoldPacket"/></param>
         public bool Equals(DropGoldPacket other)
         {
-            return this.Gold == other.Gold && this.Position == other.Position;
+            return Gold == other.Gold && Position == other.Position;
         }
     }
 }

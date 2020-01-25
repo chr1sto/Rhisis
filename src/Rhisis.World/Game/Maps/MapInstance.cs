@@ -39,10 +39,10 @@ namespace Rhisis.World.Game.Maps
         public IMapRevivalRegion DefaultRevivalRegion { get; private set; }
 
         /// <inheritdoc />
-        public int Width => this.MapInformation.Width;
+        public int Width => MapInformation.Width;
 
         /// <inheritdoc />
-        public int Length => this.MapInformation.Length;
+        public int Length => MapInformation.Length;
 
         /// <inheritdoc />
         public IReadOnlyList<IMapLayer> Layers { get; }
@@ -58,33 +58,33 @@ namespace Rhisis.World.Game.Maps
         /// <param name="worldInformations">Map world informations.</param>
         public MapInstance(ILogger<MapInstance> logger, IMapFactory mapFactory, int id, string name, WldFileInformations worldInformations)
         {
-            this.Id = id;
-            this._logger = logger;
-            this._mapFactory = mapFactory;
-            this.Name = name;
-            this.MapInformation = worldInformations;
-            this._layers = new ConcurrentDictionary<int, IMapLayer>();
-            this._cancellationTokenSource = new CancellationTokenSource();
-            this._cancellationToken = this._cancellationTokenSource.Token;
+            Id = id;
+            _logger = logger;
+            _mapFactory = mapFactory;
+            Name = name;
+            MapInformation = worldInformations;
+            _layers = new ConcurrentDictionary<int, IMapLayer>();
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
         }
 
         // <inheritdoc />
         public IMapLayer CreateMapLayer()
         {
-            int layerId = this._layers.Count > 0 ? this._layers.Values.Max(x => x.Id) + 1 : DefaultMapLayerId;
+            int layerId = _layers.Count > 0 ? _layers.Values.Max(x => x.Id) + 1 : DefaultMapLayerId;
 
-            return this.CreateMapLayer(layerId);
+            return CreateMapLayer(layerId);
         }
 
         // <inheritdoc />
         public IMapLayer CreateMapLayer(int id)
         {
-            var mapLayer = this._mapFactory.CreateLayer(this, id);
+            var mapLayer = _mapFactory.CreateLayer(this, id);
 
-            this._layers.TryAdd(id, mapLayer);
+            _layers.TryAdd(id, mapLayer);
 
-            if (this.DefaultMapLayer == null)
-                this.DefaultMapLayer = mapLayer;
+            if (DefaultMapLayer == null)
+                DefaultMapLayer = mapLayer;
 
             return mapLayer;
         }
@@ -96,51 +96,51 @@ namespace Rhisis.World.Game.Maps
         }
 
         // <inheritdoc />
-        public IMapLayer GetMapLayer(int id) => this._layers.TryGetValue(id, out IMapLayer layer) ? layer : null;
+        public IMapLayer GetMapLayer(int id) => _layers.TryGetValue(id, out IMapLayer layer) ? layer : null;
 
         // <inheritdoc />
-        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => this.GetNearRevivalRegion(position, false);
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => GetNearRevivalRegion(position, false);
 
         /// <inheritdoc />
         public IMapRevivalRegion GetNearRevivalRegion(Vector3 position, bool isChaoMode)
         {
-            IEnumerable<IMapRevivalRegion> revivalRegions = this.Regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
-            var nearestRevivalRegion = revivalRegions.FirstOrDefault(x => x.MapId == this.Id && x.IsChaoRegion == isChaoMode && x.Contains(position) && x.TargetRevivalKey);
+            IEnumerable<IMapRevivalRegion> revivalRegions = Regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            var nearestRevivalRegion = revivalRegions.FirstOrDefault(x => x.MapId == Id && x.IsChaoRegion == isChaoMode && x.Contains(position) && x.TargetRevivalKey);
 
             if (nearestRevivalRegion != null)
-                return this.GetRevivalRegion(nearestRevivalRegion.Key, isChaoMode);
+                return GetRevivalRegion(nearestRevivalRegion.Key, isChaoMode);
 
-            revivalRegions = from x in this.Regions
+            revivalRegions = from x in Regions
                              where x is IMapRevivalRegion y && y.IsChaoRegion == isChaoMode && !y.TargetRevivalKey
                              let region = x as IMapRevivalRegion
                              let distance = position.GetDistance3D(region.RevivalPosition)
                              orderby distance ascending
                              select region;
 
-            return revivalRegions.FirstOrDefault() ?? this.DefaultRevivalRegion;
+            return revivalRegions.FirstOrDefault() ?? DefaultRevivalRegion;
         }
 
         /// <inheritdoc />
-        public IMapRevivalRegion GetRevivalRegion(string revivalKey) => this.GetRevivalRegion(revivalKey, false);
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey) => GetRevivalRegion(revivalKey, false);
 
         /// <inheritdoc />
         public IMapRevivalRegion GetRevivalRegion(string revivalKey, bool isChaoMode)
         {
-            IEnumerable<IMapRevivalRegion> revivalRegions = this.Regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            IEnumerable<IMapRevivalRegion> revivalRegions = Regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
             IEnumerable<IMapRevivalRegion> revivalRegion = from x in revivalRegions
                                                            where x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode && !x.TargetRevivalKey
                                                            select x;
 
-            return revivalRegion.FirstOrDefault() ?? this.DefaultRevivalRegion;
+            return revivalRegion.FirstOrDefault() ?? DefaultRevivalRegion;
         }
 
         /// <inheritdoc />
         public bool ContainsPosition(Vector3 position)
         {
-            float x = position.X / this.MapInformation.MPU;
-            float z = position.Z / this.MapInformation.MPU;
+            float x = position.X / MapInformation.MPU;
+            float z = position.Z / MapInformation.MPU;
 
-            if (x < 0 || x > this.Width * MapLandSize || z < 0 || z > this.Length * MapLandSize)
+            if (x < 0 || x > Width * MapLandSize || z < 0 || z > Length * MapLandSize)
                 return false;
 
             return true;
@@ -151,11 +151,11 @@ namespace Rhisis.World.Game.Maps
         {
             Task.Run(async () =>
             {
-                while (!this._cancellationToken.IsCancellationRequested)
+                while (!_cancellationToken.IsCancellationRequested)
                 {
                     try
                     {
-                        foreach (var worldEntity in this.Entities)
+                        foreach (var worldEntity in Entities)
                         {
                             if (worldEntity.Value is ILivingEntity livingEntity)
                             {
@@ -163,23 +163,23 @@ namespace Rhisis.World.Game.Maps
                             }
                         }
 
-                        foreach (var layer in this._layers)
+                        foreach (var layer in _layers)
                         {
                             layer.Value.Update();
                         }
 
-                        await Task.Delay(50, this._cancellationToken).ConfigureAwait(false);
+                        await Task.Delay(50, _cancellationToken).ConfigureAwait(false);
                     }
                     catch (Exception e)
                     {
-                        this._logger.LogError(e, $"An error occured on map {this.Name}.");
+                        _logger.LogError(e, $"An error occured on map {Name}.");
                     }
                 }
-            }, this._cancellationToken);
+            }, _cancellationToken);
         }
 
         /// <inheritdoc />
-        public void StopUpdateTask() => this._cancellationTokenSource.Cancel();
+        public void StopUpdateTask() => _cancellationTokenSource.Cancel();
 
         /// <summary>
         /// Sets the map regions.
@@ -190,20 +190,20 @@ namespace Rhisis.World.Game.Maps
             if (!regions.Any(x => x is IMapRevivalRegion))
             {
                 // Loads the default revival region if no revival region is loaded.
-                this.DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0,
-                    this.MapInformation.RevivalMapId, this.MapInformation.RevivalKey, null, false, false);
+                DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0,
+                    MapInformation.RevivalMapId, MapInformation.RevivalKey, null, false, false);
             }
 
-            this.Regions = regions;
+            Regions = regions;
         }
 
         /// <inheritdoc />
-        public override string ToString() => this.Name;
+        public override string ToString() => Name;
 
         /// <inheritdoc />
         public void Dispose()
         {
-            this._cancellationTokenSource.Dispose();
+            _cancellationTokenSource.Dispose();
         }
     }
 }

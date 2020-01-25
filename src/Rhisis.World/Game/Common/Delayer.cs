@@ -36,9 +36,9 @@ namespace Rhisis.World.Game.Common
             /// <param name="delayedAction">Action to execute once delay has passed.</param>
             public DelayedAction(TimeSpan delayTime, Action delayedAction)
             {
-                this.DelayTime = delayTime;
-                this.Action = delayedAction;
-                this._cancellationTokenSource = new CancellationTokenSource();
+                DelayTime = delayTime;
+                Action = delayedAction;
+                _cancellationTokenSource = new CancellationTokenSource();
             }
 
             /// <summary>
@@ -46,22 +46,22 @@ namespace Rhisis.World.Game.Common
             /// </summary>
             public void Start()
             {
-                Task.Delay(this.DelayTime, this._cancellationTokenSource.Token).ContinueWith(_ =>
+                Task.Delay(DelayTime, _cancellationTokenSource.Token).ContinueWith(_ =>
                 {
-                    if (!this._cancellationTokenSource.IsCancellationRequested)
-                        this.Action();
+                    if (!_cancellationTokenSource.IsCancellationRequested)
+                        Action();
                 });
             }
 
             /// <summary>
             /// Cancels the current action.
             /// </summary>
-            public void Cancel() => this._cancellationTokenSource.Cancel(false);
+            public void Cancel() => _cancellationTokenSource.Cancel(false);
 
             /// <summary>
             /// Dispose the delayer action.
             /// </summary>
-            public void Dispose() => this.Cancel();
+            public void Dispose() => Cancel();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Rhisis.World.Game.Common
         /// </summary>
         public Delayer()
         {
-            this._delayedActions = new Dictionary<Guid, DelayedAction>();
+            _delayedActions = new Dictionary<Guid, DelayedAction>();
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Rhisis.World.Game.Common
             var delayedActionId = Guid.NewGuid();
             var delayedAction = new DelayedAction(delayTime, action);
 
-            this._delayedActions.Add(delayedActionId, delayedAction);
+            _delayedActions.Add(delayedActionId, delayedAction);
 
             delayedAction.Start();
 
@@ -97,7 +97,7 @@ namespace Rhisis.World.Game.Common
         /// <param name="delayedAction">Action to execute after delay has passed.</param>
         /// <returns>Delayed action unique Id.</returns>
         public Guid DelayAction(int delaySeconds, Action delayedAction) 
-            => this.DelayAction(TimeSpan.FromSeconds(delaySeconds), delayedAction);
+            => DelayAction(TimeSpan.FromSeconds(delaySeconds), delayedAction);
 
         /// <summary>
         /// Cancels an action.
@@ -105,7 +105,7 @@ namespace Rhisis.World.Game.Common
         /// <param name="delayedActionId">Delayed action id.</param>
         public void CancelAction(Guid delayedActionId)
         {
-            if (this._delayedActions.Remove(delayedActionId, out DelayedAction delayedAction))
+            if (_delayedActions.Remove(delayedActionId, out DelayedAction delayedAction))
             {
                 delayedAction.Cancel();
             }
@@ -116,17 +116,17 @@ namespace Rhisis.World.Game.Common
         /// </summary>
         public void CancelAllActions()
         {
-            foreach (KeyValuePair<Guid, DelayedAction> action in this._delayedActions)
+            foreach (KeyValuePair<Guid, DelayedAction> action in _delayedActions)
             {
                 action.Value.Cancel();
             }
 
-            this._delayedActions.Clear();
+            _delayedActions.Clear();
         }
 
         /// <summary>
         /// Dispose the delayer instance.
         /// </summary>
-        public void Dispose() => this.CancelAllActions();
+        public void Dispose() => CancelAllActions();
     }
 }

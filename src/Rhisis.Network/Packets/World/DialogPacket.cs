@@ -40,12 +40,12 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.ObjectId = packet.Read<uint>();
-            this.Key = packet.Read<string>();
-            this.Param = packet.Read<int>();
-            this.QuestId = packet.Read<int>();
-            this.MoverId = packet.Read<uint>();
-            this.PlayerId = packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
+            Key = packet.Read<string>();
+            Param = packet.Read<int>();
+            QuestId = packet.Read<int>();
+            MoverId = packet.Read<uint>();
+            PlayerId = packet.Read<uint>();
         }
     }
 }

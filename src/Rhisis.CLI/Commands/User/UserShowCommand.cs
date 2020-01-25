@@ -23,28 +23,28 @@ namespace Rhisis.CLI.Commands.User
 
         public UserShowCommand(DatabaseFactory databaseFactory)
         {
-            this._databaseFactory = databaseFactory;
+            _databaseFactory = databaseFactory;
         }
 
         public void OnExecute()
         {
-            if (string.IsNullOrEmpty(this.DatabaseConfigurationFile))
-                this.DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(this.DatabaseConfigurationFile);
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
             if (dbConfig is null)
             {
                 Console.WriteLine("Couldn't load database configuration file during execution of user show command.'");
                 return;
             }
 
-            using (IDatabase database = this._databaseFactory.GetDatabase(dbConfig))
+            using (IDatabase database = _databaseFactory.GetDatabase(dbConfig))
             {
-                DbUser user = database.Users.Get(x => x.Username.Equals(this.Username, StringComparison.OrdinalIgnoreCase));
+                DbUser user = database.Users.Get(x => x.Username.Equals(Username, StringComparison.OrdinalIgnoreCase));
 
                 if (user == null)
                 {
-                    Console.WriteLine($"Cannot find user with username: '{this.Username}'.");
+                    Console.WriteLine($"Cannot find user with username: '{Username}'.");
                 }
                 else
                 {

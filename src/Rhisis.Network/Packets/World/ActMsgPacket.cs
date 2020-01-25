@@ -29,9 +29,9 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public ActMsgPacket(INetPacketStream packet)
         {
-            this.Message = packet.Read<uint>();
-            this.Parameter1 = packet.Read<int>();
-            this.Parameter2 = packet.Read<int>();
+            Message = packet.Read<uint>();
+            Parameter1 = packet.Read<int>();
+            Parameter2 = packet.Read<int>();
         }
 
         /// <summary>

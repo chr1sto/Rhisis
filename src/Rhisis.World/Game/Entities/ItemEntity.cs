@@ -14,8 +14,8 @@ namespace Rhisis.World.Game.Entities
 
         public ItemEntity()
         {
-            this.Object.Type = WorldObjectType.Item;
-            this.Drop = new DropComponent();
+            Object.Type = WorldObjectType.Item;
+            Drop = new DropComponent();
         }
     }
 }

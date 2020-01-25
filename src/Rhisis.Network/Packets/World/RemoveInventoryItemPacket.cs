@@ -23,8 +23,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public void Deserialize(INetPacketStream packet)
         {
-            this.ItemUniqueId = packet.Read<int>();
-            this.ItemQuantity = packet.Read<int>();
+            ItemUniqueId = packet.Read<int>();
+            ItemQuantity = packet.Read<int>();
         }
     }
 }

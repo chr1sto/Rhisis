@@ -21,8 +21,8 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="cache">Memory cache.</param>
         public DialogLoader(ILogger<DialogLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
+            _logger = logger;
+            _cache = cache;
         }
 
         /// <inheritdoc />
@@ -42,26 +42,26 @@ namespace Rhisis.Core.Resources.Loaders
                 foreach (string dialogFile in dialogFiles)
                 {
                     string dialogFileContent = File.ReadAllText(dialogFile);
-                    var dialogsParsed = JToken.Parse(dialogFileContent, this._jsonSettings);
+                    var dialogsParsed = JToken.Parse(dialogFileContent, _jsonSettings);
 
                     if (dialogsParsed.Type == JTokenType.Array)
                     {
                         var dialogs = dialogsParsed.ToObject<DialogData[]>();
 
                         foreach (DialogData dialog in dialogs)
-                            this.AddDialog(dialogSet, dialog);
+                            AddDialog(dialogSet, dialog);
                     }
                     else
                     {
-                        this.AddDialog(dialogSet, dialogsParsed.ToObject<DialogData>());   
+                        AddDialog(dialogSet, dialogsParsed.ToObject<DialogData>());   
                     }
                 }
 
                 dialogSets.TryAdd(lang, dialogSet);
-                this._logger.LogInformation($"-> {dialogSet.Count} dialogs loaded for language {lang}.");
+                _logger.LogInformation($"-> {dialogSet.Count} dialogs loaded for language {lang}.");
             }
 
-            this._cache.Set(GameResourcesConstants.Dialogs, dialogSets);
+            _cache.Set(GameResourcesConstants.Dialogs, dialogSets);
         }
 
         /// <summary>
@@ -73,13 +73,13 @@ namespace Rhisis.Core.Resources.Loaders
         {
             if (dialogSet.ContainsKey(dialog.Name))
             {
-                this._logger.LogDebug(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
+                _logger.LogDebug(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Dialog", dialog.Name, "already declared");
                 return;
             }
 
             if (dialog.Links.HasDuplicates(x => x.Id))
             {
-                this._logger.LogError(GameResourcesConstants.Errors.ObjectErrorMessage, "Dialog", dialog.Name, "duplicate dialog link keys.");
+                _logger.LogError(GameResourcesConstants.Errors.ObjectErrorMessage, "Dialog", dialog.Name, "duplicate dialog link keys.");
                 return;
             }
 

@@ -24,8 +24,8 @@ namespace Rhisis.World.Handlers
         /// <param name="expSystem">Experience system.</param>
         public SendExpServerHandler(IExperienceSystem expSystem, ILogger<SendExpServerHandler> logger)
         {
-            this._expSystem = expSystem;
-            this._logger = logger;
+            _expSystem = expSystem;
+            _logger = logger;
         }
 
         /// <summary>
@@ -38,8 +38,8 @@ namespace Rhisis.World.Handlers
         {
             if (client.Player.PlayerData.Authority == AuthorityType.GameMaster || client.Player.PlayerData.Authority == AuthorityType.Administrator)
             {
-                this._logger.LogTrace($"{client.Player.Object.Name} gives himself {packet.Experience} experience point.");
-                this._expSystem.GiveExeperience(client.Player, packet.Experience);
+                _logger.LogTrace($"{client.Player.Object.Name} gives himself {packet.Experience} experience point.");
+                _expSystem.GiveExeperience(client.Player, packet.Experience);
             } 
             else 
             {

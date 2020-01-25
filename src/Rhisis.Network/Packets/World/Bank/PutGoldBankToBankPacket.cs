@@ -34,10 +34,10 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="packet">Incoming packet</param>
         public PutGoldBankToBankPacket(INetPacketStream packet)
         {
-            this.Flag = packet.Read<byte>();
-            this.DestinationSlot = packet.Read<byte>();
-            this.SourceSlot = packet.Read<byte>();
-            this.Gold = packet.Read<uint>();
+            Flag = packet.Read<byte>();
+            DestinationSlot = packet.Read<byte>();
+            SourceSlot = packet.Read<byte>();
+            Gold = packet.Read<uint>();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="other">Other <see cref="PutGoldBankToBankPacket"/></param>
         public bool Equals(PutGoldBankToBankPacket other)
         {
-            return this.Flag == other.Flag && this.DestinationSlot == other.DestinationSlot && this.SourceSlot == other.SourceSlot && this.Gold == other.Gold;
+            return Flag == other.Flag && DestinationSlot == other.DestinationSlot && SourceSlot == other.SourceSlot && Gold == other.Gold;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public IncStatLevelPacket(INetPacketStream packet)
         {
-            this.Id = packet.Read<byte>();
+            Id = packet.Read<byte>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="IncStatLevelPacket"/></param>
         public bool Equals(IncStatLevelPacket other)
         {
-            return this.Id == other.Id;
+            return Id == other.Id;
         }
     }
 }

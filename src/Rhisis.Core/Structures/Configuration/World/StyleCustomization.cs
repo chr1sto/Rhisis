@@ -35,9 +35,9 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         public StyleCustomization()
         {
-            this.ChangeFaceCost = DefaultChangeFaceCost;
-            this.ChangeHairCost = DefaultChangeHairCost;
-            this.ChangeHairColorCost = DefaultChangeHairColorCost;
+            ChangeFaceCost = DefaultChangeFaceCost;
+            ChangeHairCost = DefaultChangeHairCost;
+            ChangeHairColorCost = DefaultChangeHairColorCost;
         }
     }
 }

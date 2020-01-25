@@ -22,8 +22,8 @@ namespace Rhisis.Core.Structures.Game
         /// <param name="characterExpTable">Character experience table.</param>
         public ExpTableData(IEnumerable<long[]> expDropLuck, IReadOnlyDictionary<int, CharacterExpTableData> characterExpTable)
         {
-            this.ExpDropLuck = expDropLuck;
-            this.CharacterExpTable = characterExpTable;
+            ExpDropLuck = expDropLuck;
+            CharacterExpTable = characterExpTable;
         }
 
         /// <summary>
@@ -32,13 +32,13 @@ namespace Rhisis.Core.Structures.Game
         /// <param name="level">Level</param>
         /// <param name="refine">Refine</param>
         /// <returns></returns>
-        public long GetDropLuck(int level, int refine) => this.ExpDropLuck.ElementAt(level - 1).ElementAt(refine);
+        public long GetDropLuck(int level, int refine) => ExpDropLuck.ElementAt(level - 1).ElementAt(refine);
 
         /// <summary>
         /// Gets a character experience information based on a level.
         /// </summary>
         /// <param name="level">Character level.</param>
         /// <returns><see cref="CharacterExpTableData"/> matching the level.</returns>
-        public CharacterExpTableData GetCharacterExp(int level) => this.CharacterExpTable.TryGetValue(level, out CharacterExpTableData value) ? value : default;
+        public CharacterExpTableData GetCharacterExp(int level) => CharacterExpTable.TryGetValue(level, out CharacterExpTableData value) ? value : default;
     }
 }

@@ -34,10 +34,10 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="packet">Incoming packet</param>
         public ChangeBankPasswordPacket(INetPacketStream packet)
         {
-            this.OldPassword = packet.Read<string>();
-            this.NewPassword = packet.Read<string>();
-            this.Id = packet.Read<uint>();
-            this.ItemId = packet.Read<uint>();
+            OldPassword = packet.Read<string>();
+            NewPassword = packet.Read<string>();
+            Id = packet.Read<uint>();
+            ItemId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Rhisis.Network.Packets.World.Bank
         /// <param name="other">Other <see cref="ChangeBankPasswordPacket"/></param>
         public bool Equals(ChangeBankPasswordPacket other)
         {
-            return this.OldPassword == other.OldPassword && this.NewPassword == other.NewPassword && this.Id == other.Id && this.ItemId == other.ItemId;
+            return OldPassword == other.OldPassword && NewPassword == other.NewPassword && Id == other.Id && ItemId == other.ItemId;
         }
     }
 }

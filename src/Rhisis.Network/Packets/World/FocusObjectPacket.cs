@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public FocusObjectPacket(INetPacketStream packet)
         {
-            this.ObjectId = packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Network.Packets.World
         /// <param name="other">Other <see cref="FocusObjectPacket"/></param>
         public bool Equals(FocusObjectPacket other)
         {
-            return this.ObjectId == other.ObjectId;
+            return ObjectId == other.ObjectId;
         }
     }
 }

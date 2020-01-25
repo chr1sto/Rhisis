@@ -24,8 +24,8 @@ namespace Rhisis.Network.Packets.World.Packet
         /// <param name="packet">Incoming packet</param>
         public PartyChangeNamePacket(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.Name = packet.Read<string>();
+            PlayerId = packet.Read<uint>();
+            Name = packet.Read<string>();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.Network.Packets.World.Packet
         /// <param name="other">Other <see cref="PartyChangeNamePacket"/></param>
         public bool Equals(PartyChangeNamePacket other)
         {
-            return this.PlayerId == other.PlayerId && this.Name == other.Name;
+            return PlayerId == other.PlayerId && Name == other.Name;
         }
     }
 }

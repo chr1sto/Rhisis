@@ -27,9 +27,9 @@ namespace Rhisis.World.Game.Chat
 
         public CreateMonsterChatCommand(ILogger<CreateMonsterChatCommand> logger, IMapManager mapManager, IMonsterFactory monsterFactory)
         {
-            this._logger = logger;
-            this._mapManager = mapManager;
-            this._monsterFactory = monsterFactory;
+            _logger = logger;
+            _mapManager = mapManager;
+            _monsterFactory = monsterFactory;
         }
 
         /// <inheritdoc />
@@ -55,7 +55,7 @@ namespace Rhisis.World.Game.Chat
                     throw new ArgumentException($"Cannot convert the second parameter in int.", nameof(parameters));
                 }
             }
-            this._logger.LogTrace($"{player.Object.Name} want to spawn {quantityToSpawn} mmonster");
+            _logger.LogTrace($"{player.Object.Name} want to spawn {quantityToSpawn} mmonster");
 
             const int sizeOfSpawnArea = 13;    
             const int respawnTime = 65535;
@@ -65,7 +65,7 @@ namespace Rhisis.World.Game.Chat
             var respawnRegion = new MapRespawnRegion((int)currentPosition.X-sizeOfSpawnArea/2, (int)currentPosition.Z-sizeOfSpawnArea/2, sizeOfSpawnArea, sizeOfSpawnArea, respawnTime , WorldObjectType.Mover, monsterId, quantityToSpawn);
             for (int i = 0; i < quantityToSpawn; i++) 
             {
-                IMonsterEntity monsterToCreate = this._monsterFactory.CreateMonster(currentMap, currentMapLayer, monsterId, respawnRegion, true);
+                IMonsterEntity monsterToCreate = _monsterFactory.CreateMonster(currentMap, currentMapLayer, monsterId, respawnRegion, true);
                 monsterToCreate.Object.Position = player.Object.Position.Clone();
                 currentMapLayer.AddEntity(monsterToCreate);
             }
