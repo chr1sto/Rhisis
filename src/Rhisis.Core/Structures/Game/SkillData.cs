@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Core.Attributes;
+using Rhisis.Core.Data;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -21,6 +22,13 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         [DataMember(Name = "dwID")]
         public int Id { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill index.
+        /// </summary>
+        [DataIndex]
+        [DataMember]
+        public int Index { get; internal set; }
 
         /// <summary>
         /// Gets the skill name.
@@ -128,6 +136,24 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         [DataMember(Name = "ExpertMax")]
         public int MaxLevel { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill type.
+        /// </summary>
+        [DataMember(Name = "dwSkillType")]
+        public SkillType Type { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill spell region.
+        /// </summary>
+        [DataMember(Name = "dwSpellRegion")]
+        public SpellRegionType SpellRegionType { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill execution target.
+        /// </summary>
+        [DataMember(Name = "dwExeTarget")]
+        public SkillExecuteTargetType ExecuteTarget { get; internal set; }
 
         /// <summary>
         /// Gets the skill levels data.

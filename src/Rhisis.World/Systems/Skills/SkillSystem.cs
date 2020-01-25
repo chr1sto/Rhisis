@@ -204,6 +204,57 @@ namespace Rhisis.World.Systems.Skills
             _skillPacketFactory.SendSkillTreeUpdate(player);
         }
 
+        /// <inheritdoc />
+        public void UseSkill(IPlayerEntity player, SkillInfo skill, int targetObjectId)
+        {
+            if (skill == null)
+            {
+                return;
+            }
+
+            if (CanUseSkill(player, skill))
+            {
+                _logger.LogDebug($"Can use {skill.Data.Name}.");
+
+                // TODO: check if skill is melee (BattleSystem) or buff (BuffSystem)
+                switch (skill.Data.ExecuteTarget)
+                {
+                    case SkillExecuteTargetType.MeleeAttack:
+
+                        break;
+                }
+            }
+            else
+            {
+                _logger.LogDebug($"Cannot use {skill.Data.Name}.");
+            }
+        }
+
+        /// <inheritdoc />
+        public bool CanUseSkill(IPlayerEntity player, SkillInfo skill)
+        {
+            if (skill.Level <= 0 || skill.Level > skill.Data.SkillLevels.Count)
+            {
+                return false;
+            }
+
+            if (skill.LevelData.RequiredMP > 0 && player.Attributes[DefineAttributes.MP] < skill.LevelData.RequiredMP)
+            {
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQMP);
+                return false;
+            }
+
+            if (skill.LevelData.RequiredFP > 0 && player.Attributes[DefineAttributes.FP] < skill.LevelData.RequiredFP)
+            {
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQFP);
+                return false;
+            }
+
+            // TODO: more skill checks
+
+            return true;
+        }
+
         /// <summary>
         /// Check if the required skill condition matches.
         /// </summary>
@@ -211,7 +262,7 @@ namespace Rhisis.World.Systems.Skills
         /// <param name="requiredSkillLevel">Required skill level.</param>
         /// <param name="skillsToUpdate">Dictionary of skills to update.</param>
         /// <returns>True if the requirement matches; false otherwise.</returns>
-        public bool CheckRequiredSkill(int requiredSkillId, int requiredSkillLevel, IReadOnlyDictionary<int, int> skillsToUpdate)
+        private bool CheckRequiredSkill(int requiredSkillId, int requiredSkillLevel, IReadOnlyDictionary<int, int> skillsToUpdate)
         {
             if (requiredSkillId == -1)
             {

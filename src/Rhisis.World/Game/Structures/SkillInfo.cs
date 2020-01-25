@@ -36,6 +36,11 @@ namespace Rhisis.World.Game.Structures
         public int Level { get; set; }
 
         /// <summary>
+        /// Gets the skill level information.
+        /// </summary>
+        public SkillLevelData LevelData => Data.SkillLevels[Level];
+
+        /// <summary>
         /// Creates a new <see cref="SkillInfo"/> instance.
         /// </summary>
         /// <param name="skillId">Skill id.</param>

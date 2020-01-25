@@ -22,6 +22,13 @@ namespace Rhisis.World.Game.Components
         public SkillInfo GetSkill(int skillId) => Skills.FirstOrDefault(x => x.SkillId == skillId);
 
         /// <summary>
+        /// Gets the skill based on the given skill index.
+        /// </summary>
+        /// <param name="skillIndex">Skill index.</param>
+        /// <returns></returns>
+        public SkillInfo GetSkillByIndex(int skillIndex) => Skills.FirstOrDefault(x => x.Data.Index == skillIndex);
+
+        /// <summary>
         /// Sets the skill level of the given skill id.
         /// </summary>
         /// <param name="skillId">Skill id.</param>

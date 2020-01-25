@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.IO;
+﻿using Rhisis.Core.Attributes;
+using Rhisis.Core.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -106,6 +107,7 @@ namespace Rhisis.Core.Resources
         {
             var records = new List<T>();
             var typeProperties = GetPropertiesWithDataMemberAttribute<T>();
+            int currentIndex = 0;
 
             foreach (var record in _datas)
             {
@@ -115,6 +117,7 @@ namespace Rhisis.Core.Resources
                 {
                     DataMemberAttribute attribute = GetPropertyAttribute<DataMemberAttribute>(property);
                     DefaultValueAttribute defaultValue = GetPropertyAttribute<DefaultValueAttribute>(property);
+                    DataIndexAttribute dataIndexAttribute = this.GetPropertyAttribute<DataIndexAttribute>(property);
                     int index = -1;
                     
                     if (attribute != null)
@@ -144,9 +147,15 @@ namespace Rhisis.Core.Resources
 
                         property.SetValue(obj, Convert.ChangeType(value, property.PropertyType));
                     }
+
+                    if (dataIndexAttribute != null)
+                    {
+                        property.SetValue(obj, Convert.ChangeType(currentIndex, property.PropertyType));
+                    }
                 }
 
                 records.Add(obj);
+                currentIndex++;
             }
 
             return records;
