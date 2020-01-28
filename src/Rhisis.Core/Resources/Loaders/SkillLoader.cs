@@ -25,10 +25,10 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="cache">Memory cache.</param>
         public SkillLoader(ILogger<SkillLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
-            this._texts = this._cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
+            _logger = logger;
+            _cache = cache;
+            _defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            _texts = this._cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
         }
 
         /// <inheritdoc />

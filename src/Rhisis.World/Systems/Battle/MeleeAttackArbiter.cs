@@ -8,10 +8,11 @@ using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Systems.Battle
 {
+
     /// <summary>
     /// Provides a mechanism to calculate a melee attack result based on the attacker and defender statistics.
     /// </summary>
-    public class MeleeAttackArbiter
+    public class MeleeAttackArbiter : IAttackArbiter
     {
         public const int MinimalHitRate = 20;
         public const int MaximalHitRate = 96;
@@ -29,10 +30,7 @@ namespace Rhisis.World.Systems.Battle
             _defender = defender;
         }
 
-        /// <summary>
-        /// Gets the melee damages inflicted by an attacker to a defender.
-        /// </summary>
-        /// <returns><see cref="AttackResult"/></returns>
+        /// <inheritdoc />
         public AttackResult OnDamage()
         {
             var attackResult = new AttackResult

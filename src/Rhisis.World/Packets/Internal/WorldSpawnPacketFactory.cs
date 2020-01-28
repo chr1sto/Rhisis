@@ -45,7 +45,7 @@ namespace Rhisis.World.Packets.Internal
 
                 packet.Write<short>(0); // m_dwMotion
                 packet.Write<byte>(1); // m_bPlayer
-                packet.Write(player.Health.Hp); // HP
+                packet.Write(player.Attributes[DefineAttributes.HP]); // HP
                 packet.Write((int)player.Object.MovingFlags); // moving flags
                 packet.Write((int)player.Object.MotionFlags); // motion flags
                 packet.Write<byte>(1); // m_dwBelligerence
@@ -102,8 +102,8 @@ namespace Rhisis.World.Packets.Internal
                 for (var i = 0; i < 26; ++i)
                     packet.Write(0);
 
-                packet.Write((short)player.Health.Mp); // MP
-                packet.Write((short)player.Health.Fp); // FP
+                packet.Write((short)player.Attributes[DefineAttributes.MP]); // MP
+                packet.Write((short)player.Attributes[DefineAttributes.FP]); // FP
                 packet.Write(0); // tutorial state
                 packet.Write(0); // fly experience
                 packet.Write(player.PlayerData.Gold); // Gold
@@ -247,7 +247,7 @@ namespace Rhisis.World.Packets.Internal
 
                 packet.Write<short>(0);
                 packet.Write<byte>(1); // is player?
-                packet.Write(playerEntity.Health.Hp); // HP
+                packet.Write(playerEntity.Attributes[DefineAttributes.HP]); // HP
                 packet.Write((int)playerEntity.Object.MovingFlags); // moving flags
                 packet.Write((int)playerEntity.Object.MotionFlags); // motion flags
                 packet.Write<byte>(0);
@@ -323,7 +323,7 @@ namespace Rhisis.World.Packets.Internal
 
                 packet.Write<short>(5);
                 packet.Write<byte>(0);
-                packet.Write(monsterEntity.Health.Hp);
+                packet.Write(monsterEntity.Attributes[DefineAttributes.HP]);
                 packet.Write(1);
                 packet.Write(0);
                 packet.Write((byte)monsterEntity.Data.Belligerence);

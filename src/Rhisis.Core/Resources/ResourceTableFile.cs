@@ -1,8 +1,10 @@
 ﻿using Rhisis.Core.Attributes;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -136,21 +138,13 @@ namespace Rhisis.Core.Resources
                         {
                             value = defaultValue != null ? defaultValue.Value : GetTypeDefaultValue(property.PropertyType);
                         }
-                        else
-                        {
-                            if (property.PropertyType.BaseType == typeof(Enum))
-                                value = Enum.ToObject(property.PropertyType, Convert.ToInt32(value));
 
-                            if (property.PropertyType == typeof(bool))
-                                value = Convert.ToBoolean(Convert.ToInt32(value));
-                        }
-
-                        property.SetValue(obj, Convert.ChangeType(value, property.PropertyType));
+                        property.SetValue(obj, ConvertValueToType(value, property.PropertyType));
                     }
 
                     if (dataIndexAttribute != null)
                     {
-                        property.SetValue(obj, Convert.ChangeType(currentIndex, property.PropertyType));
+                        property.SetValue(obj, ConvertValueToType(currentIndex, property.PropertyType));
                     }
                 }
 
@@ -259,6 +253,35 @@ namespace Rhisis.Core.Resources
         /// <param name="type"></param>
         /// <returns></returns>
         private object GetTypeDefaultValue(Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
+
+        /// <summary>
+        /// Converts the given value into a given type.
+        /// </summary>
+        /// <param name="value">Value to convert.</param>
+        /// <param name="type">Target type.</param>
+        /// <returns></returns>
+        private object ConvertValueToType(object value, Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                    return null;
+
+                type = Nullable.GetUnderlyingType(type);
+            }
+
+            if (type.IsEnum)
+            {
+                value = Enum.ToObject(type, Convert.ToInt32(value));
+            }
+
+            if (type == typeof(bool))
+            {
+                value = Convert.ToBoolean(Convert.ToInt32(value));
+            }
+
+            return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+        }
 
         /// <summary>
         /// Disposes the resources.

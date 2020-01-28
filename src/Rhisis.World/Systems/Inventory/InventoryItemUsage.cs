@@ -53,7 +53,7 @@ namespace Rhisis.World.Systems.Inventory
             {
                 if (parameter.Key == DefineAttributes.HP || parameter.Key == DefineAttributes.MP || parameter.Key == DefineAttributes.FP)
                 {
-                    int currentPoints = PlayerHelper.GetPoints(player, parameter.Key);
+                    int currentPoints = player.Attributes[parameter.Key];
                     int maxPoints = PlayerHelper.GetMaxPoints(player, parameter.Key);
                     int itemMaxRecovery = foodItemToUse.Data.AbilityMin;
 
@@ -86,7 +86,7 @@ namespace Rhisis.World.Systems.Inventory
                     }
 
                     PlayerHelper.SetPoints(player, parameter.Key, currentPoints);
-                    _moverPacketFactory.SendUpdateAttributes(player, parameter.Key, PlayerHelper.GetPoints(player, parameter.Key));
+                    _moverPacketFactory.SendUpdateAttributes(player, parameter.Key, player.Attributes[parameter.Key]);
                 }
                 else
                 {

@@ -39,6 +39,18 @@ namespace Rhisis.Core.Structures.Game
         public int AbilityMax { get; internal set; }
 
         /// <summary>
+        /// Gets the skill minimum damages/ability when used in PVP.
+        /// </summary>
+        [DataMember(Name = "dwAbilityMinPVP")]
+        public int AbilityMinPVP { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill maximum damages/ability when used in PVP.
+        /// </summary>
+        [DataMember(Name = "dwAbilityMaxPVP")]
+        public int AbilityMaxPVP { get; internal set; }
+
+        /// <summary>
         /// Gets the skill attack speed.
         /// </summary>
         [DataMember(Name = "dwAttackSpeed")]

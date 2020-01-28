@@ -9,7 +9,7 @@ namespace Rhisis.World.Systems.Skills
     {
         void UpdateSkills(IPlayerEntity player, IReadOnlyDictionary<int, int> skillsToUpdate);
 
-        void UseSkill(IPlayerEntity player, SkillInfo skill, int targetObjectId);
+        void UseSkill(IPlayerEntity player, SkillInfo skill, uint targetObjectId);
 
         bool CanUseSkill(IPlayerEntity player, SkillInfo skill);
     }

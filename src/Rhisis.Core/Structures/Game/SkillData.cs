@@ -58,7 +58,13 @@ namespace Rhisis.Core.Structures.Game
         /// Gets the skill link kind.
         /// </summary>
         [DataMember(Name = "dwLinkKind")]
-        public ItemKind3 LinkKind { get; internal set; }
+        public ItemKind3? LinkKind { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill bullet link kind.
+        /// </summary>
+        [DataMember(Name = "dwLinkKindBullet")]
+        public ItemKind2? BulletLinkKind { get; internal set; }
 
         /// <summary>
         /// Gets the skill element (Fire, Water, Wind, etc...)
@@ -154,6 +160,48 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         [DataMember(Name = "dwExeTarget")]
         public SkillExecuteTargetType ExecuteTarget { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill first refer statistic type.
+        /// </summary>
+        [DataMember(Name = "dwReferStat1")]
+        public DefineAttributes ReferStat1 { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill second refer statistic type.
+        /// </summary>
+        [DataMember(Name = "dwReferStat2")]
+        public DefineAttributes ReferStat2 { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill first refer target.
+        /// </summary>
+        [DataMember(Name = "dwReferTarget1")]
+        public SkillReferTargetType ReferTarget1 { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill first refer target value.
+        /// </summary>
+        [DataMember(Name = "dwReferValue1")]
+        public int ReferValue1 { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill second refer target.
+        /// </summary>
+        [DataMember(Name = "dwReferTaget2")]
+        public SkillReferTargetType ReferTarget2 { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill second refer target value.
+        /// </summary>
+        [DataMember(Name = "dwReferValue2")]
+        public int ReferValue2 { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill weapon handed type.
+        /// </summary>
+        [DataMember(Name = "dwHanded")]
+        public WeaponHandType? Handed { get; internal set; }
 
         /// <summary>
         /// Gets the skill levels data.

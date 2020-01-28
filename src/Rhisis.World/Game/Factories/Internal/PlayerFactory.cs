@@ -76,14 +76,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 Level = character.Level,
                 MovingFlags = ObjectState.OBJSTA_STAND
             };
-
-            player.Health = new HealthComponent
-            {
-                Hp = character.Hp,
-                Mp = character.Mp,
-                Fp = character.Fp
-            };
-
             player.VisualAppearance = new VisualAppearenceComponent
             {
                 Gender = character.Gender,
@@ -112,10 +104,13 @@ namespace Rhisis.World.Game.Factories.Internal
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
-            player.Attributes.ResetAttribute(DefineAttributes.STR, character.Strength);
-            player.Attributes.ResetAttribute(DefineAttributes.STA, character.Stamina);
-            player.Attributes.ResetAttribute(DefineAttributes.DEX, character.Dexterity);
-            player.Attributes.ResetAttribute(DefineAttributes.INT, character.Intelligence);
+            player.Attributes[DefineAttributes.HP] = character.Hp;
+            player.Attributes[DefineAttributes.MP] = character.Mp;
+            player.Attributes[DefineAttributes.FP] = character.Fp;
+            player.Attributes[DefineAttributes.STR] = character.Strength;
+            player.Attributes[DefineAttributes.STA] = character.Stamina;
+            player.Attributes[DefineAttributes.DEX] = character.Dexterity;
+            player.Attributes[DefineAttributes.INT] = character.Intelligence;
 
             player.Statistics = new StatisticsComponent(character);
             player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
@@ -170,9 +165,9 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.StatPoints = player.Statistics.StatPoints;
                 character.SkillPoints = player.Statistics.SkillPoints;
 
-                character.Hp = player.Health.Hp;
-                character.Mp = player.Health.Mp;
-                character.Fp = player.Health.Fp;
+                character.Hp = player.Attributes[DefineAttributes.HP];
+                character.Mp = player.Attributes[DefineAttributes.MP];
+                character.Fp = player.Attributes[DefineAttributes.FP];
 
                 _database.Complete();
 

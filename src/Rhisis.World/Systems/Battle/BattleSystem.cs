@@ -7,14 +7,12 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Core.Structures.Game;
-using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Experience;
-using Rhisis.World.Systems.Quest;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
@@ -50,11 +48,11 @@ namespace Rhisis.World.Systems.Battle
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
         }
-        
+
         /// <inheritdoc />
         public void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed)
         {
-            if (defender.Health.IsDead)
+            if (defender.IsDead)
             {
                 _logger.LogError($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
                 ClearBattleTargets(defender);
@@ -62,43 +60,29 @@ namespace Rhisis.World.Systems.Battle
                 return;
             }
 
-            
-
             attacker.Battle.Target = defender;
             defender.Battle.Target = attacker;
 
             AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).OnDamage();
 
-            
+            _logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
 
             if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
                 BattleHelper.KnockbackEntity(defender);
 
+            _battlePacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
             _battlePacketFactory.SendMeleeAttack(attacker, attackType, defender.Id, unknwonParam: 0, meleeAttackResult.Flags);
 
-            if (defender is IPlayerEntity undyingPlayer) 
-            {
-                if (undyingPlayer.PlayerData.Mode.HasFlag(ModeType.MATCHLESS_MODE)) 
-                {
-                    _logger.LogDebug($"{attacker.Object.Name} wasn't able to inflict any damages to {defender.Object.Name} because he is in undying mode");
-                    return;
-                }
-            }
+            defender.Attributes[DefineAttributes.HP] -= meleeAttackResult.Damages;
+            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
 
-            _battlePacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
-
-            defender.Health.Hp -= meleeAttackResult.Damages;
-            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
-
-            _logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
-
-            if (defender.Health.IsDead)
+            if (defender.IsDead)
             {
                 _logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
-                defender.Health.Hp = 0;
+                defender.Attributes[DefineAttributes.HP] = 0;
                 ClearBattleTargets(defender);
                 ClearBattleTargets(attacker);
-                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
+                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
 
                 if (defender is IMonsterEntity deadMonster && attacker is IPlayerEntity player)
                 {
@@ -167,6 +151,31 @@ namespace Rhisis.World.Systems.Battle
             }
         }
 
+        /// <inheritdoc />
+        public void CastMeleeSkill(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill)
+        {
+            if (attacker == defender)
+            {
+                return;
+            }
+
+            if (defender.IsDead)
+            {
+                _logger.LogError($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
+                ClearBattleTargets(defender);
+                ClearBattleTargets(attacker);
+                return;
+            }
+
+            AttackResult meleeSkillAttackResult = new MeleeSkillAttackArbiter(attacker, defender, skill).OnDamage();
+
+            // TODO: delay action
+        }
+
+        /// <summary>
+        /// Clears the battle targets.
+        /// </summary>
+        /// <param name="entity">Current entity.</param>
         private void ClearBattleTargets(ILivingEntity entity)
         {
             entity.Follow.Target = null;

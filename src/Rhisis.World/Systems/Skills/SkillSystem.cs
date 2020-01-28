@@ -9,6 +9,9 @@ using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Battle;
+using Rhisis.World.Systems.Inventory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,6 +35,8 @@ namespace Rhisis.World.Systems.Skills
         private readonly ILogger<SkillSystem> _logger;
         private readonly IDatabase _database;
         private readonly IGameResources _gameResources;
+        private readonly IBattleSystem _battleSystem;
+        private readonly IInventorySystem _inventorySystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
@@ -39,11 +44,13 @@ namespace Rhisis.World.Systems.Skills
         /// <inheritdoc />
         public int Order => 1;
 
-        public SkillSystem(ILogger<SkillSystem> logger, IDatabase database, IGameResources gameResources, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory)
+        public SkillSystem(ILogger<SkillSystem> logger, IDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory)
         {
             this._logger = logger;
             this._database = database;
             this._gameResources = gameResources;
+            this._battleSystem = battleSystem;
+            this._inventorySystem = inventorySystem;
             this._skillPacketFactory = skillPacketFactory;
             this._textPacketFactory = textPacketFactory;
             this._specialEffectPacketFactory = specialEffectPacketFactory;
@@ -205,7 +212,7 @@ namespace Rhisis.World.Systems.Skills
         }
 
         /// <inheritdoc />
-        public void UseSkill(IPlayerEntity player, SkillInfo skill, int targetObjectId)
+        public void UseSkill(IPlayerEntity player, SkillInfo skill, uint targetObjectId)
         {
             if (skill == null)
             {
@@ -214,13 +221,18 @@ namespace Rhisis.World.Systems.Skills
 
             if (CanUseSkill(player, skill))
             {
-                _logger.LogDebug($"Can use {skill.Data.Name}.");
+                var target = player.FindEntity<ILivingEntity>(targetObjectId);
+
+                if (target == null)
+                {
+                    throw new ArgumentNullException(nameof(targetObjectId));
+                }
 
                 // TODO: check if skill is melee (BattleSystem) or buff (BuffSystem)
                 switch (skill.Data.ExecuteTarget)
                 {
                     case SkillExecuteTargetType.MeleeAttack:
-
+                        _battleSystem.CastMeleeSkill(player, target, skill);
                         break;
                 }
             }
@@ -248,6 +260,58 @@ namespace Rhisis.World.Systems.Skills
             {
                 _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQFP);
                 return false;
+            }
+
+            Item rightWeapon = _inventorySystem.GetEquipedItem(player, ItemPartType.RightWeapon);
+
+            if (skill.Data.LinkKind.HasValue)
+            {
+                bool playerHasCorrectWeapon;
+                ItemKind3? rightWeaponKind = rightWeapon?.Data?.ItemKind3;
+
+                switch (skill.Data.LinkKind)
+                {
+                    case ItemKind3.MAGICBOTH:
+                        playerHasCorrectWeapon = !rightWeaponKind.HasValue ||
+                            rightWeaponKind != ItemKind3.WAND || rightWeaponKind != ItemKind3.STAFF;
+                        break;
+
+                    case ItemKind3.YOBO:
+                        playerHasCorrectWeapon = !rightWeaponKind.HasValue ||
+                            rightWeaponKind != ItemKind3.YOYO || rightWeaponKind != ItemKind3.BOW;
+                        break;
+
+                    case ItemKind3.SHIELD:
+                        Item leftWeapon = _inventorySystem.GetEquipedItem(player, ItemPartType.LeftWeapon);
+
+                        playerHasCorrectWeapon = leftWeapon == null || leftWeapon.Data?.ItemKind3 != ItemKind3.SHIELD;
+                        break;
+
+                    default:
+                        playerHasCorrectWeapon = skill.Data.LinkKind != rightWeaponKind;
+                        break;
+                }
+
+                if (!playerHasCorrectWeapon)
+                {
+                    _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGITEM);
+                    return false;
+                }
+            }
+
+            if (skill.Data.Handed.HasValue)
+            {
+                // TODO: handle dual weapons and two handed weapons
+            }
+
+            if (skill.Data.BulletLinkKind.HasValue)
+            {
+                Item bulletItem = _inventorySystem.GetEquipedItem(player, ItemPartType.Bullet);
+
+                if (bulletItem.Id != -1 && bulletItem.Data.ItemKind2 == skill.Data.BulletLinkKind)
+                {
+                    _inventorySystem.DeleteItem(player, bulletItem, 1);
+                }
             }
 
             // TODO: more skill checks

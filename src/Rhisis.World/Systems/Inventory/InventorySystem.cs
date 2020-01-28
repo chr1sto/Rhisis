@@ -21,7 +21,9 @@ namespace Rhisis.World.Systems.Inventory
     [Injectable(ServiceLifetime.Transient)]
     public sealed class InventorySystem : IInventorySystem
     {
-        public const int RightWeaponSlot = 52;
+        public const int LeftWeaponSlot = EquipOffset + (int)ItemPartType.LeftWeapon;
+        public const int RightWeaponSlot = EquipOffset + (int)ItemPartType.RightWeapon;
+        public const int BulletSlot = EquipOffset + (int)ItemPartType.Bullet;
         public const int EquipOffset = 42;
         public const int MaxItems = 73;
         public const int InventorySize = EquipOffset;
@@ -503,6 +505,12 @@ namespace Rhisis.World.Systems.Inventory
             itemToDrop.Quantity = quantityToDrop;
             _dropSystem.DropItem(player, itemToDrop, owner: null);
             DeleteItem(player, itemUniqueId, quantityToDrop);
+        }
+
+        /// <inheritdoc />
+        public Item GetEquipedItem(IPlayerEntity player, ItemPartType equipPart)
+        {
+            return player.Inventory[EquipOffset + (int)equipPart];
         }
 
         /// <summary>

@@ -8,11 +8,15 @@ namespace Rhisis.World.Game.Components
         private readonly IDictionary<DefineAttributes, int> _attributes;
 
         /// <summary>
-        /// Gets the attribute value matching the given key.
+        /// Gets or sets the attribute value matching the given key.
         /// </summary>
         /// <param name="attribute">Attribute key.</param>
         /// <returns>Attribute value.</returns>
-        public int this[DefineAttributes attribute] => GetAttribute(attribute);
+        public int this[DefineAttributes attribute]
+        {
+            get => GetAttribute(attribute);
+            set => _attributes[attribute] = value;
+        }
 
         /// <summary>
         /// Creates a new <see cref="AttributeComponent"/> instance.

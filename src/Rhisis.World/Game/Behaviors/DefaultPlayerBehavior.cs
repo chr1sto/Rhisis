@@ -62,7 +62,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <inheritdoc />
         public void Update()
         {
-            if (!_player.Object.Spawned || _player.Health.IsDead)
+            if (!_player.Object.Spawned || _player.IsDead)
                 return;
 
             _mobilitySystem.CalculatePosition(_player);
