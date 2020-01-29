@@ -401,8 +401,25 @@ namespace Rhisis.World.Systems.Inventory
                             _inventoryItemUsage.UseMagicItem(player, itemToUse);
                             break;
                         case ItemKind2.SYSTEM:
-                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            switch (itemToUse.Data.ItemKind3) 
+                            {
+                                case ItemKind3.SCROLL:
+                                    switch (itemToUse.Data.Id) 
+                                    {
+                                        case 26456 : /* PERIN ID */
+                                            _inventoryItemUsage.UsePerin(player, itemToUse);
+                                            break;
+                                        default:
+                                            _logger.LogDebug($"Item usage for {itemToUse.Data.Id} is not implemented.");
+                                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.Id} is not implemented.");
+                                            break;
+                                    }
+                                    break;
+                                default:
+                                    _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                                    _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                                    break;
+                            }
                             break;
                         case ItemKind2.GMTEXT:
                             _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
