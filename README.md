@@ -116,7 +116,7 @@ We choose to use the <a href="https://github.com/Eastrall/Sylver.Network">Sylver
 - [x] Character customization system
 - [x] Attribute System
 - [x] Quest System
-- [ ] [Bank System](https://github.com/Eastrall/Rhisis/issues/305)
+- [ ] [Bank System](https://github.com/Eastrall/Rhisis/issues/309)
 - [ ] [Friend System](https://github.com/Eastrall/Rhisis/issues/37)
 - [ ] [Motion System](https://github.com/Eastrall/Rhisis/issues/82)
 - [ ] [Buff Pang System](https://github.com/Eastrall/Rhisis/issues/39)
