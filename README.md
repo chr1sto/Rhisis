@@ -1,20 +1,40 @@
-# Rhisis
+<h1 align="center">
+  Rhisis - Fly For Fun V15 Emulator
+  <br>
+</h1>
 
-[![forthebadge](http://forthebadge.com/images/badges/made-with-c-sharp.svg)](http://forthebadge.com)
-[![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
+<p align="center">
+  <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/made-with-c-sharp.svg" alt="Made With C#"></a>
+  <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/built-with-love.svg"></a><br>
+</p>
 
-[![Build Status](https://travis-ci.org/Eastrall/Rhisis.svg?branch=develop)](https://travis-ci.org/Eastrall/Rhisis)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/500148ec8bdd4f2e954f11c682c39f3c)](https://www.codacy.com/app/Eastrall/Rhisis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Rhisis&amp;utm_campaign=Badge_Grade)
-[![discord](https://discordapp.com/api/guilds/294405146300121088/widget.png)](https://discord.gg/zAT6Az2)
+<h4>Built with C# 8 and the <a href="https://dotnet.microsoft.com/download/dotnet-core" target="_blank">.NET Core Framework 3.0</a>.</h4>
 
-Rhisis is a FlyForFun V15 emulator built with C# 7 and the .NET Core Framework 3.0.
+<p>This project has been created for learning purposes about the network and game logic problematics on the server-side.<br>
+We choose to use the <a href="https://github.com/Eastrall/Sylver.Network">Sylver.Network</a> to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.</p>
 
-This project has been created for learning purposes about the network and game logic problematics on the server-side.
-We choose to use the [Sylver.Network][sylvernetwork] to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.
+<h4 align="center">:warning: This project is not affiliated with Gala Lab. :warning:</h4><br>
 
-> :warning: This project is not affiliated with **Gala Lab**.
+<p align="center">
+  <a href="https://travis-ci.org/Eastrall/Rhisis"><img src="https://travis-ci.org/Eastrall/Rhisis.svg?branch=develop"></a>
+  <a href="https://www.codacy.com/app/Eastrall/Rhisis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Rhisis&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/500148ec8bdd4f2e954f11c682c39f3c"></a>
+  <a href="https://github.com/Eastrall/Rhisis/commits/develop"><img src="https://img.shields.io/github/last-commit/Eastrall/Rhisis.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub last commit"></a>
+  <a href="https://discord.gg/zAT6Az2"><img src="https://discordapp.com/api/guilds/294405146300121088/widget.png"></a>
+</p>
+	    
+<p align="center">
+  <a href="#technical-information">Technical information</a> •
+  <a href="#features">Features</a> •
+  <a href="#how-to">How To's</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#contributors">Contributors</a> •
+  <a href="#supporters">Supporters</a> •
+  <a href="https://github.com/Eastrall/Rhisis/blob/develop/LICENSE">License</a>
+</p>
 
-## Technical environment and details
+<p align="center"><img src="https://i.imgur.com/wpfB1VZ.gif"></p>
+
+## Technical information
 
 - Language: `C#` 8 (latest)
 - Framework: `.NET Core 3.0`
@@ -32,91 +52,84 @@ We choose to use the [Sylver.Network][sylvernetwork] to manage our server connec
 ## Features
 
 ### Common
-- Logger
-- Rijndael cryptography algorithm
-- Custom exceptions
-- Packet handler
+- [x] Logger
+- [x] Rijndael cryptography algorithm
+- [x] Custom exceptions
+- [x] Packet handler
 
 ### Database
-- MySQL database support
+- [x] MySQL database support
 
 ### Login
-- Inter-Server authentication process (CoreServer)
-- Client authentication process
-- Send server list to connected client
+- [x] Inter-Server authentication process (CoreServer)
+- [x] Client authentication process
+- [x] Send server list to connected client
 
 ### Cluster
-- Inter-Server authentication (CoreClient)
-- Character list
-- Create character
-- Delete character
-- 2nd password verification
-- Pre join
+- [x] Inter-Server authentication (CoreClient)
+- [x] Character list
+- [x] Create character
+- [x] Delete character
+- [x] 2nd password verification
+- [x] Pre join
 
 ### World
-- Inter-Server authentication (CoreClient)
-- Entity Component System architecture
-- Connect to the world
-- Load resources
-   - Defines & texts
-   - Monsters
-   - Maps
-   - Items
-   - NPC Data/Shops/Dialogs
-   - Job Data
-   - Exp table
-   - Behaviors (AI)
-- Spawn monsters and NPC
-- Visibility System
-- Mobility System
-- Respawn System
-- Chat System
-	- Chat commands:
-		- Create item : `/ci` or `/createitem`
-		- Get gold : `/getgold`
-		- Teleport : `/teleport`
-- Inventory System
-	- Move items
-	- Equip/Unequip items
-	- Save inventory
-	- Drop items on the ground
-	- Item usage (food, potion, refreshers)
-- Shop System
-	- Buy items
-	- Sell items
-- Trade System
-- NPC Dialog System
-- Drop System
-	- Pickup Gold / Items
-- Battle System
-	- Melee Attack
-		- Player VS Monster
-	- Monster death
-	- Monster item/gold drop
-- Character customization system
-- Attribute System
-- Quest System
+- [x] Inter-Server authentication (CoreClient)
+- [x] Entity Component System architecture
+- [x] Connect to the world
+- [x] Load resources
+   - [x] Defines & texts
+   - [x] Monsters
+   - [x] Maps
+   - [x] Items
+   - [x] NPC Data/Shops/Dialogs
+   - [x] Job Data
+   - [x] Exp table
+   - [x] Behaviors (AI)
+- [x] Spawn monsters and NPC
+- [x] Visibility System
+- [x] Mobility System
+- [x] Respawn System
+- [x] Chat System
+	- [x] Chat commands:
+		- [x] Create item : `/ci` or `/createitem`
+		- [x] Get gold : `/getgold`
+		- [x] Teleport : `/teleport`
+- [x] Inventory System
+	- [x] Move items
+	- [x] Equip/Unequip items
+	- [x] Save inventory
+	- [x] Drop items on the ground
+	- [x] Item usage (food, potion, refreshers)
+- [x] Shop System
+	- [x] Buy items
+	- [x] Sell items
+- [x] Trade System
+- [x] NPC Dialog System
+- [x] Drop System
+	- [x] Pickup Gold / Items
+- [x] Battle System
+	- [x] Melee Attack
+		- [x] Player VS Monster
+	- [x] Monster death
+	- [x] Monster item/gold drop
+- [x] Character customization system
+- [x] Attribute System
+- [x] Quest System
+- [ ] [Bank System](https://github.com/Eastrall/Rhisis/issues/305)
+- [ ] [Friend System](https://github.com/Eastrall/Rhisis/issues/37)
+- [ ] [Motion System](https://github.com/Eastrall/Rhisis/issues/82)
+- [ ] [Buff Pang System](https://github.com/Eastrall/Rhisis/issues/39)
+- [ ] [Mailbox System](https://github.com/Eastrall/Rhisis/issues/38)
+- [ ] [Guild System](https://github.com/Eastrall/Rhisis/issues/36)
+- [ ] [Skill System](https://github.com/Eastrall/Rhisis/issues/35)
+- [ ] [Item Bonus System](https://github.com/Eastrall/Rhisis/issues/34)
+- [ ] [Party System](https://github.com/Eastrall/Rhisis/issues/33)
+- [ ] [Job System](https://github.com/Eastrall/Rhisis/issues/31)
 
+## Contributing
 
-## How to setup Rhisis (from `develop` branch) (Windows platform)
-
-1. Download or Clone the `develop` branch.
-2. Install the latest [.NET Core 3.X SDK](https://dotnet.microsoft.com/download)
-3. Install [`MySQL Server`](https://dev.mysql.com/downloads/installer/)
-4. Go to your Rhisis folder, open a `cmd` or `PowerShell` and compile the solution with the command : `dotnet build`
-5. Go to the `bin/` folder, open a `cmd` or `PowerShell` and type the following commands: 
-```
-$ ./rhisis-cli.bat database initialize
-$ ./rhisis-cli.bat configure login
-$ ./rhisis-cli.bat configure cluster
-$ ./rhisis-cli.bat configure world
-```
-> ℹ️ The `rhisis-cli database initialize` command will guide you through the rhisis database configuration and will setup the database for you.
-6. Create an account using the `./rhisis-cli user create` command
-8. Start the emulator
-- Start `1.login.bat`
-- Start `2.cluster.bat`
-- Start `3.world.bat`
+Please take a look at our [contributing](https://github.com/Eastrall/Rhisis/blob/develop/CONTRIBUTING.md) guidelines, if you're interested in helping!
 
 ## Contributors
 
@@ -130,6 +143,7 @@ $ ./rhisis-cli.bat configure world
 - [Almewty](https://github.com/Almewty)
 - [Anjuts](https://github.com/Anjuts)
 - [MarkWilds](https://github.com/MarkWilds)
+- [tekinomikata](https://github.com/tekinomikata)
 
 ## Supporters
 
