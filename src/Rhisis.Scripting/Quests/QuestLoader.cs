@@ -55,8 +55,6 @@ namespace Rhisis.Scripting.Quests
 
             foreach (var questName in questsDefinition)
             {
-                _logger.LogLoading($"Loading quests '{questName}': {quests.Count} / {questsDefinition.Count()}");
-
                 var questTable = lua[questName] as LuaTable;
 
                 if (!_defines.TryGetValue(questName, out int questId))
@@ -71,7 +69,6 @@ namespace Rhisis.Scripting.Quests
                 quests.TryAdd(questId, new QuestScript(questId, questName, questTable));
             }
 
-            _logger.ClearCurrentConsoleLine();
             _logger.LogInformation($"-> {quests.Count} quests loaded.");
             _cache.Set(GameResourcesConstants.Quests, quests);
         }
