@@ -468,7 +468,7 @@ namespace Rhisis.World.Systems.Inventory
         {
             switch (scrollItem.Data.Id)
             {
-                case 26456:
+                case DefineItem.II_SYS_SYS_SCR_PERIN:
                     _inventoryItemUsage.UsePerin(player, scrollItem);
                     break;
                 default:
