@@ -36,36 +36,22 @@ namespace Rhisis.World.Systems.Battle
             var attackResult = new AttackResult
             {
                 Flags = GetAttackFlags()
-            };  
+            };
+            
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                return attackResult;
             
             if (_attacker is IPlayerEntity player)
             {
-                if (!player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
-                {
-                    if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
-                    {
-                        return attackResult;
-                    }
-                    Item rightWeapon = player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot) ?? InventorySystem.Hand;
+                Item rightWeapon = player.Inventory[InventorySystem.RightWeaponSlot] ?? InventorySystem.Hand;
 
-                    // TODO: GetDamagePropertyFactor()
-                    int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
-                    attackResult.AttackMin = rightWeapon.Data.AbilityMin * 2 + weaponAttack;
-                    attackResult.AttackMax = rightWeapon.Data.AbilityMax * 2 + weaponAttack;
-                }
-                else 
-                {
-                    attackResult.Damages = _defender.Health.Hp; 
-                    attackResult.Flags = AttackFlags.AF_GENERIC; 
-                    return attackResult;
-                }
+                // TODO: GetDamagePropertyFactor()
+                int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
+                attackResult.AttackMin = rightWeapon.Data.AbilityMin * 2 + weaponAttack;
+                attackResult.AttackMax = rightWeapon.Data.AbilityMax * 2 + weaponAttack;
             }
             else if (_attacker is IMonsterEntity monster)
             {
-                if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
-                {
-                    return attackResult;
-                }
                 attackResult.AttackMin = monster.Data.AttackMin;
                 attackResult.AttackMax = monster.Data.AttackMax;
             }
@@ -230,12 +216,12 @@ namespace Rhisis.World.Systems.Battle
 
             if (_attacker is IPlayerEntity player)
             {
-                var weapon = player.Inventory[InventorySystem.RightWeaponSlot];
+                Item weapon = player.Inventory[InventorySystem.RightWeaponSlot] ?? InventorySystem.Hand;
 
-                if (weapon == null)
-                    weapon = InventorySystem.Hand;
                 if (weapon.Data.WeaponType == WeaponType.MELEE_YOYO || attackerAttackFlags.HasFlag(AttackFlags.AF_FORCE))
+                {
                     return false;
+                }
             }
 
             bool canFly = false;

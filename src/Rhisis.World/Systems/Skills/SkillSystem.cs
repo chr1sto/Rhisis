@@ -308,9 +308,12 @@ namespace Rhisis.World.Systems.Skills
             {
                 Item bulletItem = _inventorySystem.GetEquipedItem(player, ItemPartType.Bullet);
 
-                if (bulletItem.Id != -1 && bulletItem.Data.ItemKind2 == skill.Data.BulletLinkKind)
+                if (bulletItem.Id == -1 || bulletItem.Data.ItemKind2 != skill.Data.BulletLinkKind)
                 {
-                    _inventorySystem.DeleteItem(player, bulletItem, 1);
+                    DefineText errorText = skill.Data.LinkKind == ItemKind3.BOW ? DefineText.TID_TIP_NEEDSATTACKITEM : DefineText.TID_TIP_NEEDSKILLITEM;
+
+                    _textPacketFactory.SendDefinedText(player, errorText);
+                    return false;
                 }
             }
 
