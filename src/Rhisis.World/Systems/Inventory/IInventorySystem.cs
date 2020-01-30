@@ -64,6 +64,20 @@ namespace Rhisis.World.Systems.Inventory
         void UseItem(IPlayerEntity player, int itemUniqueId, int part);
 
         /// <summary>
+        /// Uses a system item from player's inventory.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="systemItem">System item to use.</param>
+        void UseSystemItem(IPlayerEntity player, Item systemItem);
+
+        /// <summary>
+        /// Uses a scroll item from player's inventory.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="scrollItem">Scroll item to use.</param>
+        void UseScrollItem(IPlayerEntity player, Item scrollItem);
+
+        /// <summary>
         /// Drops an item from player's inventory to the ground.
         /// </summary>
         /// <remarks>
