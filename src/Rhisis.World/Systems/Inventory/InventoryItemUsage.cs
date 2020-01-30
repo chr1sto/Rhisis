@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
@@ -171,8 +172,8 @@ namespace Rhisis.World.Systems.Inventory
 
         public void UsePerin(IPlayerEntity player, Item perinItem)
         {
-            int perinValue = 100000000;
-            if (!(_playerDataSystem.IncreaseGold(player, perinValue)))
+            int perinValue = Convert.ToInt32(GameConstants.PerinValue);
+            if (!_playerDataSystem.IncreaseGold(player, perinValue))
             {
                 _logger.LogTrace($"Failed to generate gold from a perin for player '{player.Object.Name}'.");
             }
