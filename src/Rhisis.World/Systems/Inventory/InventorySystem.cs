@@ -401,25 +401,7 @@ namespace Rhisis.World.Systems.Inventory
                             _inventoryItemUsage.UseMagicItem(player, itemToUse);
                             break;
                         case ItemKind2.SYSTEM:
-                            switch (itemToUse.Data.ItemKind3) 
-                            {
-                                case ItemKind3.SCROLL:
-                                    switch (itemToUse.Data.Id) 
-                                    {
-                                        case 26456 : /* PERIN ID */
-                                            _inventoryItemUsage.UsePerin(player, itemToUse);
-                                            break;
-                                        default:
-                                            _logger.LogDebug($"Item usage for {itemToUse.Data.Id} is not implemented.");
-                                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.Id} is not implemented.");
-                                            break;
-                                    }
-                                    break;
-                                default:
-                                    _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                                    _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
-                                    break;
-                            }
+                            UseSystemItem(player, itemToUse);
                             break;
                         case ItemKind2.GMTEXT:
                             _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
@@ -465,6 +447,34 @@ namespace Rhisis.World.Systems.Inventory
                             break;
                     }
                 }
+            }
+        }
+
+        public void UseSystemItem(IPlayerEntity player, Item systemItem)
+        {
+            switch (systemItem.Data.ItemKind3)
+            {
+                case ItemKind3.SCROLL:
+                    UseScrollItem(player, systemItem);
+                    break;
+                default:
+                    _logger.LogDebug($"Item usage for {systemItem.Data.ItemKind3} is not implemented.");
+                    _textPacketFactory.SendSnoop(player, $"Item usage for {systemItem.Data.ItemKind3} is not implemented.");
+                    break;
+            }
+        }
+
+        public void UseScrollItem(IPlayerEntity player, Item scrollItem)
+        {
+            switch (scrollItem.Data.Id)
+            {
+                case 26456:
+                    _inventoryItemUsage.UsePerin(player, scrollItem);
+                    break;
+                default:
+                    _logger.LogDebug($"Item usage for {scrollItem.Data.Id} is not implemented.");
+                    _textPacketFactory.SendSnoop(player, $"Item usage for {scrollItem.Data.Id} is not implemented.");
+                    break;
             }
         }
 
