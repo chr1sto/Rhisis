@@ -53,10 +53,8 @@ namespace Rhisis.Scripting.Quests
                 lua.DoFile(questFile);
             }
 
-            int startLine = Console.CursorTop;
             foreach (var questName in questsDefinition)
             {
-                _logger.ClearCurrentConsoleLine(startLine);
                 _logger.LogLoading($"Loading quests '{questName}': {quests.Count} / {questsDefinition.Count()}");
 
                 var questTable = lua[questName] as LuaTable;
@@ -65,7 +63,6 @@ namespace Rhisis.Scripting.Quests
                 {
                     if (questName.StartsWith(QuestScriptConstants.QuestPrefix) && !int.TryParse(questName.Replace(QuestScriptConstants.QuestPrefix, ""), out questId))
                     {
-                        _logger.ClearCurrentConsoleLine(startLine);
                         _logger.LogWarning($"Cannot find quest id for quest: '{questName}'.");
                         continue;
                     }
@@ -74,7 +71,7 @@ namespace Rhisis.Scripting.Quests
                 quests.TryAdd(questId, new QuestScript(questId, questName, questTable));
             }
 
-            _logger.ClearCurrentConsoleLine(startLine);
+            _logger.ClearCurrentConsoleLine();
             _logger.LogInformation($"-> {quests.Count} quests loaded.");
             _cache.Set(GameResourcesConstants.Quests, quests);
         }
