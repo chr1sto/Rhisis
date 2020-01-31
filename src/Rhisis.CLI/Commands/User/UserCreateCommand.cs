@@ -11,7 +11,7 @@ using Rhisis.Database.Entities;
 
 namespace Rhisis.CLI.Commands.User
 {
-    [Command("create", Description = "Created a new user")]
+    [Command("create", Description = "Create a new user")]
     public sealed class UserCreateCommand
     {
         private readonly DatabaseFactory _databaseFactory;
@@ -34,7 +34,7 @@ namespace Rhisis.CLI.Commands.User
             var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
             if (dbConfig is null)
             {
-                Console.WriteLine("Couldn't load database configuration file during execution of user create command.'");
+                Console.WriteLine("Couldn't load database configuration file during execution of user create command.");
                 return;
             }
 
