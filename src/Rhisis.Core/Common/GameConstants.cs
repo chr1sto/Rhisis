@@ -1,7 +1,7 @@
 namespace Rhisis.Core.Common
 {
-    public enum GameConstants : int
+    public class GameConstants
     {
-        PerinValue = 100000000
+            public const int GC_PERIN_VALUE = 100000000;
     }
 }
