@@ -58,17 +58,17 @@ namespace Rhisis.CLI.Commands.User
             if (!response)
                 return;
 
-            response = _consoleHelper.AskConfirmation($"Would you like to change the email? '{user.Email}'");
-            if (response)
+            bool changeEmail = _consoleHelper.AskConfirmation($"Would you like to change the email? '{user.Email}'");
+            if (changeEmail)
             {
                 Console.Write("Type the new email: ");
                 user.Email = Console.ReadLine();
             }
 
-            response = _consoleHelper.AskConfirmation($"Would you like to change the password?");
+            bool changePassword = _consoleHelper.AskConfirmation("Would you like to change the password?");
             string passwordConfirmation = string.Empty;
             string passwordSalt = string.Empty;
-            if (response)
+            if (changePassword)
             {
                 Console.Write("New password: ");
                 user.Password = _consoleHelper.ReadPassword();
@@ -80,8 +80,8 @@ namespace Rhisis.CLI.Commands.User
                 passwordSalt = _consoleHelper.ReadStringOrDefault();
             }
 
-            response = _consoleHelper.AskConfirmation("Would you like to change the account authority?");
-            if (response)
+            bool changeAuthority = _consoleHelper.AskConfirmation("Would you like to change the account authority?");
+            if (changeAuthority)
             {
                 Console.WriteLine("New authority: ");
                 _consoleHelper.DisplayEnum<AuthorityType>();
@@ -95,28 +95,34 @@ namespace Rhisis.CLI.Commands.User
             Console.WriteLine($"Authority: {(AuthorityType)user.Authority}");
             Console.WriteLine("--------------------------------");
 
-            response = _consoleHelper.AskConfirmation("Update user?");
-            if (response)
+            bool updateUser = (changeEmail || changePassword || changeAuthority) && _consoleHelper.AskConfirmation("Update user?");
+            if (updateUser)
             {
-                if (!user.Email.IsValidEmail())
+                if (changeEmail)
                 {
-                    Console.WriteLine($"Email '{user.Email}' is not valid.");
-                    return;
+                    if (!user.Email.IsValidEmail())
+                    {
+                        Console.WriteLine($"Email '{user.Email}' is not valid.");
+                        return;
+                    }
+
+                    if (database.Users.HasAny(x => x.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        Console.WriteLine($"Email '{user.Email}' is already used.");
+                        return;
+                    }
                 }
 
-                if (database.Users.HasAny(x => x.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+                if (changePassword)
                 {
-                    Console.WriteLine($"Email '{user.Email}' is already used.");
-                    return;
-                }
+                    if (!user.Password.Equals(passwordConfirmation))
+                    {
+                        Console.WriteLine("Passwords doesn't match.");
+                        return;
+                    }
 
-                if (!user.Password.Equals(passwordConfirmation))
-                {
-                    Console.WriteLine("Passwords doesn't match.");
-                    return;
+                    user.Password = MD5.GetMD5Hash(passwordSalt, user.Password);
                 }
-
-                user.Password = MD5.GetMD5Hash(passwordSalt, user.Password);
 
                 database.Users.Update(user);
                 database.Complete();
