@@ -34,7 +34,7 @@ namespace Rhisis.CLI.Commands.User
             var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
             if (dbConfig is null)
             {
-                Console.WriteLine("Couldn't load database configuration file during execution of user show command.'");
+                Console.WriteLine("Couldn't load database configuration file during execution of user show command.");
                 return;
             }
 
@@ -55,8 +55,8 @@ namespace Rhisis.CLI.Commands.User
                     Console.WriteLine($"Email: {user.Email}");
                     Console.WriteLine($"Authority: {user.Authority.ToString()}");
                     Console.WriteLine($"Deleted: {user.IsDeleted}");
-                    Console.WriteLine($"Last connection: {user.LastConnectionTime.ToString("yyyy/MM/dd HH:mm:ss")}");
-                    Console.WriteLine($"Play time: {TimeSpan.FromSeconds(user.PlayTime).ToString(@"hh\:mm\:ss")}");
+                    Console.WriteLine($"Last connection: {user.LastConnectionTime:yyyy/MM/dd HH:mm:ss}");
+                    Console.WriteLine($"Play time: {TimeSpan.FromSeconds(user.PlayTime):hh\\:mm\\:ss}");
                     Console.WriteLine($"Number of characters: {user.Characters.Count}");
 
                     if (user.Characters.Any())
