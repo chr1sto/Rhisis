@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Helpers;
 using Rhisis.World.Game.Maps;
@@ -27,11 +29,12 @@ namespace Rhisis.World.Systems.Inventory
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly WorldConfiguration _worldServerConfiguration;
 
         /// <summary>
         /// Creates a new <see cref="InventoryItemUsage"/> instance.
         /// </summary>
-        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem)
+        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IOptions<WorldConfiguration> worldServerConfiguration)
         {
             _logger = logger;
             _inventoryPacketFactory = inventoryPacketFactory;
@@ -41,6 +44,7 @@ namespace Rhisis.World.Systems.Inventory
             _moverPacketFactory = moverPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerDataSystem = playerDataSystem;
+            _worldServerConfiguration = worldServerConfiguration.Value;
         }
 
         public void UseFoodItem(IPlayerEntity player, Item foodItemToUse)
@@ -172,7 +176,7 @@ namespace Rhisis.World.Systems.Inventory
 
         public void UsePerin(IPlayerEntity player, Item perinItem)
         {
-            int perinValue = Convert.ToInt32(GameConstants.GC_PERIN_VALUE);
+            int perinValue = _worldServerConfiguration.Perin.PerinValue;
             if (!_playerDataSystem.IncreaseGold(player, perinValue))
             {
                 _logger.LogTrace($"Failed to generate gold from a perin for player '{player.Object.Name}'.");

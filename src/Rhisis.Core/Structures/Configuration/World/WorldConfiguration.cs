@@ -89,6 +89,12 @@ namespace Rhisis.Core.Structures.Configuration.World
         public MailConfiguration Mails { get; set; } = new MailConfiguration();
 
         /// <summary>
+        /// Gets or sets the mails configuration.
+        /// </summary>
+        [DataMember(Name = "perin")]
+        public PerinConfiguration Perin { get; set; } = new PerinConfiguration();
+
+        /// <summary>
         /// Gets or sets the Style Customization settings.
         /// </summary>
         [DataMember(Name = "customization")]
