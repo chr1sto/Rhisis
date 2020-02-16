@@ -9,6 +9,6 @@
         /// Calculates the damages inflicted by an attacker to a defender.
         /// </summary>
         /// <returns><see cref="AttackResult"/>.</returns>
-        AttackResult OnDamage();
+        AttackResult CalculateDamages();
     }
 }

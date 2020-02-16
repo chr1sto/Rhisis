@@ -13,6 +13,7 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Experience;
+using System;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
@@ -26,6 +27,8 @@ namespace Rhisis.World.Systems.Battle
         private readonly IExperienceSystem _experienceSystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
+        private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
+        private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly WorldConfiguration _worldConfiguration;
 
         /// <summary>
@@ -38,7 +41,9 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="experienceSystem">Experience system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        /// <param name="specialEffectPacketFactory">Special effect factory.</param>
+        /// <param name="skillPacketFactory">Skill packet factory.</param>
+        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, ISkillPacketFactory skillPacketFactory)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
@@ -47,14 +52,15 @@ namespace Rhisis.World.Systems.Battle
             _experienceSystem = experienceSystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
+            _specialEffectPacketFactory = specialEffectPacketFactory;
+            _skillPacketFactory = skillPacketFactory;
         }
 
         /// <inheritdoc />
         public void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed)
         {
-            if (defender.IsDead)
+            if (!CanAttack(attacker, defender))
             {
-                _logger.LogError($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
                 ClearBattleTargets(defender);
                 ClearBattleTargets(attacker);
                 return;
@@ -63,7 +69,7 @@ namespace Rhisis.World.Systems.Battle
             attacker.Battle.Target = defender;
             defender.Battle.Target = attacker;
 
-            AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).OnDamage();
+            AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).CalculateDamages();
 
             _logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
 
@@ -76,6 +82,67 @@ namespace Rhisis.World.Systems.Battle
             defender.Attributes[DefineAttributes.HP] -= meleeAttackResult.Damages;
             _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
 
+            CheckIfDefenderIsDead(attacker, defender, attackType);
+        }
+
+        /// <inheritdoc />
+        public void CastMeleeSkill(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill, int skillCastingTime, SkillUseType skillUseType)
+        {
+            if (!CanAttack(attacker, defender))
+            {
+                ClearBattleTargets(defender);
+                ClearBattleTargets(attacker);
+                return;
+            }
+
+            // TODO: check range attacks (AOE)
+
+            attacker.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
+            {
+                AttackResult meleeSkillAttackResult = new MeleeSkillAttackArbiter(attacker, defender, skill).CalculateDamages();
+
+                _battlePacketFactory.SendAddDamage(defender, attacker, meleeSkillAttackResult.Flags, meleeSkillAttackResult.Damages);
+                _skillPacketFactory.SendUseSkill(attacker, defender, skill, skillCastingTime, skillUseType);
+            });
+        }
+
+        /// <summary>
+        /// Check if the attacker entity can attack a defender entity.
+        /// </summary>
+        /// <param name="attacker">Attacker living entity.</param>
+        /// <param name="defender">Defender living entity.</param>
+        /// <returns></returns>
+        private bool CanAttack(ILivingEntity attacker, ILivingEntity defender)
+        {
+            if (attacker == defender)
+            {
+                _logger.LogError($"{attacker} cannot attack itself.");
+                return false;
+            }
+
+            if (attacker.IsDead)
+            {
+                _logger.LogError($"{attacker} cannot attack because its dead.");
+                return false;
+            }
+
+            if (defender.IsDead)
+            {
+                _logger.LogError($"{attacker} cannot attack {defender} because target is already dead.");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the defender has been killed by the attacker.
+        /// </summary>
+        /// <param name="attacker">Attacker living entity.</param>
+        /// <param name="defender">Defender living entity.</param>
+        /// <param name="attackType">Killing attack type.</param>
+        private void CheckIfDefenderIsDead(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType)
+        {
             if (defender.IsDead)
             {
                 _logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
@@ -149,27 +216,6 @@ namespace Rhisis.World.Systems.Battle
 
                 attacker.Behavior.OnTargetKilled(defender);
             }
-        }
-
-        /// <inheritdoc />
-        public void CastMeleeSkill(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill)
-        {
-            if (attacker == defender)
-            {
-                return;
-            }
-
-            if (defender.IsDead)
-            {
-                _logger.LogError($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
-                ClearBattleTargets(defender);
-                ClearBattleTargets(attacker);
-                return;
-            }
-
-            AttackResult meleeSkillAttackResult = new MeleeSkillAttackArbiter(attacker, defender, skill).OnDamage();
-
-            // TODO: delay action
         }
 
         /// <summary>

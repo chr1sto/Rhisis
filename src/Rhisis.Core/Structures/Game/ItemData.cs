@@ -130,6 +130,12 @@ namespace Rhisis.Core.Structures.Game
         [IgnoreDataMember]
         public WeaponType WeaponType => (WeaponType)Enum.ToObject(typeof(WeaponType), WeaponTypeId);
 
+        [DataMember(Name = "dwAddSkillMin")]
+        public int AttackSkillMin { get; set; }
+
+        [DataMember(Name = "dwAddSkillMax")]
+        public int AttackSkillMax { get; set; }
+
         [IgnoreDataMember]
         public bool IsStackable => PackMax > 1;
 

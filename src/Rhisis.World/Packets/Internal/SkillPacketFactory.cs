@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Packets.Internal
 {
@@ -19,6 +21,21 @@ namespace Rhisis.World.Packets.Internal
             packet.Write((int)player.Statistics.SkillPoints);
 
             SendToPlayer(player, packet);
+        }
+
+        /// <inheritdoc />
+        public void SendUseSkill(ILivingEntity player, IWorldEntity target, SkillInfo skill, int castingTime, SkillUseType skillUseType)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(player.Id, SnapshotType.USESKILL);
+            packet.Write(skill.SkillId);
+            packet.Write(skill.Level);
+            packet.Write(target.Id);
+            packet.Write((int)skillUseType);
+            packet.Write(castingTime);
+
+            SendToVisible(packet, player, sendToPlayer: true);
         }
     }
 }

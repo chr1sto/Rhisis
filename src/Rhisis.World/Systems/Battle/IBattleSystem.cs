@@ -24,6 +24,8 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attacker">Attacker.</param>
         /// <param name="defender">Defender.</param>
         /// <param name="skill">Skill to cast.</param>
-        void CastMeleeSkill(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill);
+        /// <param name="castingTime">Skill casting time.</param>
+        /// <param name="skillUseType">Skill use type.</param>
+        void CastMeleeSkill(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill, int castingTime, SkillUseType skillUseType);
     }
 }

@@ -2,7 +2,7 @@
 {
     public enum SkillType : byte
     {
-        Skill = 1,
-        Magic
+        Magic = 1,
+        Skill,
     }
 }

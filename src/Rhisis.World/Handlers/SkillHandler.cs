@@ -61,7 +61,7 @@ namespace Rhisis.World.Handlers
 
             SkillInfo skill = client.Player.SkillTree.GetSkillByIndex(packet.SkillIndex);
 
-            _skillSystem.UseSkill(client.Player, skill, packet.TargetObjectId);
+            _skillSystem.UseSkill(client.Player, skill, packet.TargetObjectId, packet.UseType);
         }
     }
 }

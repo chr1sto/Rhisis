@@ -212,7 +212,7 @@ namespace Rhisis.World.Systems.Skills
         }
 
         /// <inheritdoc />
-        public void UseSkill(IPlayerEntity player, SkillInfo skill, uint targetObjectId)
+        public void UseSkill(IPlayerEntity player, SkillInfo skill, uint targetObjectId, SkillUseType skillUseType)
         {
             if (skill == null)
             {
@@ -228,11 +228,17 @@ namespace Rhisis.World.Systems.Skills
                     throw new ArgumentNullException(nameof(targetObjectId));
                 }
 
+                int skillCastingTime = GetSkillCastingTime(player, skill);
+
                 // TODO: check if skill is melee (BattleSystem) or buff (BuffSystem)
                 switch (skill.Data.ExecuteTarget)
                 {
                     case SkillExecuteTargetType.MeleeAttack:
-                        _battleSystem.CastMeleeSkill(player, target, skill);
+                        _battleSystem.CastMeleeSkill(player, target, skill, skillCastingTime, skillUseType);
+                        break;
+                    case SkillExecuteTargetType.MagicAttack:
+                    case SkillExecuteTargetType.MagicAttackShot:
+                        // TODO
                         break;
                 }
             }
@@ -342,6 +348,28 @@ namespace Rhisis.World.Systems.Skills
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Gets the skill casting time.
+        /// </summary>
+        /// <param name="caster">Entity casting the skill.</param>
+        /// <param name="skill">Skill to be cast.</param>
+        /// <returns>Skill casting time.</returns>
+        private int GetSkillCastingTime(ILivingEntity caster, SkillInfo skill)
+        {
+            if (skill.Data.Type == SkillType.Skill)
+            {
+                return 1;
+            }
+            else
+            {
+                int castingTime = (int)((skill.LevelData.CastingTime / 1000f) * (60 / 4));
+
+                castingTime -= castingTime * (caster.Attributes[DefineAttributes.SPELL_RATE] / 100);
+                
+                return Math.Max(castingTime, 0);
+            }
         }
     }
 }

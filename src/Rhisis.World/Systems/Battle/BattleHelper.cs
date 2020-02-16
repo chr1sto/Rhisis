@@ -134,5 +134,32 @@ namespace Rhisis.World.Systems.Battle
 
             return multiplier;
         }
+
+        /// <summary>
+        /// Gets the weapon extra damages based weapon type and entity attribute bonuses.
+        /// </summary>
+        /// <param name="entity">Current entity.</param>
+        /// <param name="weapon">Current entity weapon.</param>
+        /// <returns>Weapon extra damages</returns>
+        public static int GetWeaponExtraDamages(ILivingEntity entity, Item weapon)
+        {
+            int extraDamages = weapon.Data.WeaponType switch
+            {
+                WeaponType.MELEE_SWD => entity.Attributes[DefineAttributes.SWD_DMG] + entity.Attributes[DefineAttributes.TWOHANDMASTER_DMG],
+                WeaponType.MELEE_AXE => entity.Attributes[DefineAttributes.AXE_DMG] + entity.Attributes[DefineAttributes.TWOHANDMASTER_DMG],
+                WeaponType.KNUCKLE => entity.Attributes[DefineAttributes.KNUCKLE_DMG] + entity.Attributes[DefineAttributes.KNUCKLEMASTER_DMG],
+                WeaponType.MELEE_YOYO => entity.Attributes[DefineAttributes.YOY_DMG] + entity.Attributes[DefineAttributes.YOYOMASTER_DMG],
+                WeaponType.RANGE_BOW => entity.Attributes[DefineAttributes.BOW_DMG] + entity.Attributes[DefineAttributes.BOWMASTER_DMG],
+                _ => default
+            };
+
+            if (entity is IPlayerEntity player)
+            {
+                // TODO: check if player has dual weapons
+                // TODO: if yes add "ONEHANDMASTER_DMG" to extra damages
+            }
+
+            return extraDamages;
+        }
     }
 }
