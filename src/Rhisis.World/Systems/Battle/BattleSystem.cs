@@ -95,15 +95,35 @@ namespace Rhisis.World.Systems.Battle
                 return;
             }
 
-            // TODO: check range attacks (AOE)
-
-            attacker.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
+            if (skill.Data.SpellRegionType == SpellRegionType.Around)
             {
-                AttackResult meleeSkillAttackResult = new MeleeSkillAttackArbiter(attacker, defender, skill).CalculateDamages();
+                // TODO: check range attacks (AOE)
+            }
+            else
+            {
+                attacker.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
+                {
+                    AttackResult meleeSkillAttackResult = new MeleeSkillAttackArbiter(attacker, defender, skill).CalculateDamages();
 
-                _battlePacketFactory.SendAddDamage(defender, attacker, meleeSkillAttackResult.Flags, meleeSkillAttackResult.Damages);
-                _skillPacketFactory.SendUseSkill(attacker, defender, skill, skillCastingTime, skillUseType);
-            });
+                    if (skill.LevelData.RequiredFP > 0)
+                    {
+                        attacker.Attributes[DefineAttributes.FP] -= skill.LevelData.RequiredFP;
+                    }
+
+                    if (skill.LevelData.RequiredMP > 0)
+                    {
+                        attacker.Attributes[DefineAttributes.MP] -= skill.LevelData.RequiredMP;
+                    }
+
+                    if (skill.LevelData.CooldownTime > 0)
+                    {
+                        skill.SetCoolTime(skill.LevelData.CooldownTime);
+                    }
+
+                    _battlePacketFactory.SendAddDamage(defender, attacker, meleeSkillAttackResult.Flags, meleeSkillAttackResult.Damages);
+                    _skillPacketFactory.SendUseSkill(attacker, defender, skill, skillCastingTime, skillUseType);
+                });
+            }
         }
 
         /// <summary>

@@ -108,6 +108,12 @@ namespace Rhisis.Core.Structures.Game
         public int RequiredSkillLevel2 { get; internal set; }
 
         /// <summary>
+        /// Gets the time for the skill to be ready to use.
+        /// </summary>
+        [DataMember(Name = "dwSkillReady")]
+        public int SkillReadyTime { get; internal set; }
+
+        /// <summary>
         /// Gets the skill special effect.
         /// </summary>
         [DataMember(Name = "dwSfxObj")]

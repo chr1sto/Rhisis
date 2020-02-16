@@ -245,6 +245,7 @@ namespace Rhisis.World.Systems.Skills
             else
             {
                 _logger.LogDebug($"Cannot use {skill.Data.Name}.");
+                _skillPacketFactory.SendSkillCancellation(player);
             }
         }
 
@@ -253,6 +254,12 @@ namespace Rhisis.World.Systems.Skills
         {
             if (skill.Level <= 0 || skill.Level > skill.Data.SkillLevels.Count)
             {
+                return false;
+            }
+
+            if (!skill.IsCoolTimeElapsed())
+            {
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_SKILLWAITTIME);
                 return false;
             }
 

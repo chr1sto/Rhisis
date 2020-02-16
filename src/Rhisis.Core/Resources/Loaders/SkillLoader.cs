@@ -62,6 +62,14 @@ namespace Rhisis.Core.Resources.Loaders
                 {
                     skillData.SkillLevels = skillLevels.ToDictionary(x => x.Level, x => x);
 
+                    foreach (SkillLevelData skillLevel in skillData.SkillLevels.Values)
+                    {
+                        if (skillLevel.CooldownTime <= 0)
+                        {
+                            skillLevel.CooldownTime = skillData.SkillReadyTime;
+                        }
+                    }
+
                     if (!skillsData.TryAdd(skillData.Id, skillData))
                     {
                         _logger.LogWarning($"Cannot add skill '{skillData.Name}'. Reason: Already exist.");

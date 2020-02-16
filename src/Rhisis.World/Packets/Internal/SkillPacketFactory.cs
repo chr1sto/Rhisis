@@ -37,5 +37,14 @@ namespace Rhisis.World.Packets.Internal
 
             SendToVisible(packet, player, sendToPlayer: true);
         }
+
+        public void SendSkillCancellation(IPlayerEntity player)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(player.Id, SnapshotType.CLEAR_USESKILL);
+
+            SendToPlayer(player, packet);
+        }
     }
 }

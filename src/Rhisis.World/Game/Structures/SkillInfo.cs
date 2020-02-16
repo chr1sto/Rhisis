@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Core.IO;
+using Rhisis.Core.Structures.Game;
 using Rhisis.Network.Packets;
 using Sylver.Network.Data;
 using System;
@@ -10,6 +11,8 @@ namespace Rhisis.World.Game.Structures
     [DebuggerDisplay("{Data.Name} Lv. {Level}")]
     public class SkillInfo : IEquatable<SkillInfo>, IPacketSerializer
     {
+        private long _nextSkillUsageTime;
+
         /// <summary>
         /// Gets the skill id.
         /// </summary>
@@ -50,12 +53,24 @@ namespace Rhisis.World.Game.Structures
         /// <param name="databaseId">Database id.</param>
         public SkillInfo(int skillId, int characterId, SkillData skillData, int level = default, int? databaseId = default)
         {
-            this.SkillId = skillId;
-            this.CharacterId = characterId;
-            this.Data = skillData;
-            this.DatabaseId = databaseId;
-            this.Level = level;
+            SkillId = skillId;
+            CharacterId = characterId;
+            Data = skillData;
+            DatabaseId = databaseId;
+            Level = level;
         }
+
+        /// <summary>
+        /// Sets the skill cool time before it can be used again.
+        /// </summary>
+        /// <param name="coolTime">Cool time.</param>
+        public void SetCoolTime(long coolTime) => _nextSkillUsageTime = Time.GetElapsedTime() + coolTime;
+
+        /// <summary>
+        /// Check if the current skill cool time is over.
+        /// </summary>
+        /// <returns>True if the cooltime is over; false otherwise.</returns>
+        public bool IsCoolTimeElapsed() => _nextSkillUsageTime > Time.GetElapsedTime();
 
         /// <summary>
         /// Compares two <see cref="SkillInfo"/> instances.
