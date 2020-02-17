@@ -110,6 +110,5 @@ namespace Rhisis.World
 
         public int GetOnlineConnectedPlayerNumber() 
             => Clients.Count();
-        
     }
 }
