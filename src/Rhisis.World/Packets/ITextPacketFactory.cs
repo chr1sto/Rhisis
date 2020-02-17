@@ -21,6 +21,14 @@ namespace Rhisis.World.Packets
         void SendDefinedText(IPlayerEntity player, DefineText textId, params object[] parameters);
 
         /// <summary>
+        /// Sends a defined text by its id with an int value to the current player.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="textId">Defined text</param>
+        /// <param name="value">value.</param>
+        void SendDefinedTextWithInt(IPlayerEntity player, DefineText textId, int value);
+
+        /// <summary>
         /// Sends a system message to the player.
         /// </summary>
         /// <param name="player">Player.</param>
