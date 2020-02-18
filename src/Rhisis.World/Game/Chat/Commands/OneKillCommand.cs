@@ -2,12 +2,12 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.PlayerData;
-using System;
 using Rhisis.Core.Data;
 
 namespace Rhisis.World.Game.Chat
 {
-    [ChatCommand("/onekill", AuthorityType.Administrator)]
+    [ChatCommand("/onekill", AuthorityType.GameMaster)]
+    [ChatCommand("/ok", AuthorityType.GameMaster)]
     public class OneKillChatCommand : IChatCommand
     {
         private readonly ILogger<OneKillChatCommand> _logger;
