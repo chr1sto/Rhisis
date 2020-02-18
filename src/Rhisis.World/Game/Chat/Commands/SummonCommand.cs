@@ -7,6 +7,7 @@ using System;
 namespace Rhisis.World.Game.Chat
 {
     [ChatCommand("/summon", AuthorityType.GameMaster)]
+    [ChatCommand("/su", AuthorityType.GameMaster)]
     public class SummonCommand : IChatCommand
     {
         private readonly ITeleportSystem _teleportSystem;
