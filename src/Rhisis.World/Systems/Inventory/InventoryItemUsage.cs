@@ -1,12 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Helpers;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.SpecialEffect;
 using Rhisis.World.Systems.Teleport;
 using System;
@@ -24,11 +28,13 @@ namespace Rhisis.World.Systems.Inventory
         private readonly ITeleportSystem _teleportSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
+        private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly WorldConfiguration _worldServerConfiguration;
 
         /// <summary>
         /// Creates a new <see cref="InventoryItemUsage"/> instance.
         /// </summary>
-        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
+        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IOptions<WorldConfiguration> worldServerConfiguration)
         {
             _logger = logger;
             _inventoryPacketFactory = inventoryPacketFactory;
@@ -37,6 +43,8 @@ namespace Rhisis.World.Systems.Inventory
             _teleportSystem = teleportSystem;
             _moverPacketFactory = moverPacketFactory;
             _textPacketFactory = textPacketFactory;
+            _playerDataSystem = playerDataSystem;
+            _worldServerConfiguration = worldServerConfiguration.Value;
         }
 
         public void UseFoodItem(IPlayerEntity player, Item foodItemToUse)
@@ -164,6 +172,20 @@ namespace Rhisis.World.Systems.Inventory
                 DecreaseItem(player, magicItem, noFollowSfx: true);
             });
             _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, magicItem);
+        }
+
+        public void UsePerin(IPlayerEntity player, Item perinItem)
+        {
+            int perinValue = _worldServerConfiguration.Perin.PerinValue;
+            if (!_playerDataSystem.IncreaseGold(player, perinValue))
+            {
+                _logger.LogTrace($"Failed to generate gold from a perin for player '{player.Object.Name}'.");
+            }
+            else
+            {
+                DecreaseItem(player, perinItem);
+                _logger.LogTrace($"Player '{player.Object.Name}' created {perinValue} gold.");
+            }
         }
 
         /// <summary>
