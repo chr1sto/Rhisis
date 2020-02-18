@@ -38,22 +38,36 @@ namespace Rhisis.World.Systems.Battle
             var attackResult = new AttackResult
             {
                 Flags = GetAttackFlags()
-            };
-            
-            if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
-                return attackResult;
+            };  
             
             if (_attacker is IPlayerEntity player)
             {
-                Item rightWeapon = player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot) ?? InventorySystem.Hand;
+                if (player.PlayerData.Mode != ModeType.ONEKILL_MODE)
+                {
+                    if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                    {
+                        return attackResult;
+                    }
+                    Item rightWeapon = player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot) ?? InventorySystem.Hand;
 
-                // TODO: GetDamagePropertyFactor()
-                int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
-                attackResult.AttackMin = rightWeapon.Data.AbilityMin * 2 + weaponAttack;
-                attackResult.AttackMax = rightWeapon.Data.AbilityMax * 2 + weaponAttack;
+                    // TODO: GetDamagePropertyFactor()
+                    int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
+                    attackResult.AttackMin = rightWeapon.Data.AbilityMin * 2 + weaponAttack;
+                    attackResult.AttackMax = rightWeapon.Data.AbilityMax * 2 + weaponAttack;
+                }
+                else 
+                {
+                    attackResult.Damages = _defender.Health.Hp; 
+                    attackResult.Flags = AttackFlags.AF_GENERIC; 
+                    return attackResult;
+                }
             }
             else if (_attacker is IMonsterEntity monster)
             {
+                if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                {
+                    return attackResult;
+                }
                 attackResult.AttackMin = monster.Data.AttackMin;
                 attackResult.AttackMax = monster.Data.AttackMax;
             }
