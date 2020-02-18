@@ -62,21 +62,35 @@ namespace Rhisis.World.Systems.Battle
                 return;
             }
 
+            
+
             attacker.Battle.Target = defender;
             defender.Battle.Target = attacker;
 
             AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).OnDamage();
 
-            _logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
+            
 
             if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
                 BattleHelper.KnockbackEntity(defender);
 
-            _battlePacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
             _battlePacketFactory.SendMeleeAttack(attacker, attackType, defender.Id, unknwonParam: 0, meleeAttackResult.Flags);
+
+            if (defender is IPlayerEntity undyingPlayer) 
+            {
+                if (undyingPlayer.PlayerData.Mode == ModeType.MATCHLESS_MODE) 
+                {
+                    _logger.LogDebug($"{attacker.Object.Name} wasn't able to inflict any damages to {defender.Object.Name} because he is in undying mode");
+                    return;
+                }
+            }
+
+            _battlePacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
 
             defender.Health.Hp -= meleeAttackResult.Damages;
             _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
+
+            _logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
 
             if (defender.Health.IsDead)
             {
