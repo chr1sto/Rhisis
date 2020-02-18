@@ -32,18 +32,6 @@ namespace Rhisis.World.Packets.Internal
 
             SendToPlayer(player, packet);
         }
-        
-        /// <inheritdoc />
-        public void SendDefinedTextWithInt(IPlayerEntity player, DefineText textId, int value)
-        {
-            using var packet = new FFPacket();
-            
-            packet.StartNewMergedPacket(player.Id, SnapshotType.DEFINEDTEXT);
-            packet.Write((int)textId);
-            packet.Write(value);
-
-            SendToPlayer(player, packet);
-        }
 
         /// <inheritdoc />
         public void SendSnoop(IPlayerEntity player, string text)

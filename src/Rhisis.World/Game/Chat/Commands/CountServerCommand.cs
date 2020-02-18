@@ -7,6 +7,7 @@ using Rhisis.World.Packets;
 namespace Rhisis.World.Game.Chat
 {
     [ChatCommand("/count", AuthorityType.GameMaster)]
+    [ChatCommand("/cnt", AuthorityType.GameMaster)]
     public class CountCommand : IChatCommand
     {
         private readonly IWorldServer _worldServer;
