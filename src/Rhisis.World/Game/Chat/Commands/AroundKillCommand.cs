@@ -8,7 +8,8 @@ using Rhisis.World.Systems.Follow;
 
 namespace Rhisis.World.Game.Chat
 {
-    [ChatCommand("/aroundkill", AuthorityType.Administrator)]
+    [ChatCommand("/aroundkill", AuthorityType.GameMaster)]
+    [ChatCommand("/ak", AuthorityType.GameMaster)]
     public class AroundKillChatCommand : IChatCommand
     {
         private readonly ILogger<AroundKillChatCommand> _logger;
