@@ -27,9 +27,9 @@ namespace Rhisis.World.Game.Chat
         /// <inheritdoc />
         public void Execute(IPlayerEntity player, object[] parameters)
         {
-            if (player.PlayerData.Mode == ModeType.MATCHLESS_MODE)
+            if (player.PlayerData.Mode.HasFlag(ModeType.MATCHLESS_MODE))
             {
-                player.PlayerData.Mode = ModeType.NONE;
+                player.PlayerData.Mode &= ~ ModeType.MATCHLESS_MODE;
                 _logger.LogTrace($"Player '{player.Object.Name}' is not anymore in undying mode.");
             }
             else {

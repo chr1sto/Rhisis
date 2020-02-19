@@ -42,7 +42,7 @@ namespace Rhisis.World.Systems.Battle
             
             if (_attacker is IPlayerEntity player)
             {
-                if (player.PlayerData.Mode != ModeType.ONEKILL_MODE)
+                if (!player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
                 {
                     if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
                     {

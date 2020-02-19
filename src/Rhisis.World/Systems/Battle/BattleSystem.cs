@@ -78,7 +78,7 @@ namespace Rhisis.World.Systems.Battle
 
             if (defender is IPlayerEntity undyingPlayer) 
             {
-                if (undyingPlayer.PlayerData.Mode == ModeType.MATCHLESS_MODE) 
+                if (undyingPlayer.PlayerData.Mode.HasFlag(ModeType.MATCHLESS_MODE)) 
                 {
                     _logger.LogDebug($"{attacker.Object.Name} wasn't able to inflict any damages to {defender.Object.Name} because he is in undying mode");
                     return;

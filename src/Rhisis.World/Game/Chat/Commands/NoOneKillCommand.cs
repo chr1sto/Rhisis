@@ -27,9 +27,9 @@ namespace Rhisis.World.Game.Chat
         /// <inheritdoc />
         public void Execute(IPlayerEntity player, object[] parameters)
         {
-            if (player.PlayerData.Mode == ModeType.ONEKILL_MODE)
+            if (player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
             {
-                player.PlayerData.Mode = ModeType.NONE;
+                player.PlayerData.Mode &= ~ ModeType.ONEKILL_MODE;
                 _logger.LogTrace($"Player '{player.Object.Name}' is not anymore in OneKill mode.");
             }
             else {

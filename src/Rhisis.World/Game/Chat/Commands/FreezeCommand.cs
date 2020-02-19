@@ -34,9 +34,9 @@ namespace Rhisis.World.Game.Chat
             if (parameters.Length == 1) 
             {
                 IPlayerEntity playerToFreeze = _worldServer.GetPlayerEntity(parameters[0].ToString());
-                if (playerToFreeze.PlayerData.Mode != ModeType.DONMOVE_MODE)
+                if (!player.PlayerData.Mode.HasFlag(ModeType.DONMOVE_MODE))
                 {
-                    playerToFreeze.PlayerData.Mode = ModeType.DONMOVE_MODE;
+                    playerToFreeze.PlayerData.Mode |= ModeType.DONMOVE_MODE;
                     _logger.LogTrace($"Player '{playerToFreeze.Object.Name}' is now freezed.");
                 }
                 else 
