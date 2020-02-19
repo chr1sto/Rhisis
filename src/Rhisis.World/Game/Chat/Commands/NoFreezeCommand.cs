@@ -13,7 +13,6 @@ namespace Rhisis.World.Game.Chat
     public class NoFreezeChatCommand : IChatCommand
     {
         private readonly ILogger<NoFreezeChatCommand> _logger;
-        private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IWorldServer _worldServer;
         private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
@@ -21,12 +20,11 @@ namespace Rhisis.World.Game.Chat
         /// Creates a new <see cref="NoFreezeChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="playerDataSystem">Player data system.</param>
         /// <param name="worldServer">World server system.</param>
-        public NoFreezeChatCommand(ILogger<NoFreezeChatCommand> logger, IPlayerDataSystem playerDataSystem, IWorldServer worldServer, IPlayerDataPacketFactory playerDataPacketFactory)
+        /// <param name="playerDataPacketFactory">Player data packet factory system.</param>
+        public NoFreezeChatCommand(ILogger<NoFreezeChatCommand> logger, IWorldServer worldServer, IPlayerDataPacketFactory playerDataPacketFactory)
         {
             _logger = logger;
-            _playerDataSystem = playerDataSystem;
             _worldServer = worldServer;
             _playerDataPacketFactory = playerDataPacketFactory;
         }
