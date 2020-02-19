@@ -4,6 +4,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.Core.Data;
 using System;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -14,6 +15,7 @@ namespace Rhisis.World.Game.Chat
         private readonly ILogger<NoFreezeChatCommand> _logger;
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IWorldServer _worldServer;
+        private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="NoFreezeChatCommand"/> instance.
@@ -21,11 +23,12 @@ namespace Rhisis.World.Game.Chat
         /// <param name="logger">Logger.</param>
         /// <param name="playerDataSystem">Player data system.</param>
         /// <param name="worldServer">World server system.</param>
-        public NoFreezeChatCommand(ILogger<NoFreezeChatCommand> logger, IPlayerDataSystem playerDataSystem, IWorldServer worldServer)
+        public NoFreezeChatCommand(ILogger<NoFreezeChatCommand> logger, IPlayerDataSystem playerDataSystem, IWorldServer worldServer, IPlayerDataPacketFactory playerDataPacketFactory)
         {
             _logger = logger;
             _playerDataSystem = playerDataSystem;
             _worldServer = worldServer;
+            _playerDataPacketFactory = playerDataPacketFactory;
         }
 
         /// <inheritdoc />
@@ -34,9 +37,10 @@ namespace Rhisis.World.Game.Chat
             if (parameters.Length == 1) 
             {
                 IPlayerEntity playerToUnfreeze = _worldServer.GetPlayerEntity(parameters[0].ToString());
-                if (!playerToUnfreeze.PlayerData.Mode.HasFlag(ModeType.DONMOVE_MODE))
+                if (playerToUnfreeze.PlayerData.Mode.HasFlag(ModeType.DONMOVE_MODE))
                 {
                     playerToUnfreeze.PlayerData.Mode &= ~ ModeType.DONMOVE_MODE;
+                    _playerDataPacketFactory.SendModifyMode(playerToUnfreeze);
                     _logger.LogTrace($"Player '{playerToUnfreeze.Object.Name}' is not freezed anymore.");
                 }
                 else 

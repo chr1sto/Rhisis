@@ -4,6 +4,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.Core.Data;
 using System;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -14,6 +15,7 @@ namespace Rhisis.World.Game.Chat
         private readonly ILogger<FreezeChatCommand> _logger;
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IWorldServer _worldServer;
+        private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="FreezeChatCommand"/> instance.
@@ -21,11 +23,12 @@ namespace Rhisis.World.Game.Chat
         /// <param name="logger">Logger.</param>
         /// <param name="playerDataSystem">Player data system.</param>
         /// <param name="worldServer">World server system.</param>
-        public FreezeChatCommand(ILogger<FreezeChatCommand> logger, IPlayerDataSystem playerDataSystem, IWorldServer worldServer)
+        public FreezeChatCommand(ILogger<FreezeChatCommand> logger, IPlayerDataSystem playerDataSystem, IWorldServer worldServer, IPlayerDataPacketFactory playerDataPacketFactory)
         {
             _logger = logger;
             _playerDataSystem = playerDataSystem;
             _worldServer = worldServer;
+            _playerDataPacketFactory = playerDataPacketFactory;
         }
 
         /// <inheritdoc />
@@ -37,6 +40,7 @@ namespace Rhisis.World.Game.Chat
                 if (!player.PlayerData.Mode.HasFlag(ModeType.DONMOVE_MODE))
                 {
                     playerToFreeze.PlayerData.Mode |= ModeType.DONMOVE_MODE;
+                    _playerDataPacketFactory.SendModifyMode(playerToFreeze);
                     _logger.LogTrace($"Player '{playerToFreeze.Object.Name}' is now freezed.");
                 }
                 else 
