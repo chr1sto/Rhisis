@@ -3,7 +3,6 @@ using Rhisis.Core.Data;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Factories;
-using Rhisis.World.Systems.PlayerData;
 using Sylver.Network.Common;
 
 namespace Rhisis.World.Game.Entities

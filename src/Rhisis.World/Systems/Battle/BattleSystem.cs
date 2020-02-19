@@ -27,8 +27,6 @@ namespace Rhisis.World.Systems.Battle
         private readonly IExperienceSystem _experienceSystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
-        private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
-        private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly WorldConfiguration _worldConfiguration;
 
         /// <summary>
@@ -41,9 +39,7 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="experienceSystem">Experience system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        /// <param name="specialEffectPacketFactory">Special effect factory.</param>
-        /// <param name="skillPacketFactory">Skill packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, ISkillPacketFactory skillPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
@@ -52,77 +48,54 @@ namespace Rhisis.World.Systems.Battle
             _experienceSystem = experienceSystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
-            _specialEffectPacketFactory = specialEffectPacketFactory;
-            _skillPacketFactory = skillPacketFactory;
+        }
+
+        /// <inheritdoc />
+        public AttackResult DamageTarget(ILivingEntity attacker, ILivingEntity defender, IAttackArbiter attackArbiter, ObjectMessageType attackType)
+        {
+            if (!CanAttack(attacker, defender))
+            {
+                ClearBattleTargets(defender);
+                ClearBattleTargets(attacker);
+                return null;
+            }
+
+            AttackResult attackResult = attackArbiter.CalculateDamages();
+
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS) || attackResult.Damages <= 0)
+            {
+                return attackResult;
+            }
+
+            // TODO: make monster follow player
+
+            attacker.Battle.Target = defender;
+            defender.Battle.Target = attacker;
+
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
+            {
+                BattleHelper.KnockbackEntity(defender);
+            }
+
+            _battlePacketFactory.SendAddDamage(defender, attacker, attackResult.Flags, attackResult.Damages);
+
+            defender.Attributes[DefineAttributes.HP] -= attackResult.Damages;
+            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
+
+            CheckIfDefenderIsDead(attacker, defender, attackType);
+
+            return attackResult;
         }
 
         /// <inheritdoc />
         public void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed)
         {
-            if (!CanAttack(attacker, defender))
+            IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender);
+            AttackResult meleeAttackResult = DamageTarget(attacker, defender, attackArbiter, attackType);
+
+            if (meleeAttackResult != null)
             {
-                ClearBattleTargets(defender);
-                ClearBattleTargets(attacker);
-                return;
-            }
-
-            attacker.Battle.Target = defender;
-            defender.Battle.Target = attacker;
-
-            AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).CalculateDamages();
-
-            _logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
-
-            if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
-                BattleHelper.KnockbackEntity(defender);
-
-            _battlePacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
-            _battlePacketFactory.SendMeleeAttack(attacker, attackType, defender.Id, unknwonParam: 0, meleeAttackResult.Flags);
-
-            defender.Attributes[DefineAttributes.HP] -= meleeAttackResult.Damages;
-            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
-
-            CheckIfDefenderIsDead(attacker, defender, attackType);
-        }
-
-        /// <inheritdoc />
-        public void CastMeleeSkill(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill, int skillCastingTime, SkillUseType skillUseType)
-        {
-            if (!CanAttack(attacker, defender))
-            {
-                ClearBattleTargets(defender);
-                ClearBattleTargets(attacker);
-                return;
-            }
-
-            if (skill.Data.SpellRegionType == SpellRegionType.Around)
-            {
-                // TODO: check range attacks (AOE)
-            }
-            else
-            {
-                attacker.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
-                {
-                    AttackResult meleeSkillAttackResult = new MeleeSkillAttackArbiter(attacker, defender, skill).CalculateDamages();
-
-                    if (skill.LevelData.RequiredFP > 0)
-                    {
-                        attacker.Attributes[DefineAttributes.FP] -= skill.LevelData.RequiredFP;
-                    }
-
-                    if (skill.LevelData.RequiredMP > 0)
-                    {
-                        attacker.Attributes[DefineAttributes.MP] -= skill.LevelData.RequiredMP;
-                    }
-
-                    if (skill.LevelData.CooldownTime > 0)
-                    {
-                        skill.SetCoolTime(skill.LevelData.CooldownTime);
-                    }
-
-                    _battlePacketFactory.SendAddDamage(defender, attacker, meleeSkillAttackResult.Flags, meleeSkillAttackResult.Damages);
-                    _skillPacketFactory.SendUseSkill(attacker, defender, skill, skillCastingTime, skillUseType);
-                });
+                _battlePacketFactory.SendMeleeAttack(attacker, attackType, defender.Id, unknwonParam: 0, meleeAttackResult.Flags);
             }
         }
 
@@ -167,9 +140,9 @@ namespace Rhisis.World.Systems.Battle
             {
                 _logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
                 defender.Attributes[DefineAttributes.HP] = 0;
+                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
                 ClearBattleTargets(defender);
                 ClearBattleTargets(attacker);
-                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
 
                 if (defender is IMonsterEntity deadMonster && attacker is IPlayerEntity player)
                 {

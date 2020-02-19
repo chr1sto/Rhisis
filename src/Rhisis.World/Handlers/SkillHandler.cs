@@ -4,6 +4,7 @@ using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Game.Structures;
+using Rhisis.World.Packets;
 using Rhisis.World.Systems.Skills;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
@@ -15,11 +16,13 @@ namespace Rhisis.World.Handlers
     {
         private readonly ILogger<SkillHandler> _logger;
         private readonly ISkillSystem _skillSystem;
+        private readonly ISkillPacketFactory _skillPacketFactory;
 
-        public SkillHandler(ILogger<SkillHandler> logger, ISkillSystem skillSystem)
+        public SkillHandler(ILogger<SkillHandler> logger, ISkillSystem skillSystem, ISkillPacketFactory skillPacketFactory)
         {
-            this._logger = logger;
-            this._skillSystem = skillSystem;
+            _logger = logger;
+            _skillSystem = skillSystem;
+            _skillPacketFactory = skillPacketFactory;
         }
 
         /// <summary>
@@ -50,12 +53,14 @@ namespace Rhisis.World.Handlers
             if (packet.SkillIndex < 0 || packet.SkillIndex > (int)DefineJob.JobMax.MAX_SKILLS)
             {
                 _logger.LogWarning($"Player {client.Player} tried to use an unknown skill: '{packet.SkillIndex}'.");
+                _skillPacketFactory.SendSkillCancellation(client.Player);
                 return;
             }
 
             if (packet.TargetObjectId < 0)
             {
                 _logger.LogWarning($"Player {client.Player} tried to use a skill on an unknown target.");
+                _skillPacketFactory.SendSkillCancellation(client.Player);
                 return;
             }
 

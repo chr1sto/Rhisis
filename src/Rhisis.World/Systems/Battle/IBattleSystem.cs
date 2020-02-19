@@ -1,6 +1,5 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -10,6 +9,16 @@ namespace Rhisis.World.Systems.Battle
     public interface IBattleSystem
     {
         /// <summary>
+        /// Inflicts damages to a defender target based on the given attack arbiter.
+        /// </summary>
+        /// <param name="attacker">Attacker entity.</param>
+        /// <param name="defender">Defender target entity.</param>
+        /// <param name="attackArbiter">Attack arbiter to inflict damages to the target.</param>
+        /// <param name="attackType">Attack type.</param>
+        /// <returns>The attack result.</returns>
+        AttackResult DamageTarget(ILivingEntity attacker, ILivingEntity defender, IAttackArbiter attackArbiter, ObjectMessageType attackType);
+
+        /// <summary>
         /// Process a melee attack on an ennemy.
         /// </summary>
         /// <param name="attacker">Attacker.</param>
@@ -17,15 +26,5 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attackType">Attack type.</param>
         /// <param name="attackSpeed">Attack speed.</param>
         void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed);
-
-        /// <summary>
-        /// Casts a melee skill on an ennemy.
-        /// </summary>
-        /// <param name="attacker">Attacker.</param>
-        /// <param name="defender">Defender.</param>
-        /// <param name="skill">Skill to cast.</param>
-        /// <param name="castingTime">Skill casting time.</param>
-        /// <param name="skillUseType">Skill use type.</param>
-        void CastMeleeSkill(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill, int castingTime, SkillUseType skillUseType);
     }
 }

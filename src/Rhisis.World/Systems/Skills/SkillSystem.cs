@@ -40,11 +40,12 @@ namespace Rhisis.World.Systems.Skills
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
+        private readonly IMoverPacketFactory _moverPacketFactory;
 
         /// <inheritdoc />
         public int Order => 1;
 
-        public SkillSystem(ILogger<SkillSystem> logger, IDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory)
+        public SkillSystem(ILogger<SkillSystem> logger, IDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             this._logger = logger;
             this._database = database;
@@ -54,6 +55,7 @@ namespace Rhisis.World.Systems.Skills
             this._skillPacketFactory = skillPacketFactory;
             this._textPacketFactory = textPacketFactory;
             this._specialEffectPacketFactory = specialEffectPacketFactory;
+            this._moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
@@ -216,6 +218,7 @@ namespace Rhisis.World.Systems.Skills
         {
             if (skill == null)
             {
+                _skillPacketFactory.SendSkillCancellation(player);
                 return;
             }
 
@@ -225,16 +228,15 @@ namespace Rhisis.World.Systems.Skills
 
                 if (target == null)
                 {
+                    _skillPacketFactory.SendSkillCancellation(player);
                     throw new ArgumentNullException(nameof(targetObjectId));
                 }
-
-                int skillCastingTime = GetSkillCastingTime(player, skill);
 
                 // TODO: check if skill is melee (BattleSystem) or buff (BuffSystem)
                 switch (skill.Data.ExecuteTarget)
                 {
                     case SkillExecuteTargetType.MeleeAttack:
-                        _battleSystem.CastMeleeSkill(player, target, skill, skillCastingTime, skillUseType);
+                        CastMeleeSkill(player, target, skill, skillUseType);
                         break;
                     case SkillExecuteTargetType.MagicAttack:
                     case SkillExecuteTargetType.MagicAttackShot:
@@ -376,6 +378,60 @@ namespace Rhisis.World.Systems.Skills
                 castingTime -= castingTime * (caster.Attributes[DefineAttributes.SPELL_RATE] / 100);
                 
                 return Math.Max(castingTime, 0);
+            }
+        }
+
+        /// <summary>
+        /// Casts a melee skill on a target.
+        /// </summary>
+        /// <param name="caster">Living entity casting a skill.</param>
+        /// <param name="target">Living target entity touched by the skill.</param>
+        /// <param name="skill">Skill to be casted.</param>
+        /// <param name="skillUseType">Skill use type.</param>
+        private void CastMeleeSkill(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
+        {
+            int skillCastingTime = GetSkillCastingTime(caster, skill);
+
+            if (skill.Data.SpellRegionType == SpellRegionType.Around)
+            {
+                // TODO: AoE
+            }
+            else
+            {
+                caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
+                {
+                    IAttackArbiter attackArbiter = new MeleeSkillAttackArbiter(caster, target, skill);
+
+                    _battleSystem.DamageTarget(caster, target, attackArbiter, ObjectMessageType.OBJMSG_MELEESKILL);
+                    _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+
+                    if (skill.LevelData.CooldownTime > 0)
+                    {
+                        skill.SetCoolTime(skill.LevelData.CooldownTime);
+                    }
+
+                    ReduceCasterPoints(caster, skill);
+                });
+            }
+        }
+
+        /// <summary>
+        /// Reduces caster fatigue points or mana points.
+        /// </summary>
+        /// <param name="caster">Living entity casting the skill.</param>
+        /// <param name="skill">Casted skill by the living entity.</param>
+        private void ReduceCasterPoints(ILivingEntity caster, SkillInfo skill)
+        {
+            if (skill.LevelData.RequiredFP > 0)
+            {
+                caster.Attributes[DefineAttributes.FP] -= skill.LevelData.RequiredFP;
+                _moverPacketFactory.SendUpdateAttributes(caster, DefineAttributes.FP, caster.Attributes[DefineAttributes.FP]);
+            }
+
+            if (skill.LevelData.RequiredMP > 0)
+            {
+                caster.Attributes[DefineAttributes.MP] -= skill.LevelData.RequiredMP;
+                _moverPacketFactory.SendUpdateAttributes(caster, DefineAttributes.MP, caster.Attributes[DefineAttributes.MP]);
             }
         }
     }
