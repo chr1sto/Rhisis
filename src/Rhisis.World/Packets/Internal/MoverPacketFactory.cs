@@ -21,23 +21,11 @@ namespace Rhisis.World.Packets.Internal
             {
                 if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
                 {
-                    packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERBEHAVIOR);
-                    packet.Write(playerEntity.Object.Position.X);
-                    packet.Write(playerEntity.Object.Position.Y);
-                    packet.Write(playerEntity.Object.Position.Z);
-                    packet.Write(playerEntity.Object.Position.X);
-                    packet.Write(playerEntity.Object.Position.Y);
-                    packet.Write(playerEntity.Object.Position.Z);
-                    packet.Write(angle);
-                    packet.Write(state);
-                    packet.Write(stateFlag);
-                    packet.Write(motion);
-                    packet.Write(motionEx);
-                    packet.Write(loop);
-                    packet.Write(motionOption);
-                    packet.Write(tickCount);
-                    SendToVisible(packet, entity, sendToPlayer: false);
-                    return;
+                    if (playerEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_SJUMP2) || playerEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_SJUMP3) )
+                    {
+                        uint standposition = 1;
+                        packet.Write(standposition);
+                    }
                 }
             }
 
@@ -70,22 +58,6 @@ namespace Rhisis.World.Packets.Internal
             {
                 if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
                 {
-                    packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERBEHAVIOR);
-                    packet.Write(playerEntity.Object.Position.X);
-                    packet.Write(playerEntity.Object.Position.Y);
-                    packet.Write(playerEntity.Object.Position.Z);
-                    packet.Write(playerEntity.Object.Position.X);
-                    packet.Write(playerEntity.Object.Position.Y);
-                    packet.Write(playerEntity.Object.Position.Z);
-                    packet.Write(angle);
-                    packet.Write(state);
-                    packet.Write(stateFlag);
-                    packet.Write(motion);
-                    packet.Write(motionEx);
-                    packet.Write(loop);
-                    packet.Write(motionOption);
-                    packet.Write(tickCount);
-                    SendToVisible(packet, entity, sendToPlayer: false);
                     return;
                 }
             }
