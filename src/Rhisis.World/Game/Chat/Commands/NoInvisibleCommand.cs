@@ -34,7 +34,8 @@ namespace Rhisis.World.Game.Chat
             {
                 player.PlayerData.Mode &= ~ ModeType.TRANSPARENT_MODE;
                 _playerDataPacketFactory.SendModifyMode(player);
-                _moverPacketFactory.SendMoverPositionAngle(player);
+                _moverPacketFactory.SendMoverPositionAngle(player, sendOwnPlayer : false);
+                _moverPacketFactory.SendDestinationPosition(player);
                 _logger.LogTrace($"Player '{player.Object.Name}' is not anymore invisible.");
             }
             else {

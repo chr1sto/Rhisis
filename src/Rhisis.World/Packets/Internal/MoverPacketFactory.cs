@@ -17,6 +17,30 @@ namespace Rhisis.World.Packets.Internal
         {
             using var packet = new FFPacket();
             
+            if (entity is IPlayerEntity playerEntity)
+            {
+                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
+                {
+                    packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERBEHAVIOR);
+                    packet.Write(playerEntity.Object.Position.X);
+                    packet.Write(playerEntity.Object.Position.Y);
+                    packet.Write(playerEntity.Object.Position.Z);
+                    packet.Write(playerEntity.Object.Position.X);
+                    packet.Write(playerEntity.Object.Position.Y);
+                    packet.Write(playerEntity.Object.Position.Z);
+                    packet.Write(angle);
+                    packet.Write(state);
+                    packet.Write(stateFlag);
+                    packet.Write(motion);
+                    packet.Write(motionEx);
+                    packet.Write(loop);
+                    packet.Write(motionOption);
+                    packet.Write(tickCount);
+                    SendToVisible(packet, entity, sendToPlayer: false);
+                    return;
+                }
+            }
+
             packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERMOVED);
             packet.Write(beginPosition.X);
             packet.Write(beginPosition.Y);
@@ -39,7 +63,32 @@ namespace Rhisis.World.Packets.Internal
         /// <inheritdoc />
         public void SendMoverBehavior(IWorldEntity entity, Vector3 beginPosition, Vector3 destinationPosition, float angle, uint state, uint stateFlag, uint motion, int motionEx, int loop, uint motionOption, long tickCount)
         {
+            
             using var packet = new FFPacket();
+
+            if (entity is IPlayerEntity playerEntity)
+            {
+                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
+                {
+                    packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERBEHAVIOR);
+                    packet.Write(playerEntity.Object.Position.X);
+                    packet.Write(playerEntity.Object.Position.Y);
+                    packet.Write(playerEntity.Object.Position.Z);
+                    packet.Write(playerEntity.Object.Position.X);
+                    packet.Write(playerEntity.Object.Position.Y);
+                    packet.Write(playerEntity.Object.Position.Z);
+                    packet.Write(angle);
+                    packet.Write(state);
+                    packet.Write(stateFlag);
+                    packet.Write(motion);
+                    packet.Write(motionEx);
+                    packet.Write(loop);
+                    packet.Write(motionOption);
+                    packet.Write(tickCount);
+                    SendToVisible(packet, entity, sendToPlayer: false);
+                    return;
+                }
+            }
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERBEHAVIOR);
             packet.Write(beginPosition.X);
@@ -63,6 +112,14 @@ namespace Rhisis.World.Packets.Internal
         /// <inheritdoc />
         public void SendDestinationAngle(IWorldEntity entity, bool left)
         {
+            if (entity is IPlayerEntity playerEntity)
+            {
+                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
+                {
+                    return;
+                }
+            }
+
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.DESTANGLE);
@@ -108,7 +165,7 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
-        public void SendMoverPositionAngle(IWorldEntity entity)
+        public void SendMoverPositionAngle(IWorldEntity entity, bool sendOwnPlayer = true)
         {
             using var packet = new FFPacket();
             
@@ -118,7 +175,7 @@ namespace Rhisis.World.Packets.Internal
             packet.Write(entity.Object.Position.Z);
             packet.Write(entity.Object.Angle);
 
-            SendToVisible(packet, entity, sendToPlayer: true);
+            SendToVisible(packet, entity, sendToPlayer: sendOwnPlayer);
         }
 
         /// <inheritdoc />
@@ -139,6 +196,14 @@ namespace Rhisis.World.Packets.Internal
         /// <inheritdoc />
         public void SendFollowTarget(IWorldEntity entity, IWorldEntity targetEntity, float distance)
         {
+            if (entity is IPlayerEntity playerEntity)
+            {
+                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
+                {
+                    return;
+                }
+            }
+
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERSETDESTOBJ);

@@ -62,7 +62,8 @@ namespace Rhisis.World.Packets
         /// Sends the moving entity position and angle.
         /// </summary>
         /// <param name="entity">Entity.</param>
-        void SendMoverPositionAngle(IWorldEntity entity);
+        /// <param name="sendOwnPlayer">Send to Own Player.</param>
+        void SendMoverPositionAngle(IWorldEntity entity, bool sendOwnPlayer = true);
 
         /// <summary>
         /// Sends the entity angle.
