@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Systems.PlayerData;
 using Rhisis.Core.Data;
 using Rhisis.World.Packets;
 
@@ -20,6 +19,7 @@ namespace Rhisis.World.Game.Chat
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="playerDataPacketFactory">Player data packet factory system.</param>
+        /// <param name="moverPacketFactory">Mover packet factory system.</param>
         public NoInvisibleChatCommand(ILogger<NoInvisibleChatCommand> logger, IPlayerDataPacketFactory playerDataPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;

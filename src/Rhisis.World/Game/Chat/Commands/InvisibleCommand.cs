@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Systems.PlayerData;
 using Rhisis.Core.Data;
 using Rhisis.World.Packets;
 

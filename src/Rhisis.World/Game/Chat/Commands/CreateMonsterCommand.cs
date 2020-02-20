@@ -16,19 +16,16 @@ namespace Rhisis.World.Game.Chat
     {
         private readonly ILogger<CreateMonsterChatCommand> _logger;
         private readonly IMonsterFactory _monsterFactory;
-        private readonly IMapManager _mapManager;
 
         /// <summary>
         /// Creates a new <see cref="CreateMonsterChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="monsterFactory">Monster factory.</param>
-        /// <param name="mapManager">Map Manager.</param>
 
         public CreateMonsterChatCommand(ILogger<CreateMonsterChatCommand> logger, IMapManager mapManager, IMonsterFactory monsterFactory)
         {
             _logger = logger;
-            _mapManager = mapManager;
             _monsterFactory = monsterFactory;
         }
 

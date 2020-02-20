@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Systems.PlayerData;
 using Rhisis.Core.Data;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -11,17 +11,17 @@ namespace Rhisis.World.Game.Chat
     public class UndyingChatCommand : IChatCommand
     {
         private readonly ILogger<UndyingChatCommand> _logger;
-        private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="UndyingChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="playerDataSystem">Player data system.</param>
-        public UndyingChatCommand(ILogger<UndyingChatCommand> logger, IPlayerDataSystem playerDataSystem)
+        /// <param name="playerDataPacketFactory">Player data packet factory system.</param>
+        public UndyingChatCommand(ILogger<UndyingChatCommand> logger, IPlayerDataPacketFactory playerDataPacketFactory)
         {
             _logger = logger;
-            _playerDataSystem = playerDataSystem;
+            _playerDataPacketFactory = playerDataPacketFactory;
         }
 
         /// <inheritdoc />
@@ -30,6 +30,7 @@ namespace Rhisis.World.Game.Chat
             if (!player.PlayerData.Mode.HasFlag(ModeType.MATCHLESS_MODE))
             {
                 player.PlayerData.Mode |= ModeType.MATCHLESS_MODE;
+                _playerDataPacketFactory.SendModifyMode(player);
                 _logger.LogTrace($"Player '{player.Object.Name}' is now in undying mode.");
             }
             else {
