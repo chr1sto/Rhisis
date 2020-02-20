@@ -59,6 +59,12 @@ namespace Rhisis.World.Packets
         void SendMoverPosition(IWorldEntity entity);
 
         /// <summary>
+        /// Sends the moving entity position and angle.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        void SendMoverPositionAngle(IWorldEntity entity);
+
+        /// <summary>
         /// Sends the entity angle.
         /// </summary>
         /// <param name="entity"></param>
