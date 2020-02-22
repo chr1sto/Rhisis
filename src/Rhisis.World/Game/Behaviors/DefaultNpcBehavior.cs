@@ -49,12 +49,12 @@ namespace Rhisis.World.Game.Behaviors
         /// </summary>
         private void UpdateOralText()
         {
-            if (_npc.Data == null)
+            if (_npc.NpcData == null)
                 return;
 
             if (_npc.Timers.LastSpeakTime <= Time.TimeInSeconds())
             {
-                if (_npc.Data.HasDialog && !string.IsNullOrEmpty(_npc.Data.Dialog.OralText))
+                if (_npc.NpcData.HasDialog && !string.IsNullOrEmpty(_npc.NpcData.Dialog.OralText))
                 {
                     IEnumerable<IPlayerEntity> playersArount = from x in _npc.Object.Entities
                                                                where x.Object.Position.IsInCircle(_npc.Object.Position, OralTextRadius) &&
@@ -63,7 +63,7 @@ namespace Rhisis.World.Game.Behaviors
 
                     foreach (IPlayerEntity player in playersArount)
                     {
-                        string text = _npc.Data.Dialog.OralText.Replace(DialogVariables.PlayerNameText, player.Object.Name);
+                        string text = _npc.NpcData.Dialog.OralText.Replace(DialogVariables.PlayerNameText, player.Object.Name);
 
                         _chatPacketFactory.SendChatTo(_npc, player, text);
                     }

@@ -161,6 +161,36 @@ namespace Rhisis.Core.Structures.Game
         public ElementType Element { get; set; }
 
         /// <summary>
+        /// Gets or sets the mover's resitance to electricity.
+        /// </summary>
+        [DataMember(Name = "fResistElecricity")]
+        public float ElectricityResistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resistance to fire.
+        /// </summary>
+        [DataMember(Name = "fResistFire")]
+        public float FireResitance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resitance to wind.
+        /// </summary>
+        [DataMember(Name = "fResistWind")]
+        public float WindResistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resitance to water.
+        /// </summary>
+        [DataMember(Name = "fResistWater")]
+        public float WaterResistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resistance to earth.
+        /// </summary>
+        [DataMember(Name = "fResistEarth")]
+        public float EarthResistance { get; set; }
+
+        /// <summary>
         /// Gets or sets the minimal amount of gold dropped when the mover dies.
         /// </summary>
         [IgnoreDataMember]

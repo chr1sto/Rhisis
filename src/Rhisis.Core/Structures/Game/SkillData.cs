@@ -70,8 +70,11 @@ namespace Rhisis.Core.Structures.Game
         /// Gets the skill element (Fire, Water, Wind, etc...)
         /// </summary>
         [DataMember(Name = "eItemType")]
-        public ElementType Element { get; internal set; }
-
+        public ElementType? Element { get; internal set; }
+        
+        /// <summary>
+        /// Gets the skill continuous pain time.
+        /// </summary>
         [DataMember(Name = "tmContinuousPain")]
         public int ContinuousPainTime { get; internal set; }
 
@@ -160,6 +163,12 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         [DataMember(Name = "dwSpellRegion")]
         public SpellRegionType SpellRegionType { get; internal set; }
+
+        /// <summary>
+        /// Gets the skill spell type.
+        /// </summary>
+        [DataMember(Name = "dwSpellType")]
+        public SpellType SpellType { get; internal set; }
 
         /// <summary>
         /// Gets the skill execution target.

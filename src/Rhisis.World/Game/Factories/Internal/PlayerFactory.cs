@@ -6,6 +6,7 @@ using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Behaviors;
@@ -50,6 +51,13 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <inheritdoc />
         public IPlayerEntity CreatePlayer(DbCharacter character)
         {
+            int playerModelId = character.Gender == 0 ? 11 : 12; // TODO: remove these magic numbers
+
+            if (!_gameResources.Movers.TryGetValue(playerModelId, out MoverData moverData))
+            {
+                throw new ArgumentException($"Cannot find mover with id '{playerModelId}' in game resources.", nameof(playerModelId));
+            }
+
             var player = _playerFactory(_serviceProvider, null) as IPlayerEntity;
 
             IMapInstance map = _mapManager.GetMap(character.MapId);
@@ -63,7 +71,7 @@ namespace Rhisis.World.Game.Factories.Internal
 
             player.Object = new ObjectComponent
             {
-                ModelId = character.Gender == 0 ? 11 : 12, // TODO: remove these magic numbers
+                ModelId = playerModelId,
                 Type = WorldObjectType.Mover,
                 MapId = character.MapId,
                 CurrentMap = map,
@@ -84,7 +92,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 HairColor = character.HairColor,
                 FaceId = character.FaceId,
             };
-
             player.PlayerData = new PlayerDataComponent
             {
                 Id = character.Id,
@@ -95,7 +102,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 Experience = character.Experience,
                 JobData = _gameResources.Jobs[character.ClassId]
             };
-
             player.Moves = new MovableComponent
             {
                 Speed = _gameResources.Movers[player.Object.ModelId].Speed,
@@ -103,6 +109,8 @@ namespace Rhisis.World.Game.Factories.Internal
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
+
+            player.Data = moverData;
 
             player.Attributes[DefineAttributes.HP] = character.Hp;
             player.Attributes[DefineAttributes.MP] = character.Mp;

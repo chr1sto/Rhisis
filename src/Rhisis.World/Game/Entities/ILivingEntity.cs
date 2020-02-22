@@ -1,4 +1,5 @@
-﻿using Rhisis.World.Game.Behaviors;
+﻿using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 
 namespace Rhisis.World.Game.Entities
@@ -9,6 +10,11 @@ namespace Rhisis.World.Game.Entities
         /// Gets a value that indicates if the living entity is dead.
         /// </summary>
         bool IsDead { get; }
+
+        /// <summary>
+        /// Gets or sets the living entity mover data.
+        /// </summary>
+        MoverData Data { get; set; }
 
         /// <summary>
         /// Gets or sets the interaction component.

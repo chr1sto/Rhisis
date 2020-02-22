@@ -20,7 +20,10 @@ namespace Rhisis.World.Game.Entities
         public ItemContainerComponent[] Shop { get; set; }
 
         /// <inheritdoc />
-        public NpcData Data { get; set; }
+        public MoverData Data { get; set; }
+
+        /// <inheritdoc />
+        public NpcData NpcData { get; set; }
 
         /// <inheritdoc />
         public IEnumerable<IQuestScript> Quests { get; set; }

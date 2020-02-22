@@ -78,7 +78,7 @@ namespace Rhisis.World.Systems.NpcShop
                 return;
             }
 
-            if (!npc.Data.HasShop)
+            if (!npc.NpcData.HasShop)
             {
                 _logger.LogError($"ShopSystem: NPC {npc.Object.Name} doesn't have a shop.");
                 return;

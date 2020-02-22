@@ -241,7 +241,7 @@ namespace Rhisis.World.Systems.Skills
                         CastMagicSkill(player, target, skill, skillUseType);
                         break;
                     case SkillExecuteTargetType.MagicAttackShot:
-                        // TODO
+                        CastMagicAttackShot(player, target, skill, skillUseType);
                         break;
                 }
             }
@@ -431,7 +431,7 @@ namespace Rhisis.World.Systems.Skills
 
                 caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
                 {
-                    IAttackArbiter attackArbiter = new MeleeSkillAttackArbiter(caster, target, skill);
+                    IAttackArbiter attackArbiter = new MagicSkillAttackArbiter(caster, target, skill);
 
                     _battleSystem.DamageTarget(caster, target, attackArbiter, ObjectMessageType.OBJMSG_MAGICSKILL);
 
@@ -443,6 +443,12 @@ namespace Rhisis.World.Systems.Skills
                     ReduceCasterPoints(caster, skill);
                 });
             }
+        }
+
+        private void CastMagicAttackShot(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
+        {
+            // TODO
+            _skillPacketFactory.SendSkillCancellation(caster as IPlayerEntity);
         }
 
         /// <summary>

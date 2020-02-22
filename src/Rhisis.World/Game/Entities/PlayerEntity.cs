@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Factories;
@@ -16,6 +17,9 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public bool IsDead => Attributes[DefineAttributes.HP] <= 0;
+
+        /// <inheritdoc />
+        public MoverData Data { get; set; }
 
         /// <inheritdoc />
         public VisualAppearenceComponent VisualAppearance { get; set; }

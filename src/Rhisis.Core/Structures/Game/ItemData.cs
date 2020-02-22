@@ -52,6 +52,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwAbilityMax")]
         public int AbilityMax { get; set; }
 
+        [DataMember(Name = "eItemType")]
+        public ElementType Element { get; set; }
+
         [DataMember(Name = "dwItemLV")]
         public int Level { get; set; }
 

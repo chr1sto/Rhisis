@@ -14,7 +14,6 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Experience;
-using System;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle

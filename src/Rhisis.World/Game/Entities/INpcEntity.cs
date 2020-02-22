@@ -18,7 +18,7 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets the NPC data.
         /// </summary>
-        NpcData Data { get; }
+        NpcData NpcData { get; }
 
         /// <summary>
         /// Gets the NPC quests.

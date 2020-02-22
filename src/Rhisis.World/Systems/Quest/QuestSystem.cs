@@ -545,7 +545,7 @@ namespace Rhisis.World.Systems.Quest
         /// <param name="buttons"></param>
         private void SendQuestDialog(IPlayerEntity player, INpcEntity npc, int questId, IEnumerable<string> questTexts, IEnumerable<DialogLink> buttons)
         {
-            _npcDialogPacketFactory.SendDialog(player, GetQuestDialogsTexts(questTexts), npc.Data.Dialog?.Links, buttons, questId);
+            _npcDialogPacketFactory.SendDialog(player, GetQuestDialogsTexts(questTexts), npc.NpcData.Dialog?.Links, buttons, questId);
             SendQuestsInfo(player, npc);
         }
     }
