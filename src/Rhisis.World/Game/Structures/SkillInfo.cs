@@ -70,7 +70,7 @@ namespace Rhisis.World.Game.Structures
         /// Check if the current skill cool time is over.
         /// </summary>
         /// <returns>True if the cooltime is over; false otherwise.</returns>
-        public bool IsCoolTimeElapsed() => _nextSkillUsageTime > Time.GetElapsedTime();
+        public bool IsCoolTimeElapsed() => _nextSkillUsageTime < Time.GetElapsedTime();
 
         /// <summary>
         /// Compares two <see cref="SkillInfo"/> instances.

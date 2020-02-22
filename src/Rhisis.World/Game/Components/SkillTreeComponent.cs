@@ -26,7 +26,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="skillIndex">Skill index.</param>
         /// <returns></returns>
-        public SkillInfo GetSkillByIndex(int skillIndex) => Skills.FirstOrDefault(x => x.Data.Index == skillIndex);
+        public SkillInfo GetSkillByIndex(int skillIndex) => Skills.ElementAt(skillIndex);
 
         /// <summary>
         /// Sets the skill level of the given skill id.

@@ -117,8 +117,7 @@ namespace Rhisis.World.Systems.Skills
             IEnumerable<SkillInfo> jobSkills = from x in _gameResources.Skills.Values
                                                where x.Job == job.Name &&
                                                      x.JobType != DefineJob.JobType.JTYPE_COMMON &&
-                                                     x.JobType != DefineJob.JobType.JTYPE_TROUPE &&
-                                                     x.Id < (int)DefineJob.JobMax.MAX_SKILLS
+                                                     x.JobType != DefineJob.JobType.JTYPE_TROUPE
                                                select new SkillInfo(x.Id, player.PlayerData.Id, x);
 
             skillsList.AddRange(jobSkills);
@@ -239,6 +238,8 @@ namespace Rhisis.World.Systems.Skills
                         CastMeleeSkill(player, target, skill, skillUseType);
                         break;
                     case SkillExecuteTargetType.MagicAttack:
+                        CastMagicSkill(player, target, skill, skillUseType);
+                        break;
                     case SkillExecuteTargetType.MagicAttackShot:
                         // TODO
                         break;
@@ -364,12 +365,12 @@ namespace Rhisis.World.Systems.Skills
         /// </summary>
         /// <param name="caster">Entity casting the skill.</param>
         /// <param name="skill">Skill to be cast.</param>
-        /// <returns>Skill casting time.</returns>
+        /// <returns>Skill casting time in milliseconds.</returns>
         private int GetSkillCastingTime(ILivingEntity caster, SkillInfo skill)
         {
             if (skill.Data.Type == SkillType.Skill)
             {
-                return 1;
+                return 1 * 1000;
             }
             else
             {
@@ -398,12 +399,41 @@ namespace Rhisis.World.Systems.Skills
             }
             else
             {
+                _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+
                 caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
                 {
                     IAttackArbiter attackArbiter = new MeleeSkillAttackArbiter(caster, target, skill);
 
                     _battleSystem.DamageTarget(caster, target, attackArbiter, ObjectMessageType.OBJMSG_MELEESKILL);
-                    _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+
+                    if (skill.LevelData.CooldownTime > 0)
+                    {
+                        skill.SetCoolTime(skill.LevelData.CooldownTime);
+                    }
+
+                    ReduceCasterPoints(caster, skill);
+                });
+            }
+        }
+
+        private void CastMagicSkill(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
+        {
+            int skillCastingTime = GetSkillCastingTime(caster, skill);
+
+            if (skill.Data.SpellRegionType == SpellRegionType.Around)
+            {
+                // TODO: AoE
+            }
+            else
+            {
+                _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+
+                caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
+                {
+                    IAttackArbiter attackArbiter = new MeleeSkillAttackArbiter(caster, target, skill);
+
+                    _battleSystem.DamageTarget(caster, target, attackArbiter, ObjectMessageType.OBJMSG_MAGICSKILL);
 
                     if (skill.LevelData.CooldownTime > 0)
                     {

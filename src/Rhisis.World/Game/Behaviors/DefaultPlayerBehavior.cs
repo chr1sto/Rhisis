@@ -63,10 +63,13 @@ namespace Rhisis.World.Game.Behaviors
         public void Update()
         {
             if (!_player.Object.Spawned || _player.IsDead)
+            {
                 return;
+            }
 
             _mobilitySystem.CalculatePosition(_player);
             _regionTriggerSystem.CheckWrapzones(_player);
+
             ProcessIdleHeal();
         }
 
@@ -76,7 +79,10 @@ namespace Rhisis.World.Game.Behaviors
             if (_player.Follow.IsFollowing && _player.Follow.Target.Type == WorldEntityType.Drop)
             {
                 if (_player.Follow.Target is IItemEntity target)
+                {
                     PickUpDroppedItem(target);
+                }
+
                 _player.Follow.Reset();
             }
         }

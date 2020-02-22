@@ -1,16 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
-using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle;
-using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.Inventory;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 
 namespace Rhisis.World.Handlers
 {
@@ -19,8 +16,6 @@ namespace Rhisis.World.Handlers
     {
         private readonly ILogger<BattleHandler> _logger;
         private readonly IBattleSystem _battleSystem;
-        private readonly IFollowSystem _followSystem;
-        private readonly IMoverPacketFactory _moverPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="BattleHandler"/> instance.
@@ -28,12 +23,10 @@ namespace Rhisis.World.Handlers
         /// <param name="logger">Logger.</param>
         /// <param name="battleSystem">Battle system.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleHandler(ILogger<BattleHandler> logger, IBattleSystem battleSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory)
+        public BattleHandler(ILogger<BattleHandler> logger, IBattleSystem battleSystem)
         {
             _logger = logger;
             _battleSystem = battleSystem;
-            _followSystem = followSystem;
-            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <summary>
@@ -58,17 +51,6 @@ namespace Rhisis.World.Handlers
             {
                 _logger.LogCritical($"Player {client.Player.Object.Name} has changed his weapon speed.");
                 return;
-            }
-
-            if (!target.Follow.IsFollowing && target.Type == WorldEntityType.Monster)
-            {
-                if (target.Moves.SpeedFactor != 2f)
-                {
-                    target.Moves.SpeedFactor = 2f;
-                    _moverPacketFactory.SendSpeedFactor(target, target.Moves.SpeedFactor);
-                }
-
-                _followSystem.Follow(target, client.Player);
             }
 
             _battleSystem.MeleeAttack(client.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
