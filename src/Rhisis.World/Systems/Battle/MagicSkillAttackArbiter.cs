@@ -64,10 +64,7 @@ namespace Rhisis.World.Systems.Battle
             int damages = attackResult.Damages;
             int defenderDefense = GetDefenderDefense(attackResult);
 
-            if (attackResult.Flags.HasFlag(AttackFlags.AF_MAGICSKILL))
-            {
-                damages -= damages * (int)(Defender.Attributes[DefineAttributes.RESIST_MAGIC_RATE] / 100f);
-            }
+            damages -= damages * (int)(Defender.Attributes[DefineAttributes.RESIST_MAGIC_RATE] / 100f);
 
             float damageDefenseDelta = (damages - defenderDefense) * (1.0f - GetMagicSkillResitanceRate(Defender, Skill));
 

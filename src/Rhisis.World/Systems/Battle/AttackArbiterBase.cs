@@ -45,8 +45,7 @@ namespace Rhisis.World.Systems.Battle
         {
             if (attackResult.Flags.HasFlag(AttackFlags.AF_MAGICSKILL))
             {
-                // Calculate magic resistance
-                return default;
+                return Defender.Attributes[DefineAttributes.RESIST_MAGIC];
             }
 
             int defense = 0;
