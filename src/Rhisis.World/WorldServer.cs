@@ -108,6 +108,7 @@ namespace Rhisis.World
         public IPlayerEntity GetPlayerEntityByCharacterId(uint id) 
             => Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id)?.Player;
 
+        /// <inheritdoc />
         public uint GetOnlineConnectedPlayerNumber() 
             => (uint)Clients.Count();
     }
