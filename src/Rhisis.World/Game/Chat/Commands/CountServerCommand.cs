@@ -27,8 +27,9 @@ namespace Rhisis.World.Game.Chat
         /// <inheritdoc />
         public void Execute(IPlayerEntity player, object[] parameters)
         {
-            int onlineCount = _worldServer.GetOnlineConnectedPlayerNumber();
-            _textPacketFactory.SendDefinedText(player, DefineText.TID_ADMIN_WORLDCOUNT, $"\"{onlineCount}\"");
+            uint onlineCount = _worldServer.GetOnlineConnectedPlayerNumber();
+            string countMessage = string.Format("Players Online : {0}", onlineCount);
+            _textPacketFactory.SendWorldMessage(player, countMessage);
         }
     }
 } 

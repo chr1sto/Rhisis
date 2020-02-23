@@ -30,6 +30,6 @@ namespace Rhisis.World
         /// Gets the number of players connected to the worldserver.
         /// </summary>
         /// <returns><see cref="int"/></returns>
-        int GetOnlineConnectedPlayerNumber();
+        uint GetOnlineConnectedPlayerNumber();
     }
 }
