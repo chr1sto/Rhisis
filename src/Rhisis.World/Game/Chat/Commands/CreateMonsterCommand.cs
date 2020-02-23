@@ -35,7 +35,6 @@ namespace Rhisis.World.Game.Chat
         /// <inheritdoc />
         public void Execute(IPlayerEntity player, object[] parameters)
         {
-
             if (parameters.Length <= 0 || parameters.Length > 2)
             {
                 throw new ArgumentException($"Create monster command must have 1 or 2 parameters.", nameof(parameters));

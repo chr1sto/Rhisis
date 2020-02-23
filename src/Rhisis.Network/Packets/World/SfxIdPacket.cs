@@ -7,7 +7,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the target id.
         /// </summary>
-        public uint Target { get; private set; }
+        public uint TargetId { get; private set; }
 
         /// <summary>
         /// Gets the id of the hit SFX.
@@ -22,7 +22,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the skill.
         /// </summary>
-        public uint Skill { get; private set; }
+        public int Skill { get; private set; }
 
         /// <summary>
         /// Gets the max damage count.
@@ -32,10 +32,10 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            Target = packet.Read<uint>();
+            TargetId = packet.Read<uint>();
             IdSfxHit = packet.Read<int>();
             Type = packet.Read<uint>();
-            Skill = packet.Read<uint>();
+            Skill = packet.Read<int>();
             MaxDamageCount = packet.Read<int>();
         }
     }

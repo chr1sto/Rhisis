@@ -26,5 +26,14 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attackType">Attack type.</param>
         /// <param name="attackSpeed">Attack speed.</param>
         void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed);
+
+        /// <summary>
+        /// Process a magic attack on an ennemy.
+        /// </summary>
+        /// <param name="attacker">Attacker.</param>
+        /// <param name="defender">Defender.</param>
+        /// <param name="attackType">Attack type.</param>
+        /// <param name="magicAttackPower">Magic attack power.</param>
+        void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower);
     }
 }

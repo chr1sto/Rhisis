@@ -102,6 +102,12 @@ namespace Rhisis.World.Systems.Battle
             }
         }
 
+        /// <inheritdoc />
+        public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower)
+        {
+            // TODO
+        }
+
         /// <summary>
         /// Check if the attacker entity can attack a defender entity.
         /// </summary>

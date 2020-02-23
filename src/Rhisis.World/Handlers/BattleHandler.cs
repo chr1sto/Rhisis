@@ -7,7 +7,6 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Inventory;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 
 namespace Rhisis.World.Handlers
 {
@@ -54,6 +53,31 @@ namespace Rhisis.World.Handlers
             }
 
             _battleSystem.MeleeAttack(client.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
+        }
+
+        /// <summary>
+        /// On magic attack.
+        /// </summary>
+        /// <param name="client">Current client.</param>
+        /// <param name="packet">Magic attack incoming packet.</param>
+        [HandlerAction(PacketType.MAGIC_ATTACK)]
+        public void OnMagicAttack(IWorldClient client, MagicAttackPacket packet)
+        {
+            var target = client.Player.FindEntity<IMonsterEntity>(packet.TargetObjectId);
+
+            if (target == null)
+            {
+                _logger.LogError($"Cannot find target with object id {packet.TargetObjectId}");
+                return;
+            }
+
+            if (packet.MagicPower <= 0)
+            {
+                _logger.LogError($"Invalid magic power.");
+                return;
+            }
+
+            _battleSystem.MagicAttack(client.Player, target, packet.AttackMessage, packet.MagicPower);
         }
     }
 }

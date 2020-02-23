@@ -68,5 +68,17 @@ namespace Rhisis.World.Handlers
 
             _skillSystem.UseSkill(client.Player, skill, packet.TargetObjectId, packet.UseType);
         }
+
+        [HandlerAction(PacketType.SFX_ID)]
+        public void OnProjectileLaunched(IWorldClient client, SfxIdPacket packet)
+        {
+            // TODO
+        }
+
+        [HandlerAction(PacketType.SFX_HIT)]
+        public void OnProjectileArrived(IWorldClient client, SfxHitPacket packet)
+        {
+            // TODO
+        }
     }
 }

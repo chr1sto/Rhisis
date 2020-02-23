@@ -11,6 +11,7 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Projectile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace Rhisis.World.Systems.Skills
         private readonly IGameResources _gameResources;
         private readonly IBattleSystem _battleSystem;
         private readonly IInventorySystem _inventorySystem;
+        private readonly IProjectileSystem _projectileSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
@@ -45,17 +47,18 @@ namespace Rhisis.World.Systems.Skills
         /// <inheritdoc />
         public int Order => 1;
 
-        public SkillSystem(ILogger<SkillSystem> logger, IDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
+        public SkillSystem(ILogger<SkillSystem> logger, IDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
-            this._logger = logger;
-            this._database = database;
-            this._gameResources = gameResources;
-            this._battleSystem = battleSystem;
-            this._inventorySystem = inventorySystem;
-            this._skillPacketFactory = skillPacketFactory;
-            this._textPacketFactory = textPacketFactory;
-            this._specialEffectPacketFactory = specialEffectPacketFactory;
-            this._moverPacketFactory = moverPacketFactory;
+            _logger = logger;
+            _database = database;
+            _gameResources = gameResources;
+            _battleSystem = battleSystem;
+            _inventorySystem = inventorySystem;
+            _projectileSystem = projectileSystem;
+            _skillPacketFactory = skillPacketFactory;
+            _textPacketFactory = textPacketFactory;
+            _specialEffectPacketFactory = specialEffectPacketFactory;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
@@ -231,7 +234,6 @@ namespace Rhisis.World.Systems.Skills
                     throw new ArgumentNullException(nameof(targetObjectId));
                 }
 
-                // TODO: check if skill is melee (BattleSystem) or buff (BuffSystem)
                 switch (skill.Data.ExecuteTarget)
                 {
                     case SkillExecuteTargetType.MeleeAttack:
@@ -417,6 +419,13 @@ namespace Rhisis.World.Systems.Skills
             }
         }
 
+        /// <summary>
+        /// Casts an instant magic skill on a living target entity.
+        /// </summary>
+        /// <param name="caster">Living entity casting a skill.</param>
+        /// <param name="target">Living target entity touched by the skill.</param>
+        /// <param name="skill">Skill to be casted.</param>
+        /// <param name="skillUseType">Skill use type.</param>
         private void CastMagicSkill(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
         {
             int skillCastingTime = GetSkillCastingTime(caster, skill);
@@ -445,10 +454,23 @@ namespace Rhisis.World.Systems.Skills
             }
         }
 
+        /// <summary>
+        /// Casts a magic attack shot projectile on a target.
+        /// </summary>
+        /// <param name="caster">Living entity casting the skill.</param>
+        /// <param name="target">Target living entity.</param>
+        /// <param name="skill">Skill to be casted as projectile.</param>
+        /// <param name="skillUseType">Skill use type.</param>
         private void CastMagicAttackShot(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
         {
-            // TODO
-            _skillPacketFactory.SendSkillCancellation(caster as IPlayerEntity);
+            int skillCastingTime = GetSkillCastingTime(caster, skill);
+
+            _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+            _projectileSystem.CreateProjectile(new MagicSkillProjectileInfo(caster.Battle.LastProjectileId++, caster, target, skill, () =>
+            {
+                // TODO: action when the projectile hits the target
+                _logger.LogDebug($"Inflict damages");
+            }));
         }
 
         /// <summary>
