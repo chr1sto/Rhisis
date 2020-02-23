@@ -28,11 +28,7 @@ namespace Rhisis.World.Game.Chat
         {
             if (parameters.Length >= 1)
             {
-                string sysMsg = $"[{player.Object.Name}]";
-                for (int i = 0; i < parameters.Length; i++)
-                {
-                    sysMsg += " " + parameters[i].ToString();
-                }  
+                string sysMsg = $"[{player.Object.Name}] " + string.Join(" ", parameters);
                 _sysMessageSystem.SystemMessage(player, sysMsg);
                 _logger.LogTrace($"Player '{player.Object.Name}' sent the following system message : '{sysMsg}'.");            
             }
