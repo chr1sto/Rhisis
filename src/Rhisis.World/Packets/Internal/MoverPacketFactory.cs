@@ -16,18 +16,6 @@ namespace Rhisis.World.Packets.Internal
         public void SendMoverMoved(IWorldEntity entity, Vector3 beginPosition, Vector3 destinationPosition, float angle, uint state, uint stateFlag, uint motion, int motionEx, int loop, uint motionOption, long tickCount)
         {
             using var packet = new FFPacket();
-            
-            if (entity is IPlayerEntity playerEntity)
-            {
-                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
-                {
-                    if (playerEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_SJUMP2) || playerEntity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_SJUMP3) )
-                    {
-                        uint standposition = 1;
-                        packet.Write(standposition);
-                    }
-                }
-            }
 
             packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERMOVED);
             packet.Write(beginPosition.X);
@@ -37,7 +25,21 @@ namespace Rhisis.World.Packets.Internal
             packet.Write(destinationPosition.Y);
             packet.Write(destinationPosition.Z);
             packet.Write(angle);
-            packet.Write(state);
+            if (entity is IPlayerEntity playerEntity)
+            {
+                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
+                {
+                    packet.Write(ObjectState.OBJSTA_STAND);
+                }
+                else
+                {
+                    packet.Write(state);
+                }
+            }
+            else 
+            {
+                packet.Write(state);
+            }
             packet.Write(stateFlag);
             packet.Write(motion);
             packet.Write(motionEx);
@@ -51,17 +53,8 @@ namespace Rhisis.World.Packets.Internal
         /// <inheritdoc />
         public void SendMoverBehavior(IWorldEntity entity, Vector3 beginPosition, Vector3 destinationPosition, float angle, uint state, uint stateFlag, uint motion, int motionEx, int loop, uint motionOption, long tickCount)
         {
-            
             using var packet = new FFPacket();
 
-            if (entity is IPlayerEntity playerEntity)
-            {
-                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
-                {
-                    return;
-                }
-            }
-            
             packet.StartNewMergedPacket(entity.Id, SnapshotType.MOVERBEHAVIOR);
             packet.Write(beginPosition.X);
             packet.Write(beginPosition.Y);
@@ -70,7 +63,21 @@ namespace Rhisis.World.Packets.Internal
             packet.Write(destinationPosition.Y);
             packet.Write(destinationPosition.Z);
             packet.Write(angle);
-            packet.Write(state);
+            if (entity is IPlayerEntity playerEntity)
+            {
+                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
+                {
+                    packet.Write(ObjectState.OBJSTA_STAND);
+                }
+                else
+                {
+                    packet.Write(state);
+                }
+            }
+            else 
+            {
+                packet.Write(state);
+            }
             packet.Write(stateFlag);
             packet.Write(motion);
             packet.Write(motionEx);
@@ -84,14 +91,6 @@ namespace Rhisis.World.Packets.Internal
         /// <inheritdoc />
         public void SendDestinationAngle(IWorldEntity entity, bool left)
         {
-            if (entity is IPlayerEntity playerEntity)
-            {
-                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
-                {
-                    return;
-                }
-            }
-
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.DESTANGLE);
