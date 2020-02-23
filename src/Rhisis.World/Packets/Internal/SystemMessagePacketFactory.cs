@@ -2,15 +2,24 @@ using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
-using Rhisis.World.Client;
 using Rhisis.World.Game.Entities;
-using Sylver.Network.Server;
 
 namespace Rhisis.World.Packets.Internal
 {
     [Injectable(ServiceLifetime.Singleton)]
-    internal class SystemMessagePacketFactory : PacketFactoryBase, ISystemMessagePacketFactory
+    internal class SystemMessagePacketFactory : ISystemMessagePacketFactory
     {
+        private readonly IWorldServer _worldServer;
+
+        /// <summary>
+        /// Creates a new <see cref="SystemMessagePacketFactory"/> instance.
+        /// </summary>
+        /// <param name="worldServer">world server system.</param>
+        public SystemMessagePacketFactory(IWorldServer worldServer)
+        {
+            _worldServer = worldServer;
+        }
+
         /// <inheritdoc />
         public void SendSystemMessage(IPlayerEntity player, string message)
         {
@@ -20,7 +29,7 @@ namespace Rhisis.World.Packets.Internal
             packet.Write(message.Length);
             packet.Write(message);
 
-            SendToVisible(packet, player, true);
+            _worldServer.SendToAll(packet);
         }
     }
 }
