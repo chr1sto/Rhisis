@@ -26,6 +26,16 @@ namespace Rhisis.World.Packets
         void SendMeleeAttack(ILivingEntity attacker, ObjectMessageType motion, uint targetId, int unknwonParam, AttackFlags attackFlags);
 
         /// <summary>
+        /// Sends a magic projectile attack motion.
+        /// </summary>
+        /// <param name="attacker">Attacker entity.</param>
+        /// <param name="motion">Attack motion.</param>
+        /// <param name="targetId">Target entity id.</param>
+        /// <param name="magicAttackPower">Magic attack power.</param>
+        /// <param name="projectileId">Magic projectile id.</param>
+        void SendMagicAttack(ILivingEntity attacker, ObjectMessageType motion, uint targetId, int magicAttackPower, int projectileId);
+
+        /// <summary>
         /// Sends a packet that makes the entity die.
         /// </summary>
         /// <param name="player">Player.</param>

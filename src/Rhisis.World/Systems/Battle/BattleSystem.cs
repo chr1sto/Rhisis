@@ -14,6 +14,7 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Experience;
+using Rhisis.World.Systems.Projectile;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
@@ -25,6 +26,7 @@ namespace Rhisis.World.Systems.Battle
         private readonly IGameResources _gameResources;
         private readonly IDropSystem _dropSystem;
         private readonly IExperienceSystem _experienceSystem;
+        private readonly IProjectileSystem _projectileSystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly WorldConfiguration _worldConfiguration;
@@ -37,15 +39,17 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="gameResources">Game resources.</param>
         /// <param name="dropSystem">Drop system.</param>
         /// <param name="experienceSystem">Experience system.</param>
+        /// <param name="projectileSystem">Projectile system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IProjectileSystem projectileSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
             _gameResources = gameResources;
             _dropSystem = dropSystem;
             _experienceSystem = experienceSystem;
+            _projectileSystem = projectileSystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
         }
@@ -105,7 +109,9 @@ namespace Rhisis.World.Systems.Battle
         /// <inheritdoc />
         public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower)
         {
-            // TODO
+            int projectileId = _projectileSystem.CreateProjectile(new MagicProjectileInfo(attacker, defender, magicAttackPower));
+
+            _battlePacketFactory.SendMagicAttack(attacker, ObjectMessageType.OBJMSG_ATK_MAGIC1, defender.Id, magicAttackPower, projectileId);
         }
 
         /// <summary>

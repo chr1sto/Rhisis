@@ -465,12 +465,8 @@ namespace Rhisis.World.Systems.Skills
         {
             int skillCastingTime = GetSkillCastingTime(caster, skill);
 
+            _projectileSystem.CreateProjectile(new MagicSkillProjectileInfo(caster, target, skill));
             _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
-            _projectileSystem.CreateProjectile(new MagicSkillProjectileInfo(caster.Battle.LastProjectileId++, caster, target, skill, () =>
-            {
-                // TODO: action when the projectile hits the target
-                _logger.LogDebug($"Inflict damages");
-            }));
         }
 
         /// <summary>

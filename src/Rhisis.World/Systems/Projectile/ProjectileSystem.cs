@@ -1,8 +1,6 @@
 ﻿using Rhisis.Core.DependencyInjection;
+using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.World.Systems.Projectile
 {
@@ -10,21 +8,25 @@ namespace Rhisis.World.Systems.Projectile
     public class ProjectileSystem : IProjectileSystem
     {
         /// <inheritdoc />
-        public void CreateProjectile(ProjectileInfo projectile)
+        public int CreateProjectile(ProjectileInfo projectile)
         {
-            throw new NotImplementedException();
+            ILivingEntity livingEntity = projectile.Owner;
+            int projectileId = livingEntity.Battle.LastProjectileId++;
+
+            livingEntity.Battle.Projectiles.Add(projectileId, projectile);
+
+            return projectileId;
         }
 
         /// <inheritdoc />
-        public void ExecuteProjectile(int projectileId)
+        public void RemoveProjectile(ILivingEntity livingEntity, int projectileId)
         {
-            throw new NotImplementedException();
+            livingEntity.Battle.Projectiles.Remove(projectileId);
         }
 
         /// <inheritdoc />
-        public TProjectile GetProjectile<TProjectile>(int projectileId) where TProjectile : ProjectileInfo
-        {
-            throw new NotImplementedException();
-        }
+        public TProjectile GetProjectile<TProjectile>(ILivingEntity livingEntity, int projectileId) 
+            where TProjectile : ProjectileInfo 
+            => livingEntity.Battle.Projectiles.TryGetValue(projectileId, out ProjectileInfo projectile) ? (TProjectile)projectile : default;
     }
 }

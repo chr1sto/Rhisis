@@ -1,15 +1,10 @@
-﻿using Rhisis.World.Game.Entities;
-using System;
+﻿using Rhisis.World.Game.Common;
+using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Game.Structures
 {
-    public class ProjectileInfo
+    public abstract class ProjectileInfo
     {
-        /// <summary>
-        /// Gets the projectile id.
-        /// </summary>
-        public int Id { get; }
-
         /// <summary>
         /// Gets the projectile owner.
         /// </summary>
@@ -21,23 +16,19 @@ namespace Rhisis.World.Game.Structures
         public ILivingEntity Target { get; }
 
         /// <summary>
-        /// Gets the action to execute once the projectile has arrived to its target destination.
+        /// Gets or sets the projectile attack type.
         /// </summary>
-        public Action OnArrived { get; }
+        public abstract AttackFlags Type { get; }
 
         /// <summary>
         /// Creates a new <see cref="ProjectileInfo"/> instance.
         /// </summary>
-        /// <param name="id">Projectile id.</param>
         /// <param name="owner">Projectile owner entity.</param>
         /// <param name="target">Projectile target entity.</param>
-        /// <param name="onArrived">Projection action to execute once arrived.</param>
-        public ProjectileInfo(int id, ILivingEntity owner, ILivingEntity target, Action onArrived)
+        public ProjectileInfo(ILivingEntity owner, ILivingEntity target)
         {
-            Id = id;
             Owner = owner;
             Target = target;
-            OnArrived = onArrived;
         }
     }
 }

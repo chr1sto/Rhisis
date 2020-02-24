@@ -23,9 +23,9 @@ namespace Rhisis.World.Game.Components
         public bool IsFighting => Target != null || Targets.Any();
 
         /// <summary>
-        /// Gets collection of active projectiles.
+        /// Gets the collection of active projectiles.
         /// </summary>
-        public ICollection<ProjectileInfo> Projectiles { get; }
+        public IDictionary<int, ProjectileInfo> Projectiles { get; }
 
         /// <summary>
         /// Gets the last projectile id.
@@ -38,7 +38,7 @@ namespace Rhisis.World.Game.Components
         public BattleComponent()
         {
             Targets = new List<ILivingEntity>();
-            Projectiles = new List<ProjectileInfo>();
+            Projectiles = new Dictionary<int, ProjectileInfo>();
         }
 
         /// <summary>

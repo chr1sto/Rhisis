@@ -7,6 +7,7 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Inventory;
 using Sylver.HandlerInvoker.Attributes;
+using System;
 
 namespace Rhisis.World.Handlers
 {
@@ -71,13 +72,12 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            if (packet.MagicPower <= 0)
+            if (packet.MagicPower < 0)
             {
-                _logger.LogError($"Invalid magic power.");
-                return;
+                _logger.LogWarning($"Magic attack power cannot be less than 0.");
             }
 
-            _battleSystem.MagicAttack(client.Player, target, packet.AttackMessage, packet.MagicPower);
+            _battleSystem.MagicAttack(client.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower));
         }
     }
 }
