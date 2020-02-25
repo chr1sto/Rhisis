@@ -37,7 +37,7 @@ namespace Rhisis.World.Systems.Battle
             
             if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
                 return attackResult;
-            
+
             if (Attacker is IPlayerEntity player)
             {
                 Item rightWeapon = player.Inventory[InventorySystem.RightWeaponSlot] ?? InventorySystem.Hand;
@@ -49,6 +49,11 @@ namespace Rhisis.World.Systems.Battle
             }
             else if (Attacker is IMonsterEntity monster)
             {
+                if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                {
+                    return attackResult;
+                }
+
                 attackResult.AttackMin = monster.Data.AttackMin;
                 attackResult.AttackMax = monster.Data.AttackMax;
             }
@@ -59,7 +64,9 @@ namespace Rhisis.World.Systems.Battle
                 CalculateCriticalDamages(attackResult);
 
                 if (IsKnockback(attackResult.Flags))
+                {
                     attackResult.Flags |= AttackFlags.AF_FLYING;
+                }
             }
 
             attackResult.Damages = RandomHelper.Random(attackResult.AttackMin, attackResult.AttackMax);

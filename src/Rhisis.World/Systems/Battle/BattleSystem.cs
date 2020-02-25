@@ -64,7 +64,29 @@ namespace Rhisis.World.Systems.Battle
                 return null;
             }
 
-            AttackResult attackResult = attackArbiter.CalculateDamages();
+            if (defender is IPlayerEntity undyingPlayer)
+            {
+                if (undyingPlayer.PlayerData.Mode == ModeType.MATCHLESS_MODE)
+                {
+                    _logger.LogDebug($"{attacker.Object.Name} wasn't able to inflict any damages to {defender.Object.Name} because he is in undying mode");
+                    return null;
+                }
+            }
+
+            AttackResult attackResult;
+
+            if (attacker is IPlayerEntity player && player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
+            {
+                attackResult = new AttackResult
+                {
+                    Damages = defender.Attributes[DefineAttributes.HP],
+                    Flags = AttackFlags.AF_GENERIC
+                };
+            }
+            else
+            {
+                attackResult = attackArbiter.CalculateDamages();
+            }
 
             if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS) || attackResult.Damages <= 0)
             {
