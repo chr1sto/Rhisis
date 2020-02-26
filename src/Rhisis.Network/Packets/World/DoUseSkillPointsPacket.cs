@@ -12,7 +12,7 @@ namespace Rhisis.Network.Packets.World
         /// </summary>
         public DoUseSkillPointsPacket()
         {
-            this._skills = new Dictionary<int, int>();
+            _skills = new Dictionary<int, int>();
         }
 
         /// <summary>

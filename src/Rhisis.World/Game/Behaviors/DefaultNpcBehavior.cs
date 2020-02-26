@@ -12,7 +12,7 @@ namespace Rhisis.World.Game.Behaviors
     /// <summary>
     /// Default behavior of a NPC.
     /// </summary>
-    [Behavior(BehaviorType.Npc, IsDefault: true)]
+    [Behavior(BehaviorType.Npc, isDefault: true)]
     public class DefaultNpcBehavior : IBehavior
     {
         private const float OralTextRadius = 50f;

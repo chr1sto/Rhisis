@@ -26,9 +26,9 @@ namespace Rhisis.Core.Resources.Loaders
         /// <param name="cache">Application memory cache.</param>
         public JobLoader(ILogger<JobLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this._cache = cache;
-            this._defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            _logger = logger;
+            _cache = cache;
+            _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
         }
 
         /// <inheritdoc />

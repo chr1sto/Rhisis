@@ -13,7 +13,7 @@ using Rhisis.World.Systems.Recovery;
 
 namespace Rhisis.World.Game.Behaviors
 {
-    [Behavior(BehaviorType.Player, IsDefault: true)]
+    [Behavior(BehaviorType.Player, isDefault: true)]
     public sealed class DefaultPlayerBehavior : IBehavior
     {
         private readonly IPlayerEntity _player;

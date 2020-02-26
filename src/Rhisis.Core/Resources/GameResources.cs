@@ -57,7 +57,7 @@ namespace Rhisis.Core.Resources
         public IReadOnlyDictionary<int, IQuestScript> Quests => GetCacheValue(GameResourcesConstants.Quests, ref _quests);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<int, SkillData> Skills => GetCacheValue(GameResourcesConstants.Skills, ref this._skills);
+        public IReadOnlyDictionary<int, SkillData> Skills => GetCacheValue(GameResourcesConstants.Skills, ref _skills);
 
         /// <inheritdoc />
         public ExpTableData ExpTables => GetCacheValue(GameResourcesConstants.ExpTables, ref _expTableData);

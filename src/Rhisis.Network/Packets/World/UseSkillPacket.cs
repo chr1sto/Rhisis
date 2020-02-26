@@ -22,11 +22,11 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            this.Type = packet.Read<ushort>();
-            this.SkillIndex = packet.Read<ushort>();
-            this.TargetObjectId = packet.Read<uint>();
-            this.UseType = (SkillUseType)packet.Read<int>();
-            this.Control = Convert.ToBoolean(packet.Read<int>());
+            Type = packet.Read<ushort>();
+            SkillIndex = packet.Read<ushort>();
+            TargetObjectId = packet.Read<uint>();
+            UseType = (SkillUseType)packet.Read<int>();
+            Control = Convert.ToBoolean(packet.Read<int>());
         }
     }
 }

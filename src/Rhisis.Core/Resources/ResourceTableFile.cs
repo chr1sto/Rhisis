@@ -119,7 +119,7 @@ namespace Rhisis.Core.Resources
                 {
                     DataMemberAttribute attribute = GetPropertyAttribute<DataMemberAttribute>(property);
                     DefaultValueAttribute defaultValue = GetPropertyAttribute<DefaultValueAttribute>(property);
-                    DataIndexAttribute dataIndexAttribute = this.GetPropertyAttribute<DataIndexAttribute>(property);
+                    DataIndexAttribute dataIndexAttribute = GetPropertyAttribute<DataIndexAttribute>(property);
                     int index = -1;
                     
                     if (attribute != null)

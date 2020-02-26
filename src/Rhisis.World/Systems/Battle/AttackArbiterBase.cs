@@ -26,8 +26,8 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="defender"></param>
         protected AttackArbiterBase(ILivingEntity attacker, ILivingEntity defender)
         {
-            this.Attacker = attacker;
-            this.Defender = defender;
+            Attacker = attacker;
+            Defender = defender;
         }
 
         /// <summary>

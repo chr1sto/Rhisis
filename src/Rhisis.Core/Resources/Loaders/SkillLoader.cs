@@ -27,8 +27,8 @@ namespace Rhisis.Core.Resources.Loaders
         {
             _logger = logger;
             _cache = cache;
-            _defines = this._cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
-            _texts = this._cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
+            _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            _texts = _cache.Get<IDictionary<string, string>>(GameResourcesConstants.Texts);
         }
 
         /// <inheritdoc />
