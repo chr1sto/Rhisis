@@ -73,13 +73,13 @@ namespace Rhisis.World.Systems.Dialog
                     return;
                 }
 
-                if (!npc.Data.HasDialog)
+                if (!npc.NpcData.HasDialog)
                 {
                     _logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
                     return;
                 }
 
-                SendNpcDialog(player, npc, npc.Data.Dialog.IntroText, npc.Data.Dialog.Links);
+                SendNpcDialog(player, npc, npc.NpcData.Dialog.IntroText, npc.NpcData.Dialog.Links);
             }
             else
             {
@@ -104,7 +104,7 @@ namespace Rhisis.World.Systems.Dialog
                 }
                 else
                 {
-                    if (!npc.Data.HasDialog)
+                    if (!npc.NpcData.HasDialog)
                     {
                         _logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
                         return;
@@ -112,13 +112,13 @@ namespace Rhisis.World.Systems.Dialog
 
                     if (dialogKey == DialogConstants.Bye)
                     {
-                        _chatPacketFactory.SendChatTo(npc, player, npc.Data.Dialog.ByeText);
+                        _chatPacketFactory.SendChatTo(npc, player, npc.NpcData.Dialog.ByeText);
                         _npcDialogPacketFactory.SendCloseDialog(player);
                         return;
                     }
                     else
                     {
-                        DialogLink dialogLink = npc.Data.Dialog.Links?.FirstOrDefault(x => x.Id == dialogKey);
+                        DialogLink dialogLink = npc.NpcData.Dialog.Links?.FirstOrDefault(x => x.Id == dialogKey);
 
                         if (dialogLink == null)
                         {
@@ -126,7 +126,7 @@ namespace Rhisis.World.Systems.Dialog
                             return;
                         }
 
-                        SendNpcDialog(player, npc, dialogLink.Texts, npc.Data.Dialog.Links);
+                        SendNpcDialog(player, npc, dialogLink.Texts, npc.NpcData.Dialog.Links);
                     }
                 }
             }

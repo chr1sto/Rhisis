@@ -1,8 +1,9 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Factories;
-using Rhisis.World.Systems.PlayerData;
 using Sylver.Network.Common;
 
 namespace Rhisis.World.Game.Entities
@@ -13,6 +14,12 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public override WorldEntityType Type => WorldEntityType.Player;
+
+        /// <inheritdoc />
+        public bool IsDead => Attributes[DefineAttributes.HP] <= 0;
+
+        /// <inheritdoc />
+        public MoverData Data { get; set; }
 
         /// <inheritdoc />
         public VisualAppearenceComponent VisualAppearance { get; set; }
@@ -51,9 +58,6 @@ namespace Rhisis.World.Game.Entities
         public BattleComponent Battle { get; set; }
 
         /// <inheritdoc />
-        public HealthComponent Health { get; set; }
-
-        /// <inheritdoc />
         public AttributeComponent Attributes { get; set; }
 
         /// <inheritdoc />
@@ -61,6 +65,9 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public QuestDiaryComponent QuestDiary { get; set; }
+
+        /// <inheritdoc />
+        public SkillTreeComponent SkillTree { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="PlayerEntity"/> instance.
@@ -74,10 +81,10 @@ namespace Rhisis.World.Game.Entities
             Follow = new FollowComponent();
             Interaction = new InteractionComponent();
             Battle = new BattleComponent();
-            Health = new HealthComponent();
             Timers = new TimerComponent();
             Attributes = new AttributeComponent();
             QuestDiary = new QuestDiaryComponent();
+            SkillTree = new SkillTreeComponent();
             _playerFactory = playerFactory;
         }
 

@@ -6,6 +6,7 @@ using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Behaviors;
@@ -50,6 +51,13 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <inheritdoc />
         public IPlayerEntity CreatePlayer(DbCharacter character)
         {
+            int playerModelId = character.Gender == 0 ? 11 : 12; // TODO: remove these magic numbers
+
+            if (!_gameResources.Movers.TryGetValue(playerModelId, out MoverData moverData))
+            {
+                throw new ArgumentException($"Cannot find mover with id '{playerModelId}' in game resources.", nameof(playerModelId));
+            }
+
             var player = _playerFactory(_serviceProvider, null) as IPlayerEntity;
 
             IMapInstance map = _mapManager.GetMap(character.MapId);
@@ -63,7 +71,7 @@ namespace Rhisis.World.Game.Factories.Internal
 
             player.Object = new ObjectComponent
             {
-                ModelId = character.Gender == 0 ? 11 : 12, // TODO: remove these magic numbers
+                ModelId = playerModelId,
                 Type = WorldObjectType.Mover,
                 MapId = character.MapId,
                 CurrentMap = map,
@@ -76,14 +84,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 Level = character.Level,
                 MovingFlags = ObjectState.OBJSTA_STAND
             };
-
-            player.Health = new HealthComponent
-            {
-                Hp = character.Hp,
-                Mp = character.Mp,
-                Fp = character.Fp
-            };
-
             player.VisualAppearance = new VisualAppearenceComponent
             {
                 Gender = character.Gender,
@@ -92,7 +92,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 HairColor = character.HairColor,
                 FaceId = character.FaceId,
             };
-
             player.PlayerData = new PlayerDataComponent
             {
                 Id = character.Id,
@@ -103,7 +102,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 Experience = character.Experience,
                 JobData = _gameResources.Jobs[character.ClassId]
             };
-
             player.Moves = new MovableComponent
             {
                 Speed = _gameResources.Movers[player.Object.ModelId].Speed,
@@ -112,10 +110,15 @@ namespace Rhisis.World.Game.Factories.Internal
                 NextMoveTime = Time.GetElapsedTime() + 10
             };
 
-            player.Attributes.ResetAttribute(DefineAttributes.STR, character.Strength);
-            player.Attributes.ResetAttribute(DefineAttributes.STA, character.Stamina);
-            player.Attributes.ResetAttribute(DefineAttributes.DEX, character.Dexterity);
-            player.Attributes.ResetAttribute(DefineAttributes.INT, character.Intelligence);
+            player.Data = moverData;
+
+            player.Attributes[DefineAttributes.HP] = character.Hp;
+            player.Attributes[DefineAttributes.MP] = character.Mp;
+            player.Attributes[DefineAttributes.FP] = character.Fp;
+            player.Attributes[DefineAttributes.STR] = character.Strength;
+            player.Attributes[DefineAttributes.STA] = character.Stamina;
+            player.Attributes[DefineAttributes.DEX] = character.Dexterity;
+            player.Attributes[DefineAttributes.INT] = character.Intelligence;
 
             player.Statistics = new StatisticsComponent(character);
             player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
@@ -170,9 +173,9 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.StatPoints = player.Statistics.StatPoints;
                 character.SkillPoints = player.Statistics.SkillPoints;
 
-                character.Hp = player.Health.Hp;
-                character.Mp = player.Health.Mp;
-                character.Fp = player.Health.Fp;
+                character.Hp = player.Attributes[DefineAttributes.HP];
+                character.Mp = player.Attributes[DefineAttributes.MP];
+                character.Fp = player.Attributes[DefineAttributes.FP];
 
                 _database.Complete();
 

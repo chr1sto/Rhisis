@@ -45,6 +45,11 @@ namespace Rhisis.Database.Context
         public DbSet<DbQuest> Quests { get; set; }
 
         /// <summary>
+        /// Gets or sets the skills.
+        /// </summary>
+        public DbSet<DbSkill> Skills { get; set; }
+
+        /// <summary>
         /// Create a new <see cref="DatabaseContext"/> instance.
         /// </summary>
         /// <param name="options"></param>
@@ -78,6 +83,11 @@ namespace Rhisis.Database.Context
             // Configure quest entity
             modelBuilder.Entity<DbQuest>()
                 .HasIndex(x => new { x.QuestId, x.CharacterId })
+                .IsUnique();
+
+            // Configure skill entity
+            modelBuilder.Entity<DbSkill>()
+                .HasIndex(x => new { x.SkillId, x.CharacterId })
                 .IsUnique();
         }
 

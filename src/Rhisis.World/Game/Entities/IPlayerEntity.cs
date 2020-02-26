@@ -41,6 +41,11 @@ namespace Rhisis.World.Game.Entities
         QuestDiaryComponent QuestDiary { get; set; }
 
         /// <summary>
+        /// Gets or sets the player's skill tree.
+        /// </summary>
+        SkillTreeComponent SkillTree { get; set; }
+
+        /// <summary>
         /// Gets or sets the player's connection.
         /// </summary>
         INetUser Connection { get; set; }

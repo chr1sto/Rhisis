@@ -12,6 +12,8 @@ namespace Rhisis.World.Game.Structures
     /// </summary>
     public class Item : ItemDescriptor
     {
+        public const int RefineMax = 10;
+
         /// <summary>
         /// Flyff item refine table.
         /// </summary>

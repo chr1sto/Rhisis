@@ -13,7 +13,7 @@ namespace Rhisis.World.Game.Behaviors
     /// <summary>
     /// Default behavior for all monsters.
     /// </summary>
-    [Behavior(BehaviorType.Monster, IsDefault: true)]
+    [Behavior(BehaviorType.Monster, isDefault: true)]
     public class DefaultMonsterBehavior : IBehavior
     {
         private const float MovingRange = 40f;
@@ -36,7 +36,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <inheritdoc />
         public virtual void Update()
         {
-            if (!_monster.Object.Spawned || _monster.Health.IsDead)
+            if (!_monster.Object.Spawned || _monster.IsDead)
                 return;
 
             if (_monster.Timers.LastAICheck > Time.GetElapsedTime())
@@ -81,8 +81,8 @@ namespace Rhisis.World.Game.Behaviors
             {
                 if (monster.Moves.ReturningToOriginalPosition)
                 {
-                    monster.Health.Hp = monster.Data.AddHp;
-                    _moverPacketFactory.SendUpdateAttributes(monster, DefineAttributes.HP, monster.Health.Hp);
+                    monster.Attributes[DefineAttributes.HP] = monster.Data.AddHp;
+                    _moverPacketFactory.SendUpdateAttributes(monster, DefineAttributes.HP, monster.Attributes[DefineAttributes.HP]);
                     monster.Moves.ReturningToOriginalPosition = false;
                 }
                 else
@@ -117,7 +117,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="monster"></param>
         private void ProcessMonsterFight(IMonsterEntity monster)
         {
-            if (monster.Battle.Target.Health.IsDead)
+            if (monster.Battle.Target.IsDead)
             {
                 monster.Follow.Target = null;
                 monster.Battle.Target = null;

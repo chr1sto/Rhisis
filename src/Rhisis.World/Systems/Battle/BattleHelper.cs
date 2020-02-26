@@ -2,6 +2,7 @@
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using System;
 
 namespace Rhisis.World.Systems.Battle
@@ -93,6 +94,72 @@ namespace Rhisis.World.Systems.Battle
 
             entity.Moves.DestinationPosition.X += delta.X;
             entity.Moves.DestinationPosition.Z += delta.Z;
+        }
+
+        /// <summary>
+        /// Gets the weapon attack power.
+        /// </summary>
+        /// <param name="entity">Living entity using the weapon.</param>
+        /// <param name="weapon">Weapon used by the living entity.</param>
+        /// <returns><see cref="AttackResult"/> with AttackMin and AttackMax range.</returns>
+        public static AttackResult GetWeaponAttackPower(ILivingEntity entity, Item weapon)
+        {
+            float multiplier = GetWeaponItemMultiplier(weapon);
+            int power = weapon.Refine > 0 ? (int)Math.Pow(weapon.Refine, 1.5f) : default;
+
+            return new AttackResult
+            {
+                AttackMin = (int)((entity.Attributes[DefineAttributes.ABILITY_MIN] + weapon.Data.AbilityMin) * multiplier) + power,
+                AttackMax = (int)((entity.Attributes[DefineAttributes.ABILITY_MAX] + weapon.Data.AbilityMax) * multiplier) + power,
+            };
+        }
+
+        /// <summary>
+        /// Gets the weapon item multiplier.
+        /// </summary>
+        /// <param name="weapon">Current used weapon.</param>
+        /// <returns></returns>
+        public static float GetWeaponItemMultiplier(Item weapon)
+        {
+            // TODO: check if item has expired.
+            float multiplier = 1.0f;
+            int refine = weapon.Data.WeaponKind == WeaponKindType.Ultimate ? Item.RefineMax : weapon.Refine;
+
+            if (refine > 0)
+            {
+                // TODO: get item exp up
+                int itemExpUp = 0 + 100;
+                multiplier *= (itemExpUp / 100);
+            }
+
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Gets the weapon extra damages based weapon type and entity attribute bonuses.
+        /// </summary>
+        /// <param name="entity">Current entity.</param>
+        /// <param name="weapon">Current entity weapon.</param>
+        /// <returns>Weapon extra damages</returns>
+        public static int GetWeaponExtraDamages(ILivingEntity entity, Item weapon)
+        {
+            int extraDamages = weapon.Data.WeaponType switch
+            {
+                WeaponType.MELEE_SWD => entity.Attributes[DefineAttributes.SWD_DMG] + entity.Attributes[DefineAttributes.TWOHANDMASTER_DMG],
+                WeaponType.MELEE_AXE => entity.Attributes[DefineAttributes.AXE_DMG] + entity.Attributes[DefineAttributes.TWOHANDMASTER_DMG],
+                WeaponType.KNUCKLE => entity.Attributes[DefineAttributes.KNUCKLE_DMG] + entity.Attributes[DefineAttributes.KNUCKLEMASTER_DMG],
+                WeaponType.MELEE_YOYO => entity.Attributes[DefineAttributes.YOY_DMG] + entity.Attributes[DefineAttributes.YOYOMASTER_DMG],
+                WeaponType.RANGE_BOW => entity.Attributes[DefineAttributes.BOW_DMG] + entity.Attributes[DefineAttributes.BOWMASTER_DMG],
+                _ => default
+            };
+
+            if (entity is IPlayerEntity player)
+            {
+                // TODO: check if player has dual weapons
+                // TODO: if yes add "ONEHANDMASTER_DMG" to extra damages
+            }
+
+            return extraDamages;
         }
     }
 }

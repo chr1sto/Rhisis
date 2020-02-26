@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
@@ -7,14 +8,13 @@ using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Core.Structures.Game;
-using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Experience;
-using Rhisis.World.Systems.Quest;
+using Rhisis.World.Systems.Projectile;
 using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
@@ -26,6 +26,7 @@ namespace Rhisis.World.Systems.Battle
         private readonly IGameResources _gameResources;
         private readonly IDropSystem _dropSystem;
         private readonly IExperienceSystem _experienceSystem;
+        private readonly IProjectileSystem _projectileSystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly WorldConfiguration _worldConfiguration;
@@ -38,67 +39,147 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="gameResources">Game resources.</param>
         /// <param name="dropSystem">Drop system.</param>
         /// <param name="experienceSystem">Experience system.</param>
+        /// <param name="projectileSystem">Projectile system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IProjectileSystem projectileSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
             _gameResources = gameResources;
             _dropSystem = dropSystem;
             _experienceSystem = experienceSystem;
+            _projectileSystem = projectileSystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
         }
-        
+
         /// <inheritdoc />
-        public void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed)
+        public AttackResult DamageTarget(ILivingEntity attacker, ILivingEntity defender, IAttackArbiter attackArbiter, ObjectMessageType attackType)
         {
-            if (defender.Health.IsDead)
+            if (!CanAttack(attacker, defender))
             {
-                _logger.LogError($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
                 ClearBattleTargets(defender);
                 ClearBattleTargets(attacker);
-                return;
+                return null;
             }
 
-            
+            if (defender is IPlayerEntity undyingPlayer)
+            {
+                if (undyingPlayer.PlayerData.Mode == ModeType.MATCHLESS_MODE)
+                {
+                    _logger.LogDebug($"{attacker.Object.Name} wasn't able to inflict any damages to {defender.Object.Name} because he is in undying mode");
+                    return null;
+                }
+            }
+
+            AttackResult attackResult;
+
+            if (attacker is IPlayerEntity player && player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
+            {
+                attackResult = new AttackResult
+                {
+                    Damages = defender.Attributes[DefineAttributes.HP],
+                    Flags = AttackFlags.AF_GENERIC
+                };
+            }
+            else
+            {
+                attackResult = attackArbiter.CalculateDamages();
+            }
+
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS) || attackResult.Damages <= 0)
+            {
+                return attackResult;
+            }
 
             attacker.Battle.Target = defender;
             defender.Battle.Target = attacker;
 
-            AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).OnDamage();
-
-            
-
-            if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
-                BattleHelper.KnockbackEntity(defender);
-
-            _battlePacketFactory.SendMeleeAttack(attacker, attackType, defender.Id, unknwonParam: 0, meleeAttackResult.Flags);
-
-            if (defender is IPlayerEntity undyingPlayer) 
+            if (defender.Type == WorldEntityType.Monster)
             {
-                if (undyingPlayer.PlayerData.Mode.HasFlag(ModeType.MATCHLESS_MODE)) 
-                {
-                    _logger.LogDebug($"{attacker.Object.Name} wasn't able to inflict any damages to {defender.Object.Name} because he is in undying mode");
-                    return;
-                }
+                defender.Follow.Target = attacker;
             }
 
-            _battlePacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
+            {
+                BattleHelper.KnockbackEntity(defender);
+            }
 
-            defender.Health.Hp -= meleeAttackResult.Damages;
-            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
+            _battlePacketFactory.SendAddDamage(defender, attacker, attackResult.Flags, attackResult.Damages);
 
-            _logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
+            defender.Attributes[DefineAttributes.HP] -= attackResult.Damages;
+            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
 
-            if (defender.Health.IsDead)
+            CheckIfDefenderIsDead(attacker, defender, attackType);
+
+            return attackResult;
+        }
+
+        /// <inheritdoc />
+        public void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed)
+        {
+            IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender);
+            AttackResult meleeAttackResult = DamageTarget(attacker, defender, attackArbiter, attackType);
+
+            if (meleeAttackResult != null)
+            {
+                _battlePacketFactory.SendMeleeAttack(attacker, attackType, defender.Id, unknwonParam: 0, meleeAttackResult.Flags);
+            }
+        }
+
+        /// <inheritdoc />
+        public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower)
+        {
+            int projectileId = _projectileSystem.CreateProjectile(new MagicProjectileInfo(attacker, defender, magicAttackPower));
+
+            _battlePacketFactory.SendMagicAttack(attacker, ObjectMessageType.OBJMSG_ATK_MAGIC1, defender.Id, magicAttackPower, projectileId);
+        }
+
+        /// <summary>
+        /// Check if the attacker entity can attack a defender entity.
+        /// </summary>
+        /// <param name="attacker">Attacker living entity.</param>
+        /// <param name="defender">Defender living entity.</param>
+        /// <returns></returns>
+        private bool CanAttack(ILivingEntity attacker, ILivingEntity defender)
+        {
+            if (attacker == defender)
+            {
+                _logger.LogError($"{attacker} cannot attack itself.");
+                return false;
+            }
+
+            if (attacker.IsDead)
+            {
+                _logger.LogError($"{attacker} cannot attack because its dead.");
+                return false;
+            }
+
+            if (defender.IsDead)
+            {
+                _logger.LogError($"{attacker} cannot attack {defender} because target is already dead.");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the defender has been killed by the attacker.
+        /// </summary>
+        /// <param name="attacker">Attacker living entity.</param>
+        /// <param name="defender">Defender living entity.</param>
+        /// <param name="attackType">Killing attack type.</param>
+        private void CheckIfDefenderIsDead(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType)
+        {
+            if (defender.IsDead)
             {
                 _logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
-                defender.Health.Hp = 0;
+                defender.Attributes[DefineAttributes.HP] = 0;
+                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
                 ClearBattleTargets(defender);
                 ClearBattleTargets(attacker);
-                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
 
                 if (defender is IMonsterEntity deadMonster && attacker is IPlayerEntity player)
                 {
@@ -167,6 +248,10 @@ namespace Rhisis.World.Systems.Battle
             }
         }
 
+        /// <summary>
+        /// Clears the battle targets.
+        /// </summary>
+        /// <param name="entity">Current entity.</param>
         private void ClearBattleTargets(ILivingEntity entity)
         {
             entity.Follow.Target = null;

@@ -1,15 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle;
-using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.Inventory;
 using Sylver.HandlerInvoker.Attributes;
+using System;
 
 namespace Rhisis.World.Handlers
 {
@@ -18,8 +16,6 @@ namespace Rhisis.World.Handlers
     {
         private readonly ILogger<BattleHandler> _logger;
         private readonly IBattleSystem _battleSystem;
-        private readonly IFollowSystem _followSystem;
-        private readonly IMoverPacketFactory _moverPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="BattleHandler"/> instance.
@@ -27,12 +23,10 @@ namespace Rhisis.World.Handlers
         /// <param name="logger">Logger.</param>
         /// <param name="battleSystem">Battle system.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleHandler(ILogger<BattleHandler> logger, IBattleSystem battleSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory)
+        public BattleHandler(ILogger<BattleHandler> logger, IBattleSystem battleSystem)
         {
             _logger = logger;
             _battleSystem = battleSystem;
-            _followSystem = followSystem;
-            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <summary>
@@ -59,18 +53,31 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            if (!target.Follow.IsFollowing && target.Type == WorldEntityType.Monster)
-            {
-                if (target.Moves.SpeedFactor != 2f)
-                {
-                    target.Moves.SpeedFactor = 2f;
-                    _moverPacketFactory.SendSpeedFactor(target, target.Moves.SpeedFactor);
-                }
+            _battleSystem.MeleeAttack(client.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
+        }
 
-                _followSystem.Follow(target, client.Player);
+        /// <summary>
+        /// On magic attack.
+        /// </summary>
+        /// <param name="client">Current client.</param>
+        /// <param name="packet">Magic attack incoming packet.</param>
+        [HandlerAction(PacketType.MAGIC_ATTACK)]
+        public void OnMagicAttack(IWorldClient client, MagicAttackPacket packet)
+        {
+            var target = client.Player.FindEntity<IMonsterEntity>(packet.TargetObjectId);
+
+            if (target == null)
+            {
+                _logger.LogError($"Cannot find target with object id {packet.TargetObjectId}");
+                return;
             }
 
-            _battleSystem.MeleeAttack(client.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
+            if (packet.MagicPower < 0)
+            {
+                _logger.LogWarning($"Magic attack power cannot be less than 0.");
+            }
+
+            _battleSystem.MagicAttack(client.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower));
         }
     }
 }

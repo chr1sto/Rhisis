@@ -18,7 +18,7 @@ namespace Rhisis.World.Game.Factories.Internal
     public sealed class NpcFactory : INpcFactory
     {
         private readonly IGameResources _gameResources;
-        private readonly IBehaviorManager behaviorManager;
+        private readonly IBehaviorManager _behaviorManager;
         private readonly IItemFactory _itemFactory;
 
         /// <summary>
@@ -30,20 +30,27 @@ namespace Rhisis.World.Game.Factories.Internal
         public NpcFactory(IGameResources gameResources, IBehaviorManager behaviorManager, IItemFactory itemFactory)
         {
             _gameResources = gameResources;
-            this.behaviorManager = behaviorManager;
+            _behaviorManager = behaviorManager;
             _itemFactory = itemFactory;
         }
 
         /// <inheritdoc />
         public INpcEntity CreateNpc(IMapContext mapContext, NpcDyoElement element)
         {
+            int npcModelId = element.Index;
+
+            if (!_gameResources.Movers.TryGetValue(npcModelId, out MoverData moverData))
+            {
+                throw new ArgumentException($"Cannot find mover with id '{npcModelId}' in game resources.", nameof(npcModelId));
+            }
+
             var npc = new NpcEntity
             {
                 Object = new ObjectComponent
                 {
                     MapId = mapContext.Id,
                     CurrentMap = mapContext as IMapInstance,
-                    ModelId = element.Index,
+                    ModelId = npcModelId,
                     Name = element.CharacterKey,
                     Angle = element.Angle,
                     Position = element.Position.Clone(),
@@ -51,20 +58,21 @@ namespace Rhisis.World.Game.Factories.Internal
                     Spawned = true,
                     Type = WorldObjectType.Mover,
                     Level = 1
-                }
+                },
+                Data = moverData
             };
-            npc.Behavior = behaviorManager.GetBehavior(BehaviorType.Npc, npc, npc.Object.ModelId);
+            npc.Behavior = _behaviorManager.GetBehavior(BehaviorType.Npc, npc, npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
             npc.Quests = _gameResources.Quests.Values.Where(x => !string.IsNullOrEmpty(x.StartCharacter) && x.StartCharacter.Equals(npc.Object.Name, StringComparison.OrdinalIgnoreCase)).ToList();
 
             if (_gameResources.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
-                npc.Data = npcData;
+                npc.NpcData = npcData;
             }
 
-            if (npc.Data != null && npc.Data.HasShop)
+            if (npc.NpcData != null && npc.NpcData.HasShop)
             {
-                ShopData npcShopData = npc.Data.Shop;
+                ShopData npcShopData = npc.NpcData.Shop;
                 npc.Shop = new ItemContainerComponent[npcShopData.Items.Length];
 
                 for (var i = 0; i < npcShopData.Items.Length; i++)

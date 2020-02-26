@@ -1,9 +1,15 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Rhisis.Core.Data;
+using Rhisis.Core.Extensions;
+using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rhisis.Core.Resources.Loaders
 {
@@ -29,6 +35,7 @@ namespace Rhisis.Core.Resources.Loaders
         public void Load()
         {
             string propJobFile = GameResourcesConstants.Paths.JobPropPath;
+            string jobsDefinitionFile = GameResourcesConstants.Paths.JobsDefinitionsPath;
 
             if (!File.Exists(propJobFile))
             {
@@ -36,20 +43,41 @@ namespace Rhisis.Core.Resources.Loaders
                 return;
             }
 
+            if (!File.Exists(jobsDefinitionFile))
+            {
+                _logger.LogWarning($"Unable to load job definitions. Reason: cannot find '{jobsDefinitionFile}' file.");
+                return;
+            }
+
+            string jobDefinitionFileContent = File.ReadAllText(jobsDefinitionFile);
+            var jobDefinitions = JsonConvert.DeserializeObject<Dictionary<DefineJob.Job, JobDefinitionData>>(jobDefinitionFileContent);
             var jobData = new ConcurrentDictionary<int, JobData>();
+
             using (var propJob = new ResourceTableFile(propJobFile, -1, new [] { '\t', ' ', '\r' }, _defines, null))
             {
-                var jobs = propJob.GetRecords<JobData>();
+                IEnumerable<JobData> jobs = propJob.GetRecords<JobData>();
 
-                foreach (var job in jobs)
+                foreach (JobData job in jobs)
                 {
-                    if (jobData.ContainsKey(job.Id))
+                    if (!jobData.TryAdd(job.Id, job))
                     {
-                        jobData[job.Id] = job;
                         _logger.LogWarning(GameResourcesConstants.Errors.ObjectOverridedMessage, "JobData", job.Id, "already delcared");
                     }
+                }
+
+                foreach (JobData job in jobData.Values)
+                {
+                    var jobId = (DefineJob.Job)job.Id;
+
+                    if (jobDefinitions.TryGetValue(jobId, out JobDefinitionData jobDefinition))
+                    {
+                        job.Parent = jobDefinition.Parent.HasValue ? jobData[(int)jobDefinition.Parent.Value] : null;
+                        job.Type = jobDefinition.Type;
+                    }
                     else
-                        jobData.TryAdd(job.Id, job);
+                    {
+                        _logger.LogWarning($"Cannot find job '{jobId.ToString()}' definition.");
+                    }
                 }
             }
 

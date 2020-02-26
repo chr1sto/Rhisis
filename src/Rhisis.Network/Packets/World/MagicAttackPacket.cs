@@ -13,7 +13,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the target object id.
         /// </summary>
-        public uint ObjectId { get; private set; }
+        public uint TargetObjectId { get; private set; }
 
         /// <summary>
         /// Gets the second parameter.
@@ -31,19 +31,19 @@ namespace Rhisis.Network.Packets.World
         public int MagicPower { get; private set; }
 
         /// <summary>
-        /// Gets the id of the hit SFX.
+        /// Gets the SFX projectile id.
         /// </summary>
-        public int IdSfxHit { get; private set; }
+        public int ProjectileId { get; private set; }
 
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
             AttackMessage = (ObjectMessageType)packet.Read<uint>();
-            ObjectId = packet.Read<uint>();
+            TargetObjectId = packet.Read<uint>();
             Parameter2 = packet.Read<int>();
             Parameter3 = packet.Read<int>();
             MagicPower = packet.Read<int>();
-            IdSfxHit = packet.Read<int>();
+            ProjectileId = packet.Read<int>();
         }
     }
 }

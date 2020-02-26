@@ -55,9 +55,9 @@ namespace Rhisis.World.Systems.Death
             int dexterity = player.Attributes[DefineAttributes.DEX];
             int intelligence = player.Attributes[DefineAttributes.INT];
 
-            player.Health.Hp = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, jobData.MaxHpFactor) * recoveryRate);
-            player.Health.Mp = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, jobData.MaxMpFactor, true) * recoveryRate);
-            player.Health.Fp = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, jobData.MaxFpFactor, true) * recoveryRate);
+            player.Attributes[DefineAttributes.HP] = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, jobData.MaxHpFactor) * recoveryRate);
+            player.Attributes[DefineAttributes.MP] = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, jobData.MaxMpFactor, true) * recoveryRate);
+            player.Attributes[DefineAttributes.FP] = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, jobData.MaxFpFactor, true) * recoveryRate);
 
             if (player.Object.MapId != revivalRegion.MapId)
             {
@@ -78,9 +78,9 @@ namespace Rhisis.World.Systems.Death
 
             _moverPacketFactory.SendMotion(player, ObjectMessageType.OBJMSG_ACC_STOP | ObjectMessageType.OBJMSG_STOP_TURN | ObjectMessageType.OBJMSG_STAND);
             _playerPacketFactory.SendPlayerRevival(player);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
 
             ProcessDeathPenality(player);
         }

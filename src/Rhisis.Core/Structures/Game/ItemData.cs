@@ -52,6 +52,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwAbilityMax")]
         public int AbilityMax { get; set; }
 
+        [DataMember(Name = "eItemType")]
+        public ElementType Element { get; set; }
+
         [DataMember(Name = "dwItemLV")]
         public int Level { get; set; }
 
@@ -124,8 +127,17 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwSkillReadyType")]
         public int SkillReadyType { get; set; }
 
+        [DataMember(Name = "dwReferStat1")]
+        public WeaponKindType WeaponKind { get; set; }
+
         [IgnoreDataMember]
         public WeaponType WeaponType => (WeaponType)Enum.ToObject(typeof(WeaponType), WeaponTypeId);
+
+        [DataMember(Name = "dwAddSkillMin")]
+        public int AttackSkillMin { get; set; }
+
+        [DataMember(Name = "dwAddSkillMax")]
+        public int AttackSkillMax { get; set; }
 
         [IgnoreDataMember]
         public bool IsStackable => PackMax > 1;

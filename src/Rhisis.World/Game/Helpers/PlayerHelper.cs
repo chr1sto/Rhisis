@@ -89,23 +89,6 @@ namespace Rhisis.World.Game.Helpers
         }
 
         /// <summary>
-        /// Gets the correct player's point based on an attribute.
-        /// </summary>
-        /// <param name="player">Player.</param>
-        /// <param name="attribute">Attribute</param>
-        /// <returns>Points based on the given attribute.</returns>
-        public static int GetPoints(IPlayerEntity player, DefineAttributes attribute)
-        {
-            switch (attribute)
-            {
-                case DefineAttributes.HP: return player.Health.Hp + player.Attributes[DefineAttributes.HP];
-                case DefineAttributes.MP: return player.Health.Mp + player.Attributes[DefineAttributes.MP];
-                case DefineAttributes.FP: return player.Health.Fp + player.Attributes[DefineAttributes.FP];
-                default: return -1;
-            }
-        }
-
-        /// <summary>
         /// Sets the player's points.
         /// </summary>
         /// <param name="player">Player.</param>
@@ -114,17 +97,13 @@ namespace Rhisis.World.Game.Helpers
         public static void SetPoints(IPlayerEntity player, DefineAttributes attribute, int value)
         {
             int max = GetMaxPoints(player, attribute);
-            int current = GetPoints(player, attribute);
 
-            if (current == value)
-                return;
-
-            switch (attribute)
+            if (player.Attributes[attribute] == value)
             {
-                case DefineAttributes.HP: player.Health.Hp = Math.Min(value, max); break;
-                case DefineAttributes.MP: player.Health.Mp = Math.Min(value, max); break;
-                case DefineAttributes.FP: player.Health.Fp = Math.Min(value, max); break;
+                return;
             }
+
+            player.Attributes[attribute] = Math.Min(value, max);
         }
 
         /// <summary>
@@ -135,13 +114,13 @@ namespace Rhisis.World.Game.Helpers
         /// <returns>Max points based on the given attribute.</returns>
         public static int GetMaxPoints(IPlayerEntity player, DefineAttributes attribute)
         {
-            switch (attribute)
+            return attribute switch
             {
-                case DefineAttributes.HP: return GetMaxHP(player);
-                case DefineAttributes.MP: return GetMaxMP(player);
-                case DefineAttributes.FP: return GetMaxFP(player);
-                default: return -1;
-            }
+                DefineAttributes.HP => GetMaxHP(player),
+                DefineAttributes.MP => GetMaxMP(player),
+                DefineAttributes.FP => GetMaxFP(player),
+                _ => -1,
+            };
         }
 
         /// <summary>

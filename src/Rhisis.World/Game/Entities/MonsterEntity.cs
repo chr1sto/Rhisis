@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
@@ -13,6 +14,9 @@ namespace Rhisis.World.Game.Entities
     {
         /// <inheritdoc />
         public override WorldEntityType Type => WorldEntityType.Monster;
+
+        /// <inheritdoc />
+        public bool IsDead => Attributes[DefineAttributes.HP] <= 0;
 
         /// <inheritdoc />
         public IMapRespawnRegion Region { get; set; }
@@ -36,9 +40,6 @@ namespace Rhisis.World.Game.Entities
         public BattleComponent Battle { get; set; }
 
         /// <inheritdoc />
-        public HealthComponent Health { get; set; }
-
-        /// <inheritdoc />
         public StatisticsComponent Statistics { get; set; }
 
         /// <inheritdoc />
@@ -58,7 +59,6 @@ namespace Rhisis.World.Game.Entities
             Follow = new FollowComponent();
             Interaction = new InteractionComponent();
             Battle = new BattleComponent();
-            Health = new HealthComponent();
             Attributes = new AttributeComponent();
         }
     }

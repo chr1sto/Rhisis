@@ -73,7 +73,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.PLAYERMOVED)]
         public void OnPlayerMoved(IWorldClient client, PlayerMovedPacket packet)
         {
-            if (client.Player.Health.IsDead)
+            if (client.Player.IsDead)
             {
                 _logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
                 return;
@@ -107,7 +107,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.PLAYERBEHAVIOR)]
         public void OnPlayerBehavior(IWorldClient client, PlayerBehaviorPacket packet)
         {
-            if (client.Player.Health.IsDead)
+            if (client.Player.IsDead)
             {
                 _logger.LogError($"Player {client.Player.Object.Name} is dead, he cannot move with keyboard.");
                 return;
@@ -139,7 +139,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
         public void OnRevivalToLodestar(IWorldClient client, INetPacketStream _)
         {
-            if (!client.Player.Health.IsDead)
+            if (!client.Player.IsDead)
             {
                 _logger.LogWarning($"Player '{client.Player.Object.Name}' tried to revival to lodestar without being dead.");
                 return;

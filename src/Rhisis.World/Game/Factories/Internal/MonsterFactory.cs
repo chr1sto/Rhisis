@@ -54,12 +54,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 Timers = new TimerComponent
                 {
                     NextMoveTime = RandomHelper.LongRandom(8, 20)
-                },
-                Health = new HealthComponent
-                {
-                    Hp = moverData.AddHp,
-                    Mp = moverData.AddMp,
-                    Fp = 0
                 }
             };
 
@@ -68,16 +62,21 @@ namespace Rhisis.World.Game.Factories.Internal
                 Speed = moverData.Speed / 2,
                 DestinationPosition = monster.Object.Position.Clone()
             };
-            monster.Attributes.ResetAttribute(DefineAttributes.STR, moverData.Strength);
-            monster.Attributes.ResetAttribute(DefineAttributes.STA, moverData.Stamina);
-            monster.Attributes.ResetAttribute(DefineAttributes.DEX, moverData.Dexterity);
-            monster.Attributes.ResetAttribute(DefineAttributes.INT, moverData.Intelligence);
-            monster.Behavior = _behaviorManager.GetBehavior(BehaviorType.Monster, monster, moverId);
+
             monster.Data = moverData;
             monster.Region = region;
+            monster.Attributes[DefineAttributes.HP] = moverData.AddHp;
+            monster.Attributes[DefineAttributes.MP] = moverData.AddMp;
+            monster.Attributes[DefineAttributes.STR] = moverData.Strength;
+            monster.Attributes[DefineAttributes.STA] = moverData.Stamina;
+            monster.Attributes[DefineAttributes.DEX] = moverData.Dexterity;
+            monster.Attributes[DefineAttributes.INT] = moverData.Intelligence;
+            monster.Behavior = _behaviorManager.GetBehavior(BehaviorType.Monster, monster, moverId);
 
             if (moverData.Class == MoverClassType.RANK_BOSS)
+            {
                 monster.Object.Size *= 2;
+            }
 
             return monster;
         }

@@ -8,15 +8,14 @@ using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Systems.Battle
 {
+
     /// <summary>
     /// Provides a mechanism to calculate a melee attack result based on the attacker and defender statistics.
     /// </summary>
-    public class MeleeAttackArbiter
+    public class MeleeAttackArbiter : AttackArbiterBase, IAttackArbiter
     {
         public const int MinimalHitRate = 20;
         public const int MaximalHitRate = 96;
-        private readonly ILivingEntity _attacker;
-        private readonly ILivingEntity _defender;
 
         /// <summary>
         /// Creates a new <see cref="MeleeAttackArbiter"/> instance.
@@ -24,61 +23,50 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attacker">Attacker entity</param>
         /// <param name="defender">Defender entity</param>
         public MeleeAttackArbiter(ILivingEntity attacker, ILivingEntity defender)
+            : base(attacker, defender)
         {
-            _attacker = attacker;
-            _defender = defender;
         }
 
-        /// <summary>
-        /// Gets the melee damages inflicted by an attacker to a defender.
-        /// </summary>
-        /// <returns><see cref="AttackResult"/></returns>
-        public AttackResult OnDamage()
+        /// <inheritdoc />
+        public override AttackResult CalculateDamages()
         {
             var attackResult = new AttackResult
             {
                 Flags = GetAttackFlags()
-            };  
+            };
             
-            if (_attacker is IPlayerEntity player)
-            {
-                if (!player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
-                {
-                    if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
-                    {
-                        return attackResult;
-                    }
-                    Item rightWeapon = player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot) ?? InventorySystem.Hand;
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                return attackResult;
 
-                    // TODO: GetDamagePropertyFactor()
-                    int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
-                    attackResult.AttackMin = rightWeapon.Data.AbilityMin * 2 + weaponAttack;
-                    attackResult.AttackMax = rightWeapon.Data.AbilityMax * 2 + weaponAttack;
-                }
-                else 
-                {
-                    attackResult.Damages = _defender.Health.Hp; 
-                    attackResult.Flags = AttackFlags.AF_GENERIC; 
-                    return attackResult;
-                }
+            if (Attacker is IPlayerEntity player)
+            {
+                Item rightWeapon = player.Inventory[InventorySystem.RightWeaponSlot] ?? InventorySystem.Hand;
+
+                // TODO: GetDamagePropertyFactor()
+                int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
+                attackResult.AttackMin = rightWeapon.Data.AbilityMin * 2 + weaponAttack;
+                attackResult.AttackMax = rightWeapon.Data.AbilityMax * 2 + weaponAttack;
             }
-            else if (_attacker is IMonsterEntity monster)
+            else if (Attacker is IMonsterEntity monster)
             {
                 if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
                 {
                     return attackResult;
                 }
+
                 attackResult.AttackMin = monster.Data.AttackMin;
                 attackResult.AttackMax = monster.Data.AttackMax;
             }
 
-            if (IsCriticalAttack(_attacker, attackResult.Flags))
+            if (IsCriticalAttack(Attacker, attackResult.Flags))
             {
                 attackResult.Flags |= AttackFlags.AF_CRITICAL;
                 CalculateCriticalDamages(attackResult);
 
                 if (IsKnockback(attackResult.Flags))
+                {
                     attackResult.Flags |= AttackFlags.AF_FLYING;
+                }
             }
 
             attackResult.Damages = RandomHelper.Random(attackResult.AttackMin, attackResult.AttackMax);
@@ -112,20 +100,20 @@ namespace Rhisis.World.Systems.Battle
             // TODO: if attacker mode == ONEKILL_MODE, return AF_GENERIC
 
             int hitRate;
-            int hitRating = GetHitRating(_attacker);
-            int escapeRating = GetEspaceRating(_defender);
+            int hitRating = GetHitRating(Attacker);
+            int escapeRating = GetEspaceRating(Defender);
 
-            if (_attacker.Type == WorldEntityType.Monster && _defender.Type == WorldEntityType.Player)
+            if (Attacker.Type == WorldEntityType.Monster && Defender.Type == WorldEntityType.Player)
             {
                 // Monster VS Player
                 hitRate = (int)(((hitRating * 1.5f) / (hitRating + escapeRating)) * 2.0f *
-                          (_attacker.Object.Level * 0.5f / (_attacker.Object.Level + _defender.Object.Level * 0.3f)) * 100.0f);
+                          (Attacker.Object.Level * 0.5f / (Attacker.Object.Level + Defender.Object.Level * 0.3f)) * 100.0f);
             }
             else
             {
                 // Player VS Player or Player VS Monster
                 hitRate = (int)(((hitRating * 1.6f) / (hitRating + escapeRating)) * 1.5f *
-                          (_attacker.Object.Level * 1.2f / (_attacker.Object.Level + _defender.Object.Level)) * 100.0f);
+                          (Attacker.Object.Level * 1.2f / (Attacker.Object.Level + Defender.Object.Level)) * 100.0f);
             }
 
             hitRate = MathHelper.Clamp(hitRate, MinimalHitRate, MaximalHitRate);
@@ -144,21 +132,6 @@ namespace Rhisis.World.Systems.Battle
                 return player.Attributes[DefineAttributes.DEX]; // TODO: add dex bonus
             else if (entity is IMonsterEntity monster)
                 return monster.Data.HitRating;
-
-            return 0;
-        }
-
-        /// <summary>
-        /// Gets the escape rating of an entity.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public int GetEspaceRating(ILivingEntity entity)
-        {
-            if (entity is IPlayerEntity player)
-                return (int)(player.Attributes[DefineAttributes.DEX] * 0.5f); // TODO: add dex bonus and DST_PARRY
-            else if (entity is IMonsterEntity monster)
-                return monster.Data.EscapeRating;
 
             return 0;
         }
@@ -195,9 +168,9 @@ namespace Rhisis.World.Systems.Battle
             float criticalMin = 1.1f;
             float criticalMax = 1.4f;
 
-            if (_attacker.Object.Level > _defender.Object.Level)
+            if (Attacker.Object.Level > Defender.Object.Level)
             {
-                if (_defender.Type == WorldEntityType.Monster)
+                if (Defender.Type == WorldEntityType.Monster)
                 {
                     criticalMin = 1.2f;
                     criticalMax = 2.0f;
@@ -227,23 +200,23 @@ namespace Rhisis.World.Systems.Battle
         {
             bool knockbackChance = RandomHelper.Random(0, 100) < 15;
 
-            if (_defender.Type == WorldEntityType.Player)
+            if (Defender.Type == WorldEntityType.Player)
                 return false;
 
-            if (_attacker is IPlayerEntity player)
+            if (Attacker is IPlayerEntity player)
             {
-                var weapon = player.Inventory[InventorySystem.RightWeaponSlot];
+                Item weapon = player.Inventory[InventorySystem.RightWeaponSlot] ?? InventorySystem.Hand;
 
-                if (weapon == null)
-                    weapon = InventorySystem.Hand;
                 if (weapon.Data.WeaponType == WeaponType.MELEE_YOYO || attackerAttackFlags.HasFlag(AttackFlags.AF_FORCE))
+                {
                     return false;
+                }
             }
 
             bool canFly = false;
 
             // TODO: if is flying, return false
-            if ((_defender.Object.MovingFlags & ObjectState.OBJSTA_DMG_FLY_ALL) == 0 && _defender is IMonsterEntity monster)
+            if ((Defender.Object.MovingFlags & ObjectState.OBJSTA_DMG_FLY_ALL) == 0 && Defender is IMonsterEntity monster)
             {
                 canFly = monster.Data.Class != MoverClassType.RANK_SUPER && 
                     monster.Data.Class != MoverClassType.RANK_MATERIAL && 
@@ -251,109 +224,6 @@ namespace Rhisis.World.Systems.Battle
             }
 
             return canFly && knockbackChance;
-        }
-
-        /// <summary>
-        /// Gets the defender defense.
-        /// </summary>
-        /// <param name="attackResult"></param>
-        /// <returns></returns>
-        public int GetDefenderDefense(AttackResult attackResult)
-        {
-            bool isGenericAttack = attackResult.Flags.HasFlag(AttackFlags.AF_GENERIC);
-
-            if (_attacker.Type == WorldEntityType.Player && _defender.Type == WorldEntityType.Player)
-                isGenericAttack = true;
-
-            if (isGenericAttack)
-            {
-                float factor = 1f;
-
-                if (_defender is IPlayerEntity player)
-                    factor = player.PlayerData.JobData.DefenseFactor;
-
-                int stamina = _defender.Attributes[DefineAttributes.STA];
-                int level = _defender.Object.Level;
-                int defense = (int)(((((level * 2) + (stamina / 2)) / 2.8f) - 4) + ((stamina - 14) * factor));
-                // TODO: add defense armor
-                // TODO: add DST_ADJDEF
-
-                if (defense < 0)
-                    defense = 0;
-
-                return defense;
-            }
-
-            if (_defender is IMonsterEntity monster)
-            {
-                var monsterDefenseArmor = attackResult.Flags.HasFlag(AttackFlags.AF_MAGIC) ? monster.Data.MagicResitance : monster.Data.NaturalArmor;
-
-                return (int)(monsterDefenseArmor / 7f + 1);
-            }
-
-            return 0;
-        }
-
-        /// <summary>
-        /// Gets the defender blocking factor.
-        /// </summary>
-        /// <returns>Defender blocking factor</returns>
-        public float GetDefenderBlockFactor()
-        {
-            if (_defender.Type == WorldEntityType.Player)
-            {
-                int blockRandomProbability = RandomHelper.Random(0, 80);
-
-                if (blockRandomProbability <= 5)
-                    return 1f;
-                if (blockRandomProbability >= 75f)
-                    return 0.1f;
-
-                int defenderLevel = _defender.Object.Level;
-                int defenderDexterity = _defender.Attributes[DefineAttributes.DEX];
-
-                float blockProbabilityA = defenderLevel / ((defenderLevel + _attacker.Object.Level) * 15.0f);
-                float blockProbabilityB = (defenderDexterity + _attacker.Attributes[DefineAttributes.DEX] + 2) * ((defenderDexterity - _attacker.Attributes[DefineAttributes.DEX]) / 800.0f);
-
-                if (blockProbabilityB > 10.0f)
-                    blockProbabilityB = 10.0f;
-                float blockProbability = blockProbabilityA + blockProbabilityB;
-                if (blockProbability < 0.0f)
-                    blockProbability = 0.0f;
-
-                // TODO: range attack probability
-
-                var player = _defender as IPlayerEntity;
-                if (player is null)
-                    return 0f;
-
-                int blockRate = (int)((defenderDexterity / 8.0f) * player.PlayerData.JobData.Blocking + blockProbability);
-
-                if (blockRate < 0)
-                    blockRate = 0;
-                
-                if (blockRate > blockRandomProbability)
-                    return 0f;
-            }
-            else if (_defender.Type == WorldEntityType.Monster)
-            {
-                int blockRandomProbability = RandomHelper.Random(0, 100);
-
-                if (blockRandomProbability <= 5)
-                    return 1f;
-                if (blockRandomProbability >= 95)
-                    return 0f;
-
-                int blockRate = (int)((GetEspaceRating(_defender) - _defender.Object.Level) * 0.5f);
-
-                if (blockRate < 0)
-                    blockRate = 0;
-
-                if (blockRate > blockRandomProbability)
-                    return 0.2f;
-            }
-
-            return 1f;  
         }
     }
 }

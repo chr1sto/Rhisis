@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
@@ -23,7 +24,7 @@ namespace Rhisis.World.Systems
         /// <inheritdoc />
         public void Execute(IWorldEntity entity)
         {
-            if (entity is IMonsterEntity monster && monster.Health.IsDead)
+            if (entity is IMonsterEntity monster && monster.IsDead)
             {
                 if (monster.Object.Spawned && monster.Timers.DespawnTime < Time.TimeInSeconds())
                 {
@@ -73,8 +74,8 @@ namespace Rhisis.World.Systems
             monster.Object.Position = monster.Region.GetRandomPosition();
             monster.Moves.DestinationPosition = monster.Object.Position.Clone();
             monster.Moves.SpeedFactor = 1;
-            monster.Health.Hp = monster.Data.AddHp;
-            monster.Health.Mp = monster.Data.AddMp;
+            monster.Attributes[DefineAttributes.HP] = monster.Data.AddHp;
+            monster.Attributes[DefineAttributes.MP] = monster.Data.AddMp;
         }
 
         /// <summary>

@@ -47,6 +47,22 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
+        public void SendMagicAttack(ILivingEntity attacker, ObjectMessageType motion, uint target, int magicAttackPower, int projectileId)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(attacker.Id, SnapshotType.MAGIC_ATTACK);
+            packet.Write((int)motion);
+            packet.Write(target);
+            packet.Write(0); // unused parameter, always 0
+            packet.Write(0); // unused parameter, always 0
+            packet.Write(magicAttackPower);
+            packet.Write(projectileId);
+
+            SendToVisible(packet, attacker);
+        }
+
+        /// <inheritdoc />
         public void SendDie(IPlayerEntity player, ILivingEntity deadEntity, ILivingEntity killerEntity, ObjectMessageType motion)
         {
             using var packet = new FFPacket();

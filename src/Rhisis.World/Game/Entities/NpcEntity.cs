@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Behaviors;
@@ -13,10 +14,16 @@ namespace Rhisis.World.Game.Entities
         public override WorldEntityType Type => WorldEntityType.Npc;
 
         /// <inheritdoc />
+        public bool IsDead => Attributes[DefineAttributes.HP] <= 0;
+
+        /// <inheritdoc />
         public ItemContainerComponent[] Shop { get; set; }
 
         /// <inheritdoc />
-        public NpcData Data { get; set; }
+        public MoverData Data { get; set; }
+
+        /// <inheritdoc />
+        public NpcData NpcData { get; set; }
 
         /// <inheritdoc />
         public IEnumerable<IQuestScript> Quests { get; set; }
@@ -29,9 +36,6 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public BattleComponent Battle { get; set; }
-
-        /// <inheritdoc />
-        public HealthComponent Health { get; set; }
 
         /// <inheritdoc />
         public AttributeComponent Attributes { get; set; }
@@ -55,7 +59,6 @@ namespace Rhisis.World.Game.Entities
             Timers = new TimerComponent();
             Interaction = new InteractionComponent();
             Battle = new BattleComponent();
-            Health = new HealthComponent();
             Attributes = new AttributeComponent();
             Moves = new MovableComponent();
             Follow = new FollowComponent();

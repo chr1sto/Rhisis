@@ -36,9 +36,9 @@ namespace Rhisis.World.Systems.Experience
 
             if (GiveExperienceToPlayer(player, exp))
             {
-                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
                 _playerPacketFactory.SendPlayerSetLevel(player, player.Object.Level);
                 _playerPacketFactory.SendPlayerStatsPoints(player);
             }
@@ -108,9 +108,9 @@ namespace Rhisis.World.Systems.Experience
             var intelligence = player.Attributes[DefineAttributes.INT];
 
             player.PlayerData.Experience = 0;
-            player.Health.Hp = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);
-            player.Health.Mp = HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, player.PlayerData.JobData.MaxMpFactor, true);
-            player.Health.Fp = HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, player.PlayerData.JobData.MaxFpFactor, true);
+            player.Attributes[DefineAttributes.HP] = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);
+            player.Attributes[DefineAttributes.MP] = HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, player.PlayerData.JobData.MaxMpFactor, true);
+            player.Attributes[DefineAttributes.FP] = HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, player.PlayerData.JobData.MaxFpFactor, true);
         }
     }
 }

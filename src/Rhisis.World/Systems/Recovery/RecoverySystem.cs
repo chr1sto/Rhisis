@@ -45,8 +45,10 @@ namespace Rhisis.World.Systems.Recovery
 
             player.Timers.NextHealTime = Time.TimeInSeconds() + nextHealDelay;
 
-            if (player.Health.IsDead)
+            if (player.IsDead)
+            {
                 return;
+            }
 
             int strength = player.Attributes[DefineAttributes.STR];
             int stamina = player.Attributes[DefineAttributes.STA];
@@ -60,20 +62,20 @@ namespace Rhisis.World.Systems.Recovery
             int recoveryMp = HealthFormulas.GetMpRecovery(maxMp, player.Object.Level, intelligence, player.PlayerData.JobData.MpRecoveryFactor);
             int recoveryFp = HealthFormulas.GetFpRecovery(maxFp, player.Object.Level, stamina, player.PlayerData.JobData.FpRecoveryFactor);
 
-            player.Health.Hp += recoveryHp;
-            player.Health.Mp += recoveryMp;
-            player.Health.Fp += recoveryFp;
+            player.Attributes[DefineAttributes.HP] += recoveryHp;
+            player.Attributes[DefineAttributes.MP] += recoveryMp;
+            player.Attributes[DefineAttributes.FP] += recoveryFp;
 
-            if (player.Health.Hp > maxHp)
-                player.Health.Hp = maxHp;
-            if (player.Health.Mp > maxMp)
-                player.Health.Mp = maxMp;
-            if (player.Health.Fp > maxFp)
-                player.Health.Fp = maxFp;
+            if (player.Attributes[DefineAttributes.HP] > maxHp)
+                player.Attributes[DefineAttributes.HP] = maxHp;
+            if (player.Attributes[DefineAttributes.MP] > maxMp)
+                player.Attributes[DefineAttributes.MP] = maxMp;
+            if (player.Attributes[DefineAttributes.FP] > maxFp)
+                player.Attributes[DefineAttributes.FP] = maxFp;
 
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
         }
     }
 }
