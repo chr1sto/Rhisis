@@ -25,7 +25,7 @@ namespace Rhisis.World.Game.Structures
         /// </summary>
         /// <param name="owner">Projectile owner entity.</param>
         /// <param name="target">Projectile target entity.</param>
-        public ProjectileInfo(ILivingEntity owner, ILivingEntity target)
+        protected ProjectileInfo(ILivingEntity owner, ILivingEntity target)
         {
             Owner = owner;
             Target = target;

@@ -138,11 +138,6 @@ namespace Rhisis.World.Packets.Internal
 
                 // skills
                 player.SkillTree.Serialize(packet);
-                //for (var i = 0; i < 45; ++i)
-                //{
-                //    packet.Write(-1); // skill id
-                //    packet.Write(0); // skill level
-                //}
 
                 packet.Write<byte>(0); // cheer point
                 packet.Write(0); // next cheer point ?
