@@ -85,16 +85,23 @@ namespace Rhisis.World.Handlers
 
             if (projectile != null)
             {
+                bool isProjectileValid = true;
+
                 if (projectile.Target.Id != packet.TargetId)
                 {
                     _logger.LogError($"Invalid projectile target for '{client.Player}'");
-                    return;
+                    isProjectileValid = false;
                 }
 
                 if (projectile.Type != (AttackFlags)packet.Type)
                 {
                     _logger.LogError($"Invalid projectile type for '{client.Player}'");
-                    return;
+                    isProjectileValid = false;
+                }
+
+                if (!isProjectileValid)
+                {
+                    _projectileSystem.RemoveProjectile(client.Player, packet.IdSfxHit);
                 }
             }
         }
