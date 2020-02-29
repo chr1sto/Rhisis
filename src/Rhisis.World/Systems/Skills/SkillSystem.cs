@@ -77,11 +77,11 @@ namespace Rhisis.World.Systems.Skills
         public void Save(IPlayerEntity player)
         {
             var skillsSet = from x in _database.Skills.GetCharacterSkills(player.PlayerData.Id).AsQueryable().AsNoTracking().ToList()
-                           join s in player.SkillTree.Skills on
-                            new { x.SkillId, x.CharacterId }
-                            equals
-                            new { s.SkillId, s.CharacterId }
-                           select new { DbSkill = x, PlayerSkill = s };
+                            join s in player.SkillTree.Skills on
+                             new { x.SkillId, x.CharacterId }
+                             equals
+                             new { s.SkillId, s.CharacterId }
+                            select new { DbSkill = x, PlayerSkill = s };
 
             foreach (var skillToUpdate in skillsSet)
             {
@@ -379,7 +379,7 @@ namespace Rhisis.World.Systems.Skills
                 int castingTime = (int)((skill.LevelData.CastingTime / 1000f) * (60 / 4));
 
                 castingTime -= castingTime * (caster.Attributes[DefineAttributes.SPELL_RATE] / 100);
-                
+
                 return Math.Max(castingTime, 0);
             }
         }
@@ -398,6 +398,7 @@ namespace Rhisis.World.Systems.Skills
             if (skill.Data.SpellRegionType == SpellRegionType.Around)
             {
                 // TODO: AoE
+                _textPacketFactory.SendFeatureNotImplemented(caster as IPlayerEntity, "AoE skills");
             }
             else
             {
@@ -405,16 +406,7 @@ namespace Rhisis.World.Systems.Skills
 
                 caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
                 {
-                    IAttackArbiter attackArbiter = new MeleeSkillAttackArbiter(caster, target, skill);
-
-                    _battleSystem.DamageTarget(caster, target, attackArbiter, ObjectMessageType.OBJMSG_MELEESKILL);
-
-                    if (skill.LevelData.CooldownTime > 0)
-                    {
-                        skill.SetCoolTime(skill.LevelData.CooldownTime);
-                    }
-
-                    ReduceCasterPoints(caster, skill);
+                    ExecuteSkill(caster, target, skill);
                 });
             }
         }
@@ -433,6 +425,7 @@ namespace Rhisis.World.Systems.Skills
             if (skill.Data.SpellRegionType == SpellRegionType.Around)
             {
                 // TODO: AoE
+                _textPacketFactory.SendFeatureNotImplemented(caster as IPlayerEntity, "AoE skills");
             }
             else
             {
@@ -440,17 +433,46 @@ namespace Rhisis.World.Systems.Skills
 
                 caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
                 {
-                    IAttackArbiter attackArbiter = new MagicSkillAttackArbiter(caster, target, skill);
-
-                    _battleSystem.DamageTarget(caster, target, attackArbiter, ObjectMessageType.OBJMSG_MAGICSKILL);
-
-                    if (skill.LevelData.CooldownTime > 0)
-                    {
-                        skill.SetCoolTime(skill.LevelData.CooldownTime);
-                    }
-
-                    ReduceCasterPoints(caster, skill);
+                    ExecuteSkill(caster, target, skill);
                 });
+            }
+        }
+
+        /// <summary>
+        /// Executes a melee or magic skill and inflicts the damages to the target.
+        /// </summary>
+        /// <param name="caster">Living entity casting a skill.</param>
+        /// <param name="target">Living target entity touched by the skill.</param>
+        /// <param name="skill">Skill to be casted.</param>
+        /// <param name="reduceCasterPoints">Value that indicates if it should reduce caster points or not.</param>
+        private void ExecuteSkill(ILivingEntity caster, ILivingEntity target, SkillInfo skill, bool reduceCasterPoints = true)
+        {
+            ObjectMessageType skillMessageType = ObjectMessageType.OBJMSG_NONE;
+            IAttackArbiter attackArbiter = null;
+
+            switch (skill.Data.Type)
+            {
+                case SkillType.Magic:
+                    attackArbiter = new MagicSkillAttackArbiter(caster, target, skill);
+                    skillMessageType = ObjectMessageType.OBJMSG_MAGICSKILL;
+                    break;
+
+                case SkillType.Skill:
+                    attackArbiter = new MeleeSkillAttackArbiter(caster, target, skill);
+                    skillMessageType = ObjectMessageType.OBJMSG_MELEESKILL;
+                    break;
+            }
+
+            _battleSystem.DamageTarget(caster, target, attackArbiter, skillMessageType);
+
+            if (skill.LevelData.CooldownTime > 0)
+            {
+                skill.SetCoolTime(skill.LevelData.CooldownTime);
+            }
+
+            if (reduceCasterPoints)
+            {
+                ReduceCasterPoints(caster, skill);
             }
         }
 
@@ -464,9 +486,18 @@ namespace Rhisis.World.Systems.Skills
         private void CastMagicAttackShot(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
         {
             int skillCastingTime = GetSkillCastingTime(caster, skill);
+            var projectile = new MagicSkillProjectileInfo(caster, target, skill, () =>
+            {
+                ExecuteSkill(caster, target, skill, reduceCasterPoints: false);
+            });
 
-            _projectileSystem.CreateProjectile(new MagicSkillProjectileInfo(caster, target, skill));
+            _projectileSystem.CreateProjectile(projectile);
             _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+
+            caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
+            {
+                ReduceCasterPoints(caster, skill);
+            });
         }
 
         /// <summary>
