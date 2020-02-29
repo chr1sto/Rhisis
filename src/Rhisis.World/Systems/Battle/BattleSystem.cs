@@ -90,6 +90,8 @@ namespace Rhisis.World.Systems.Battle
 
             if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS) || attackResult.Damages <= 0)
             {
+                _battlePacketFactory.SendAddDamage(defender, attacker, attackResult.Flags, attackResult.Damages);
+
                 return attackResult;
             }
 
@@ -131,7 +133,13 @@ namespace Rhisis.World.Systems.Battle
         /// <inheritdoc />
         public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower)
         {
-            int projectileId = _projectileSystem.CreateProjectile(new MagicProjectileInfo(attacker, defender, magicAttackPower));
+            var projectile = new MagicProjectileInfo(attacker, defender, magicAttackPower, onArrived: () =>
+            {
+                IAttackArbiter magicAttackArbiter = new MagicAttackArbiter(attacker, defender, magicAttackPower);
+                
+                DamageTarget(attacker, defender, magicAttackArbiter, ObjectMessageType.OBJMSG_ATK_MAGIC1);
+            });
+            int projectileId = _projectileSystem.CreateProjectile(projectile);
 
             _battlePacketFactory.SendMagicAttack(attacker, ObjectMessageType.OBJMSG_ATK_MAGIC1, defender.Id, magicAttackPower, projectileId);
         }

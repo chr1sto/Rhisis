@@ -8,7 +8,6 @@ using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Systems.Battle
 {
-
     /// <summary>
     /// Provides a mechanism to calculate a melee attack result based on the attacker and defender statistics.
     /// </summary>

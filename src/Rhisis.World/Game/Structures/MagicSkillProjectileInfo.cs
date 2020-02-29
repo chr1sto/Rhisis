@@ -20,8 +20,9 @@ namespace Rhisis.World.Game.Structures
         /// <param name="owner">Projectile owner entity.</param>
         /// <param name="target">Projectile target entity.</param>
         /// <param name="skill">Projectile skill.</param>
-        public MagicSkillProjectileInfo(ILivingEntity owner, ILivingEntity target, SkillInfo skill) 
-            : base(owner, target)
+        /// <param name="onArrived">Action to execute when the magic attack projectile arrives to its target.</param>
+        public MagicSkillProjectileInfo(ILivingEntity owner, ILivingEntity target, SkillInfo skill, Action onArrived) 
+            : base(owner, target, onArrived)
         {
             Skill = skill;
         }

@@ -1,5 +1,6 @@
 ﻿using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
+using System;
 
 namespace Rhisis.World.Game.Structures
 {
@@ -19,8 +20,9 @@ namespace Rhisis.World.Game.Structures
         /// <param name="owner">Projectile owner entity.</param>
         /// <param name="target">Projectile target entity.</param>
         /// <param name="magicPower">Magic attack power.</param>
-        public MagicProjectileInfo(ILivingEntity owner, ILivingEntity target, int magicPower) 
-            : base(owner, target)
+        /// <param name="onArrived">Action to execute when the magic projectile arrives to its target.</param>
+        public MagicProjectileInfo(ILivingEntity owner, ILivingEntity target, int magicPower, Action onArrived) 
+            : base(owner, target, onArrived)
         {
             MagicPower = magicPower;
         }
