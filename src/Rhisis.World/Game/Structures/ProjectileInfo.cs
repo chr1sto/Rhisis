@@ -19,7 +19,7 @@ namespace Rhisis.World.Game.Structures
         /// <summary>
         /// Gets the action to execute when the projectile arrives to its target.
         /// </summary>
-        public Action OnArrived;
+        public Action OnArrived { get; }
 
         /// <summary>
         /// Gets or sets the projectile attack type.

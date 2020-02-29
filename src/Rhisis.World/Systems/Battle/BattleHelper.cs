@@ -105,7 +105,7 @@ namespace Rhisis.World.Systems.Battle
         public static AttackResult GetWeaponAttackPower(ILivingEntity entity, Item weapon)
         {
             float multiplier = GetWeaponItemMultiplier(weapon);
-            int power = weapon?.Refine > 0 ? (int)Math.Pow(weapon.Refine, 1.5f) : default;
+            int power = weapon?.Refine > 0 ? (int)Math.Pow(weapon?.Refine ?? default, 1.5f) : default;
 
             return new AttackResult
             {
