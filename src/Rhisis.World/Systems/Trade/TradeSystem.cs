@@ -8,6 +8,7 @@ using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.PlayerData;
 using System;
+using System.Linq;
 
 namespace Rhisis.World.Systems.Trade
 {
@@ -140,14 +141,14 @@ namespace Rhisis.World.Systems.Trade
                 return;
             }
 
-            Item inventoryItem = player.Inventory.GetItem(itemUniqueId);
+            Item inventoryItem = player.Inventory.GetItemAtIndex(itemUniqueId);
 
             if (inventoryItem == null)
             {
                 throw new ArgumentNullException($"Cannot find item with unique id '{itemUniqueId}' in '{player.Object.Name}' inventory.');");
             }
 
-            if (!IsTradeItemValid(inventoryItem, out DefineText errorText))
+            if (!IsTradeItemValid(player, inventoryItem, out DefineText errorText))
             {
                 _textPacketFactory.SendDefinedText(player, errorText);
             }
@@ -161,7 +162,8 @@ namespace Rhisis.World.Systems.Trade
             }
 
             inventoryItem.ExtraUsed = tradingQuantity;
-            player.Trade.Items[destinationSlot] = inventoryItem;
+
+            player.Trade.Items.SetItemAtIndex(inventoryItem.Clone(), destinationSlot);
             player.Trade.ItemCount++;
 
             _tradePacketFactory.SendTradePut(player, trader: player, (byte)destinationSlot, (byte)itemType, (byte)inventoryItem.UniqueId, (short)tradingQuantity);
@@ -321,17 +323,18 @@ namespace Rhisis.World.Systems.Trade
         {
             if (player.Trade.IsTrading == isTrading)
             {
-                throw new InvalidOperationException($"Player '{player.Object.Name}' is {(!isTrading ? "not" : "already" )} trading.");
+                throw new InvalidOperationException($"Player '{player.Object.Name}' is {(!isTrading ? "not" : "already")} trading.");
             }
         }
 
         /// <summary>
         /// Check if the item to trade is valid.
         /// </summary>
+        /// <param name="player">Current player.</param>
         /// <param name="itemToTrade">Item to trade.</param>
         /// <param name="errorText">Output error text if item is not valid.</param>
         /// <returns>True if item is valid; false otherwise.</returns>
-        private bool IsTradeItemValid(Item itemToTrade, out DefineText errorText)
+        private bool IsTradeItemValid(IPlayerEntity player, Item itemToTrade, out DefineText errorText)
         {
             errorText = DefineText.TID_BLANK;
 
@@ -341,7 +344,7 @@ namespace Rhisis.World.Systems.Trade
                 return false;
             }
 
-            if (itemToTrade.IsEquipped())
+            if (player.Inventory.IsItemEquiped(itemToTrade))
             {
                 errorText = DefineText.TID_GAME_CANNOTTRADE_ITEM;
                 return false;
@@ -437,7 +440,7 @@ namespace Rhisis.World.Systems.Trade
         {
             for (int i = 0; i < MaxTrade; i++)
             {
-                Item item = player.Trade.Items.Items[i];
+                Item item = player.Trade.Items.ElementAt(i);
 
                 if (item == null || item.Slot == -1)
                     continue;

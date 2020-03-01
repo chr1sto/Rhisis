@@ -64,11 +64,11 @@ namespace Rhisis.World.Systems.Battle
                 attackMax = Skill.LevelData.AbilityMax;
             }
 
-            Item weaponItem = InventorySystem.Hand;
+            Item weaponItem = Attacker.Hand;
 
             if (Attacker is IPlayerEntity player)
             {
-                weaponItem = player.Inventory[InventorySystem.RightWeaponSlot];
+                weaponItem = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon);
 
                 if (weaponItem.Id == -1)
                 {

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
@@ -56,17 +55,18 @@ namespace Rhisis.World.Systems.Inventory
         {
             IEnumerable<DbItem> items = _database.Items.GetAll(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
 
-            player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
-
+            player.Inventory = new InventoryContainerComponent();
+            
             if (items == null)
-                return;
-
-            foreach (DbItem item in items)
             {
-                int uniqueId = player.Inventory.Items[item.ItemSlot].UniqueId;
+                return;
+            }
 
-                player.Inventory.Items[item.ItemSlot] = _itemFactory.CreateItem(item);
-                player.Inventory.Items[item.ItemSlot].UniqueId = uniqueId;
+            foreach (DbItem databaseItem in items)
+            {
+                Item item = _itemFactory.CreateItem(databaseItem);
+
+                player.Inventory.SetItemAtIndex(item, item.Slot);
             }
         }
 
@@ -74,10 +74,10 @@ namespace Rhisis.World.Systems.Inventory
         public void Save(IPlayerEntity player)
         {
             DbCharacter character = _database.Characters.Get(player.PlayerData.Id);
-            IEnumerable<DbItem> itemsToDelete = from dbItem in character.Items
-                                                let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id)
-                                                where !dbItem.IsDeleted && inventoryItem == null || (inventoryItem != null && inventoryItem.Id == -1)
-                                                select dbItem;
+            IEnumerable<DbItem> itemsToDelete = (from dbItem in character.Items
+                                                 let inventoryItem = player.Inventory.GetItem(x => x != null && x.DbId == dbItem.Id)
+                                                 where !dbItem.IsDeleted && inventoryItem == null
+                                                 select dbItem).ToList();
 
             foreach (DbItem dbItem in itemsToDelete)
             {
@@ -87,9 +87,9 @@ namespace Rhisis.World.Systems.Inventory
             }
 
             // Add or update items
-            foreach (var item in player.Inventory.Items)
+            foreach (Item item in player.Inventory)
             {
-                if (item.Id == -1)
+                if (item == null)
                 {
                     continue;
                 }
@@ -136,11 +136,11 @@ namespace Rhisis.World.Systems.Inventory
 
             if (item.Data.IsStackable)
             {
-                for (var i = 0; i < EquipOffset; i++)
+                for (var i = 0; i < InventoryContainerComponent.InventorySize; i++)
                 {
-                    Item inventoryItem = player.Inventory.Items[i];
+                    Item inventoryItem = player.Inventory.ElementAt(i);
 
-                    if (inventoryItem.Id == item.Id)
+                    if (inventoryItem?.Id == item.Id)
                     {
                         if (inventoryItem.Quantity + quantity > item.Data.PackMax)
                         {
@@ -158,20 +158,22 @@ namespace Rhisis.World.Systems.Inventory
                         }
 
                         if (sendToPlayer)
+                        {
                             _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
+                        }
                     }
                 }
 
                 if (quantity > 0)
                 {
-                    if (!player.Inventory.HasAvailableSlots())
+                    int availableSlot = player.Inventory.GetAvailableSlot();
+
+                    if (availableSlot == -1)
                     {
                         _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                     }
                     else
                     {
-                        int availableSlot = player.Inventory.GetAvailableSlot();
-
                         Item newItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
 
                         if (newItem == null)
@@ -180,12 +182,14 @@ namespace Rhisis.World.Systems.Inventory
                         }
 
                         newItem.Quantity = quantity;
-                        newItem.UniqueId = player.Inventory[availableSlot].UniqueId;
                         newItem.Slot = availableSlot;
-                        player.Inventory[availableSlot] = newItem;
+
+                        player.Inventory.SetItemAtSlot(newItem, availableSlot);
 
                         if (sendToPlayer)
+                        {
                             _inventoryPacketFactory.SendItemCreation(player, newItem);
+                        }
 
                         createdAmount += quantity;
                     }
@@ -195,13 +199,13 @@ namespace Rhisis.World.Systems.Inventory
             {
                 while (quantity > 0)
                 {
-                    if (!player.Inventory.HasAvailableSlots())
+                    int availableSlot = player.Inventory.GetAvailableSlot();
+
+                    if (availableSlot == -1)
                     {
                         _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
                         break;
                     }
-
-                    int availableSlot = player.Inventory.GetAvailableSlot();
 
                     Item newItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
 
@@ -211,12 +215,14 @@ namespace Rhisis.World.Systems.Inventory
                     }
 
                     newItem.Quantity = 1;
-                    newItem.UniqueId = player.Inventory[availableSlot].UniqueId;
                     newItem.Slot = availableSlot;
-                    player.Inventory[availableSlot] = newItem;
+
+                    player.Inventory.SetItemAtSlot(newItem, availableSlot);
 
                     if (sendToPlayer)
+                    {
                         _inventoryPacketFactory.SendItemCreation(player, newItem);
+                    }
 
                     createdAmount++;
                     quantity--;
@@ -230,12 +236,16 @@ namespace Rhisis.World.Systems.Inventory
         public int DeleteItem(IPlayerEntity player, int itemUniqueId, int quantity, bool sendToPlayer = true)
         {
             if (quantity <= 0)
+            {
                 return 0;
+            }
 
-            Item itemToDelete = player.Inventory.GetItem(itemUniqueId);
+            Item itemToDelete = player.Inventory.GetItemAtIndex(itemUniqueId);
 
             if (itemToDelete == null)
+            {
                 throw new ArgumentNullException(nameof(itemToDelete), $"Cannot find item with unique id: '{itemUniqueId}' in '{player.Object.Name}''s inventory.");
+            }
 
             return DeleteItem(player, itemToDelete, quantity, sendToPlayer);
         }
@@ -248,10 +258,14 @@ namespace Rhisis.World.Systems.Inventory
             itemToDelete.Quantity -= quantityToDelete;
 
             if (sendToPlayer)
+            {
                 _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToDelete.UniqueId, itemToDelete.Quantity);
+            }
 
             if (itemToDelete.Quantity <= 0)
+            {
                 itemToDelete.Reset();
+            }
 
             return quantityToDelete;
         }
@@ -259,12 +273,12 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void MoveItem(IPlayerEntity player, byte sourceSlot, byte destinationSlot, bool sendToPlayer = true)
         {
-            if (sourceSlot >= MaxItems)
+            if (sourceSlot < 0 || sourceSlot >= MaxItems)
             {
                 throw new InvalidOperationException("Source slot is out of inventory range.");
             }
 
-            if (destinationSlot >= MaxItems)
+            if (destinationSlot < 0 || destinationSlot >= MaxItems)
             {
                 throw new InvalidOperationException("Destination slot is out of inventory range.");
             }
@@ -275,10 +289,10 @@ namespace Rhisis.World.Systems.Inventory
                 return;
             }
 
-            Item sourceItem = player.Inventory[sourceSlot];
-            Item destinationItem = player.Inventory[destinationSlot];
+            Item sourceItem = player.Inventory.GetItemAtSlot(sourceSlot); 
+            Item destinationItem = player.Inventory.GetItemAtSlot(destinationSlot);
 
-            if (sourceItem.Id == destinationItem.Id && sourceItem.Data.IsStackable)
+            if (destinationItem != null && sourceItem.Id == destinationItem.Id && sourceItem.Data.IsStackable)
             {
                 int newQuantity = sourceItem.Quantity + destinationItem.Quantity;
 
@@ -301,67 +315,83 @@ namespace Rhisis.World.Systems.Inventory
             {
                 sourceItem.Slot = destinationSlot;
 
-                if (destinationItem.Slot != -1)
+                if (destinationItem != null && destinationItem.Slot != -1)
+                {
                     destinationItem.Slot = sourceSlot;
+                }
 
-                player.Inventory.Items.Swap(sourceSlot, destinationSlot);
+                player.Inventory.Swap(sourceSlot, destinationSlot);
 
                 if (sendToPlayer)
+                {
                     _inventoryPacketFactory.SendItemMove(player, sourceSlot, destinationSlot);
+                }
             }
         }
 
         /// <inheritdoc />
-        public void EquipItem(IPlayerEntity player, int itemUniqueId, int equipPart)
+        public bool EquipItem(IPlayerEntity player, int itemUniqueId, int equipPart)
         {
-            Item itemToEquip = player.Inventory.GetItem(itemUniqueId);
+            Item itemToEquip = player.Inventory.GetItemAtIndex(itemUniqueId);
 
             if (itemToEquip == null)
             {
                 throw new ArgumentNullException(nameof(itemToEquip), $"Cannot find item with unique id: '{itemUniqueId}' in {player.Object.Name} inventory.");
             }
 
-            if (!player.Inventory.HasAvailableSlots())
-            {
-                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                return;
-            }
+            bool isItemEquiped = player.Inventory.IsItemEquiped(itemToEquip);
 
-            bool shouldEquip = !itemToEquip.IsEquipped();
-
-            if (shouldEquip)
+            if (isItemEquiped)
             {
-                if (IsItemEquipable(player, itemToEquip))
+                int availableSlot = player.Inventory.GetAvailableSlot();
+
+                if (availableSlot == -1)
                 {
-                    int sourceSlot = itemToEquip.Slot;
-                    int equipSlot = itemToEquip.Data.Parts + EquipOffset;
-
-                    MoveItem(player, (byte)sourceSlot, (byte)equipSlot, sendToPlayer: false);
-                    MoveItem(player, (byte)sourceSlot, (byte)player.Inventory.GetAvailableSlot(), sendToPlayer: false);
-                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, itemToEquip.Data.Parts, true);
+                    _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+                    return false;
                 }
+
+                MoveItem(player, (byte)itemToEquip.Slot, (byte)availableSlot, sendToPlayer: false);
+                _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, false);
+
+                _logger.LogDebug($"Unequip {itemToEquip} to slot {itemToEquip.Slot}");
             }
             else
             {
-                if (itemToEquip.IsEquipped())
+                if (!IsItemEquipable(player, itemToEquip))
                 {
-                    int targetPart = Math.Abs(itemToEquip.Slot - EquipOffset);
+                    return false;
+                }
 
-                    if (equipPart != targetPart)
+                Item equipedItem = player.Inventory.GetEquipedItem(itemToEquip.Data.Parts);
+
+                if (equipedItem != null)
+                {
+                    _logger.LogDebug($"Unequip {equipedItem} and equip {itemToEquip}");
+
+                    if (!EquipItem(player, equipedItem.UniqueId, (int)equipedItem.Data.Parts))
                     {
-                        throw new InvalidOperationException($"Equipement parts doesn't match.");
+                        _logger.LogWarning($"Failed to unequip {equipedItem} to equip {itemToEquip}");
+                        return false;
                     }
 
-                    MoveItem(player, (byte)itemToEquip.Slot, (byte)player.Inventory.GetAvailableSlot(), sendToPlayer: false);
-                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, targetPart, false);
                 }
+
+                int equipIndex = (int)itemToEquip.Data.Parts + InventoryContainerComponent.EquipOffset;
+
+                MoveItem(player, (byte)itemToEquip.Slot, (byte)equipIndex, sendToPlayer: false);
+                _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, true);
+
+                _logger.LogDebug($"Equip {itemToEquip}");
             }
+
+            return true;
         }
 
         /// <inheritdoc />
         public void UseItem(IPlayerEntity player, int itemUniqueId, int part)
         {
-            Item itemToUse = player.Inventory.GetItem(itemUniqueId);
+            Item itemToUse = player.Inventory.GetItemAtIndex(itemUniqueId);
 
             if (itemToUse == null)
             {
@@ -452,6 +482,7 @@ namespace Rhisis.World.Systems.Inventory
             }
         }
 
+        /// <inheritdoc />
         public void UseSystemItem(IPlayerEntity player, Item systemItem)
         {
             switch (systemItem.Data.ItemKind3)
@@ -466,6 +497,7 @@ namespace Rhisis.World.Systems.Inventory
             }
         }
 
+        /// <inheritdoc />
         public void UseScrollItem(IPlayerEntity player, Item scrollItem)
         {
             switch (scrollItem.Data.Id)
@@ -483,7 +515,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <inhertidoc />
         public void DropItem(IPlayerEntity player, int itemUniqueId, int quantity)
         {
-            Item itemToDrop = player.Inventory.GetItem(itemUniqueId);
+            Item itemToDrop = player.Inventory.GetItemAtIndex(itemUniqueId);
 
             if (itemToDrop == null)
             {
@@ -502,15 +534,14 @@ namespace Rhisis.World.Systems.Inventory
                 throw new InvalidOperationException("Cannot drop a zero or negative quantit.");
             }
 
-            itemToDrop.Quantity = quantityToDrop;
-            _dropSystem.DropItem(player, itemToDrop, owner: null);
+            _dropSystem.DropItem(player, itemToDrop, owner: null, quantity: quantityToDrop);
             DeleteItem(player, itemUniqueId, quantityToDrop);
         }
 
         /// <inheritdoc />
         public Item GetEquipedItem(IPlayerEntity player, ItemPartType equipPart)
         {
-            return player.Inventory[EquipOffset + (int)equipPart];
+            return player.Inventory.GetEquipedItem(equipPart);
         }
 
         /// <summary>

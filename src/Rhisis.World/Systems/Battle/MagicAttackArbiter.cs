@@ -3,7 +3,6 @@ using Rhisis.Core.Helpers;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Inventory;
 using System;
 
 namespace Rhisis.World.Systems.Battle
@@ -39,7 +38,7 @@ namespace Rhisis.World.Systems.Battle
 
             if (Attacker is IPlayerEntity player)
             {
-                Item wandWeapon = player.Inventory[InventorySystem.RightWeaponSlot];
+                Item wandWeapon = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
 
                 weaponAttackResult = BattleHelper.GetWeaponAttackPower(Attacker, wandWeapon);
                 int weaponAttackDamages = BattleHelper.GetWeaponAttackDamages(WeaponType.MAGIC_WAND, player);

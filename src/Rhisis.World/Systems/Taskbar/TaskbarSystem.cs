@@ -90,7 +90,7 @@ namespace Rhisis.World.Systems.Taskbar
 
                 if (applet.Type == ShortcutType.Item)
                 {
-                    var item = player.Inventory.GetItem((int)applet.ObjectId);
+                    var item = player.Inventory.GetItemAtIndex((int)applet.ObjectId);
                     if (item is null)
                         continue;
 
@@ -115,7 +115,7 @@ namespace Rhisis.World.Systems.Taskbar
 
                     if (itemShortcut.Type == ShortcutType.Item)
                     {
-                        var item = player.Inventory.GetItem((int)itemShortcut.ObjectId);
+                        var item = player.Inventory.GetItemAtIndex((int)itemShortcut.ObjectId);
                         if (item is null)
                             continue;
 

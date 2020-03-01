@@ -2,6 +2,7 @@
 using Rhisis.Core.Helpers;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
@@ -34,10 +35,12 @@ namespace Rhisis.World.Client
         /// <summary>
         /// Initialize the client and send welcome packet.
         /// </summary>
-        public void Initialize(ILogger<WorldClient> logger, IHandlerInvoker handlerInvoker)
+        public void Initialize(ILogger<WorldClient> logger, IHandlerInvoker handlerInvoker, IWorldServerPacketFactory worldServerPacketFactory)
         {
             _logger = logger;
             _handlerInvoker = handlerInvoker;
+
+            worldServerPacketFactory.SendWelcome(this, SessionId);
         }
 
         /// <inheritdoc />

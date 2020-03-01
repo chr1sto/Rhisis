@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
@@ -9,6 +10,7 @@ using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
+using Rhisis.World.Game.Structures;
 using System;
 using System.Linq;
 
@@ -64,6 +66,7 @@ namespace Rhisis.World.Game.Factories.Internal
             npc.Behavior = _behaviorManager.GetBehavior(BehaviorType.Npc, npc, npc.Object.ModelId);
             npc.Timers.LastSpeakTime = RandomHelper.Random(10, 15);
             npc.Quests = _gameResources.Quests.Values.Where(x => !string.IsNullOrEmpty(x.StartCharacter) && x.StartCharacter.Equals(npc.Object.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+            npc.Hand = _itemFactory.CreateItem(11, 0, ElementType.None, 0);
 
             if (_gameResources.Npcs.TryGetValue(npc.Object.Name, out NpcData npcData))
             {
@@ -82,11 +85,17 @@ namespace Rhisis.World.Game.Factories.Internal
                     for (var j = 0; j < npcShopData.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
                     {
                         ItemDescriptor item = npcShopData.Items[i][j];
+                        Item shopItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
 
-                        npc.Shop[i].Items[j] = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
-                        npc.Shop[i].Items[j].Slot = j;
-                        npc.Shop[i].Items[j].UniqueId = j;
-                        npc.Shop[i].Items[j].Quantity = npc.Shop[i].Items[j].Data.PackMax;
+                        shopItem.Slot = j;
+                        shopItem.Quantity = shopItem.Data.PackMax;
+
+                        npc.Shop[i].SetItemAtIndex(shopItem, j);
+
+                        //npc.Shop[i].Items[j] = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
+                        //npc.Shop[i].Items[j].Slot = j;
+                        //npc.Shop[i].Items[j].UniqueId = j;
+                        //npc.Shop[i].Items[j].Quantity = npc.Shop[i].Items[j].Data.PackMax;
                     }
                 }
             }

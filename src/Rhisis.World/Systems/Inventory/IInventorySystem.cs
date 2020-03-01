@@ -54,7 +54,8 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="player">Current player.</param>
         /// <param name="itemUniqueId">Equip player unique id.</param>
         /// <param name="equipPart">Equip part.</param>
-        void EquipItem(IPlayerEntity player, int itemUniqueId, int equipPart);
+        /// <returns>True if the equip/unequip operation has succeeded, false otherwise.</returns>
+        bool EquipItem(IPlayerEntity player, int itemUniqueId, int equipPart);
 
         /// <summary>
         /// Uses an item from player's inventory.

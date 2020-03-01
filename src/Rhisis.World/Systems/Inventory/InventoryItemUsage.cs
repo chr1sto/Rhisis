@@ -204,16 +204,21 @@ namespace Rhisis.World.Systems.Inventory
             }
 
             if (!item.Data.IsPermanant)
+            {
                 item.Quantity--;
-
+            }
 
             _inventoryPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
 
             if (item.Data.SfxObject3 != 0)
+            {
                 _specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3, noFollowSfx);
+            }
 
             if (item.Quantity <= 0)
+            {
                 item.Reset();
+            }
         }
     }
 }

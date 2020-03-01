@@ -4,6 +4,7 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Factories;
+using Rhisis.World.Game.Structures;
 using Sylver.Network.Common;
 
 namespace Rhisis.World.Game.Entities
@@ -34,7 +35,7 @@ namespace Rhisis.World.Game.Entities
         public TimerComponent Timers { get; set; }
 
         /// <inheritdoc />
-        public ItemContainerComponent Inventory { get; set; }
+        public InventoryContainerComponent Inventory { get; set; }
 
         /// <inheritdoc />
         public StatisticsComponent Statistics { get; set; }
@@ -68,6 +69,9 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public SkillTreeComponent SkillTree { get; set; }
+
+        /// <inheritdoc />
+        public Item Hand { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="PlayerEntity"/> instance.

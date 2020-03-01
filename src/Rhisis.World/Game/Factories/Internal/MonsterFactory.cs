@@ -19,11 +19,13 @@ namespace Rhisis.World.Game.Factories.Internal
     {
         private readonly IGameResources _gameResources;
         private readonly IBehaviorManager _behaviorManager;
+        private readonly IItemFactory _itemFactory;
 
-        public MonsterFactory(IGameResources gameResources, IBehaviorManager behaviorManager)
+        public MonsterFactory(IGameResources gameResources, IBehaviorManager behaviorManager, IItemFactory itemFactory)
         {
             _gameResources = gameResources;
             _behaviorManager = behaviorManager;
+            _itemFactory = itemFactory;
         }
 
         /// <inheritdoc />
@@ -72,6 +74,7 @@ namespace Rhisis.World.Game.Factories.Internal
             monster.Attributes[DefineAttributes.DEX] = moverData.Dexterity;
             monster.Attributes[DefineAttributes.INT] = moverData.Intelligence;
             monster.Behavior = _behaviorManager.GetBehavior(BehaviorType.Monster, monster, moverId);
+            monster.Hand = _itemFactory.CreateItem(11, 0, ElementType.None, 0);
 
             if (moverData.Class == MoverClassType.RANK_BOSS)
             {

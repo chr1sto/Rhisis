@@ -18,7 +18,7 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets or sets the player's inventory.
         /// </summary>
-        ItemContainerComponent Inventory { get; set; }
+        InventoryContainerComponent Inventory { get; set; }
 
         /// <summary>
         /// Gets or sets the player's trade component.
