@@ -91,11 +91,6 @@ namespace Rhisis.World.Game.Factories.Internal
                         shopItem.Quantity = shopItem.Data.PackMax;
 
                         npc.Shop[i].SetItemAtIndex(shopItem, j);
-
-                        //npc.Shop[i].Items[j] = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
-                        //npc.Shop[i].Items[j].Slot = j;
-                        //npc.Shop[i].Items[j].UniqueId = j;
-                        //npc.Shop[i].Items[j].Quantity = npc.Shop[i].Items[j].Data.PackMax;
                     }
                 }
             }
