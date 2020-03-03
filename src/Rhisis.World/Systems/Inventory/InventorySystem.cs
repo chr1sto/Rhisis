@@ -17,6 +17,9 @@ using System.Linq;
 
 namespace Rhisis.World.Systems.Inventory
 {
+    /// <summary>
+    /// Implements the flyff inventory system management.
+    /// </summary>
     [Injectable(ServiceLifetime.Transient)]
     public sealed class InventorySystem : IInventorySystem
     {
@@ -37,8 +40,21 @@ namespace Rhisis.World.Systems.Inventory
         private readonly IDropSystem _dropSystem;
         private readonly ITextPacketFactory _textPacketFactory;
 
+        /// <summary>
+        /// Gets the initialization order of the inventory system when creating a new player.
+        /// </summary>
         public int Order => 0;
 
+        /// <summary>
+        /// Creates a new <see cref="InventorySystem"/> instance.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
+        /// <param name="database">Rhisis database.</param>
+        /// <param name="itemFactory">Item factory.</param>
+        /// <param name="inventoryPacketFactory">Inventory packet factory.</param>
+        /// <param name="inventoryItemUsage">Inventory item usage system.</param>
+        /// <param name="dropSystem">Drop system.</param>
+        /// <param name="textPacketFactory">Text packet factory.</param>
         public InventorySystem(ILogger<InventorySystem> logger, IDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
         {
             _logger = logger;
@@ -54,19 +70,15 @@ namespace Rhisis.World.Systems.Inventory
         public void Initialize(IPlayerEntity player)
         {
             IEnumerable<DbItem> items = _database.Items.GetAll(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
-
-            player.Inventory = new InventoryContainerComponent();
             
-            if (items == null)
+            if (items != null)
             {
-                return;
-            }
+                foreach (DbItem databaseItem in items)
+                {
+                    Item item = _itemFactory.CreateItem(databaseItem);
 
-            foreach (DbItem databaseItem in items)
-            {
-                Item item = _itemFactory.CreateItem(databaseItem);
-
-                player.Inventory.SetItemAtIndex(item, item.Slot);
+                    player.Inventory.SetItemAtIndex(item, item.Slot);
+                }
             }
         }
 
@@ -138,7 +150,7 @@ namespace Rhisis.World.Systems.Inventory
             {
                 for (var i = 0; i < InventoryContainerComponent.InventorySize; i++)
                 {
-                    Item inventoryItem = player.Inventory.ElementAt(i);
+                    Item inventoryItem = player.Inventory.GetItemAtIndex(i);
 
                     if (inventoryItem?.Id == item.Id)
                     {
@@ -264,7 +276,7 @@ namespace Rhisis.World.Systems.Inventory
 
             if (itemToDelete.Quantity <= 0)
             {
-                itemToDelete.Reset();
+                player.Inventory.SetItemAtSlot(null, itemToDelete.Slot);
             }
 
             return quantityToDelete;
@@ -285,11 +297,16 @@ namespace Rhisis.World.Systems.Inventory
 
             if (sourceSlot == destinationSlot)
             {
-                // Nothing to do when moving an item to the same slot.
-                return;
+                throw new InvalidOperationException("Cannot move an item to the same slot.");
             }
 
-            Item sourceItem = player.Inventory.GetItemAtSlot(sourceSlot); 
+            Item sourceItem = player.Inventory.GetItemAtSlot(sourceSlot);
+
+            if (sourceItem == null)
+            {
+                throw new InvalidOperationException("Source item not found");
+            }
+
             Item destinationItem = player.Inventory.GetItemAtSlot(destinationSlot);
 
             if (destinationItem != null && sourceItem.Id == destinationItem.Id && sourceItem.Data.IsStackable)
@@ -536,12 +553,6 @@ namespace Rhisis.World.Systems.Inventory
 
             _dropSystem.DropItem(player, itemToDrop, owner: null, quantity: quantityToDrop);
             DeleteItem(player, itemUniqueId, quantityToDrop);
-        }
-
-        /// <inheritdoc />
-        public Item GetEquipedItem(IPlayerEntity player, ItemPartType equipPart)
-        {
-            return player.Inventory.GetEquipedItem(equipPart);
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Data;
-using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
@@ -89,13 +88,5 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="itemUniqueId">Item unique id to drop.</param>
         /// <param name="quantity">Quantity to drop.</param>
         void DropItem(IPlayerEntity player, int itemUniqueId, int quantity);
-
-        /// <summary>
-        /// Gets the equiped item based on the given item part.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        /// <param name="equipPart">Item part.</param>
-        /// <returns>Returns the equiped <see cref="Item"/>.</returns>
-        Item GetEquipedItem(IPlayerEntity player, ItemPartType equipPart);
     }
 }

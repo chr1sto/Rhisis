@@ -146,7 +146,11 @@ namespace Rhisis.World.Game.Components
         public void SetItemAtIndex(Item item, int index)
         {
             _items[index] = item;
-            item.UniqueId = index;
+
+            if (item != null)
+            {
+                item.UniqueId = index;
+            }
         }
 
         /// <summary>

@@ -89,6 +89,7 @@ namespace Rhisis.World.Game.Entities
             Attributes = new AttributeComponent();
             QuestDiary = new QuestDiaryComponent();
             SkillTree = new SkillTreeComponent();
+            Inventory = new InventoryContainerComponent();
             _playerFactory = playerFactory;
         }
 

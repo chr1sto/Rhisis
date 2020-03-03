@@ -20,8 +20,11 @@ jobs:
 
       - stage: "Tests"
         script: 
-        - dotnet test test/Rhisis.Core.Tests/
-        - dotnet test test/Rhisis.Login.Tests/
-        - dotnet test test/Rhisis.Cluster.Tests/
-        - dotnet test test/Rhisis.World.Tests/
+        - dotnet test test/Rhisis.Core.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
+        - dotnet test test/Rhisis.Login.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
+        - dotnet test test/Rhisis.Cluster.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
+        - dotnet test test/Rhisis.World.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
         name: "Rhisis Tests"
+
+after_script:
+  - bash <(curl -s https://codecov.io/bash) 

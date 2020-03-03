@@ -12,7 +12,7 @@ namespace Rhisis.World.Game.Entities
         private bool _disposedValue;
 
         /// <inheritdoc />
-        public uint Id { get; }
+        public uint Id { get; set; }
 
         /// <inheritdoc />
         public abstract WorldEntityType Type { get; }
