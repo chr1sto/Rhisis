@@ -6,19 +6,19 @@ using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Chat
 {
-    [ChatCommand("/onekill", AuthorityType.GameMaster)]
-    [ChatCommand("/ok", AuthorityType.GameMaster)]
-    public class OneKillChatCommand : IChatCommand
+    [ChatCommand("/invisible", AuthorityType.GameMaster)]
+    [ChatCommand("/inv", AuthorityType.GameMaster)]
+    public class InvisibleChatCommand : IChatCommand
     {
-        private readonly ILogger<OneKillChatCommand> _logger;
+        private readonly ILogger<InvisibleChatCommand> _logger;
         private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
-        /// Creates a new <see cref="OneKillChatCommand"/> instance.
+        /// Creates a new <see cref="InvisibleChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="playerDataPacketFactory">Player data packet factory system.</param>
-        public OneKillChatCommand(ILogger<OneKillChatCommand> logger, IPlayerDataPacketFactory playerDataPacketFactory)
+        public InvisibleChatCommand(ILogger<InvisibleChatCommand> logger, IPlayerDataPacketFactory playerDataPacketFactory)
         {
             _logger = logger;
             _playerDataPacketFactory = playerDataPacketFactory;
@@ -27,14 +27,14 @@ namespace Rhisis.World.Game.Chat
         /// <inheritdoc />
         public void Execute(IPlayerEntity player, object[] parameters)
         {
-            if (!player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
+            if (!player.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE))
             {
-                player.PlayerData.Mode |= ModeType.ONEKILL_MODE;
+                player.PlayerData.Mode |= ModeType.TRANSPARENT_MODE;
                 _playerDataPacketFactory.SendModifyMode(player);
-                _logger.LogTrace($"Player '{player.Object.Name}' is now in OneKill mode.");
+                _logger.LogTrace($"Player '{player.Object.Name}' is now invisible.");
             }
             else {
-                _logger.LogTrace($"Player '{player.Object.Name}' is already in OneKill mode.");
+                _logger.LogTrace($"Player '{player.Object.Name}' is already invisible.");
             }
         }
     }

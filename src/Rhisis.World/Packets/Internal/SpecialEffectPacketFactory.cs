@@ -13,6 +13,14 @@ namespace Rhisis.World.Packets.Internal
         /// <inheritdoc />
         public void SendSpecialEffect(IWorldEntity entity, int specialEffectId, bool sfxNoFollow)
         {
+            if (entity is IPlayerEntity playerEntity)
+            {
+                if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
+                {
+                    return;
+                }
+            }
+
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.CREATESFXOBJ);

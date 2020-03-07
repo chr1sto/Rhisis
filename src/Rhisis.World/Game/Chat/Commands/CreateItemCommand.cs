@@ -6,7 +6,6 @@ using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
-using Rhisis.Core.Structures.Game;
 using System;
 
 namespace Rhisis.World.Game.Chat
