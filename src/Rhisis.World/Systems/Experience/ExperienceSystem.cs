@@ -30,6 +30,11 @@ namespace Rhisis.World.Systems.Experience
         /// <inheritdoc />
         public void GiveExeperience(IPlayerEntity player, long experience)
         {
+            if (player.PlayerData.Mode.HasFlag(ModeType.MODE_EXPUP_STOP))
+            {
+                return;
+            }
+            
             var exp = CalculateExtraExperience(player, experience);
 
             // TODO: experience to party
