@@ -44,7 +44,7 @@ namespace Rhisis.Core.Structures.Game
         public int LimitLevel { get; set; }
 
         [DataMember(Name = "dwParts")]
-        public int Parts { get; set; }
+        public ItemPartType Parts { get; set; }
 
         [DataMember(Name = "dwAbilityMin")]
         public int AbilityMin { get; set; }

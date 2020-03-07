@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.Data;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
@@ -45,7 +46,7 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            Item weaponItem = client.Player.Inventory.GetItem(x => x.Slot == InventorySystem.RightWeaponSlot) ?? InventorySystem.Hand;
+            Item weaponItem = client.Player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? client.Player.Hand;
 
             if (weaponItem != null && weaponItem.Data?.AttackSpeed != packet.WeaponAttackSpeed)
             {

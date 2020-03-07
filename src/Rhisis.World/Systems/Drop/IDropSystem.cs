@@ -11,7 +11,8 @@ namespace Rhisis.World.Systems.Drop
         /// <param name="entity">Entity.</param>
         /// <param name="item">Item to drop.</param>
         /// <param name="owner">Owner.</param>
-        void DropItem(IWorldEntity entity, ItemDescriptor item, IWorldEntity owner);
+        /// <param name="quantity">Quantity of items to drop.</param>
+        void DropItem(IWorldEntity entity, ItemDescriptor item, IWorldEntity owner, int quantity = 1);
 
         /// <summary>
         /// Drops gold on the group.

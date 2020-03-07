@@ -28,6 +28,7 @@ namespace Rhisis.World.Game.Factories.Internal
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
+        private readonly IItemFactory _itemFactory;
         private readonly ObjectFactory _playerFactory;
 
         /// <summary>
@@ -38,13 +39,15 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <param name="gameResources">Game resources.</param>
         /// <param name="mapManager">Map manager.</param>
         /// <param name="behaviorManager">Behavior manager.</param>
-        public PlayerFactory(IServiceProvider serviceProvider, IDatabase database, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager)
+        /// <param name="itemFactory">Item factory.</param>
+        public PlayerFactory(IServiceProvider serviceProvider, IDatabase database, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IItemFactory itemFactory)
         {
             _serviceProvider = serviceProvider;
             _database = database;
             _gameResources = gameResources;
             _mapManager = mapManager;
             _behaviorManager = behaviorManager;
+            _itemFactory = itemFactory;
             _playerFactory = ActivatorUtilities.CreateFactory(typeof(PlayerEntity), Type.EmptyTypes);
         }
 
@@ -58,7 +61,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 throw new ArgumentException($"Cannot find mover with id '{playerModelId}' in game resources.", nameof(playerModelId));
             }
 
-            var player = _playerFactory(_serviceProvider, null) as IPlayerEntity;
+            var player = _playerFactory(_serviceProvider, null) as PlayerEntity;
 
             IMapInstance map = _mapManager.GetMap(character.MapId);
 
@@ -124,6 +127,7 @@ namespace Rhisis.World.Game.Factories.Internal
             player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
 
             player.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, player);
+            player.Hand = _itemFactory.CreateItem(11, 0, ElementType.None, 0);
 
             var gameServices = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>().OrderBy(x => x.Order);
 

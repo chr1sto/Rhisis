@@ -4,6 +4,7 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities
@@ -48,6 +49,9 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public TimerComponent Timers { get; set; }
+
+        /// <inheritdoc />
+        public Item Hand { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="NpcEntity"/> instance.

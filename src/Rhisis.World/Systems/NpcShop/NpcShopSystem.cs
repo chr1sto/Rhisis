@@ -92,13 +92,13 @@ namespace Rhisis.World.Systems.NpcShop
 
             ItemContainerComponent shopTab = npc.Shop.ElementAt(shopItemInfo.Tab);
 
-            if (shopItemInfo.Slot < 0 || shopItemInfo.Slot > shopTab.Items.Count - 1)
+            if (shopItemInfo.Slot < 0 || shopItemInfo.Slot > shopTab.MaxCapacity - 1)
             {
                 _logger.LogError($"ShopSystem: Item slot index was out of tab bounds. Slot: {shopItemInfo.Slot}");
                 return;
             }
 
-            Item shopItem = shopTab[shopItemInfo.Slot];
+            Item shopItem = shopTab.GetItemAtSlot(shopItemInfo.Slot);
 
             if (shopItem.Id != shopItemInfo.ItemId)
             {
@@ -124,7 +124,7 @@ namespace Rhisis.World.Systems.NpcShop
         /// <inheritdoc />
         public void SellItem(IPlayerEntity player, int playerItemUniqueId, int quantity)
         {
-            Item itemToSell = player.Inventory.GetItem(playerItemUniqueId);
+            Item itemToSell = player.Inventory.GetItemAtIndex(playerItemUniqueId);
 
             if (itemToSell == null)
                 throw new ArgumentNullException(nameof(itemToSell), $"Cannot find item with unique id: '{playerItemUniqueId}' in '{player.Object.Name}''s inventory.");

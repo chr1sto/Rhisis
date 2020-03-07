@@ -109,8 +109,8 @@ namespace Rhisis.World.Systems.Battle
 
             return new AttackResult
             {
-                AttackMin = (int)((entity.Attributes[DefineAttributes.ABILITY_MIN] + weapon.Data.AbilityMin) * multiplier) + power,
-                AttackMax = (int)((entity.Attributes[DefineAttributes.ABILITY_MAX] + weapon.Data.AbilityMax) * multiplier) + power,
+                AttackMin = (int)((entity.Attributes[DefineAttributes.ABILITY_MIN] + weapon?.Data.AbilityMin) * multiplier) + power,
+                AttackMax = (int)((entity.Attributes[DefineAttributes.ABILITY_MAX] + weapon?.Data.AbilityMax) * multiplier) + power,
             };
         }
 

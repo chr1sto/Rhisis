@@ -5,6 +5,7 @@ using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
+using System;
 
 namespace Rhisis.World.Packets.Internal
 {
@@ -25,18 +26,18 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
-        public void SendItemEquip(IPlayerEntity entity, Item item, int targetSlot, bool equip)
+        public void SendItemEquip(IPlayerEntity entity, Item item, int targetPart, bool equip)
         {
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.DOEQUIP);
             packet.Write(item.UniqueId);
-            packet.Write<byte>(0); // Guild id
-            packet.Write(equip ? (byte)0x01 : (byte)0x00);
+            packet.Write((byte)0); // Guild id
+            packet.Write(Convert.ToByte(equip));
             packet.Write(item.Id);
             packet.Write(item.Refines);
             packet.Write(0); // flag
-            packet.Write(targetSlot);
+            packet.Write(targetPart);
 
             SendToVisible(packet, entity, sendToPlayer: true);
         }

@@ -92,10 +92,12 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(-1); // titles
 
                 // Serialize visible effects
-                IEnumerable<Item> equippedItems = player.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                IEnumerable<Item> equippedItems = player.Inventory.GetEquipedItems();
 
                 foreach (var item in equippedItems)
-                    packet.Write(item.Refines);
+                {
+                    packet.Write(item?.Refines ?? 0);
+                }
 
                 packet.Write(0); // guild war state
 
@@ -133,7 +135,7 @@ namespace Rhisis.World.Packets.Internal
                 // item mask
                 foreach (var item in equippedItems)
                 {
-                    packet.Write(item.Id);
+                    packet.Write(item?.Id ?? -1);
                 }
 
                 // skills
@@ -218,7 +220,7 @@ namespace Rhisis.World.Packets.Internal
         public void SendSpawnObjectTo(IPlayerEntity player, IWorldEntity entityToSpawn)
         {
             using var packet = new FFPacket();
-            
+
             packet.StartNewMergedPacket(entityToSpawn.Id, SnapshotType.ADD_OBJ);
             packet.Write((byte)entityToSpawn.Object.Type);
             packet.Write(entityToSpawn.Object.ModelId);
@@ -283,7 +285,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(-1); // titles
 
                 // Serialize visible effects
-                IEnumerable<Item> equipedItems = playerEntity.Inventory.Items.GetRange(InventorySystem.EquipOffset, InventorySystem.MaxItems - InventorySystem.EquipOffset);
+                IEnumerable<Item> equipedItems = playerEntity.Inventory.GetEquipedItems();
 
                 foreach (var item in equipedItems)
                     packet.Write(item.Refines);
@@ -379,7 +381,7 @@ namespace Rhisis.World.Packets.Internal
         public void SendDespawnObjectTo(IPlayerEntity player, IWorldEntity entityToDespawn)
         {
             using var packet = new FFPacket();
-            
+
             packet.StartNewMergedPacket(entityToDespawn.Id, SnapshotType.DEL_OBJ);
 
             SendToPlayer(player, packet);

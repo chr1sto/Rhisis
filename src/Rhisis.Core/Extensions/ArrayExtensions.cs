@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Rhisis.Core.Extensions
 {
@@ -18,6 +19,15 @@ namespace Rhisis.Core.Extensions
 
             array[source] = array[dest];
             array[dest] = temp;
+        }
+
+        public static IEnumerable<T> GetRange<T>(this T[] array, int start, int count)
+        {
+            var rangedArray = new T[count];
+
+            Array.Copy(array, start, rangedArray, 0, count);
+
+            return rangedArray;
         }
     }
 }

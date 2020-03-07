@@ -27,9 +27,9 @@ namespace Rhisis.World.Packets
         /// </summary>
         /// <param name="entity">Player entity.</param>
         /// <param name="item">Item to equip/unequip.</param>
-        /// <param name="targetSlot">Target slot.</param>
+        /// <param name="targetPart">Target part.</param>
         /// <param name="equip">Boolean value that tells if the item should be equiped or unequiped.</param>
-        void SendItemEquip(IPlayerEntity entity, Item item, int targetSlot, bool equip);
+        void SendItemEquip(IPlayerEntity entity, Item item, int targetPart, bool equip);
 
         /// <summary>
         /// Sends a packet that moves an item from a source slot to a destination slot.

@@ -35,13 +35,12 @@ namespace Rhisis.World.Systems.Drop
         }
 
         /// <inheritdoc />
-        public void DropItem(IWorldEntity entity, ItemDescriptor item, IWorldEntity owner)
+        public void DropItem(IWorldEntity entity, ItemDescriptor item, IWorldEntity owner, int quantity = 1)
         {
             Item droppedItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
-            droppedItem.Quantity = 1;
-
             IItemEntity newItem = _itemFactory.CreateItemEntity(entity.Object.CurrentMap, entity.Object.CurrentLayer, droppedItem, owner);
 
+            newItem.Drop.Item.Quantity = quantity;
             newItem.Object.Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, DropCircleRadius);
 
             if (newItem.Drop.HasOwner)

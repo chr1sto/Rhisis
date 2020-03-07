@@ -4,7 +4,6 @@ using Rhisis.Core.Helpers;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -39,7 +38,7 @@ namespace Rhisis.World.Systems.Battle
 
             if (Attacker is IPlayerEntity player)
             {
-                Item rightWeapon = player.Inventory[InventorySystem.RightWeaponSlot] ?? InventorySystem.Hand;
+                Item rightWeapon = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
 
                 // TODO: GetDamagePropertyFactor()
                 int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
@@ -204,7 +203,7 @@ namespace Rhisis.World.Systems.Battle
 
             if (Attacker is IPlayerEntity player)
             {
-                Item weapon = player.Inventory[InventorySystem.RightWeaponSlot] ?? InventorySystem.Hand;
+                Item weapon = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
 
                 if (weapon.Data.WeaponType == WeaponType.MELEE_YOYO || attackerAttackFlags.HasFlag(AttackFlags.AF_FORCE))
                 {

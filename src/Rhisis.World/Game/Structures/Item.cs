@@ -1,15 +1,19 @@
 ﻿using Rhisis.Core.Data;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Database.Entities;
 using Rhisis.World.Systems.Inventory;
 using Sylver.Network.Data;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Rhisis.World.Game.Structures
 {
     /// <summary>
     /// FlyFF item structure.
     /// </summary>
+    [DebuggerDisplay("({Quantity}) {Data.Name} +{Refine} ({Element}+{ElementRefine})")]
     public class Item : ItemDescriptor
     {
         public const int RefineMax = 10;
@@ -202,14 +206,8 @@ namespace Rhisis.World.Game.Structures
         {
             packet.Write(UniqueId);
             packet.Write(Id);
-            
             packet.Write(0); // Serial number
-
-            if (Data != null)
-                packet.Write(Data.Name.Substring(0, Data.Name.Length > 31 ? 31 : Data.Name.Length));
-            else
-                packet.Write("Unknown");
-
+            packet.Write(Data?.Name.TakeCharacters(32) ?? "[undefined]");
             packet.Write((short) Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp
@@ -245,6 +243,7 @@ namespace Rhisis.World.Game.Structures
             };
         }
 
+        [Obsolete("This should not be used anymore")]
         public bool IsEquipped() => Slot > InventorySystem.EquipOffset;
 
         /// <summary>

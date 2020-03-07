@@ -5,13 +5,13 @@ using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network;
-using Rhisis.Network.Packets;
 using Rhisis.Scripting.Quests;
 using Rhisis.World.Client;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Chat;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
+using Rhisis.World.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
@@ -80,8 +80,8 @@ namespace Rhisis.World
         protected override void OnClientConnected(WorldClient client)
         {
             client.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldClient>>(),
-                _serviceProvider.GetRequiredService<IHandlerInvoker>());
-            CommonPacketFactory.SendWelcome(client, client.SessionId);
+                _serviceProvider.GetRequiredService<IHandlerInvoker>(),
+                _serviceProvider.GetRequiredService<IWorldServerPacketFactory>());
 
             _logger.LogInformation("New client connected from {0}.", client.Socket.RemoteEndPoint);
         }

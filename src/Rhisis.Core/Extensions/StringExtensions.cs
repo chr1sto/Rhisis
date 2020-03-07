@@ -21,5 +21,14 @@ namespace Rhisis.Core.Extensions
         /// <returns>String source converted as given enum.</returns>
         public static T ToEnum<T>(this string source) where T : struct, IConvertible, IComparable, IFormattable 
             => Enum.TryParse(source, true, out T result) ? result : default;
+
+        /// <summary>
+        /// Takes at most, the given number of characters.
+        /// </summary>
+        /// <param name="source">Source string.</param>
+        /// <param name="numberOfCharacters">Number of characters to take.</param>
+        /// <returns></returns>
+        public static string TakeCharacters(this string source, int numberOfCharacters)
+            => source.Substring(0, source.Length > numberOfCharacters ? numberOfCharacters : source.Length);
     }
 }

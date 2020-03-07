@@ -4,6 +4,7 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Maps.Regions;
+using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Game.Entities
 {
@@ -47,6 +48,9 @@ namespace Rhisis.World.Game.Entities
 
         /// <inheritdoc />
         public MoverData Data { get; set; }
+
+        /// <inheritdoc />
+        public Item Hand { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="MonsterEntity"/> instance.

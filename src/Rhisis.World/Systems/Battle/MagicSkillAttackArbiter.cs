@@ -2,7 +2,6 @@
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Inventory;
 using System;
 
 namespace Rhisis.World.Systems.Battle
@@ -112,7 +111,7 @@ namespace Rhisis.World.Systems.Battle
 
             if (entity is IPlayerEntity player)
             {
-                Item weapon = player.Inventory[InventorySystem.RightWeaponSlot];
+                Item weapon = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
                 ElementType weaponElementType = weapon.Id != -1 ? weapon.Data.Element : ElementType.None;
                 ElementType skillElementType = skill.Data.Element.GetValueOrDefault(ElementType.None);
 

@@ -6,6 +6,8 @@
 
         public enum TradeState { Item, Ok, Confirm }
 
+        private readonly int _maxTradeItemsCapacity;
+
         /// <summary>
         /// Gets or sets the target trader id.
         /// </summary>
@@ -14,7 +16,7 @@
         /// <summary>
         /// Gets or sets the current items for trade.
         /// </summary>
-        public ItemContainerComponent Items { get; }
+        public ItemContainerComponent Items { get; private set; }
 
         /// <summary>
         /// Gets the number of items to trade.
@@ -42,7 +44,8 @@
         /// <param name="maxItemCapacity">Maximum amount of items in trade window.</param>
         public TradeComponent(int maxItemCapacity)
         {
-            Items = new ItemContainerComponent(maxItemCapacity);
+            _maxTradeItemsCapacity = maxItemCapacity;
+            Reset();
         }
 
         /// <summary>
@@ -54,11 +57,7 @@
             ItemCount = 0;
             Gold = 0;
             State = TradeState.Item;
-
-            foreach (var tradeItem in Items.Items)
-                tradeItem.ExtraUsed = 0;
-
-            Items.Reset();
+            Items = new ItemContainerComponent(_maxTradeItemsCapacity);
         }
     }
 }
