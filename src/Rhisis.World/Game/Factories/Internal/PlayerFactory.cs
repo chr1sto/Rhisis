@@ -103,7 +103,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 Gold = character.Gold,
                 Authority = (AuthorityType)character.User.Authority,
                 Experience = character.Experience,
-                JobData = _gameResources.Jobs[character.ClassId]
+                JobData = _gameResources.Jobs[character.JobId]
             };
             player.Moves = new MovableComponent
             {

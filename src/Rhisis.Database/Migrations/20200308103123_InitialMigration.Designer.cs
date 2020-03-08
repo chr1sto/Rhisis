@@ -9,7 +9,7 @@ using Rhisis.Database.Context;
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200308101436_InitialMigration")]
+    [Migration("20200308103123_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,11 +28,8 @@ namespace Rhisis.Database.Migrations
                     b.Property<float>("Angle")
                         .HasColumnType("float");
 
-                    b.Property<int>("BankCode")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClassId")
-                        .HasColumnType("int");
+                    b.Property<short>("BankCode")
+                        .HasColumnType("SMALLINT(4)");
 
                     b.Property<int>("Dexterity")
                         .HasColumnType("int");
@@ -66,6 +63,9 @@ namespace Rhisis.Database.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
@@ -104,8 +104,8 @@ namespace Rhisis.Database.Migrations
                     b.Property<int>("SkinSetId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Slot")
-                        .HasColumnType("int");
+                    b.Property<sbyte>("Slot")
+                        .HasColumnType("TINYINT");
 
                     b.Property<int>("Stamina")
                         .HasColumnType("int");
