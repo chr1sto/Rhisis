@@ -1,25 +1,26 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.MySqlClient;
 using Rhisis.Database.Context;
 
 namespace Rhisis.Database
 {
     public static class ConfigureDatabase
     {
-        private const string MySqlConnectionString =
-            "server={0};userid={1};pwd={2};port={4};database={3};sslmode=none;";
-
         public static DbContextOptionsBuilder ConfigureCorrectDatabase(this DbContextOptionsBuilder optionsBuilder,
             DatabaseConfiguration configuration)
         {
-            optionsBuilder.UseMySql(string.Format(MySqlConnectionString,
-                            configuration.Host,
-                            configuration.Username,
-                            configuration.Password,
-                            configuration.Database,
-                            configuration.Port));
+            var sqlConnectionStringBuilder = new MySqlConnectionStringBuilder
+            {
+                Server = configuration.Host,
+                UserID = configuration.Username,
+                Password = configuration.Password,
+                Port = (uint)configuration.Port,
+                Database = configuration.Database,
+                SslMode = MySqlSslMode.None
+            };
 
-            return optionsBuilder;
+            return optionsBuilder.UseMySql(sqlConnectionStringBuilder.ToString());
         }
 
         public static IServiceCollection RegisterDatabaseFactory(this IServiceCollection serviceCollection)

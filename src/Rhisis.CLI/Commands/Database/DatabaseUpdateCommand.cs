@@ -38,29 +38,31 @@ namespace Rhisis.CLI.Commands.Database
             try
             {
                 if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                {
                     DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
+                }
 
                 DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+                
                 if (dbConfig is null)
                 {
                     Console.WriteLine("Couldn't load database configuration file during execution of update command.");
                     return;
                 }
 
-                using (IDatabase database = _databaseFactory.GetDatabase(dbConfig))
-                {
-                    Console.WriteLine("Starting database structure update...");
-                    DatabaseContext rhisisDbContext = database.DatabaseContext;
+                using IDatabase database = _databaseFactory.GetDatabase(dbConfig);
+                
+                Console.WriteLine("Starting database structure update...");
+                DatabaseContext rhisisDbContext = database.DatabaseContext;
 
-                    if (rhisisDbContext.DatabaseExists())
-                    {
-                        rhisisDbContext.Migrate();
-                        Console.WriteLine("Database updated.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Database does not exist yet!");
-                    }
+                if (rhisisDbContext.DatabaseExists())
+                {
+                    rhisisDbContext.Migrate();
+                    Console.WriteLine("Database updated.");
+                }
+                else
+                {
+                    Console.WriteLine("Database does not exist yet!");
                 }
             }
             catch (Exception e)

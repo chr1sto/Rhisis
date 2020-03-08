@@ -160,6 +160,27 @@ namespace Rhisis.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Skills",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SkillId = table.Column<int>(nullable: false),
+                    Level = table.Column<byte>(nullable: false),
+                    CharacterId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skills", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Skills_characters_CharacterId",
+                        column: x => x.CharacterId,
+                        principalTable: "characters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "mails",
                 columns: table => new
                 {
@@ -243,6 +264,17 @@ namespace Rhisis.Database.Migrations
                 column: "CharacterId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Skills_CharacterId",
+                table: "Skills",
+                column: "CharacterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Skills_SkillId_CharacterId",
+                table: "Skills",
+                columns: new[] { "SkillId", "CharacterId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_users_Username_Email",
                 table: "users",
                 columns: new[] { "Username", "Email" },
@@ -259,6 +291,9 @@ namespace Rhisis.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "shortcuts");
+
+            migrationBuilder.DropTable(
+                name: "Skills");
 
             migrationBuilder.DropTable(
                 name: "items");

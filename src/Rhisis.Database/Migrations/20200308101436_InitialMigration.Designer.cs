@@ -9,14 +9,14 @@ using Rhisis.Database.Context;
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200119144006_InitialMigration")]
+    [Migration("20200308101436_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.0")
+                .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbCharacter", b =>
@@ -309,6 +309,31 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("shortcuts");
                 });
 
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<byte>("Level")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId");
+
+                    b.HasIndex("SkillId", "CharacterId")
+                        .IsUnique();
+
+                    b.ToTable("Skills");
+                });
+
             modelBuilder.Entity("Rhisis.Database.Entities.DbUser", b =>
                 {
                     b.Property<int>("Id")
@@ -397,6 +422,15 @@ namespace Rhisis.Database.Migrations
                 {
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
                         .WithMany("TaskbarShortcuts")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkill", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
+                        .WithMany()
                         .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
