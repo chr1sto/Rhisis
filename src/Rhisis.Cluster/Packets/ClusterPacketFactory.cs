@@ -111,7 +111,7 @@ namespace Rhisis.Cluster.Packets
 
                 foreach (var character in characters)
                 {
-                    packet.Write(character.Slot);
+                    packet.Write((int)character.Slot);
                     packet.Write(1); // this number represents the selected character in the window
                     packet.Write(character.MapId);
                     packet.Write(0x0B + character.Gender); // Model id
@@ -128,7 +128,7 @@ namespace Rhisis.Cluster.Packets
                     packet.Write((uint)character.HairColor);
                     packet.Write(character.FaceId);
                     packet.Write(character.Gender);
-                    packet.Write(character.ClassId);
+                    packet.Write(character.JobId);
                     packet.Write(character.Level);
                     packet.Write(0); // Job Level (Maybe master or hero ?)
                     packet.Write(character.Strength);
