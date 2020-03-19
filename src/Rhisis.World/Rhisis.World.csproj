@@ -15,9 +15,9 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.2" />
     <PackageReference Include="NLog" Version="4.6.8" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.1" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.2" />
     <PackageReference Include="Sylver.HandlerInvoker" Version="1.0.0" />
-    <PackageReference Include="Sylver.Network" Version="1.1.0" />
+    <PackageReference Include="Sylver.Network" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

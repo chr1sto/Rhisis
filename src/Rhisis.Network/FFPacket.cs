@@ -17,10 +17,10 @@ namespace Rhisis.Network
         private short _mergedPacketCount;
 
         /// <inheritdoc />
-        protected override Encoding StringReadEncoding => FlyFFReadStringEncoding;
+        protected override Encoding ReadEncoding => FlyFFReadStringEncoding;
 
         /// <inheritdoc />
-        protected override Encoding StringWriteEncoding => FlyFFWriteStringEncoding;
+        protected override Encoding WriteEncoding => FlyFFWriteStringEncoding;
 
         /// <summary>
         /// Gets the FFPacket buffer.
