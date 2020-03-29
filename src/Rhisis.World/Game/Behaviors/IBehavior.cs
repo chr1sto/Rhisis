@@ -22,5 +22,11 @@ namespace Rhisis.World.Game.Behaviors
         /// </summary>
         /// <param name="killedEntity">Killed entity.</param>
         void OnTargetKilled(ILivingEntity killedEntity);
+
+        /// <summary>
+        /// Process an action when the current entity is killed.
+        /// </summary>
+        /// <param name="killerEntity">Killer.</param>
+        void OnKilled(ILivingEntity killerEntity);
     }
 }

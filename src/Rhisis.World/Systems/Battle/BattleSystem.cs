@@ -1,20 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
-using Rhisis.Core.Resources;
-using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Drop;
-using Rhisis.World.Systems.Experience;
+using Rhisis.World.Systems.Battle.Arbiters;
 using Rhisis.World.Systems.Projectile;
-using System.Linq;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -22,32 +14,22 @@ namespace Rhisis.World.Systems.Battle
     public class BattleSystem : IBattleSystem
     {
         private readonly ILogger<BattleSystem> _logger;
-        private readonly IGameResources _gameResources;
-        private readonly IDropSystem _dropSystem;
-        private readonly IExperienceSystem _experienceSystem;
         private readonly IProjectileSystem _projectileSystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
-        private readonly WorldConfiguration _worldConfiguration;
 
         /// <summary>
         /// Creates a new <see cref="BattleSystem"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="worldConfiguration">World server configuration.</param>
-        /// <param name="gameResources">Game resources.</param>
-        /// <param name="dropSystem">Drop system.</param>
         /// <param name="experienceSystem">Experience system.</param>
         /// <param name="projectileSystem">Projectile system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IDropSystem dropSystem, IExperienceSystem experienceSystem, IProjectileSystem projectileSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IProjectileSystem projectileSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
-            _worldConfiguration = worldConfiguration.Value;
-            _gameResources = gameResources;
-            _dropSystem = dropSystem;
-            _experienceSystem = experienceSystem;
             _projectileSystem = projectileSystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
@@ -183,63 +165,13 @@ namespace Rhisis.World.Systems.Battle
                 ClearBattleTargets(defender);
                 ClearBattleTargets(attacker);
 
-                if (defender is IMonsterEntity deadMonster && attacker is IPlayerEntity player)
+                if (defender is IMonsterEntity && attacker is IPlayerEntity player)
                 {
                     _battlePacketFactory.SendDie(player, defender, attacker, attackType);
-
-                    deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5; // Configure this timer on world configuration
-
-                    // Drop items
-                    int itemCount = 0;
-                    foreach (DropItemData dropItem in deadMonster.Data.DropItems)
-                    {
-                        if (itemCount >= deadMonster.Data.MaxDropItem)
-                            break;
-
-                        long dropChance = RandomHelper.LongRandom(0, DropSystem.MaxDropChance);
-
-                        if (dropItem.Probability * _worldConfiguration.Rates.Drop >= dropChance)
-                        {
-                            var item = new Item(dropItem.ItemId, 1, -1, -1, -1, (byte)RandomHelper.Random(0, dropItem.ItemMaxRefine));
-
-                            _dropSystem.DropItem(defender, item, attacker);
-                            itemCount++;
-                        }
-                    }
-
-                    // Drop item kinds
-                    foreach (DropItemKindData dropItemKind in deadMonster.Data.DropItemsKind)
-                    {
-                        var itemsDataByItemKind = _gameResources.Items.Values.Where(x => x.ItemKind3 == dropItemKind.ItemKind && x.Rare >= dropItemKind.UniqueMin && x.Rare <= dropItemKind.UniqueMax);
-
-                        if (!itemsDataByItemKind.Any())
-                            continue;
-
-                        var itemData = itemsDataByItemKind.ElementAt(RandomHelper.Random(0, itemsDataByItemKind.Count() - 1));
-
-                        int itemRefine = RandomHelper.Random(0, 10);
-
-                        for (int i = itemRefine; i >= 0; i--)
-                        {
-                            long itemDropProbability = (long)(_gameResources.ExpTables.GetDropLuck(itemData.Level > 120 ? 119 : itemData.Level, itemRefine) * (deadMonster.Data.CorrectionValue / 100f));
-                            long dropChance = RandomHelper.LongRandom(0, DropSystem.MaxDropChance);
-
-                            if (dropChance < itemDropProbability * _worldConfiguration.Rates.Drop)
-                            {
-                                var item = new Item(itemData.Id, 1, -1, -1, -1, (byte)itemRefine);
-
-                                _dropSystem.DropItem(defender, item, attacker);
-                                break;
-                            }
-                        }
-                    }
-
-                    // Drop gold
-                    int goldDropped = RandomHelper.Random(deadMonster.Data.DropGoldMin, deadMonster.Data.DropGoldMax);
-                    _dropSystem.DropGold(deadMonster, goldDropped, attacker);
-
-                    // Give experience
-                    _experienceSystem.GiveExeperience(player, deadMonster.Data.Experience * _worldConfiguration.Rates.Experience);
+                }
+                else if (defender is IPlayerEntity && attacker is IPlayerEntity)
+                {
+                    // TODO: PVP
                 }
                 else if (defender is IPlayerEntity deadPlayer)
                 {
@@ -247,6 +179,7 @@ namespace Rhisis.World.Systems.Battle
                 }
 
                 attacker.Behavior.OnTargetKilled(defender);
+                defender.Behavior.OnKilled(attacker);
             }
         }
 
@@ -257,6 +190,10 @@ namespace Rhisis.World.Systems.Battle
         private void ClearBattleTargets(ILivingEntity entity)
         {
             entity.Follow.Reset();
+            entity.Object.MovingFlags &= ~ObjectState.OBJSTA_FMOVE;
+            entity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
+            entity.Moves.DestinationPosition.Reset();
+
             entity.Battle.Reset();
         }
     }

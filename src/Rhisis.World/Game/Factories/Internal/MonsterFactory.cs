@@ -3,6 +3,7 @@ using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
@@ -56,7 +57,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 },
                 Timers = new TimerComponent
                 {
-                    NextMoveTime = RandomHelper.LongRandom(8, 20)
+                    NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20)
                 }
             };
 

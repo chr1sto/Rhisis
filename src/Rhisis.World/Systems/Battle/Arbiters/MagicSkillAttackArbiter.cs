@@ -4,7 +4,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using System;
 
-namespace Rhisis.World.Systems.Battle
+namespace Rhisis.World.Systems.Battle.Arbiters
 {
     public class MagicSkillAttackArbiter : SkillAttackArbiter, IAttackArbiter
     {
@@ -14,7 +14,7 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attacker">Attacker entity.</param>
         /// <param name="defender">Defender entity.</param>
         /// <param name="skill">Magic skill.</param>
-        public MagicSkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill) 
+        public MagicSkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill)
             : base(attacker, defender, skill)
         {
         }
@@ -22,7 +22,7 @@ namespace Rhisis.World.Systems.Battle
         /// <inheritdoc />
         public override AttackResult CalculateDamages()
         {
-            int damages = GetAttackerSkillPower();
+            var damages = GetAttackerSkillPower();
             DefineAttributes? skillMastryAttribute = Skill.Data.SpellType switch
             {
                 SpellType.Fire => DefineAttributes.MASTRY_FIRE,
@@ -35,9 +35,9 @@ namespace Rhisis.World.Systems.Battle
 
             if (skillMastryAttribute.HasValue)
             {
-                float ratio = Math.Max(0, Attacker.Attributes[skillMastryAttribute.Value] / 100f);
+                var ratio = Math.Max(0, Attacker.Attributes[skillMastryAttribute.Value] / 100f);
 
-                damages = (int)(damages + (damages * ratio));
+                damages = (int)(damages + damages * ratio);
             }
 
             damages *= (int)GetAttackMultiplier();
@@ -60,12 +60,12 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attackResult">Current attack result.</param>
         private void PostCalculation(AttackResult attackResult)
         {
-            int damages = attackResult.Damages;
-            int defenderDefense = GetDefenderDefense(attackResult);
+            var damages = attackResult.Damages;
+            var defenderDefense = GetDefenderDefense(attackResult);
 
             damages -= damages * (int)(Defender.Attributes[DefineAttributes.RESIST_MAGIC_RATE] / 100f);
 
-            float damageDefenseDelta = (damages - defenderDefense) * (1.0f - GetMagicSkillResitanceRate(Defender, Skill));
+            var damageDefenseDelta = (damages - defenderDefense) * (1.0f - GetMagicSkillResitanceRate(Defender, Skill));
 
             attackResult.Damages = (int)(damageDefenseDelta * GetMagicSkillFactor(Attacker, Skill));
         }
@@ -78,7 +78,7 @@ namespace Rhisis.World.Systems.Battle
         /// <returns>Magic skill resistance.</returns>
         private float GetMagicSkillResistance(ILivingEntity entity, SkillInfo skill)
         {
-            float skillResistance = skill.Data.Element switch
+            var skillResistance = skill.Data.Element switch
             {
                 ElementType.Fire => entity.Data.FireResitance + entity.Attributes[DefineAttributes.RESIST_FIRE],
                 ElementType.Water => entity.Data.WaterResistance + entity.Attributes[DefineAttributes.RESIST_WATER],
@@ -120,10 +120,10 @@ namespace Rhisis.World.Systems.Battle
                     return 1.1f;
                 }
                 else if (
-                    (skillElementType == ElementType.Fire && weaponElementType == ElementType.Water) ||
-                    (skillElementType == ElementType.Water && weaponElementType == ElementType.Electricity) ||
-                    (skillElementType == ElementType.Electricity && weaponElementType == ElementType.Earth) ||
-                    (skillElementType == ElementType.Wind && weaponElementType == ElementType.Fire)
+                    skillElementType == ElementType.Fire && weaponElementType == ElementType.Water ||
+                    skillElementType == ElementType.Water && weaponElementType == ElementType.Electricity ||
+                    skillElementType == ElementType.Electricity && weaponElementType == ElementType.Earth ||
+                    skillElementType == ElementType.Wind && weaponElementType == ElementType.Fire
                     )
                 {
                     return 0.9f;

@@ -5,7 +5,7 @@ using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using System;
 
-namespace Rhisis.World.Systems.Battle
+namespace Rhisis.World.Systems.Battle.Arbiters
 {
     public abstract class AttackArbiterBase : IAttackArbiter
     {
@@ -48,23 +48,23 @@ namespace Rhisis.World.Systems.Battle
                 return Defender.Attributes[DefineAttributes.RESIST_MAGIC];
             }
 
-            int defense = 0;
-            bool isGenericAttack = attackResult.Flags.HasFlag(AttackFlags.AF_GENERIC);
+            var defense = 0;
+            var isGenericAttack = attackResult.Flags.HasFlag(AttackFlags.AF_GENERIC);
 
             if (Attacker.Type == WorldEntityType.Player && Defender.Type == WorldEntityType.Player)
                 isGenericAttack = true;
 
             if (isGenericAttack)
             {
-                float factor = 1f;
+                var factor = 1f;
 
                 if (Defender is IPlayerEntity player)
                     factor = player.PlayerData.JobData.DefenseFactor;
 
-                int stamina = Defender.Attributes[DefineAttributes.STA];
-                int level = Defender.Object.Level;
+                var stamina = Defender.Attributes[DefineAttributes.STA];
+                var level = Defender.Object.Level;
 
-                defense = (int)(((((level * 2) + (stamina / 2)) / 2.8f) - 4) + ((stamina - 14) * factor));
+                defense = (int)((level * 2 + stamina / 2) / 2.8f - 4 + (stamina - 14) * factor);
                 // TODO: add defense armor
                 // TODO: add DST_ADJDEF
 
@@ -90,7 +90,7 @@ namespace Rhisis.World.Systems.Battle
         /// <returns></returns>
         protected virtual float GetDefenseMultiplier(float defenseFactor = 1.0f)
         {
-            defenseFactor *= (1.0f + (Defender.Attributes[DefineAttributes.ADJDEF_RATE] / 100.0f));
+            defenseFactor *= 1.0f + Defender.Attributes[DefineAttributes.ADJDEF_RATE] / 100.0f;
 
             return defenseFactor;
         }
@@ -116,13 +116,13 @@ namespace Rhisis.World.Systems.Battle
         /// <returns>Player's defense.</returns>
         private int GetPlayerDefense(IPlayerEntity defenderPlayer, AttackFlags flags)
         {
-            int defense = 0;
+            var defense = 0;
 
             if (Attacker.Type == WorldEntityType.Player)
             {
                 if (flags.HasFlag(AttackFlags.AF_MAGIC))
                 {
-                    defense = (int)((defenderPlayer.Attributes[DefineAttributes.INT] * 9.04f) + (defenderPlayer.Object.Level * 35.98f));
+                    defense = (int)(defenderPlayer.Attributes[DefineAttributes.INT] * 9.04f + defenderPlayer.Object.Level * 35.98f);
                 }
                 else
                 {
@@ -145,22 +145,22 @@ namespace Rhisis.World.Systems.Battle
         {
             if (Defender.Type == WorldEntityType.Player)
             {
-                int blockRandomProbability = RandomHelper.Random(0, 80);
+                var blockRandomProbability = RandomHelper.Random(0, 80);
 
                 if (blockRandomProbability <= 5)
                     return 1f;
                 if (blockRandomProbability >= 75f)
                     return 0.1f;
 
-                int defenderLevel = Defender.Object.Level;
-                int defenderDexterity = Defender.Attributes[DefineAttributes.DEX];
+                var defenderLevel = Defender.Object.Level;
+                var defenderDexterity = Defender.Attributes[DefineAttributes.DEX];
 
-                float blockProbabilityA = defenderLevel / ((defenderLevel + Attacker.Object.Level) * 15.0f);
-                float blockProbabilityB = (defenderDexterity + Attacker.Attributes[DefineAttributes.DEX] + 2) * ((defenderDexterity - Attacker.Attributes[DefineAttributes.DEX]) / 800.0f);
+                var blockProbabilityA = defenderLevel / ((defenderLevel + Attacker.Object.Level) * 15.0f);
+                var blockProbabilityB = (defenderDexterity + Attacker.Attributes[DefineAttributes.DEX] + 2) * ((defenderDexterity - Attacker.Attributes[DefineAttributes.DEX]) / 800.0f);
 
                 if (blockProbabilityB > 10.0f)
                     blockProbabilityB = 10.0f;
-                float blockProbability = blockProbabilityA + blockProbabilityB;
+                var blockProbability = blockProbabilityA + blockProbabilityB;
                 if (blockProbability < 0.0f)
                     blockProbability = 0.0f;
 
@@ -170,7 +170,7 @@ namespace Rhisis.World.Systems.Battle
                 if (player is null)
                     return 0f;
 
-                int blockRate = (int)((defenderDexterity / 8.0f) * player.PlayerData.JobData.Blocking + blockProbability);
+                var blockRate = (int)(defenderDexterity / 8.0f * player.PlayerData.JobData.Blocking + blockProbability);
 
                 if (blockRate < 0)
                     blockRate = 0;
@@ -180,14 +180,14 @@ namespace Rhisis.World.Systems.Battle
             }
             else if (Defender.Type == WorldEntityType.Monster)
             {
-                int blockRandomProbability = RandomHelper.Random(0, 100);
+                var blockRandomProbability = RandomHelper.Random(0, 100);
 
                 if (blockRandomProbability <= 5)
                     return 1f;
                 if (blockRandomProbability >= 95)
                     return 0f;
 
-                int blockRate = (int)((GetEspaceRating(Defender) - Defender.Object.Level) * 0.5f);
+                var blockRate = (int)((GetEspaceRating(Defender) - Defender.Object.Level) * 0.5f);
 
                 if (blockRate < 0)
                     blockRate = 0;
@@ -224,13 +224,13 @@ namespace Rhisis.World.Systems.Battle
         /// <returns></returns>
         public float GetAttackMultiplier()
         {
-            float multiplier = 1.0f + (Attacker.Attributes[DefineAttributes.ATKPOWER_RATE] / 100f);
+            var multiplier = 1.0f + Attacker.Attributes[DefineAttributes.ATKPOWER_RATE] / 100f;
 
             if (Attacker is IPlayerEntity)
             {
                 // TODO: check SM mode SM_ATTACK_UP or SM_ATTACK_UP1 => multiplier *= 1.2f;
 
-                int damages = Attacker.Attributes[Defender.Type == WorldEntityType.Player ? DefineAttributes.PVP_DMG : DefineAttributes.MONSTER_DMG];
+                var damages = Attacker.Attributes[Defender.Type == WorldEntityType.Player ? DefineAttributes.PVP_DMG : DefineAttributes.MONSTER_DMG];
 
                 if (damages > 0)
                 {

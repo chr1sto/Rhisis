@@ -39,10 +39,9 @@ namespace Rhisis.World.Systems.Mobility
                 if (entity.Object.Position.IsInCircle(entity.Follow.Target.Object.Position, entity.Follow.FollowDistance))
                 {
                     entity.Moves.DestinationPosition.Reset();
-                    entity.Behavior?.OnArrived();
-
                     entity.Object.MovingFlags &= ~ObjectState.OBJSTA_FMOVE;
                     entity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
+                    entity.Behavior?.OnArrived();
                 }
                 else
                 {
