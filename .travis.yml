@@ -26,5 +26,5 @@ jobs:
         - dotnet test test/Rhisis.World.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
         name: "Rhisis Tests"
 
-after_script:
-  - bash <(curl -s https://codecov.io/bash) 
+# after_script:
+#  - bash <(curl -s https://codecov.io/bash) 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
@@ -97,11 +96,6 @@ namespace Rhisis.World.Systems.Battle
 
             attacker.Battle.Target = defender;
             defender.Battle.Target = attacker;
-
-            if (defender.Type == WorldEntityType.Monster)
-            {
-                defender.Follow.Target = attacker;
-            }
 
             if (attackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
             {
@@ -262,9 +256,8 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="entity">Current entity.</param>
         private void ClearBattleTargets(ILivingEntity entity)
         {
-            entity.Follow.Target = null;
-            entity.Battle.Target = null;
-            entity.Battle.Targets.Clear();
+            entity.Follow.Reset();
+            entity.Battle.Reset();
         }
     }
 }

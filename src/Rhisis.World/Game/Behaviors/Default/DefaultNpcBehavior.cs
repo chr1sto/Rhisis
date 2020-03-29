@@ -50,7 +50,9 @@ namespace Rhisis.World.Game.Behaviors
         private void UpdateOralText()
         {
             if (_npc.NpcData == null)
+            {
                 return;
+            }
 
             if (_npc.Timers.LastSpeakTime <= Time.TimeInSeconds())
             {

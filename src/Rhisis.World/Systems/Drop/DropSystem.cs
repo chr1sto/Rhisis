@@ -48,6 +48,8 @@ namespace Rhisis.World.Systems.Drop
                 newItem.Drop.OwnershipTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.OwnershipTime;
                 newItem.Drop.DespawnTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.DespawnTime;
             }
+
+            owner.Object.CurrentLayer.AddEntity(newItem);
         }
 
         /// <inheritdoc />

@@ -7,7 +7,7 @@ using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Sylver.Network.Common;
 
-namespace Rhisis.World.Game.Entities
+namespace Rhisis.World.Game.Entities.Internal
 {
     public class PlayerEntity : WorldEntity, IPlayerEntity
     {

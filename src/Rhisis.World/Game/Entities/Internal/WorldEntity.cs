@@ -5,7 +5,7 @@ using Rhisis.World.Game.Components;
 using System;
 using System.Linq;
 
-namespace Rhisis.World.Game.Entities
+namespace Rhisis.World.Game.Entities.Internal
 {
     public abstract class WorldEntity : IWorldEntity
     {
@@ -34,7 +34,7 @@ namespace Rhisis.World.Game.Entities
         }
 
         /// <inheritdoc />
-        public TEntity FindEntity<TEntity>(uint id) where TEntity : IWorldEntity 
+        public TEntity FindEntity<TEntity>(uint id) where TEntity : IWorldEntity
             => (TEntity)Object.Entities.FirstOrDefault(x => x is TEntity && x.Id == id);
 
         /// <inheritdoc />
@@ -52,11 +52,10 @@ namespace Rhisis.World.Game.Entities
         public bool Equals(IWorldEntity x, IWorldEntity y) => x.Equals(y);
 
         /// <inheritdoc />
-        public bool Equals(IWorldEntity other)
-            => (Id, Type, Object.MapId, Object.LayerId) == (other.Id, other.Type, other.Object.MapId, other.Object.LayerId);
+        public bool Equals(IWorldEntity other) => Id == other.Id;
 
         /// <inheritdoc />
-        public int GetHashCode(IWorldEntity obj) => (obj.Id, obj.Type, obj.Object.Name, obj.Object.Type).GetHashCode();
+        public int GetHashCode(IWorldEntity obj) => obj.Id.GetHashCode();
 
         /// <summary>
         /// Disposes the <see cref="WorldEntity"/> resources.

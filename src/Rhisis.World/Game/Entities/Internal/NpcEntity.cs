@@ -7,7 +7,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 
-namespace Rhisis.World.Game.Entities
+namespace Rhisis.World.Game.Entities.Internal
 {
     public class NpcEntity : WorldEntity, INpcEntity
     {

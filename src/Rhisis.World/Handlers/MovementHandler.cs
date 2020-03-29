@@ -32,8 +32,7 @@ namespace Rhisis.World.Handlers
         {
             client.Player.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
             client.Player.Moves.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
-            client.Player.Object.Angle = Vector3.AngleBetween(client.Player.Object.Position, client.Player.Moves.DestinationPosition);
-            client.Player.Follow.Target = null;
+            client.Player.Follow.Reset();
 
             _moverPacketFactory.SendDestinationPosition(client.Player);
         }

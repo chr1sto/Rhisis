@@ -12,6 +12,7 @@ using Rhisis.Database.Entities;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Entities.Internal;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems.Recovery;
 using System;
@@ -107,8 +108,7 @@ namespace Rhisis.World.Game.Factories.Internal
             };
             player.Moves = new MovableComponent
             {
-                Speed = _gameResources.Movers[player.Object.ModelId].Speed,
-                DestinationPosition = player.Object.Position.Clone(),
+                Speed = _gameResources.Movers[player.Object.ModelId]?.Speed ?? 0.1f,
                 LastMoveTime = Time.GetElapsedTime(),
                 NextMoveTime = Time.GetElapsedTime() + 10
             };

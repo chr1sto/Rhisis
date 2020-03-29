@@ -67,10 +67,9 @@ namespace Rhisis.World.Game.Behaviors
                 return;
             }
 
-            _mobilitySystem.CalculatePosition(_player);
-            _regionTriggerSystem.CheckWrapzones(_player);
-
             ProcessIdleHeal();
+            _regionTriggerSystem.CheckWrapzones(_player);
+            _mobilitySystem.CalculatePosition(_player);
         }
 
         /// <inheritdoc />
@@ -136,12 +135,9 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="player"></param>
         private void ProcessIdleHeal()
         {
-            if (_player.Timers.NextHealTime <= Time.TimeInSeconds())
+            if (_player.Timers.NextHealTime <= Time.TimeInSeconds() && !_player.Battle.IsFighting)
             {
-                if (!_player.Battle.IsFighting)
-                {
-                    _recoverySystem.IdleRecevory(_player, isSitted: false);
-                }
+                _recoverySystem.IdleRecevory(_player, isSitted: false);
             }
         }
     }

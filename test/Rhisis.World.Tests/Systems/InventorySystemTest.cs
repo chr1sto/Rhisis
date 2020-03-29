@@ -4,6 +4,7 @@ using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Entities.Internal;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;

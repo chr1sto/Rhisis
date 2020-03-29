@@ -2,7 +2,7 @@
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Maps.Regions;
 
-namespace Rhisis.World.Game.Entities
+namespace Rhisis.World.Game.Entities.Internal
 {
     public class ItemEntity : WorldEntity, IItemEntity
     {
