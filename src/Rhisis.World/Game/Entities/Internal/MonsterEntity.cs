@@ -6,7 +6,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 
-namespace Rhisis.World.Game.Entities
+namespace Rhisis.World.Game.Entities.Internal
 {
     /// <summary>
     /// Describes the Monster entity.
@@ -65,5 +65,7 @@ namespace Rhisis.World.Game.Entities
             Battle = new BattleComponent();
             Attributes = new AttributeComponent();
         }
+
+        public override string ToString() => Object.Name;
     }
 }

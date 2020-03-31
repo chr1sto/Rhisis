@@ -67,8 +67,10 @@ namespace Rhisis.World.Systems.Teleport
                 // TODO: get map height at x/z position
                 float positionY = y ?? 100;
                 player.Object.Position = new Vector3(x, positionY, z);
-                player.Moves.DestinationPosition = player.Object.Position.Clone();
                 player.Object.MovingFlags = ObjectState.OBJSTA_STAND;
+                player.Moves.DestinationPosition.Reset();
+                player.Battle.Reset();
+                player.Follow.Reset();
 
                 _playerPacketFactory.SendPlayerReplace(player);
                 _worldSpawnPacketFactory.SendPlayerSpawn(player);
@@ -85,7 +87,10 @@ namespace Rhisis.World.Systems.Teleport
                 // TODO: get map height at x/z position
                 float positionY = y ?? 100;
                 player.Object.Position = new Vector3(x, positionY, z);
-                player.Moves.DestinationPosition = player.Object.Position.Clone();
+                player.Object.MovingFlags = ObjectState.OBJSTA_STAND;
+                player.Moves.DestinationPosition.Reset();
+                player.Battle.Reset();
+                player.Follow.Reset();
             }
 
             _playerPacketFactory.SendPlayerTeleport(player);

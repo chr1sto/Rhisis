@@ -30,11 +30,13 @@ namespace Rhisis.World.Systems
                 {
                     _logger.LogDebug($"Despawning {monster.Object.Name}...");
                     monster.Object.Spawned = false;
-                    if (monster.Object.AbleRespawn != true) {
+                    
+                    if (!monster.Object.AbleRespawn)
+                    {
                         monster.Timers.RespawnTime = Time.TimeInSeconds() + monster.Region.Time;
-                    } 
+                    }
                 }
-                else if (!monster.Object.Spawned && monster.Timers.RespawnTime < Time.TimeInSeconds() && monster.Object.AbleRespawn != true )
+                else if (!monster.Object.Spawned && monster.Timers.RespawnTime < Time.TimeInSeconds() && !monster.Object.AbleRespawn)
                 {
                     _logger.LogDebug($"Respawning {monster.Object.Name}...");
                     ResetMonster(monster);
@@ -72,8 +74,11 @@ namespace Rhisis.World.Systems
             monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 15);
             monster.Object.Spawned = true;
             monster.Object.Position = monster.Region.GetRandomPosition();
-            monster.Moves.DestinationPosition = monster.Object.Position.Clone();
+            monster.Object.MovingFlags = ObjectState.OBJSTA_STAND;
+            monster.Moves.DestinationPosition.Reset();
             monster.Moves.SpeedFactor = 1;
+            monster.Battle.Reset();
+            monster.Follow.Reset();
             monster.Attributes[DefineAttributes.HP] = monster.Data.AddHp;
             monster.Attributes[DefineAttributes.MP] = monster.Data.AddMp;
         }

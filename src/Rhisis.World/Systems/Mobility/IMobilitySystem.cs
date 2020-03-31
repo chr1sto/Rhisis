@@ -10,7 +10,7 @@ namespace Rhisis.World.Systems.Mobility
         /// <summary>
         /// Calculates the movable entities positions in real-time.
         /// </summary>
-        /// <param name="entity">Movable entity.</param>
-        void CalculatePosition(IMovableEntity entity);
+        /// <param name="entity">Living and moving entity.</param>
+        void CalculatePosition(ILivingEntity entity);
     }
 }

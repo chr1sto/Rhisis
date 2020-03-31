@@ -1,30 +1,25 @@
-﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Resources;
+﻿using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
-using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Maps.Regions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Rhisis.World.Game.Maps
 {
+    [DebuggerDisplay("{Name}")]
     public class MapInstance : MapContext, IMapInstance
     {
-        private const int DefaultMapLayerId = 1;
-        private const int MapLandSize = 128;
-        private const int FrameRate = 15;
-        public const double UpdateRate = 1000f / FrameRate;
+        public const int DefaultMapLayerId = 1;
+        public const int MapLandSize = 128;
+        public const int FrameRate = 15;
+        public static readonly float UpdateRate = 1000 / FrameRate;
 
         private readonly ConcurrentDictionary<int, IMapLayer> _layers;
-        private readonly ILogger<MapInstance> _logger;
         private readonly IMapFactory _mapFactory;
-        private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly CancellationToken _cancellationToken;
 
         /// <inheritdoc />
         public string Name { get; }
@@ -45,10 +40,10 @@ namespace Rhisis.World.Game.Maps
         public int Length => MapInformation.Length;
 
         /// <inheritdoc />
-        public IReadOnlyList<IMapLayer> Layers { get; }
+        public IEnumerable<IMapLayer> Layers => _layers.Values;
 
         /// <inheritdoc />
-        public IReadOnlyList<IMapRegion> Regions { get; private set; }
+        public IEnumerable<IMapRegion> Regions { get; private set; }
 
         /// <summary>
         /// Creates a new <see cref="MapInstance"/>.
@@ -56,16 +51,14 @@ namespace Rhisis.World.Game.Maps
         /// <param name="id">Map Id.</param>
         /// <param name="name">Map name.</param>
         /// <param name="worldInformations">Map world informations.</param>
-        public MapInstance(ILogger<MapInstance> logger, IMapFactory mapFactory, int id, string name, WldFileInformations worldInformations)
+        /// <param name="mapFactory">Map factory.</param>
+        public MapInstance(int id, string name, WldFileInformations worldInformations, IMapFactory mapFactory)
         {
             Id = id;
-            _logger = logger;
-            _mapFactory = mapFactory;
             Name = name;
             MapInformation = worldInformations;
+            _mapFactory = mapFactory;
             _layers = new ConcurrentDictionary<int, IMapLayer>();
-            _cancellationTokenSource = new CancellationTokenSource();
-            _cancellationToken = _cancellationTokenSource.Token;
         }
 
         // <inheritdoc />
@@ -146,46 +139,11 @@ namespace Rhisis.World.Game.Maps
             return true;
         }
 
-        /// <inheritdoc />
-        public void StartUpdateTask()
-        {
-            Task.Run(async () =>
-            {
-                while (!_cancellationToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        foreach (var worldEntity in Entities)
-                        {
-                            if (worldEntity.Value is ILivingEntity livingEntity)
-                            {
-                                livingEntity.Behavior?.Update();
-                            }
-                        }
-
-                        foreach (var layer in _layers)
-                        {
-                            layer.Value.Update();
-                        }
-
-                        await Task.Delay(50, _cancellationToken).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, $"An error occured on map {Name}.");
-                    }
-                }
-            }, _cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public void StopUpdateTask() => _cancellationTokenSource.Cancel();
-
         /// <summary>
         /// Sets the map regions.
         /// </summary>
         /// <param name="regions">Map regions.</param>
-        internal void SetRegions(List<IMapRegion> regions)
+        internal void SetRegions(IEnumerable<IMapRegion> regions)
         {
             if (!regions.Any(x => x is IMapRevivalRegion))
             {
@@ -194,7 +152,7 @@ namespace Rhisis.World.Game.Maps
                     MapInformation.RevivalMapId, MapInformation.RevivalKey, null, false, false);
             }
 
-            Regions = regions;
+            Regions = new List<IMapRegion>(regions);
         }
 
         /// <inheritdoc />
@@ -203,7 +161,7 @@ namespace Rhisis.World.Game.Maps
         /// <inheritdoc />
         public void Dispose()
         {
-            _cancellationTokenSource.Dispose();
+            _layers.Clear();
         }
     }
 }

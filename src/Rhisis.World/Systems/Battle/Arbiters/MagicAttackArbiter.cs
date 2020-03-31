@@ -5,7 +5,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using System;
 
-namespace Rhisis.World.Systems.Battle
+namespace Rhisis.World.Systems.Battle.Arbiters
 {
     /// <summary>
     /// Provides a mechanism to calculate a magic attack based on the attacker and defender statistics.
@@ -20,7 +20,7 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attacker">Attacker entity.</param>
         /// <param name="defender">Defender entity.</param>
         /// <param name="magicAttackPower">Magic attack power.</param>
-        public MagicAttackArbiter(ILivingEntity attacker, ILivingEntity defender, int magicAttackPower) 
+        public MagicAttackArbiter(ILivingEntity attacker, ILivingEntity defender, int magicAttackPower)
             : base(attacker, defender)
         {
             _magicAttackPower = magicAttackPower;
@@ -41,7 +41,7 @@ namespace Rhisis.World.Systems.Battle
                 Item wandWeapon = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
 
                 weaponAttackResult = BattleHelper.GetWeaponAttackPower(Attacker, wandWeapon);
-                int weaponAttackDamages = BattleHelper.GetWeaponAttackDamages(WeaponType.MAGIC_WAND, player);
+                var weaponAttackDamages = BattleHelper.GetWeaponAttackDamages(WeaponType.MAGIC_WAND, player);
 
                 weaponAttackResult.AttackMin += weaponAttackDamages;
                 weaponAttackResult.AttackMax += weaponAttackDamages;

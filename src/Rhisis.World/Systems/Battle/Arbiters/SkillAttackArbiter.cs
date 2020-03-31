@@ -6,7 +6,7 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems.Inventory;
 using System;
 
-namespace Rhisis.World.Systems.Battle
+namespace Rhisis.World.Systems.Battle.Arbiters
 {
     public class SkillAttackArbiter : AttackArbiterBase
     {
@@ -21,7 +21,7 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attacker">Attacker living entity.</param>
         /// <param name="defender">Defender living entity.</param>
         /// <param name="skill">Skill.</param>
-        protected SkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill) 
+        protected SkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill)
             : base(attacker, defender)
         {
             Skill = skill;
@@ -36,20 +36,20 @@ namespace Rhisis.World.Systems.Battle
         /// <returns>Skill power.</returns>
         protected int GetAttackerSkillPower()
         {
-            int referStatistic1 = Attacker.Attributes[Skill.Data.ReferStat1];
-            int referStatistic2 = Attacker.Attributes[Skill.Data.ReferStat2];
+            var referStatistic1 = Attacker.Attributes[Skill.Data.ReferStat1];
+            var referStatistic2 = Attacker.Attributes[Skill.Data.ReferStat2];
 
             if (Skill.Data.ReferTarget1 == SkillReferTargetType.Attack && referStatistic1 != 0)
             {
-                referStatistic1 = (int)(((Skill.Data.ReferValue1 / 10f) * referStatistic1) + (Skill.Level * (referStatistic1 / 50f)));
+                referStatistic1 = (int)(Skill.Data.ReferValue1 / 10f * referStatistic1 + Skill.Level * (referStatistic1 / 50f));
             }
 
             if (Skill.Data.ReferTarget2 == SkillReferTargetType.Attack && referStatistic2 != 0)
             {
-                referStatistic2 = (int)(((Skill.Data.ReferValue2 / 10f) * referStatistic2) + (Skill.Level * (referStatistic2 / 50f)));
+                referStatistic2 = (int)(Skill.Data.ReferValue2 / 10f * referStatistic2 + Skill.Level * (referStatistic2 / 50f));
             }
 
-            int referStatistic = referStatistic1 + referStatistic2;
+            var referStatistic = referStatistic1 + referStatistic2;
             int attackMin;
             int attackMax;
 
@@ -89,7 +89,7 @@ namespace Rhisis.World.Systems.Battle
             powerMin += weaponExtraDamages;
             powerMax += weaponExtraDamages;
 
-            float attackMinMax = Math.Max((powerMax - powerMin) + 1, 1);
+            var attackMinMax = Math.Max(powerMax - powerMin + 1, 1);
 
             return (int)(powerMin + RandomHelper.FloatRandom(1f, attackMinMax));
         }

@@ -25,6 +25,7 @@ namespace Rhisis.World
         private const int ClientBacklog = 50;
 
         private readonly ILogger<WorldServer> _logger;
+        private readonly IWorldServerTaskManager _worldServerTaskManager;
         private readonly WorldConfiguration _worldConfiguration;
         private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
@@ -35,9 +36,13 @@ namespace Rhisis.World
         /// <summary>
         /// Creates a new <see cref="WorldServer"/> instance.
         /// </summary>
-        public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IServiceProvider serviceProvider, IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager)
+        public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, 
+            IWorldServerTaskManager worldServerTaskManager,
+            IGameResources gameResources, IServiceProvider serviceProvider, 
+            IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager)
         {
             _logger = logger;
+            _worldServerTaskManager = worldServerTaskManager;
             _worldConfiguration = worldConfiguration.Value;
             _gameResources = gameResources;
             _serviceProvider = serviceProvider;
@@ -72,8 +77,15 @@ namespace Rhisis.World
         /// <inheritdoc />
         protected override void OnAfterStart()
         {
+            _worldServerTaskManager.Start();
             _logger.LogInformation("'{0}' world server is started and listen on {1}:{2}.",
                 _worldConfiguration.Name, ServerConfiguration.Host, ServerConfiguration.Port);
+        }
+
+        /// <inheritdoc />
+        protected override void OnBeforeStop()
+        {
+            _worldServerTaskManager.Stop();
         }
 
         /// <inheritdoc />

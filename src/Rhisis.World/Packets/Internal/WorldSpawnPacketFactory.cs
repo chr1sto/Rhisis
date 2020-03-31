@@ -288,17 +288,21 @@ namespace Rhisis.World.Packets.Internal
                 IEnumerable<Item> equipedItems = playerEntity.Inventory.GetEquipedItems();
 
                 foreach (var item in equipedItems)
-                    packet.Write(item.Refines);
+                {
+                    packet.Write(item?.Refines ?? 0);
+                }
 
                 for (var i = 0; i < 28; i++)
+                {
                     packet.Write(0);
+                }
 
                 // Serialize Equiped items
-                packet.Write((byte)equipedItems.Count(x => x.Id != -1));
+                packet.Write((byte)equipedItems.Count(x => x != null));
 
                 foreach (var item in equipedItems)
                 {
-                    if (item != null && item.Id > 0)
+                    if (item != null)
                     {
                         packet.Write((byte)(item.Slot - InventorySystem.EquipOffset));
                         packet.Write((short)item.Id);

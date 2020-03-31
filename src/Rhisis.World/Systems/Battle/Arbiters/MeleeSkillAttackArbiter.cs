@@ -6,16 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.World.Systems.Battle
+namespace Rhisis.World.Systems.Battle.Arbiters
 {
     /// <summary>
     /// Provides a mechanism to calculate a melee skill attack result based on the attacker and defender statistics.
     /// </summary>
     public class MeleeSkillAttackArbiter : SkillAttackArbiter, IAttackArbiter
     {
-        private readonly IEnumerable<int> SkillsIgnoringDefense = new int[]
+        private static readonly IEnumerable<int> SkillsIgnoringDefense = new int[]
         {
-            DefineSkill.SI_BIL_PST_ASALRAALAIKUM, 
+            DefineSkill.SI_BIL_PST_ASALRAALAIKUM,
             DefineSkill.SI_JST_YOYO_HITOFPENYA
         };
 
@@ -33,7 +33,7 @@ namespace Rhisis.World.Systems.Battle
         /// <inheritdoc />
         public override AttackResult CalculateDamages()
         {
-            int damages = (int)(GetAttackerSkillPower() * GetAttackMultiplier()) + Attacker.Attributes[DefineAttributes.ATKPOWER];
+            var damages = (int)(GetAttackerSkillPower() * GetAttackMultiplier()) + Attacker.Attributes[DefineAttributes.ATKPOWER];
 
             var attackResult = new AttackResult
             {

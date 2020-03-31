@@ -8,6 +8,7 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Entities.Internal;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Structures;
 using System;
@@ -97,8 +98,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 Owner = owner,
                 Item = CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine)
             };
-
-            currentMapLayerContext.AddEntity(itemEntity);
 
             return itemEntity;
         }

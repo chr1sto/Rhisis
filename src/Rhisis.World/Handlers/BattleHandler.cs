@@ -6,7 +6,6 @@ using Rhisis.World.Client;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems.Battle;
-using Rhisis.World.Systems.Inventory;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
@@ -23,7 +22,6 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="battleSystem">Battle system.</param>
-        /// <param name="moverPacketFactory">Mover packet factory.</param>
         public BattleHandler(ILogger<BattleHandler> logger, IBattleSystem battleSystem)
         {
             _logger = logger;

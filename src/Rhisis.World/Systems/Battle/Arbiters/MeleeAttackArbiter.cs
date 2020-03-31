@@ -5,7 +5,7 @@ using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 
-namespace Rhisis.World.Systems.Battle
+namespace Rhisis.World.Systems.Battle.Arbiters
 {
     /// <summary>
     /// Provides a mechanism to calculate a melee attack result based on the attacker and defender statistics.
@@ -32,7 +32,7 @@ namespace Rhisis.World.Systems.Battle
             {
                 Flags = GetAttackFlags()
             };
-            
+
             if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
                 return attackResult;
 
@@ -41,7 +41,7 @@ namespace Rhisis.World.Systems.Battle
                 Item rightWeapon = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
 
                 // TODO: GetDamagePropertyFactor()
-                int weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
+                var weaponAttack = BattleHelper.GetWeaponAttackDamages(rightWeapon.Data.WeaponType, player);
                 attackResult.AttackMin = rightWeapon.Data.AbilityMin * 2 + weaponAttack;
                 attackResult.AttackMax = rightWeapon.Data.AbilityMax * 2 + weaponAttack;
             }
@@ -72,7 +72,7 @@ namespace Rhisis.World.Systems.Battle
 
             if (attackResult.Damages > 0)
             {
-                float blockFactor = GetDefenderBlockFactor();
+                var blockFactor = GetDefenderBlockFactor();
                 if (blockFactor < 1f)
                 {
                     attackResult.Flags |= AttackFlags.AF_BLOCKING;
@@ -85,7 +85,7 @@ namespace Rhisis.World.Systems.Battle
                 attackResult.Flags &= ~AttackFlags.AF_CRITICAL;
                 attackResult.Flags &= ~AttackFlags.AF_FLYING;
             }
-            
+
             return attackResult;
         }
 
@@ -98,19 +98,19 @@ namespace Rhisis.World.Systems.Battle
             // TODO: if attacker mode == ONEKILL_MODE, return AF_GENERIC
 
             int hitRate;
-            int hitRating = GetHitRating(Attacker);
-            int escapeRating = GetEspaceRating(Defender);
+            var hitRating = GetHitRating(Attacker);
+            var escapeRating = GetEspaceRating(Defender);
 
             if (Attacker.Type == WorldEntityType.Monster && Defender.Type == WorldEntityType.Player)
             {
                 // Monster VS Player
-                hitRate = (int)(((hitRating * 1.5f) / (hitRating + escapeRating)) * 2.0f *
+                hitRate = (int)(hitRating * 1.5f / (hitRating + escapeRating) * 2.0f *
                           (Attacker.Object.Level * 0.5f / (Attacker.Object.Level + Defender.Object.Level * 0.3f)) * 100.0f);
             }
             else
             {
                 // Player VS Player or Player VS Monster
-                hitRate = (int)(((hitRating * 1.6f) / (hitRating + escapeRating)) * 1.5f *
+                hitRate = (int)(hitRating * 1.6f / (hitRating + escapeRating) * 1.5f *
                           (Attacker.Object.Level * 1.2f / (Attacker.Object.Level + Defender.Object.Level)) * 100.0f);
             }
 
@@ -145,8 +145,8 @@ namespace Rhisis.World.Systems.Battle
             if (currentAttackFlags.HasFlag(AttackFlags.AF_MELEESKILL) || currentAttackFlags.HasFlag(AttackFlags.AF_MAGICSKILL))
                 return false;
 
-            float criticalJobFactor = attacker is IPlayerEntity player ? player.PlayerData.JobData.Critical : 1f;
-            int criticalProbability = (int)((attacker.Attributes[DefineAttributes.DEX] / 10) * criticalJobFactor);
+            var criticalJobFactor = attacker is IPlayerEntity player ? player.PlayerData.JobData.Critical : 1f;
+            var criticalProbability = (int)(attacker.Attributes[DefineAttributes.DEX] / 10 * criticalJobFactor);
             // TODO: add DST_CHR_CHANCECRITICAL to criticalProbability
 
             if (criticalProbability < 0)
@@ -163,8 +163,8 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="attackResult">Attack result</param>
         public void CalculateCriticalDamages(AttackResult attackResult)
         {
-            float criticalMin = 1.1f;
-            float criticalMax = 1.4f;
+            var criticalMin = 1.1f;
+            var criticalMax = 1.4f;
 
             if (Attacker.Object.Level > Defender.Object.Level)
             {
@@ -196,7 +196,7 @@ namespace Rhisis.World.Systems.Battle
         /// <returns></returns>
         public bool IsKnockback(AttackFlags attackerAttackFlags)
         {
-            bool knockbackChance = RandomHelper.Random(0, 100) < 15;
+            var knockbackChance = RandomHelper.Random(0, 100) < 15;
 
             if (Defender.Type == WorldEntityType.Player)
                 return false;
@@ -211,13 +211,13 @@ namespace Rhisis.World.Systems.Battle
                 }
             }
 
-            bool canFly = false;
+            var canFly = false;
 
             // TODO: if is flying, return false
             if ((Defender.Object.MovingFlags & ObjectState.OBJSTA_DMG_FLY_ALL) == 0 && Defender is IMonsterEntity monster)
             {
-                canFly = monster.Data.Class != MoverClassType.RANK_SUPER && 
-                    monster.Data.Class != MoverClassType.RANK_MATERIAL && 
+                canFly = monster.Data.Class != MoverClassType.RANK_SUPER &&
+                    monster.Data.Class != MoverClassType.RANK_MATERIAL &&
                     monster.Data.Class != MoverClassType.RANK_MIDBOSS;
             }
 

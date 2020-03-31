@@ -31,7 +31,9 @@ namespace Rhisis.World.Systems.Visibility
         public void Execute(IWorldEntity worldEntity)
         {
             if (!worldEntity.Object.Spawned || worldEntity.Type != WorldEntityType.Player)
+            {
                 return;
+            }
 
             UpdateVisibility(worldEntity, worldEntity.Object.CurrentMap.Entities);
             UpdateVisibility(worldEntity, worldEntity.Object.CurrentLayer.Entities);
@@ -66,7 +68,9 @@ namespace Rhisis.World.Systems.Visibility
             foreach (var entity in entities)
             {
                 if (entity.Key == worldEntity.Id)
+                {
                     continue;
+                }
 
                 IWorldEntity otherEntity = entity.Value;
 
@@ -75,12 +79,16 @@ namespace Rhisis.World.Systems.Visibility
                 if (canSee && otherEntity.Object.Spawned)
                 {
                     if (!worldEntity.Object.Entities.Contains(otherEntity))
+                    {
                         SpawnOtherEntity(worldEntity, otherEntity);
+                    }
                 }
                 else
                 {
                     if (worldEntity.Object.Entities.Contains(otherEntity))
+                    {
                         DespawnOtherEntity(worldEntity, otherEntity);
+                    }
                 }
             }
         }
@@ -95,10 +103,14 @@ namespace Rhisis.World.Systems.Visibility
             entity.Object.Entities.Add(otherEntity);
 
             if (entity is IPlayerEntity player)
+            {
                 _worldSpawnPacketFactory.SendSpawnObjectTo(player, otherEntity);
+            }
 
             if (otherEntity.Type != WorldEntityType.Player && !otherEntity.Object.Entities.Contains(entity))
+            {
                 otherEntity.Object.Entities.Add(entity);
+            }
 
             if (otherEntity is IMovableEntity movableEntity &&
                 movableEntity.Moves.DestinationPosition != movableEntity.Object.Position)
@@ -115,12 +127,16 @@ namespace Rhisis.World.Systems.Visibility
         private void DespawnOtherEntity(IWorldEntity entity, IWorldEntity otherEntity)
         {
             if (entity is IPlayerEntity player)
+            {
                 _worldSpawnPacketFactory.SendDespawnObjectTo(player, otherEntity);
+            }
 
             entity.Object.Entities.Remove(otherEntity);
 
             if (otherEntity.Type != WorldEntityType.Player && otherEntity.Object.Entities.Contains(entity))
+            {
                 otherEntity.Object.Entities.Remove(entity);
+            }
         }
     }
 }

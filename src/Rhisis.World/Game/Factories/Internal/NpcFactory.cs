@@ -9,6 +9,7 @@ using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Entities.Internal;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Structures;
 using System;

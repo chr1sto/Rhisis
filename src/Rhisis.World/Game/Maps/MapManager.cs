@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.DependencyInjection;
@@ -20,24 +19,24 @@ namespace Rhisis.World.Game.Maps
     {
         private readonly ILogger<MapManager> _logger;
         private readonly WorldConfiguration _worldConfiguration;
-        private readonly IMemoryCache _cache;
         private readonly IGameResources _gameResources;
         private readonly IMapFactory _mapFactory;
         private readonly IDictionary<int, IMapInstance> _maps;
+
+        /// <inheritdoc />
+        public IEnumerable<IMapInstance> Maps => _maps.Values;
 
         /// <summary>
         /// Creates a new <see cref="MapManager"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="worldConfiguration">World server configuration.</param>
-        /// <param name="cache">World server memory cache.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="mapFactory">Map factory.</param>
-        public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IMemoryCache cache, IGameResources gameResources, IMapFactory mapFactory)
+        public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IMapFactory mapFactory)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
-            _cache = cache;
             _gameResources = gameResources;
             _mapFactory = mapFactory;
             _maps = new ConcurrentDictionary<int, IMapInstance>();
@@ -55,7 +54,9 @@ namespace Rhisis.World.Game.Maps
             using (var textFile = new TextFile(worldScriptPath))
             {
                 foreach (var text in textFile.Texts)
+                {
                     worldsPaths.Add(text.Key, text.Value.Replace('"', ' ').Trim());
+                }
             }
 
             foreach (string mapDefineName in _worldConfiguration.Maps)
@@ -79,9 +80,6 @@ namespace Rhisis.World.Game.Maps
                 }
 
                 IMapInstance map = _mapFactory.Create(Path.Combine(GameResourcesConstants.Paths.MapsPath, mapName), mapName, mapId);
-
-                map.CreateMapLayer();
-                map.StartUpdateTask();
 
                 _maps.Add(mapId, map);
             }

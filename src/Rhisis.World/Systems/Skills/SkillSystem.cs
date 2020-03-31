@@ -10,6 +10,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle;
+using Rhisis.World.Systems.Battle.Arbiters;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Projectile;
 using System;

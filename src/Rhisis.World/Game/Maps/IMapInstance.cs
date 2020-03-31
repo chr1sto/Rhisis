@@ -44,12 +44,12 @@ namespace Rhisis.World.Game.Maps
         /// <summary>
         /// Gets the map layers.
         /// </summary>
-        IReadOnlyList<IMapLayer> Layers { get; }
+        IEnumerable<IMapLayer> Layers { get; }
 
         /// <summary>
         /// Gets the map regions.
         /// </summary>
-        IReadOnlyList<IMapRegion> Regions { get; }
+        IEnumerable<IMapRegion> Regions { get; }
 
         /// <summary>
         /// Creates a new map layer and gives it a random id.
@@ -76,16 +76,6 @@ namespace Rhisis.World.Game.Maps
         /// </summary>
         /// <param name="id"></param>
         void DeleteMapLayer(int id);
-
-        /// <summary>
-        /// Starts a context in a parallel task.
-        /// </summary>
-        void StartUpdateTask();
-
-        /// <summary>
-        /// Stops the context and the task.
-        /// </summary>
-        void StopUpdateTask();
 
         /// <summary>
         /// Gets the nearest revival region from a given position.

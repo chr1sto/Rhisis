@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Dyo;
@@ -47,6 +48,8 @@ namespace Rhisis.World.Game.Maps
             LoadDyo(mapPath, mapInstance);
             LoadRgn(mapPath, mapInstance);
 
+            mapInstance.CreateMapLayer();
+
             return mapInstance;
         }
 
@@ -59,7 +62,7 @@ namespace Rhisis.World.Game.Maps
             {
                 if (region is IMapRespawnRegion respawnRegion)
                 {
-                    if (respawnRegion.ObjectType == Core.Common.WorldObjectType.Mover)
+                    if (respawnRegion.ObjectType == WorldObjectType.Mover)
                     {
                         for (int i = 0; i < respawnRegion.Count; i++)
                         {
@@ -68,7 +71,7 @@ namespace Rhisis.World.Game.Maps
                             mapLayer.AddEntity(monster);
                         }
                     }
-                    else if (respawnRegion.ObjectType == Core.Common.WorldObjectType.Item)
+                    else if (respawnRegion.ObjectType == WorldObjectType.Item)
                     {
                         var item = _itemFactory.CreateItem(respawnRegion.ModelId, 0, 0, 0);
 
@@ -76,6 +79,7 @@ namespace Rhisis.World.Game.Maps
                         {
                             IItemEntity itemEntity = _itemFactory.CreateItemEntity(parentMapInstance, mapLayer, item);
                             itemEntity.Object.Position = respawnRegion.GetRandomPosition();
+                            itemEntity.Region = respawnRegion;
 
                             mapLayer.AddEntity(itemEntity);
                         }
@@ -92,11 +96,9 @@ namespace Rhisis.World.Game.Maps
         private WldFileInformations LoadWld(string mapPath, string mapName)
         {
             string wldFilePath = Path.Combine(mapPath, $"{mapName}.wld");
-
-            using (var wldFile = new WldFile(wldFilePath))
-            {
-                return wldFile.WorldInformations;
-            }
+            using var wldFile = new WldFile(wldFilePath);
+            
+            return wldFile.WorldInformations;
         }
 
         /// <summary>
@@ -105,15 +107,12 @@ namespace Rhisis.World.Game.Maps
         private void LoadDyo(string mapPath, IMapInstance map)
         {
             string dyo = Path.Combine(mapPath, $"{map.Name}.dyo");
+            using var dyoFile = new DyoFile(dyo);
+            IEnumerable<NpcDyoElement> npcElements = dyoFile.GetElements<NpcDyoElement>();
 
-            using (var dyoFile = new DyoFile(dyo))
+            foreach (NpcDyoElement element in npcElements)
             {
-                IEnumerable<NpcDyoElement> npcElements = dyoFile.GetElements<NpcDyoElement>();
-
-                foreach (NpcDyoElement element in npcElements)
-                {
-                    map.AddEntity(_npcFactory.CreateNpc(map, element));
-                }
+                map.AddEntity(_npcFactory.CreateNpc(map, element));
             }
         }
 

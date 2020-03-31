@@ -143,6 +143,17 @@ namespace Rhisis.Core.Structures
         }
 
         /// <summary>
+        /// Copies the other vector values into the current vector.
+        /// </summary>
+        /// <param name="otherVector">Other vector.</param>
+        public void Copy(Vector3 otherVector)
+        {
+            X = otherVector.X;
+            Y = otherVector.Y;
+            Z = otherVector.Z;
+        }
+
+        /// <summary>
         /// Check if the Vector3 is zero.
         /// </summary>
         /// <returns></returns>
@@ -297,10 +308,15 @@ namespace Rhisis.Core.Structures
             float angle = (float)Math.Atan2(dist.X, -dist.Z);
 
             angle = MathHelper.ToDegree(angle);
+
             if (angle < 0)
+            {
                 angle += 360;
+            }
             else if (angle >= 360)
+            {
                 angle -= 360;
+            }
 
             return angle;
         }
@@ -318,9 +334,38 @@ namespace Rhisis.Core.Structures
             float power = RandomHelper.FloatRandom(0f, radius);
 
             newVector.X += (float)Math.Sin(angle) * power;
-            newVector.Z -= (float)Math.Cos(angle) * power;
+            newVector.Z += (float)Math.Cos(angle) * power;
 
             return newVector;
+        }
+
+        /// <summary>
+        /// Gets the 2D distance between two vectors.
+        /// </summary>
+        /// <param name="from">Origin vector.</param>
+        /// <param name="to">Target vector.</param>
+        /// <returns>Distance</returns>
+        public static float Distance2D(Vector3 from, Vector3 to)
+        {
+            float x = from.X - to.X;
+            float z = from.Z - to.Z;
+
+            return (float)Math.Sqrt(x * x + z * z);
+        }
+
+        /// <summary>
+        /// Gets the 3D distance between two vectors.
+        /// </summary>
+        /// <param name="from">Origin vector.</param>
+        /// <param name="to">Target vector.</param>
+        /// <returns>Distance</returns>
+        public static float Distance3D(Vector3 from, Vector3 to)
+        {
+            float x = from.X - to.X;
+            float y = from.Y - to.Y;
+            float z = from.Z - to.Z;
+
+            return (float)Math.Sqrt(x * x + y * y + z * z);
         }
 
         /// <summary>

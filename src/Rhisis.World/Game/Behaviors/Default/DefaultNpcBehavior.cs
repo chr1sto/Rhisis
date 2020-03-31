@@ -44,13 +44,21 @@ namespace Rhisis.World.Game.Behaviors
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
+        public void OnKilled(ILivingEntity killerEntity)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Update NPC oral text.
         /// </summary>
         private void UpdateOralText()
         {
             if (_npc.NpcData == null)
+            {
                 return;
+            }
 
             if (_npc.Timers.LastSpeakTime <= Time.TimeInSeconds())
             {

@@ -3,11 +3,13 @@ using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Entities.Internal;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using System;
@@ -55,14 +57,13 @@ namespace Rhisis.World.Game.Factories.Internal
                 },
                 Timers = new TimerComponent
                 {
-                    NextMoveTime = RandomHelper.LongRandom(8, 20)
+                    NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(8, 20)
                 }
             };
 
             monster.Moves = new MovableComponent
             {
-                Speed = moverData.Speed / 2,
-                DestinationPosition = monster.Object.Position.Clone()
+                Speed = moverData.Speed
             };
 
             monster.Data = moverData;
