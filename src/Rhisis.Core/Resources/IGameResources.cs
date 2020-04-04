@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Core.Data;
+using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.Core.Structures.Game.Quests;
 using System;
@@ -44,7 +45,7 @@ namespace Rhisis.Core.Resources
         /// <summary>
         /// Gets the jobs data.
         /// </summary>
-        IReadOnlyDictionary<int, JobData> Jobs { get; }
+        IReadOnlyDictionary<DefineJob.Job, JobData> Jobs { get; }
 
         /// <summary>
         /// Gets the npcs data.

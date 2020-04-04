@@ -15,6 +15,7 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Experience;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Job;
 using Rhisis.World.Systems.PlayerData;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,7 @@ namespace Rhisis.World.Systems.Quest
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IInventorySystem _inventorySystem;
         private readonly IExperienceSystem _experienceSystem;
+        private readonly IJobSystem _jobSystem;
         private readonly IQuestPacketFactory _questPacketFactory;
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
@@ -52,7 +54,9 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public int Order => 3;
 
-        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
+        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, 
+            IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IJobSystem jobSystem,
+            IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
             _logger = logger;
             _database = database;
@@ -60,6 +64,7 @@ namespace Rhisis.World.Systems.Quest
             _playerDataSystem = playerDataSystem;
             _inventorySystem = inventorySystem;
             _experienceSystem = experienceSystem;
+            _jobSystem = jobSystem;
             _questPacketFactory = questPacketFactory;
             _npcDialogPacketFactory = npcDialogPacketFactory;
             _textPacketFactory = textPacketFactory;
@@ -183,7 +188,7 @@ namespace Rhisis.World.Systems.Quest
                 return false;
             }
 
-            if (quest.StartRequirements.Jobs != null && !quest.StartRequirements.Jobs.Contains((DefineJob.Job)player.PlayerData.JobId))
+            if (quest.StartRequirements.Jobs != null && !quest.StartRequirements.Jobs.Contains(player.PlayerData.Job))
             {
                 _logger.LogTrace($"Cannot start quest '{quest.Name}' (id: '{quest.Id}') for player: '{player}'. Invalid job.");
                 return false;
@@ -489,7 +494,10 @@ namespace Rhisis.World.Systems.Quest
             {
                 DefineJob.Job newJob = quest.Rewards.GetJob(player);
 
-                // TODO: give new job
+                if (newJob != DefineJob.Job.JOB_VAGRANT)
+                {
+                    _jobSystem.ChangeJob(player, newJob);
+                }
             }
 
             // TODO: restat

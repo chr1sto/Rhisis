@@ -2,14 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Rhisis.Core.Data;
-using Rhisis.Core.Extensions;
-using Rhisis.Core.Resources.Include;
 using Rhisis.Core.Structures.Game;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Rhisis.Core.Resources.Loaders
 {
@@ -51,7 +47,7 @@ namespace Rhisis.Core.Resources.Loaders
 
             string jobDefinitionFileContent = File.ReadAllText(jobsDefinitionFile);
             var jobDefinitions = JsonConvert.DeserializeObject<Dictionary<DefineJob.Job, JobDefinitionData>>(jobDefinitionFileContent);
-            var jobData = new ConcurrentDictionary<int, JobData>();
+            var jobData = new ConcurrentDictionary<DefineJob.Job, JobData>();
 
             using (var propJob = new ResourceTableFile(propJobFile, -1, new [] { '\t', ' ', '\r' }, _defines, null))
             {
@@ -67,16 +63,14 @@ namespace Rhisis.Core.Resources.Loaders
 
                 foreach (JobData job in jobData.Values)
                 {
-                    var jobId = (DefineJob.Job)job.Id;
-
-                    if (jobDefinitions.TryGetValue(jobId, out JobDefinitionData jobDefinition))
+                    if (jobDefinitions.TryGetValue(job.Id, out JobDefinitionData jobDefinition))
                     {
-                        job.Parent = jobDefinition.Parent.HasValue ? jobData[(int)jobDefinition.Parent.Value] : null;
+                        job.Parent = jobDefinition.Parent.HasValue ? jobData[jobDefinition.Parent.Value] : null;
                         job.Type = jobDefinition.Type;
                     }
                     else
                     {
-                        _logger.LogWarning($"Cannot find job '{jobId.ToString()}' definition.");
+                        _logger.LogWarning($"Cannot find job '{job.Id}' definition.");
                     }
                 }
             }

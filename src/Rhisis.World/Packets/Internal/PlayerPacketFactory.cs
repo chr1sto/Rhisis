@@ -4,6 +4,7 @@ using Rhisis.Core.DependencyInjection;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
+using System.Linq;
 
 namespace Rhisis.World.Packets.Internal
 {
@@ -106,6 +107,19 @@ namespace Rhisis.World.Packets.Internal
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(player.Id, SnapshotType.REVIVAL_TO_LODESTAR);
+
+            SendToVisible(packet, player, sendToPlayer: true);
+        }
+
+        /// <inheritdoc />
+        public void SendPlayerJobUpdate(IPlayerEntity player)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(player.Id, SnapshotType.SET_JOB_SKILL);
+            packet.Write((int)player.PlayerData.Job);
+            player.SkillTree.Serialize(packet);
+            packet.Write(Enumerable.Repeat((byte)0, 128).ToArray(), 0, 128);
 
             SendToVisible(packet, player, sendToPlayer: true);
         }

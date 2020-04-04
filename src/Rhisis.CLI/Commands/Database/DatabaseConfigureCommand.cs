@@ -45,9 +45,7 @@ namespace Rhisis.CLI.Commands.Database
 
             dbConfiguration.Fill();
 
-            bool useEncryption = _consoleHelper.AskConfirmation("Use encryption?");
-
-            if (useEncryption)
+            if (databaseConfiguration.UseEncryption)
             {
                 if (string.IsNullOrEmpty(dbConfiguration.Value.EncryptionKey))
                 {

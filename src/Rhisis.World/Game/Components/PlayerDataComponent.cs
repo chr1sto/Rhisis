@@ -55,7 +55,7 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets or sets the Job Id.
         /// </summary>
-        public int JobId => JobData.Id;
+        public DefineJob.Job Job => JobData.Id;
 
         /// <summary>
         /// Gets the job's data.

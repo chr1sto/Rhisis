@@ -58,19 +58,26 @@ namespace Rhisis.Database.Context
             : base(options)
         {
             if (string.IsNullOrEmpty(configuration.EncryptionKey))
+            {
                 return;
+            }
 
-            _encryptionProvider = new AesProvider(
-                Convert.FromBase64String(configuration.EncryptionKey), 
-                Enumerable.Repeat<byte>(0, 16).ToArray(), 
-                CipherMode.CBC, 
-                PaddingMode.Zeros);
+            if (configuration.UseEncryption)
+            {
+                _encryptionProvider = new AesProvider(
+                    Convert.FromBase64String(configuration.EncryptionKey),
+                    Enumerable.Repeat<byte>(0, 16).ToArray(),
+                    CipherMode.CBC,
+                    PaddingMode.Zeros);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (_encryptionProvider != null)
+            {
                 modelBuilder.UseEncryption(_encryptionProvider);
+            }
 
             modelBuilder.Entity<DbUser>()
                 .HasIndex(c => new { c.Username, c.Email })

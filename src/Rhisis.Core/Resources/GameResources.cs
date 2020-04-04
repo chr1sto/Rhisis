@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Rhisis.Core.Data;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
@@ -22,7 +23,7 @@ namespace Rhisis.Core.Resources
         private ConcurrentDictionary<int, ItemData> _items;
         private ConcurrentDictionary<string, DialogSet> _dialogs;
         private ConcurrentDictionary<string, ShopData> _shops;
-        private ConcurrentDictionary<int, JobData> _jobs;
+        private ConcurrentDictionary<DefineJob.Job, JobData> _jobs;
         private ConcurrentDictionary<string, NpcData> _npcs;
         private ConcurrentDictionary<int, IQuestScript> _quests;
         private ConcurrentDictionary<int, SkillData> _skills;
@@ -48,7 +49,7 @@ namespace Rhisis.Core.Resources
         public IReadOnlyDictionary<string, ShopData> Shops => GetCacheValue(GameResourcesConstants.Shops, ref _shops);
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<int, JobData> Jobs => GetCacheValue(GameResourcesConstants.Jobs, ref _jobs);
+        public IReadOnlyDictionary<DefineJob.Job, JobData> Jobs => GetCacheValue(GameResourcesConstants.Jobs, ref _jobs);
 
         /// <inheritdoc />
         public IReadOnlyDictionary<string, NpcData> Npcs => GetCacheValue(GameResourcesConstants.Npcs, ref _npcs);

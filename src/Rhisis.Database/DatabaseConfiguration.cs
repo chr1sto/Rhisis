@@ -49,6 +49,14 @@ namespace Rhisis.Database
         public string Database { get; set; }
 
         /// <summary>
+        /// Gets or sets a value that indicates if the database should use encryption or not.
+        /// </summary>
+        [DataMember(Name = "useEncryption")]
+        [DefaultValue(false)]
+        [Display(Name = "Use encryption", Order = 5)]
+        public bool UseEncryption { get; set; }
+
+        /// <summary>
         /// Gets or sets the database encryption key.
         /// </summary>
         /// <remarks>
