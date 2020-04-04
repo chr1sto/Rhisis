@@ -1,4 +1,5 @@
-﻿using Sylver.Network.Data;
+﻿using Rhisis.Core.Data;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.Cluster
 {
@@ -24,7 +25,7 @@ namespace Rhisis.Network.Packets.Cluster
 
         public byte Gender { get; private set; }
 
-        public int Job { get; private set; }
+        public DefineJob.Job Job { get; private set; }
 
         public int HeadMesh { get; private set; }
 
@@ -44,7 +45,7 @@ namespace Rhisis.Network.Packets.Cluster
             HairMeshId = packet.Read<byte>();
             HairColor = packet.Read<uint>();
             Gender = packet.Read<byte>();
-            Job = packet.Read<byte>();
+            Job = (DefineJob.Job)packet.Read<byte>();
             HeadMesh = packet.Read<byte>();
             BankPassword = packet.Read<int>();
             AuthenticationKey = packet.Read<int>();

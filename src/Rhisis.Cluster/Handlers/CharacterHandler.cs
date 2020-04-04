@@ -129,7 +129,7 @@ namespace Rhisis.Cluster.Handlers
                 HairId = packet.HairMeshId,
                 BankCode = packet.BankPassword,
                 Gender = packet.Gender,
-                JobId = packet.Job,
+                JobId = (int)packet.Job,
                 Hp = HealthFormulas.GetMaxOriginHp(defaultCharacter.Level, defaultCharacter.Stamina,
                     jobData.MaxHpFactor),
                 Mp = HealthFormulas.GetMaxOriginMp(defaultCharacter.Level, defaultCharacter.Intelligence,

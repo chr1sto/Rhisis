@@ -104,7 +104,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 Gold = character.Gold,
                 Authority = (AuthorityType)character.User.Authority,
                 Experience = character.Experience,
-                JobData = _gameResources.Jobs[character.JobId]
+                JobData = _gameResources.Jobs[(DefineJob.Job)character.JobId]
             };
             player.Moves = new MovableComponent
             {
@@ -167,6 +167,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.SkinSetId = player.VisualAppearance.SkinSetId;
                 character.Level = player.Object.Level;
 
+                character.JobId = (int)player.PlayerData.Job;
                 character.Gold = player.PlayerData.Gold;
                 character.Experience = player.PlayerData.Experience;
 

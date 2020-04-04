@@ -59,7 +59,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(player.VisualAppearance.HairColor);
                 packet.Write((byte)player.VisualAppearance.FaceId);
                 packet.Write(player.PlayerData.Id);
-                packet.Write((byte)player.PlayerData.JobId); // Job
+                packet.Write((byte)player.PlayerData.Job);
 
                 packet.Write((short)player.Attributes[DefineAttributes.STR]);
                 packet.Write((short)player.Attributes[DefineAttributes.STA]);

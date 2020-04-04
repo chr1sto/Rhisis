@@ -65,7 +65,7 @@ namespace Rhisis.World.Systems.Skills
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<SkillInfo> jobSkills = GetSkillsByJob(player, player.PlayerData.JobId);
+            IEnumerable<SkillInfo> jobSkills = GetSkillsByJob(player.PlayerData.Job);
             IEnumerable<DbSkill> playerSkills = _database.Skills.GetCharacterSkills(player.PlayerData.Id).AsQueryable().AsNoTracking().AsEnumerable();
 
             player.SkillTree.Skills = (from x in jobSkills
@@ -109,20 +109,20 @@ namespace Rhisis.World.Systems.Skills
             _database.Complete();
         }
 
-        private IEnumerable<SkillInfo> GetSkillsByJob(IPlayerEntity player, int jobId)
+        public IEnumerable<SkillInfo> GetSkillsByJob(DefineJob.Job job)
         {
             var skillsList = new List<SkillInfo>();
 
-            if (_gameResources.Jobs.TryGetValue(jobId, out JobData job) && job.Parent != null)
+            if (_gameResources.Jobs.TryGetValue(job, out JobData jobData) && jobData.Parent != null)
             {
-                skillsList.AddRange(GetSkillsByJob(player, job.Parent.Id));
+                skillsList.AddRange(GetSkillsByJob(jobData.Parent.Id));
             }
 
             IEnumerable<SkillInfo> jobSkills = from x in _gameResources.Skills.Values
-                                               where x.Job == job.Name &&
+                                               where x.Job == jobData.Id &&
                                                      x.JobType != DefineJob.JobType.JTYPE_COMMON &&
                                                      x.JobType != DefineJob.JobType.JTYPE_TROUPE
-                                               select new SkillInfo(x.Id, player.PlayerData.Id, x);
+                                               select new SkillInfo(x.Id, -1, x);
 
             skillsList.AddRange(jobSkills);
 

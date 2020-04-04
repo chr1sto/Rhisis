@@ -9,10 +9,7 @@ namespace Rhisis.Core.Structures.Game
     public class JobData
     {
         [DataMember(Order = 0)]
-        public int Id { get; set; }
-
-        [DataMember(Order = 0)]
-        public DefineJob.Job Name { get; set; }
+        public DefineJob.Job Id { get; set; }
 
         [DataMember(Order = 1)]
         public float AttackSpeed { get; set; }

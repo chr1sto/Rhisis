@@ -9,6 +9,13 @@ namespace Rhisis.World.Systems.Skills
     public interface ISkillSystem : IGameSystemLifeCycle
     {
         /// <summary>
+        /// Gets the skills for a given job.
+        /// </summary>
+        /// <param name="job">Job.</param>
+        /// <returns>Collection of <see cref="SkillInfo"/> for the given job.</returns>
+        IEnumerable<SkillInfo> GetSkillsByJob(DefineJob.Job job);
+
+        /// <summary>
         /// Updates the player skill tree.
         /// </summary>
         /// <param name="player">Current player.</param>

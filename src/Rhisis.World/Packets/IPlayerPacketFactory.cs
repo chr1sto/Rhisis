@@ -46,5 +46,11 @@ namespace Rhisis.World.Packets
         /// </summary>
         /// <param name="player">Current player.</param>
         void SendPlayerRevival(IPlayerEntity player);
+
+        /// <summary>
+        /// Sends a packet that updates the player's job.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        void SendPlayerJobUpdate(IPlayerEntity player);
     }
 }
