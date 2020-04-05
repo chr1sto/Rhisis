@@ -36,6 +36,16 @@ namespace Rhisis.World.Packets
         void SendMagicAttack(ILivingEntity attacker, ObjectMessageType motion, uint targetId, int magicAttackPower, int projectileId);
 
         /// <summary>
+        /// Sends a range attack motion.
+        /// </summary>
+        /// <param name="attacker">Attacker entity.</param>
+        /// <param name="motion">Attack motion.</param>
+        /// <param name="targetId">Target entity id.</param>
+        /// <param name="power">Range attack power.</param>
+        /// <param name="projectileId">Magic projectile id.</param>
+        void SendRangeAttack(ILivingEntity attacker, ObjectMessageType motion, uint targetId, int power, int projectileId);
+
+        /// <summary>
         /// Sends a packet that makes the entity die.
         /// </summary>
         /// <param name="player">Player.</param>

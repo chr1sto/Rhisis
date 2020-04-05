@@ -78,5 +78,29 @@ namespace Rhisis.World.Handlers
 
             _battleSystem.MagicAttack(client.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower));
         }
+
+        /// <summary>
+        /// On ranged attack.
+        /// </summary>
+        /// <param name="client">Current client.</param>
+        /// <param name="packet">Range attack incoming packet.</param>
+        [HandlerAction(PacketType.RANGE_ATTACK)]
+        public void OnRangeAttack(IWorldClient client, RangeAttackPacket packet)
+        {
+            var target = client.Player.FindEntity<IMonsterEntity>(packet.ObjectId);
+
+            if (target == null)
+            {
+                _logger.LogError($"Cannot find target with object id {packet.ObjectId}");
+                return;
+            }
+
+            if (packet.Power < 0)
+            {
+                _logger.LogWarning($"Range attack power cannot be less than 0.");
+            }
+
+            _battleSystem.RangeAttack(client.Player, target, packet.AttackMessage, Math.Max(0, packet.Power));
+        }
     }
 }

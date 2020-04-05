@@ -63,6 +63,21 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
+        public void SendRangeAttack(ILivingEntity attacker, ObjectMessageType motion, uint targetId, int power, int projectileId)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(attacker.Id, SnapshotType.RANGE_ATTACK);
+            packet.Write((int)motion);
+            packet.Write(targetId);
+            packet.Write(power);
+            packet.Write(0); // unused parameter, always 0
+            packet.Write(projectileId);
+
+            SendToVisible(packet, attacker);
+        }
+
+        /// <inheritdoc />
         public void SendDie(IPlayerEntity player, ILivingEntity deadEntity, ILivingEntity killerEntity, ObjectMessageType motion)
         {
             using var packet = new FFPacket();

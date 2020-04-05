@@ -6,6 +6,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle.Arbiters;
+using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Projectile;
 
 namespace Rhisis.World.Systems.Battle
@@ -15,6 +16,7 @@ namespace Rhisis.World.Systems.Battle
     {
         private readonly ILogger<BattleSystem> _logger;
         private readonly IProjectileSystem _projectileSystem;
+        private readonly IInventorySystem _inventorySystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
@@ -22,15 +24,15 @@ namespace Rhisis.World.Systems.Battle
         /// Creates a new <see cref="BattleSystem"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="worldConfiguration">World server configuration.</param>
-        /// <param name="experienceSystem">Experience system.</param>
         /// <param name="projectileSystem">Projectile system.</param>
+        /// <param name="inventorySystem">Inventory system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IProjectileSystem projectileSystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IProjectileSystem projectileSystem, IInventorySystem inventorySystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _projectileSystem = projectileSystem;
+            _inventorySystem = inventorySystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
         }
@@ -112,12 +114,45 @@ namespace Rhisis.World.Systems.Battle
             var projectile = new MagicProjectileInfo(attacker, defender, magicAttackPower, onArrived: () =>
             {
                 IAttackArbiter magicAttackArbiter = new MagicAttackArbiter(attacker, defender, magicAttackPower);
-                
+
                 DamageTarget(attacker, defender, magicAttackArbiter, ObjectMessageType.OBJMSG_ATK_MAGIC1);
             });
             int projectileId = _projectileSystem.CreateProjectile(projectile);
 
             _battlePacketFactory.SendMagicAttack(attacker, ObjectMessageType.OBJMSG_ATK_MAGIC1, defender.Id, magicAttackPower, projectileId);
+        }
+
+        /// <inheritdoc />
+        public void RangeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int power)
+        {
+            if (attacker is IPlayerEntity player)
+            {
+                Item equipedItem = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon);
+
+                if (equipedItem == null || equipedItem.Data.WeaponType != WeaponType.RANGE_BOW)
+                {
+                    return;
+                }
+
+                Item bulletItem = player.Inventory.GetEquipedItem(ItemPartType.Bullet);
+
+                if (bulletItem == null || bulletItem.Data.ItemKind3 != ItemKind3.ARROW)
+                {
+                    return;
+                }
+
+                _inventorySystem.DeleteItem(player, bulletItem, 1);
+            }
+
+            var projectile = new RangeArrowProjectileInfo(attacker, defender, power, onArrived: () =>
+            {
+                IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender);
+                
+                DamageTarget(attacker, defender, attackArbiter, attackType);
+            });
+            int projectileId = _projectileSystem.CreateProjectile(projectile);
+
+            _battlePacketFactory.SendRangeAttack(attacker, ObjectMessageType.OBJMSG_ATK_RANGE1, defender.Id, power, projectileId);
         }
 
         /// <summary>
