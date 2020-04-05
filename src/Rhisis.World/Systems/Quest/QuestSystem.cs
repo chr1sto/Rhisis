@@ -54,7 +54,7 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public int Order => 3;
 
-        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources, 
+        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources,
             IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IJobSystem jobSystem,
             IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
@@ -122,7 +122,7 @@ namespace Rhisis.World.Systems.Quest
 
             foreach (var questSet in questsSet)
             {
-                questSet.DbQuest.IsChecked = questSet.PlayerQuest.IsChecked;
+                questSet.DbQuest.IsChecked = questSet.PlayerQuest.IsFinished ? false : questSet.PlayerQuest.IsChecked;
                 questSet.DbQuest.IsDeleted = questSet.PlayerQuest.IsDeleted;
                 questSet.DbQuest.IsPatrolDone = questSet.PlayerQuest.IsPatrolDone;
                 questSet.DbQuest.Finished = questSet.PlayerQuest.IsFinished;
@@ -148,7 +148,8 @@ namespace Rhisis.World.Systems.Quest
                         MonsterKilled1 = quest.Monsters?.ElementAtOrDefault(0).Value ?? default,
                         MonsterKilled2 = quest.Monsters?.ElementAtOrDefault(1).Value ?? default,
                         IsPatrolDone = quest.IsPatrolDone,
-                        IsChecked = quest.IsChecked
+                        IsChecked = quest.IsFinished ? false : quest.IsChecked,
+                        Finished = quest.IsFinished
                     });
                 }
             }
@@ -244,7 +245,7 @@ namespace Rhisis.World.Systems.Quest
                         }
                     }
                 }
-            
+
                 // TODO: Check region patrols
             }
 
