@@ -16,22 +16,22 @@ namespace Rhisis.Network.Packets.World
         public uint ObjectId { get; private set; }
 
         /// <summary>
-        /// Gets the item id.
+        /// Gets the range attack power.
         /// </summary>
-        public uint ItemId { get; private set; }
+        public int Power { get; private set; }
 
         /// <summary>
-        /// Gets the id of the hit SFX.
+        /// Gets the projectile id.
         /// </summary>
-        public int IdSfxHit { get; private set; }
+        public int ProjectileId { get; private set; }
 
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
             AttackMessage = (ObjectMessageType)packet.Read<uint>();
             ObjectId = packet.Read<uint>();
-            ItemId = packet.Read<uint>();
-            IdSfxHit = packet.Read<int>();
+            Power = packet.Read<int>();
+            ProjectileId = packet.Read<int>();
         }
     }
 }
