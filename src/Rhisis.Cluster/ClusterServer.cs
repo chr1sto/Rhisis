@@ -6,6 +6,7 @@ using Rhisis.Cluster.Packets;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Database;
 using Rhisis.Network;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
@@ -26,6 +27,7 @@ namespace Rhisis.Cluster
         private readonly ILogger<ClusterServer> _logger;
         private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IRhisisDatabase _database;
 
         /// <inheritdoc />
         public ClusterConfiguration ClusterConfiguration { get; }
@@ -40,12 +42,13 @@ namespace Rhisis.Cluster
         /// <param name="clusterConfiguration">Cluster Server configuration.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IGameResources gameResources, IServiceProvider serviceProvider)
+        public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IGameResources gameResources, IServiceProvider serviceProvider, IRhisisDatabase database)
         {
             _logger = logger;
             ClusterConfiguration = clusterConfiguration.Value;
             _gameResources = gameResources;
             _serviceProvider = serviceProvider;
+            _database = database;
             PacketProcessor = new FlyffPacketProcessor();
             ServerConfiguration = new NetServerConfiguration(ClusterConfiguration.Host,
                 ClusterConfiguration.Port,
@@ -56,6 +59,11 @@ namespace Rhisis.Cluster
         /// <inheritdoc />
         protected override void OnBeforeStart()
         {
+            if (!_database.IsAlive())
+            {
+                throw new InvalidProgramException($"Cannot start {nameof(ClusterServer)}. Failed to reach database.");
+            }
+
             _gameResources.Load(typeof(DefineLoader), typeof(JobLoader));
         }
 
@@ -77,7 +85,7 @@ namespace Rhisis.Cluster
         }
 
         /// <inheritdoc />
-        protected override void OnClientDisconnected(ClusterClient client) 
+        protected override void OnClientDisconnected(ClusterClient client)
             => _logger.LogInformation($"Client disconnected from {client.Socket.RemoteEndPoint}.");
 
         /// <inheritdoc />

@@ -2,6 +2,7 @@
 using Rhisis.Core.Data;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Testing.Abstract;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Entities.Internal;
@@ -9,8 +10,6 @@ using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Tests.Abstract;
-using Rhisis.World.Tests.Attributes;
 using Rhisis.World.Tests.Mocks.Database;
 using Rhisis.World.Tests.Mocks.Database.Entities;
 using Rhisis.World.Tests.Mocks.Factories;
@@ -28,14 +27,12 @@ namespace Rhisis.World.Tests.Systems
 
         private readonly Mock<IInventoryPacketFactory> _inventoryPacketFactoryMock;
 
-        private readonly Mock<IDatabase> _databaseMock;
-        private readonly ItemRepositoryMock _itemRepositoryMock;
         private readonly IEnumerable<DbItem> _databaseItems;
 
         public InventorySystemTest()
         {
+            _inventoryPacketFactoryMock = new Mock<IInventoryPacketFactory>();
             _itemFactory = new ItemFactoryMock();
-
             _player = new PlayerEntity(null)
             {
                 PlayerData = new PlayerDataComponent
@@ -43,19 +40,13 @@ namespace Rhisis.World.Tests.Systems
                     Id = 1
                 }
             };
-
             _databaseItems = new ItemEntityGenerator(_player.PlayerData.Id).Generate(_player.Inventory.MaxCapacity);
-            _itemRepositoryMock = new ItemRepositoryMock(_databaseItems);
 
-            _databaseMock = new Mock<IDatabase>();
-            _databaseMock.SetupGet(x => x.Items).Returns(_itemRepositoryMock.Object);
+            Database.Users.Add(new UserEntityGenerator().Generate(1).FirstOrDefault());
+            Database.Items.AddRange(_databaseItems);
+            Database.SaveChanges();
 
-            _inventoryPacketFactoryMock = new Mock<IInventoryPacketFactory>();
-
-            Service = new InventorySystem(LoggerMock.Object, _databaseMock.Object, 
-                _itemFactory, _inventoryPacketFactoryMock.Object, 
-                null, null, 
-                null);
+            Service = new InventorySystem(LoggerMock.Object, Database, _itemFactory, _inventoryPacketFactoryMock.Object, null, null, null);
         }
 
         [Fact]

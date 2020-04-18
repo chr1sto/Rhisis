@@ -33,7 +33,7 @@ namespace Rhisis.World.Systems.Inventory
         public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
 
         private readonly ILogger<InventorySystem> _logger;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
         private readonly IItemFactory _itemFactory;
         private readonly IInventoryPacketFactory _inventoryPacketFactory;
         private readonly IInventoryItemUsage _inventoryItemUsage;
@@ -55,7 +55,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="inventoryItemUsage">Inventory item usage system.</param>
         /// <param name="dropSystem">Drop system.</param>
         /// <param name="textPacketFactory">Text packet factory.</param>
-        public InventorySystem(ILogger<InventorySystem> logger, IDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
+        public InventorySystem(ILogger<InventorySystem> logger, IRhisisDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
         {
             _logger = logger;
             _database = database;
@@ -69,7 +69,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<DbItem> items = _database.Items.GetAll(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
+            IEnumerable<DbItem> items = _database.Items.Where(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
             
             if (items != null)
             {
@@ -85,7 +85,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            DbCharacter character = _database.Characters.Get(player.PlayerData.Id);
+            DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == player.PlayerData.Id);
             IEnumerable<DbItem> itemsToDelete = (from dbItem in character.Items
                                                  let inventoryItem = player.Inventory.GetItem(x => x != null && x.DbId == dbItem.Id)
                                                  where !dbItem.IsDeleted && inventoryItem == null
@@ -134,11 +134,11 @@ namespace Rhisis.World.Systems.Inventory
                         ElementRefine = item.ElementRefine
                     };
 
-                    _database.Items.Create(dbItem);
+                    _database.Items.Add(dbItem);
                 }
             }
 
-            _database.Complete();
+            _database.SaveChanges();
         }
 
         /// <inheritdoc />

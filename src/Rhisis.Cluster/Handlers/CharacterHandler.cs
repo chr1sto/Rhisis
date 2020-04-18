@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Common.Formulas;
@@ -21,7 +22,7 @@ namespace Rhisis.Cluster.Handlers
     public class CharacterHandler
     {
         private readonly ILogger<CharacterHandler> _logger;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
         private readonly IClusterServer _clusterServer;
         private readonly IGameResources _gameResources;
         private readonly IClusterPacketFactory _clusterPacketFactory;
@@ -34,7 +35,7 @@ namespace Rhisis.Cluster.Handlers
         /// <param name="clusterServer">Cluster server instance.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="clusterPacketFactory">Cluster server packet factory.</param>
-        public CharacterHandler(ILogger<CharacterHandler> logger, IDatabase database, IClusterServer clusterServer, IGameResources gameResources, IClusterPacketFactory clusterPacketFactory)
+        public CharacterHandler(ILogger<CharacterHandler> logger, IRhisisDatabase database, IClusterServer clusterServer, IGameResources gameResources, IClusterPacketFactory clusterPacketFactory)
         {
             _logger = logger;
             _database = database;
@@ -61,7 +62,7 @@ namespace Rhisis.Cluster.Handlers
                 return;
             }
 
-            DbUser dbUser = _database.Users.GetUser(packet.Username);
+            DbUser dbUser = _database.Users.FirstOrDefault(x => x.Username == packet.Username);
 
             if (dbUser == null)
             {
@@ -88,7 +89,7 @@ namespace Rhisis.Cluster.Handlers
         [HandlerAction(PacketType.CREATE_PLAYER)]
         public void OnCreatePlayer(IClusterClient client, CreatePlayerPacket packet)
         {
-            DbUser dbUser = _database.Users.GetUser(packet.Username, packet.Password);
+            DbUser dbUser = _database.Users.FirstOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
 
             if (dbUser == null)
             {
@@ -98,11 +99,11 @@ namespace Rhisis.Cluster.Handlers
                 return;
             }
 
-            if (_database.Characters.HasAny(x => x.Name == packet.Name))
+            if (_database.Characters.Any(x => x.Name == packet.CharacterName))
             {
                 _logger.LogWarning(
                         $"Unable to create new character for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
-                        $"Reason: character name '{packet.Name}' already exists.");
+                        $"Reason: character name '{packet.CharacterName}' already exists.");
 
                 _clusterPacketFactory.SendClusterError(client, ErrorType.USER_EXISTS);
                 return;
@@ -121,7 +122,7 @@ namespace Rhisis.Cluster.Handlers
             var newCharacter = new DbCharacter()
             {
                 UserId = dbUser.Id,
-                Name = packet.Name,
+                Name = packet.CharacterName,
                 Slot = (byte)packet.Slot,
                 SkinSetId = packet.SkinSet,
                 HairColor = (int)packet.HairColor,
@@ -157,8 +158,8 @@ namespace Rhisis.Cluster.Handlers
             newCharacter.Items.Add(new DbItem(defaultEquipment.StartShoes, 47));
             newCharacter.Items.Add(new DbItem(defaultEquipment.StartWeapon, 52));
 
-            _database.Characters.Create(newCharacter);
-            _database.Complete();
+            _database.Characters.Add(newCharacter);
+            _database.SaveChanges();
 
             _logger.LogInformation($"Character '{newCharacter.Name}' has been created successfully for user '{dbUser.Username}' from {client.Socket.RemoteEndPoint}.");
 
@@ -175,7 +176,7 @@ namespace Rhisis.Cluster.Handlers
         [HandlerAction(PacketType.DEL_PLAYER)]
         public void OnDeletePlayer(IClusterClient client, DeletePlayerPacket packet)
         {
-            DbUser dbUser = _database.Users.GetUser(packet.Username, packet.Password);
+            DbUser dbUser = _database.Users.FirstOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
 
             if (dbUser == null)
             {
@@ -193,7 +194,7 @@ namespace Rhisis.Cluster.Handlers
                 return;
             }
 
-            DbCharacter characterToDelete = _database.Characters.Get(packet.CharacterId);
+            DbCharacter characterToDelete = _database.Characters.FirstOrDefault(x => x.Id == packet.CharacterId);
 
             // Check if character exist.
             if (characterToDelete == null)
@@ -211,8 +212,10 @@ namespace Rhisis.Cluster.Handlers
                 return;
             }
 
-            _database.Characters.Delete(characterToDelete);
-            _database.Complete();
+            characterToDelete.IsDeleted = true;
+
+            _database.Characters.Update(characterToDelete);
+            _database.SaveChanges();
 
             _logger.LogInformation($"Character '{characterToDelete.Name}' has been deleted successfully for user '{packet.Username}' from {client.Socket.RemoteEndPoint}.");
 
@@ -229,7 +232,7 @@ namespace Rhisis.Cluster.Handlers
         [HandlerAction(PacketType.PRE_JOIN)]
         public void OnPreJoin(IClusterClient client, PreJoinPacket packet)
         {
-            DbCharacter character = _database.Characters.GetCharacter(packet.CharacterId);
+            DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == packet.CharacterId);
 
             if (character == null)
             {
@@ -277,7 +280,7 @@ namespace Rhisis.Cluster.Handlers
         private IEnumerable<DbCharacter> GetCharacters(int userId)
         {
             const int EquipOffset = 42;
-            IEnumerable<DbCharacter> dbCharacters = _database.Characters.GetCharacters(userId);
+            IEnumerable<DbCharacter> dbCharacters = _database.Characters.Include(x => x.Items).Where(x => x.UserId == userId && !x.IsDeleted);
 
             for (int i = 0; i < dbCharacters.Count(); i++)
             {

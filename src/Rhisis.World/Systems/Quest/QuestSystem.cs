@@ -41,7 +41,7 @@ namespace Rhisis.World.Systems.Quest
         };
 
         private readonly ILogger<QuestSystem> _logger;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IInventorySystem _inventorySystem;
@@ -54,7 +54,7 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public int Order => 3;
 
-        public QuestSystem(ILogger<QuestSystem> logger, IDatabase database, IGameResources gameResources,
+        public QuestSystem(ILogger<QuestSystem> logger, IRhisisDatabase database, IGameResources gameResources,
             IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IJobSystem jobSystem,
             IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
@@ -73,8 +73,7 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<QuestInfo> playerQuests = _database.Quests.GetCharactersQuests(player.PlayerData.Id)
-                .AsQueryable()
+            IEnumerable<QuestInfo> playerQuests = _database.Quests.Where(x => x.CharacterId == player.PlayerData.Id)
                 .AsNoTracking()
                 .AsEnumerable()
                 .Select(x =>
@@ -113,7 +112,7 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            var questsSet = from x in _database.Quests.GetCharactersQuests(player.PlayerData.Id).ToList()
+            var questsSet = from x in _database.Quests.Where(x => x.CharacterId == player.PlayerData.Id).ToList()
                             join q in player.QuestDiary on
                              new { x.QuestId, x.CharacterId }
                              equals
@@ -140,7 +139,7 @@ namespace Rhisis.World.Systems.Quest
             {
                 if (!quest.DatabaseQuestId.HasValue)
                 {
-                    _database.Quests.Create(new DbQuest
+                    _database.Quests.Add(new DbQuest
                     {
                         CharacterId = player.PlayerData.Id,
                         QuestId = quest.QuestId,
@@ -154,7 +153,7 @@ namespace Rhisis.World.Systems.Quest
                 }
             }
 
-            _database.Complete();
+            _database.SaveChanges();
         }
 
         /// <inheritdoc />

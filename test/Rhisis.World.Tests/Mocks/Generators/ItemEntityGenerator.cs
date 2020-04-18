@@ -7,8 +7,7 @@ namespace Rhisis.World.Tests.Mocks.Database.Entities
     {
         public ItemEntityGenerator(int playerId)
         {
-            RuleFor(x => x.Id, (f, i) => f.IndexFaker)
-                .RuleFor(x => x.ItemId, (f, i) => f.Random.UShort())
+            RuleFor(x => x.ItemId, (f, i) => f.Random.UShort())
                 .RuleFor(x => x.ItemSlot, (f, i) => f.IndexFaker)
                 .RuleFor(x => x.ItemCount, (f, i) => f.Random.Int(0, 999))
                 .RuleFor(x => x.IsDeleted, (f, i) => f.Random.Int() % 5 == 0)

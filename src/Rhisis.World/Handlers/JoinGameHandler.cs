@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Network.Packets;
@@ -8,6 +9,7 @@ using Rhisis.World.Game.Factories;
 using Rhisis.World.Packets;
 using Sylver.HandlerInvoker.Attributes;
 using System;
+using System.Linq;
 
 namespace Rhisis.World.Handlers
 {
@@ -15,7 +17,7 @@ namespace Rhisis.World.Handlers
     public class JoinGameHandler
     {
         private readonly ILogger<JoinGameHandler> _logger;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
         private readonly IPlayerFactory _playerFactory;
         private readonly IWorldSpawnPacketFactory _worldSpawnPacketFactory;
 
@@ -24,12 +26,9 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="database">Database access layer.</param>
-        /// <param name="gameResources">Game resources.</param>
-        /// <param name="mapManager">Map manager.</param>
-        /// <param name="behaviorManager">Behavior manager.</param>
-        /// <param name="inventorySystem">Inventory system.</param>
+        /// <param name="playerFactory">Player factory.</param>
         /// <param name="worldSpawnPacketFactory">World spawn packet factory.</param>
-        public JoinGameHandler(ILogger<JoinGameHandler> logger, IDatabase database, IPlayerFactory playerFactory, IWorldSpawnPacketFactory worldSpawnPacketFactory)
+        public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, IPlayerFactory playerFactory, IWorldSpawnPacketFactory worldSpawnPacketFactory)
         {
             _logger = logger;
             _database = database;
@@ -45,7 +44,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.JOIN)]
         public void OnJoin(IWorldClient client, JoinPacket packet)
         {
-            DbCharacter character = _database.Characters.Get(packet.PlayerId);
+            DbCharacter character = _database.Characters.Include(x => x.User).FirstOrDefault(x => x.Id == packet.PlayerId);
 
             if (character == null)
             {
@@ -66,16 +65,9 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            // 1st: Create the player entity based on the character informations from database.
             client.Player = _playerFactory.CreatePlayer(character);
-
-            // 2nd: Set the connection component
             client.Player.Connection = client;
-
-            // 3rd: spawn the player
             _worldSpawnPacketFactory.SendPlayerSpawn(client.Player);
-
-            // 4th: player is now spawned
             client.Player.Object.Spawned = true;
             client.Player.PlayerData.LoggedInAt = DateTime.UtcNow;
         }

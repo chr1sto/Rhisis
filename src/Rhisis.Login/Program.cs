@@ -35,8 +35,8 @@ namespace Rhisis.Login
                     services.AddOptions();
                     services.Configure<LoginConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.LoginServer));
                     services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-                    services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
+                    services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
 
                     // Login Server

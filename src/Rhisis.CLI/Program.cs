@@ -23,7 +23,7 @@ namespace Rhisis.CLI
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services.RegisterDatabaseFactory();
+                    services.AddTransient<DatabaseFactory>();
                     services.AddSingleton(PhysicalConsole.Singleton);
                     services.AddSingleton<ConsoleHelper>();
                 })
