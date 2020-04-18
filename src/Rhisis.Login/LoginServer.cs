@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Database;
 using Rhisis.Login.Client;
 using Rhisis.Login.Packets;
 using Rhisis.Network;
@@ -19,6 +20,7 @@ namespace Rhisis.Login
         private readonly ILogger<LoginServer> _logger;
         private readonly LoginConfiguration _loginConfiguration;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IRhisisDatabase _database;
 
         /// <inheritdoc />
         //protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
@@ -30,16 +32,26 @@ namespace Rhisis.Login
         /// <param name="loginConfiguration">Login server configuration.</param>
         /// <param name="iscConfiguration">ISC configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, IServiceProvider serviceProvider)
+        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, IServiceProvider serviceProvider, IRhisisDatabase database)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;
             _serviceProvider = serviceProvider;
+            _database = database;
             PacketProcessor = new FlyffPacketProcessor();
             ServerConfiguration = new NetServerConfiguration(_loginConfiguration.Host, 
                 _loginConfiguration.Port, 
                 ClientBacklog, 
                 ClientBufferSize);
+        }
+
+        /// <inheritdoc />
+        protected override void OnBeforeStart()
+        {
+            if (!_database.IsAlive())
+            {
+                throw new InvalidProgramException($"Cannot start {nameof(LoginServer)}. Failed to reach database.");
+            }
         }
 
         /// <inheritdoc />

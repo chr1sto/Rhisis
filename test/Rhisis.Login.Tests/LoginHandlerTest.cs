@@ -1,12 +1,9 @@
-using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Rhisis.Core.Common;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.Database.Repositories;
 using Rhisis.Login.Client;
 using Rhisis.Login.Core;
 using Rhisis.Login.Packets;
@@ -17,10 +14,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using Xunit;
+using Rhisis.Testing.Abstract;
 
 namespace Rhisis.Login.Tests
 {
-    public class LoginHandlerTest : IDisposable
+    public class LoginHandlerTest : ServiceTestBase<LoginHandler>
     {
         private const string BuildVersion = "20072019";
         private const string IncorrectBuildVersion = "23462378";
@@ -31,16 +29,12 @@ namespace Rhisis.Login.Tests
         private readonly Socket _socket;
         private readonly LoginClient _loginClient;
 
-        private readonly Mock<ILogger<LoginHandler>> _loggerMock;
         private readonly Mock<ILoginServer> _loginServerMock;
         private readonly Mock<ICoreServer> _coreServerMock;
-        private readonly Mock<IDatabase> _database;
-        private readonly Mock<IUserRepository> _databaseUserRepository;
         private readonly Mock<ILoginPacketFactory> _loginPacketFactoryMock;
         private readonly Mock<IOptions<LoginConfiguration>> _loginConfigurationMock;
-        private readonly LoginHandler _loginHandler;
 
-        private readonly List<DbUser> _users;
+        private readonly IEnumerable<DbUser> _users;
 
         public LoginHandlerTest()
         {
@@ -49,7 +43,6 @@ namespace Rhisis.Login.Tests
 
             _users = new UserGenerator().Generate(100);
 
-            _loggerMock = new Mock<ILogger<LoginHandler>>();
             _loginServerMock = new Mock<ILoginServer>();
             _coreServerMock = new Mock<ICoreServer>();
             _loginPacketFactoryMock = new Mock<ILoginPacketFactory>();
@@ -57,18 +50,14 @@ namespace Rhisis.Login.Tests
             _loginConfigurationMock = new Mock<IOptions<LoginConfiguration>>();
             _loginConfigurationMock.Setup(x => x.Value).Returns(_loginConfiguration);
 
-            _databaseUserRepository = new Mock<IUserRepository>();
-            _databaseUserRepository.Setup(x => x.GetUser(It.IsAny<string>()))
-                .Returns<string>(x => _users.AsQueryable().FirstOrDefault(y => y.Username == x));
+            Database.Users.AddRange(_users);
+            Database.SaveChanges();
 
-            _database = new Mock<IDatabase>();
-            _database.SetupGet(x => x.Users).Returns(_databaseUserRepository.Object);
-
-            _loginHandler = new LoginHandler(
-                _loggerMock.Object,
+            Service = new LoginHandler(
+                LoggerMock.Object,
                 _loginConfigurationMock.Object,
                 _loginServerMock.Object,
-                _database.Object,
+                Database,
                 _coreServerMock.Object,
                 _loginPacketFactoryMock.Object);
 
@@ -84,7 +73,7 @@ namespace Rhisis.Login.Tests
             var certifyPacket = new Mock<CertifyPacket>(_loginConfigurationMock.Object);
             certifyPacket.SetupGet(x => x.BuildVersion).Returns(IncorrectBuildVersion);
 
-            _loginHandler.OnCertify(_loginClient, certifyPacket.Object);
+            Service.OnCertify(_loginClient, certifyPacket.Object);
 
             _loginPacketFactoryMock.Verify(x => x.SendLoginError(_loginClient, ErrorType.ILLEGAL_VER), Times.Once());
         }
@@ -106,15 +95,10 @@ namespace Rhisis.Login.Tests
             certifyPacket.SetupGet(x => x.Username).Returns(username);
             certifyPacket.SetupGet(x => x.Password).Returns(password);
 
-            _loginHandler.OnCertify(_loginClient, certifyPacket.Object);
+            Service.OnCertify(_loginClient, certifyPacket.Object);
 
             if (authenticationResult == AuthenticationResult.Success)
             {
-                DbUser user = _users.FirstOrDefault(x => x.Username == username && x.Password == password);
-
-                _databaseUserRepository.Verify(x => x.Update(user), Times.Once());
-                _database.Verify(x => x.Complete());
-
                 Assert.NotNull(_loginClient.Username);
                 Assert.Equal(username, _loginClient.Username);
             }
@@ -139,7 +123,7 @@ namespace Rhisis.Login.Tests
             pingPacketMock.SetupGet(x => x.Time).Returns(time);
             pingPacketMock.SetupGet(x => x.IsTimeOut).Returns(timeout);
 
-            _loginHandler.OnPing(_loginClient, pingPacketMock.Object);
+            Service.OnPing(_loginClient, pingPacketMock.Object);
 
             if (!timeout)
             {
@@ -147,10 +131,12 @@ namespace Rhisis.Login.Tests
             }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _socket?.Dispose();
             _loginClient?.Dispose();
+
+            base.Dispose();
         }
     }
 }

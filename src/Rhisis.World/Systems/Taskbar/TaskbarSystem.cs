@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.Common.Game.Structures;
 using Rhisis.Core.DependencyInjection;
@@ -8,6 +9,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Systems.Taskbar
 {
@@ -20,7 +22,7 @@ namespace Rhisis.World.Systems.Taskbar
         public const int MaxTaskbarQueue = 5;
 
         private readonly ILogger<TaskbarSystem> _logger;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
 
         /// <inheritdoc />
         public int Order => 1;
@@ -30,7 +32,7 @@ namespace Rhisis.World.Systems.Taskbar
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="database">Rhisis database access layer.</param>
-        public TaskbarSystem(ILogger<TaskbarSystem> logger, IDatabase database)
+        public TaskbarSystem(ILogger<TaskbarSystem> logger, IRhisisDatabase database)
         {
             _logger = logger;
             _database = database;
@@ -39,7 +41,7 @@ namespace Rhisis.World.Systems.Taskbar
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<DbShortcut> shortcuts = _database.TaskbarShortcuts.GetAll(x => x.CharacterId == player.PlayerData.Id);
+            IEnumerable<DbShortcut> shortcuts = _database.TaskbarShortcuts.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().AsEnumerable();
 
             player.Taskbar.Applets = new TaskbarAppletContainerComponent(MaxTaskbarApplets);
             player.Taskbar.Items = new TaskbarItemContainerComponent(MaxTaskbarItems, MaxTaskbarItemLevels);
@@ -76,7 +78,7 @@ namespace Rhisis.World.Systems.Taskbar
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            DbCharacter character = _database.Characters.Get(player.PlayerData.Id);
+            DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == player.PlayerData.Id);
 
             character.TaskbarShortcuts.Clear();
 
@@ -136,7 +138,7 @@ namespace Rhisis.World.Systems.Taskbar
                     queueItem.ObjectData, queueItem.Text));
             }
 
-            _database.Complete();
+            _database.SaveChanges();
         }
 
         /// <inheritdoc />

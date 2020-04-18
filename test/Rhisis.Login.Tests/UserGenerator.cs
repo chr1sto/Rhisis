@@ -9,8 +9,7 @@ namespace Rhisis.Login.Tests
         public UserGenerator()
         {
             RuleFor(x => x.Username, x => x.Internet.UserName())
-                .RuleFor(x => x.Password, x => x.Internet.Password())
-                .RuleFor(x => x.Id, x => x.IndexGlobal);
+                .RuleFor(x => x.Password, x => x.Internet.Password());
         }
 
         public override List<DbUser> Generate(int count, string ruleSets = null)

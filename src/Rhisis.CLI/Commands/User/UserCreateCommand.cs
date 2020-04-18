@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Services;
 using Rhisis.Core.Common;
@@ -70,38 +71,38 @@ namespace Rhisis.CLI.Commands.User
 
             if (response)
             {
-                using (IDatabase database = _databaseFactory.GetDatabase(dbConfig))
+                using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
+                
+                if (database.Users.Any(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
                 {
-                    if (database.Users.HasAny(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        Console.WriteLine($"User '{user.Username}' is already used.");
-                        return;
-                    }
-
-                    if (!user.Email.IsValidEmail())
-                    {
-                        Console.WriteLine($"Email '{user.Email}' is not valid.");
-                        return;
-                    }
-
-                    if (database.Users.HasAny(x => x.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        Console.WriteLine($"Email '{user.Email}' is already used.");
-                        return;
-                    }
-
-                    if (!user.Password.Equals(passwordConfirmation))
-                    {
-                        Console.WriteLine("Passwords doesn't match.");
-                        return;
-                    }
-
-                    user.Password = MD5.GetMD5Hash(passwordSalt, user.Password);
-
-                    database.Users.Create(user);
-                    database.Complete();
-                    Console.WriteLine($"User '{user.Username}' created.");
+                    Console.WriteLine($"User '{user.Username}' is already used.");
+                    return;
                 }
+
+                if (!user.Email.IsValidEmail())
+                {
+                    Console.WriteLine($"Email '{user.Email}' is not valid.");
+                    return;
+                }
+
+                if (database.Users.Any(x => x.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase)))
+                {
+                    Console.WriteLine($"Email '{user.Email}' is already used.");
+                    return;
+                }
+
+                if (!user.Password.Equals(passwordConfirmation))
+                {
+                    Console.WriteLine("Passwords doesn't match.");
+                    return;
+                }
+
+                user.Password = MD5.GetMD5Hash(passwordSalt, user.Password);
+
+                database.Users.Add(user);
+                database.SaveChanges();
+
+                Console.WriteLine($"User '{user.Username}' created.");
             }
         }
     }

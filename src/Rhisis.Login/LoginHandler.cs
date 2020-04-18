@@ -11,6 +11,7 @@ using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
 using Sylver.HandlerInvoker.Attributes;
 using System;
+using System.Linq;
 
 namespace Rhisis.Login
 {
@@ -20,7 +21,7 @@ namespace Rhisis.Login
         private readonly ILogger<LoginHandler> _logger;
         private readonly LoginConfiguration _loginConfiguration;
         private readonly ILoginServer _loginServer;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
         private readonly ICoreServer _coreServer;
         private readonly ILoginPacketFactory _loginPacketFactory;
 
@@ -33,7 +34,7 @@ namespace Rhisis.Login
         /// <param name="database">Database service.</param>
         /// <param name="coreServer">Core server.</param>
         /// <param name="loginPacketFactory">Login server packet factory.</param>
-        public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IDatabase database, ICoreServer coreServer, ILoginPacketFactory loginPacketFactory)
+        public LoginHandler(ILogger<LoginHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IRhisisDatabase database, ICoreServer coreServer, ILoginPacketFactory loginPacketFactory)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;
@@ -71,7 +72,7 @@ namespace Rhisis.Login
                 return;
             }
 
-            DbUser user = _database.Users.GetUser(certifyPacket.Username);
+            DbUser user = _database.Users.FirstOrDefault(x => x.Username.Equals(certifyPacket.Username));
             AuthenticationResult authenticationResult = Authenticate(user, certifyPacket.Password);
 
             switch (authenticationResult)
@@ -100,7 +101,7 @@ namespace Rhisis.Login
 
                     user.LastConnectionTime = DateTime.UtcNow;
                     _database.Users.Update(user);
-                    _database.Complete();
+                    _database.SaveChanges();
 
                     _loginPacketFactory.SendServerList(client, certifyPacket.Username, _coreServer.GetConnectedClusters());
                     client.SetClientUsername(certifyPacket.Username);

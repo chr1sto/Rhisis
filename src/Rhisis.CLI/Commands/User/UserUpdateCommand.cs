@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Services;
 using Rhisis.Core.Common;
@@ -46,8 +47,9 @@ namespace Rhisis.CLI.Commands.User
                 return;
             }
 
-            using IDatabase database = _databaseFactory.GetDatabase(dbConfig);
-            DbUser user = database.Users.GetUser(username);
+            using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
+            DbUser user = database.Users.FirstOrDefault(x => x.Username ==  username);
+
             if (user == null)
             {
                 Console.WriteLine($"Could not locate any username named '{username}'.");
@@ -106,7 +108,7 @@ namespace Rhisis.CLI.Commands.User
                         return;
                     }
 
-                    if (database.Users.HasAny(x => x.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
+                    if (database.Users.Any(x => x.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         Console.WriteLine($"Email '{user.Email}' is already used.");
                         return;
@@ -125,7 +127,7 @@ namespace Rhisis.CLI.Commands.User
                 }
 
                 database.Users.Update(user);
-                database.Complete();
+                database.SaveChanges();
                 Console.WriteLine($"User '{user.Username}' has been updated.");
             }
         }

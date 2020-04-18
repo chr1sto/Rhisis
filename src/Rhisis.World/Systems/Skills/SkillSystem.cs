@@ -35,7 +35,7 @@ namespace Rhisis.World.Systems.Skills
         };
 
         private readonly ILogger<SkillSystem> _logger;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IBattleSystem _battleSystem;
         private readonly IInventorySystem _inventorySystem;
@@ -48,7 +48,7 @@ namespace Rhisis.World.Systems.Skills
         /// <inheritdoc />
         public int Order => 1;
 
-        public SkillSystem(ILogger<SkillSystem> logger, IDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
+        public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _database = database;
@@ -66,7 +66,7 @@ namespace Rhisis.World.Systems.Skills
         public void Initialize(IPlayerEntity player)
         {
             IEnumerable<SkillInfo> jobSkills = GetSkillsByJob(player.PlayerData.Job);
-            IEnumerable<DbSkill> playerSkills = _database.Skills.GetCharacterSkills(player.PlayerData.Id).AsQueryable().AsNoTracking().AsEnumerable();
+            IEnumerable<DbSkill> playerSkills = _database.Skills.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().AsEnumerable();
 
             player.SkillTree.Skills = (from x in jobSkills
                                        join s in playerSkills on x.SkillId equals s.SkillId into dbSkills
@@ -77,7 +77,7 @@ namespace Rhisis.World.Systems.Skills
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            var skillsSet = from x in _database.Skills.GetCharacterSkills(player.PlayerData.Id).AsQueryable().AsNoTracking().ToList()
+            var skillsSet = from x in _database.Skills.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().ToList()
                             join s in player.SkillTree.Skills on
                              new { x.SkillId, x.CharacterId }
                              equals
@@ -102,11 +102,11 @@ namespace Rhisis.World.Systems.Skills
                         CharacterId = player.PlayerData.Id
                     };
 
-                    _database.Skills.Create(newSkill);
+                    _database.Skills.Add(newSkill);
                 }
             }
 
-            _database.Complete();
+            _database.SaveChanges();
         }
 
         public IEnumerable<SkillInfo> GetSkillsByJob(DefineJob.Job job)

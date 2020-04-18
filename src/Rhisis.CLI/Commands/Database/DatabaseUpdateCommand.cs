@@ -3,7 +3,6 @@ using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
-using Rhisis.Database.Context;
 
 namespace Rhisis.CLI.Commands.Database
 {
@@ -50,14 +49,13 @@ namespace Rhisis.CLI.Commands.Database
                     return;
                 }
 
-                using IDatabase database = _databaseFactory.GetDatabase(dbConfig);
+                using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
                 
                 Console.WriteLine("Starting database structure update...");
-                DatabaseContext rhisisDbContext = database.DatabaseContext;
 
-                if (rhisisDbContext.DatabaseExists())
+                if (database.Exists())
                 {
-                    rhisisDbContext.Migrate();
+                    database.Migrate();
                     Console.WriteLine("Database updated.");
                 }
                 else

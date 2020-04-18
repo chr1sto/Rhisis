@@ -35,10 +35,11 @@ namespace Rhisis.Cluster
                 {
                     services.AddOptions();
                     services.AddMemoryCache();
+
                     services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.ClusterServer));
                     services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-                    services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
-
+                    
+                    services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddGameResources();
 

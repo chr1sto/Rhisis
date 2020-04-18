@@ -25,7 +25,7 @@ namespace Rhisis.World.Game.Factories.Internal
     public sealed class PlayerFactory : IPlayerFactory
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDatabase _database;
+        private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
@@ -41,7 +41,7 @@ namespace Rhisis.World.Game.Factories.Internal
         /// <param name="mapManager">Map manager.</param>
         /// <param name="behaviorManager">Behavior manager.</param>
         /// <param name="itemFactory">Item factory.</param>
-        public PlayerFactory(IServiceProvider serviceProvider, IDatabase database, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IItemFactory itemFactory)
+        public PlayerFactory(IServiceProvider serviceProvider, IRhisisDatabase database, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IItemFactory itemFactory)
         {
             _serviceProvider = serviceProvider;
             _database = database;
@@ -147,7 +147,7 @@ namespace Rhisis.World.Game.Factories.Internal
             if (player == null)
                 return;
 
-            DbCharacter character = _database.Characters.Get(player.PlayerData.Id);
+            DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == player.PlayerData.Id);
 
             if (character != null)
             {
@@ -182,7 +182,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.Mp = player.Attributes[DefineAttributes.MP];
                 character.Fp = player.Attributes[DefineAttributes.FP];
 
-                _database.Complete();
+                _database.SaveChanges();
 
                 var gameSystems = _serviceProvider.GetRequiredService<IEnumerable<IGameSystemLifeCycle>>().OrderBy(x => x.Order);
 

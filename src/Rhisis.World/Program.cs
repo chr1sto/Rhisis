@@ -37,8 +37,8 @@ namespace Rhisis.World
                     services.AddMemoryCache();
                     services.Configure<WorldConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.WorldServer));
                     services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-                    services.RegisterDatabaseServices(hostContext.Configuration.Get<DatabaseConfiguration>());
 
+                    services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddGameResources();
                     services.AddInjectableServices();

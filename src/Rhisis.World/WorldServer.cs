@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration.World;
+using Rhisis.Database;
 using Rhisis.Network;
 using Rhisis.Scripting.Quests;
 using Rhisis.World.Client;
@@ -32,6 +33,7 @@ namespace Rhisis.World
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
         private readonly IChatCommandManager _chatCommandManager;
+        private readonly IRhisisDatabase _database;
 
         /// <summary>
         /// Creates a new <see cref="WorldServer"/> instance.
@@ -39,7 +41,7 @@ namespace Rhisis.World
         public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, 
             IWorldServerTaskManager worldServerTaskManager,
             IGameResources gameResources, IServiceProvider serviceProvider, 
-            IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager)
+            IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager, IRhisisDatabase database)
         {
             _logger = logger;
             _worldServerTaskManager = worldServerTaskManager;
@@ -49,6 +51,7 @@ namespace Rhisis.World
             _mapManager = mapManager;
             _behaviorManager = behaviorManager;
             _chatCommandManager = chatCommandManager;
+            _database = database;
             PacketProcessor = new FlyffPacketProcessor();
             ServerConfiguration = new NetServerConfiguration(_worldConfiguration.Host, _worldConfiguration.Port, ClientBacklog, ClientBufferSize);
         }
@@ -56,6 +59,11 @@ namespace Rhisis.World
         /// <inheritdoc />
         protected override void OnBeforeStart()
         {
+            if (!_database.IsAlive())
+            {
+                throw new InvalidProgramException($"Cannot start {nameof(WorldServer)}. Failed to reach database.");
+            }
+
             _gameResources.Load(typeof(DefineLoader),
                 typeof(TextLoader),
                 typeof(MoverLoader),
