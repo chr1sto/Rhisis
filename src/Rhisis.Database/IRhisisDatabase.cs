@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Database.Entities;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rhisis.Database
 {
@@ -45,10 +47,24 @@ namespace Rhisis.Database
         DbSet<DbSkill> Skills { get; }
 
         /// <summary>
+        /// Creates a Microsoft.EntityFrameworkCore.DbSet`1 that can be used to query and save instances of TEntity.
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
+        /// <summary>
         /// Saves the database pending changes.
         /// </summary>
         /// <returns></returns>
         int SaveChanges();
+
+        /// <summary>
+        /// Saves the database pending changes asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns></returns>
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Migrates the database schema.
