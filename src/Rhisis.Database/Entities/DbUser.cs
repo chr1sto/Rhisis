@@ -14,14 +14,12 @@ namespace Rhisis.Database.Entities
         /// Gets or sets the user's identification name.
         /// </summary>
         [Required]
-        [Encrypted]
         public string Username { get; set; }
 
         /// <summary>
         /// Gets or sets the user's password.
         /// </summary>
         [Required]
-        [Encrypted]
         public string Password { get; set; }
 
         /// <summary>
@@ -30,6 +28,13 @@ namespace Rhisis.Database.Entities
         [Required]
         [Encrypted]
         public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or sets a boolean value that indicates that the user email address has been confirmed.
+        /// </summary>
+        [Required]
+        [Column(TypeName = "BIT")]
+        public bool EmailConfirmed { get; set; }
 
         /// <summary>
         /// Gets or sets the user's creation date.

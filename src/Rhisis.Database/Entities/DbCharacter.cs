@@ -13,7 +13,6 @@ namespace Rhisis.Database.Entities
         /// Gets or sets the character name.
         /// </summary>
         [Required]
-        [Encrypted]
         public string Name { get; set; }
         
         /// <summary>

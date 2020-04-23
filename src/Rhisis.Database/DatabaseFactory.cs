@@ -1,8 +1,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
-using Rhisis.Core.Helpers;
 
 namespace Rhisis.Database
 {
@@ -16,15 +16,19 @@ namespace Rhisis.Database
         /// <inheritdoc />
         public RhisisDatabaseContext CreateDbContext(string[] args)
         {
-            var configurationPath = Environment.GetEnvironmentVariable(MigrationConfigurationEnv);
-            var configuration = ConfigurationHelper.Load<DatabaseConfiguration>(configurationPath);
+            string configurationPath = Environment.GetEnvironmentVariable(MigrationConfigurationEnv);
+            IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile(configurationPath, optional: false)
+                .Build();
+            DatabaseConfiguration dbConfiguration = configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>();
 
-            if (configuration == null)
+            if (dbConfiguration == null)
             {
                 throw new InvalidOperationException($"Cannot find database configuration path: '{configurationPath}'.");
             }
 
-            return CreateDatabaseInstance(configuration) as RhisisDatabaseContext;
+            return CreateDatabaseInstance(dbConfiguration) as RhisisDatabaseContext;
         }
         
         /// <summary>

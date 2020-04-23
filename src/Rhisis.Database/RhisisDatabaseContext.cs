@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 
 namespace Rhisis.Database
 {
-    public sealed class RhisisDatabaseContext : DbContext, IRhisisDatabase
+    public class RhisisDatabaseContext : DbContext, IRhisisDatabase
     {
         private readonly IEncryptionProvider _encryptionProvider;
 
@@ -41,17 +41,8 @@ namespace Rhisis.Database
         /// Create a new <see cref="RhisisDatabaseContext"/> instance.
         /// </summary>
         /// <param name="options"></param>
-        public RhisisDatabaseContext(DbContextOptions options)
-            : this(options, null)
-        {
-        }
-
-        /// <summary>
-        /// Create a new <see cref="RhisisDatabaseContext"/> instance.
-        /// </summary>
-        /// <param name="options"></param>
         /// <param name="configuration"></param>
-        public RhisisDatabaseContext(DbContextOptions options, DatabaseConfiguration configuration)
+        public RhisisDatabaseContext(DbContextOptions options, DatabaseConfiguration configuration = null)
             : base(options)
         {
             if (configuration != null)

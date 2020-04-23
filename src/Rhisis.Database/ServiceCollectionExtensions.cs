@@ -10,13 +10,18 @@ namespace Rhisis.Database
         {
             IConfigurationSection databaseConfigSection = configuration.GetSection(nameof(DatabaseConfiguration));
             DatabaseConfiguration databaseConfiguration = databaseConfigSection.Get<DatabaseConfiguration>();
-
-            services.AddSingleton(databaseConfiguration); // TODO: remove this and use IOptions<> instead
-            services.Configure<DatabaseConfiguration>(databaseConfigSection);
+            
             services.AddDbContext<IRhisisDatabase, RhisisDatabaseContext>(options =>
             {
                 options.UseMySql(DatabaseFactory.BuildConnectionString(databaseConfiguration));
             });
+            services.AddDbContext<RhisisDatabaseContext>(options =>
+            {
+                options.UseMySql(DatabaseFactory.BuildConnectionString(databaseConfiguration));
+            });
+
+            services.AddSingleton(databaseConfiguration); // TODO: remove this and use IOptions<> instead
+            services.Configure<DatabaseConfiguration>(databaseConfigSection);
 
             return services;
         }
