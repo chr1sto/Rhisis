@@ -21,7 +21,7 @@
         public const string LoginServerPath = "config/login.json";
 
         /// <summary>
-        /// Gets the ClusterServer configuraiton key.
+        /// Gets the ClusterServer configuration key.
         /// </summary>
         public const string ClusterServer = "clusterServer";
 
@@ -44,6 +44,11 @@
         /// Gets the Database configuration file path.
         /// </summary>
         public const string DatabasePath = "config/database.json";
+
+        /// <summary>
+        /// Gets the Database configuration key.
+        /// </summary>
+        public const string DatabaseConfiguration = "databaseConfiguration";
 
         /// <summary>
         /// Prevents from creating a <see cref="ConfigurationConstants"/> instance from outside.

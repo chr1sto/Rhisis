@@ -5,6 +5,7 @@ using Rhisis.CLI.Core;
 using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.Models;
 using Rhisis.Database;
 
 namespace Rhisis.CLI.Commands.Database
@@ -40,12 +41,12 @@ namespace Rhisis.CLI.Commands.Database
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
             var dbConfiguration = new ObjectConfigurationFiller<DatabaseConfiguration>(databaseConfiguration);
 
             dbConfiguration.Fill();
 
-            if (databaseConfiguration.UseEncryption)
+            if (dbConfiguration.Value.UseEncryption)
             {
                 if (string.IsNullOrEmpty(dbConfiguration.Value.EncryptionKey))
                 {
@@ -64,7 +65,10 @@ namespace Rhisis.CLI.Commands.Database
 
             if (response)
             {
-                ConfigurationHelper.Save(DatabaseConfigurationFile, dbConfiguration.Value);
+                ConfigurationHelper.Save(DatabaseConfigurationFile, new DatabaseConfigurationModel()
+                {
+                    DatabaseConfiguration = dbConfiguration.Value
+                });
                 Console.WriteLine($"Database configuration saved in '{DatabaseConfigurationFile}'.");
             }
         }

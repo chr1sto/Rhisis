@@ -32,7 +32,7 @@ namespace Rhisis.CLI.Commands.User
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
             if (dbConfig is null)
             {
                 Console.WriteLine("Couldn't load database configuration file during execution of user show command.");

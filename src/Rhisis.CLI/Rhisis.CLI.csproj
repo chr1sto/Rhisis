@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>../../bin/tools/Rhisis.CLI/</OutputPath>
+    <OutputPath>$(SolutionDir)bin/tools/Rhisis.CLI/</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>../../bin/tools/Rhisis.CLI/</OutputPath>
+    <OutputPath>$(SolutionDir)bin/tools/Rhisis.CLI/</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
