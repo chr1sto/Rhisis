@@ -22,7 +22,7 @@ namespace Rhisis.Database
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile(configurationPath, optional: false)
                 .Build();
-            DatabaseConfiguration dbConfiguration = configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>();
+            DatabaseConfiguration dbConfiguration = configuration.GetSection(ConfigurationConstants.DatabaseConfiguration).Get<DatabaseConfiguration>();
 
             if (dbConfiguration == null)
             {

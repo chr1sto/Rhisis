@@ -9,7 +9,7 @@ namespace Rhisis.Database
     {
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            IConfigurationSection databaseConfigSection = configuration.GetSection(nameof(DatabaseConfiguration));
+            IConfigurationSection databaseConfigSection = configuration.GetSection(ConfigurationConstants.DatabaseConfiguration);
             DatabaseConfiguration databaseConfiguration = databaseConfigSection.Get<DatabaseConfiguration>();
             
             services.AddDbContext<IRhisisDatabase, RhisisDatabaseContext>(options =>
