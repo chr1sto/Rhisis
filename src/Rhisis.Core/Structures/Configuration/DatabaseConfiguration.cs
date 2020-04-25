@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
-namespace Rhisis.Database
+namespace Rhisis.Core.Structures.Configuration
 {
     [DataContract]
     public sealed class DatabaseConfiguration

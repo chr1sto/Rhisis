@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using Rhisis.Core.Structures.Configuration;
 
 namespace Rhisis.Database
 {

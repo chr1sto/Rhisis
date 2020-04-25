@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using Rhisis.Core.Structures.Configuration;
 
 namespace Rhisis.Database
 {
