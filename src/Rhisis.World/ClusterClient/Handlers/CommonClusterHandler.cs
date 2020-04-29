@@ -1,27 +1,27 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Rhisis.Network.Core;
-using Rhisis.World.CoreClient.Packets;
+using Rhisis.World.ClusterClient.Packets;
 using Sylver.HandlerInvoker.Attributes;
 using Sylver.Network.Data;
-using System;
 
-namespace Rhisis.World.CoreClient.Handlers
+namespace Rhisis.World.ClusterClient.Handlers
 {
     [Handler]
-    public class CommonCoreHandler
+    public class CommonClusterHandler
     {
-        private readonly ILogger<CommonCoreHandler> _logger;
-        private readonly ICorePacketFactory _corePacketFactory;
+        private readonly ILogger<CommonClusterHandler> _logger;
+        private readonly IClusterPacketFactory _clusterPacketFactory;
 
         /// <summary>
-        /// Creates a new <see cref="CommonCoreHandler"/> instance.
+        /// Creates a new <see cref="CommonClusterHandler"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="corePacketFactory">Core packet factory.</param>
-        public CommonCoreHandler(ILogger<CommonCoreHandler> logger, ICorePacketFactory corePacketFactory)
+        /// <param name="clusterPacketFactory">Core packet factory.</param>
+        public CommonClusterHandler(ILogger<CommonClusterHandler> logger, IClusterPacketFactory clusterPacketFactory)
         {
             _logger = logger;
-            _corePacketFactory = corePacketFactory;
+            _clusterPacketFactory = clusterPacketFactory;
         }
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace Rhisis.World.CoreClient.Handlers
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(CorePacketType.Welcome)]
-        public void OnWelcome(IWorldCoreClient client, INetPacketStream _)
+        public void OnWelcome(IWorldClusterClient client, INetPacketStream _)
         {
-            _corePacketFactory.SendAuthentication(client, client.WorldServerConfiguration);
+            _clusterPacketFactory.SendAuthentication(client, client.WorldServerConfiguration);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Rhisis.World.CoreClient.Handlers
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(CorePacketType.AuthenticationResult)]
-        public void OnAuthenticationResult(IWorldCoreClient _, INetPacketStream packet)
+        public void OnAuthenticationResult(IWorldClusterClient _, INetPacketStream packet)
         {
             var authenticationResult = (CoreAuthenticationResultType)(packet.Read<uint>());
 

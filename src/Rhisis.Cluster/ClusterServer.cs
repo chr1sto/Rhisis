@@ -70,7 +70,7 @@ namespace Rhisis.Cluster
         /// <inheritdoc />
         protected override void OnAfterStart()
         {
-            _logger.LogInformation($"'{ClusterConfiguration.Name}' cluster server is started and listen on {ServerConfiguration.Host}:{ServerConfiguration.Port}.");
+            _logger.LogInformation($"'{ClusterConfiguration.Name}' cluster server is started and listening on {ServerConfiguration.Host}:{ServerConfiguration.Port}.");
         }
 
         /// <inheritdoc />
@@ -80,19 +80,21 @@ namespace Rhisis.Cluster
 
             client.Initialize(this,
                 _serviceProvider.GetRequiredService<ILogger<ClusterClient>>(),
-                _serviceProvider.GetRequiredService<IHandlerInvoker>(),
-                _serviceProvider.GetRequiredService<IClusterPacketFactory>());
+                _serviceProvider.GetRequiredService<IHandlerInvoker>());
+
+            var clusterPacketFactory =  _serviceProvider.GetRequiredService<IClusterPacketFactory>();
+            clusterPacketFactory.SendWelcome(client);
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(ClusterClient client)
-            => _logger.LogInformation($"Client disconnected from {client.Socket.RemoteEndPoint}.");
+        {
+            _logger.LogInformation($"Client disconnected from {client.Socket.RemoteEndPoint}.");
+        }
 
-        /// <inheritdoc />
-        //protected override void OnError(Exception exception) 
-        //    => this._logger.LogInformation($"{nameof(ClusterServer)} socket error: {exception.Message}");
-
-        /// <inheritdoc />
-        public WorldServerInfo GetWorldServerById(int id) => WorldServers.FirstOrDefault(x => x.Id == id);
+        public WorldServerInfo GetWorldServerById(int id)
+        {
+            return WorldServers.SingleOrDefault(w => w.Id == id);
+        }
     }
 }

@@ -2,15 +2,16 @@
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
+using Sylver.Network.Client;
 using Sylver.Network.Data;
 
-namespace Rhisis.World.CoreClient.Packets
+namespace Rhisis.World.ClusterClient.Packets
 {
     [Injectable(ServiceLifetime.Singleton)]
-    public sealed class CorePacketFactory : ICorePacketFactory
+    public sealed class ClusterPacketFactory : IClusterPacketFactory
     {
         /// <inheritdoc />
-        public void SendAuthentication(ICoreClient client, WorldConfiguration worldConfiguration)
+        public void SendAuthentication(INetClient client, WorldConfiguration worldConfiguration)
         {
             using (var packet = new NetPacket())
             {

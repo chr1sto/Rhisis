@@ -10,11 +10,11 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
 using Rhisis.Network.Packets;
-using Rhisis.World.CoreClient;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.IO;
 using System.Threading.Tasks;
+using Rhisis.World.ClusterClient;
 
 namespace Rhisis.World
 {
@@ -48,8 +48,8 @@ namespace Rhisis.World
                     services.AddSingleton<IHostedService, WorldServerService>();
 
                     // Core client configuration
-                    services.AddSingleton<IWorldCoreClient, WorldCoreClient>();
-                    services.AddSingleton<IHostedService, WorldCoreClientService>();
+                    services.AddSingleton<IWorldClusterClient, WorldClusterClient>();
+                    services.AddSingleton<IHostedService, WorldClusterClientService>();
                 })
                 .ConfigureLogging(builder =>
                 {

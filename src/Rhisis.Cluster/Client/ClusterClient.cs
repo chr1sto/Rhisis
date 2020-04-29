@@ -40,13 +40,11 @@ namespace Rhisis.Cluster.Client
         /// <param name="logger">Logger.</param>
         /// <param name="handlerInvoker">Handler invoker.</param>
         /// <param name="clusterPacketFactory">Cluster packet factory.</param>
-        public void Initialize(IClusterServer clusterServer, ILogger<ClusterClient> logger, IHandlerInvoker handlerInvoker, IClusterPacketFactory clusterPacketFactory)
+        public void Initialize(IClusterServer clusterServer, ILogger<ClusterClient> logger, IHandlerInvoker handlerInvoker)
         {
             _clusterServer = clusterServer;
             _logger = logger;
             _handlerInvoker = handlerInvoker;
-
-            clusterPacketFactory.SendWelcome(this);
         }
 
         /// <inheritdoc />
