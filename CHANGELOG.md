@@ -4,7 +4,7 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Unreleased]
 
-## [0.5.0] (https://github.com/Eastrall/Rhisis/releases/tag/v0.4) - 2020-05-30
+## [0.5.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.4) - 2020-05-30
 
 
 
