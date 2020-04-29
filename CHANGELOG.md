@@ -4,7 +4,13 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Unreleased]
 
-## [0.4.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.4) - 2019-09-30
+## [0.5.0] (https://github.com/Eastrall/Rhisis/releases/tag/v0.4) - 2020-05-30
+
+
+
+## [Released]
+
+## [0.4.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.4) - 2020-04-29
 
 ### Fixes
 
@@ -44,8 +50,6 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - ![database] Remove repository pattern ([#347](https://github.com/Eastrall/Rhisis/pull/347))
   - `IDatabase` renamed into `IRhisisDatabase`
   - Related data should be loaded manually when needed using the `IQueryable<TEntity>.Include()` method from Entity Framework Core : https://docs.microsoft.com/en-us/ef/core/querying/related-data
-
-## [Released]
 
 ## [0.3.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.3) - 2019-06-30
 
