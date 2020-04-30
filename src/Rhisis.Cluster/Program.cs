@@ -15,7 +15,6 @@ using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.IO;
 using System.Threading.Tasks;
-using Rhisis.Cluster.Models;
 using Rhisis.Cluster.WorldCluster;
 using Rhisis.Cluster.WorldCluster.Packets;
 using Rhisis.Cluster.WorldCluster.Server;
@@ -52,7 +51,6 @@ namespace Rhisis.Cluster
                     services.AddSingleton<IWorldClusterServer, WorldClusterServer>();
                     services.AddSingleton<IWorldPacketFactory, WorldPacketFactory>();
                     services.AddSingleton<IHostedService, WorldClusterServerService>();
-                    services.AddSingleton<IWorldCache, WorldCache>();
 
                     // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();

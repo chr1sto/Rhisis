@@ -15,7 +15,7 @@ using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Cluster.Models;
+using Rhisis.Cluster.WorldCluster.Server;
 
 namespace Rhisis.Cluster.Handlers
 {
@@ -25,9 +25,9 @@ namespace Rhisis.Cluster.Handlers
         private readonly ILogger<CharacterHandler> _logger;
         private readonly IRhisisDatabase _database;
         private readonly IClusterServer _clusterServer;
+        private readonly IWorldClusterServer _worldClusterServer;
         private readonly IGameResources _gameResources;
         private readonly IClusterPacketFactory _clusterPacketFactory;
-        private readonly IWorldCache _worldCache;
 
         /// <summary>
         /// Creates a new <see cref="CharacterHandler"/> instance.
@@ -39,14 +39,14 @@ namespace Rhisis.Cluster.Handlers
         /// <param name="clusterPacketFactory">Cluster server packet factory.</param>
         /// <param name="worldCache">World server information cache</param>
         public CharacterHandler(ILogger<CharacterHandler> logger, IRhisisDatabase database, IClusterServer clusterServer, 
-            IGameResources gameResources, IClusterPacketFactory clusterPacketFactory, IWorldCache worldCache)
+            IGameResources gameResources, IClusterPacketFactory clusterPacketFactory, IWorldClusterServer worldClusterServer)
         {
             _logger = logger;
             _database = database;
             _clusterServer = clusterServer;
             _gameResources = gameResources;
             _clusterPacketFactory = clusterPacketFactory;
-            _worldCache = worldCache;
+            _worldClusterServer = worldClusterServer;
         }
 
         /// <summary>
@@ -57,7 +57,8 @@ namespace Rhisis.Cluster.Handlers
         [HandlerAction(PacketType.GETPLAYERLIST)]
         public void OnGetPlayerList(IClusterClient client, GetPlayerListPacket packet)
         {
-            WorldServerInfo selectedWorldServer = _worldCache.GetById(packet.ServerId);
+            WorldServerInfo selectedWorldServer = _worldClusterServer.Worlds
+                .SingleOrDefault(w => w.Id == packet.ServerId);
 
             if (selectedWorldServer == null)
             {

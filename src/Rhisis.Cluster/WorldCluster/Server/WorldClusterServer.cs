@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Cluster.CoreClient;
 using Rhisis.Cluster.CoreClient.Packets;
-using Rhisis.Cluster.Models;
 using Rhisis.Cluster.WorldCluster.Packets;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 
@@ -20,12 +22,15 @@ namespace Rhisis.Cluster.WorldCluster.Server
         private readonly ILogger<WorldClusterServer> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHandlerInvoker _handlerInvoker;
-        private readonly IWorldCache _worldCache;
-        
+
         private readonly ICorePacketFactory _corePacketFactory;
         private readonly IClusterCoreClient _clusterCoreClient;
 
         public WorldClusterConfiguration WorldClusterConfiguration { get; }
+
+        public IEnumerable<WorldServerInfo> Worlds => Clients
+            .Where(c => c.ServerInfo != null)
+            .Select(c => c.ServerInfo);
 
         /// <summary>
         /// Creates a new <see cref="WorldClusterServer"/> instance.
@@ -34,18 +39,16 @@ namespace Rhisis.Cluster.WorldCluster.Server
         /// <param name="configuration">World cluster server configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
         /// <param name="handlerInvoker">Packet invoker</param>
-        /// <param name="worldCache">World server information cache</param>
         /// <param name="clusterCoreClient">Core client</param>
         /// <param name="corePacketFactory">Packet creator for cluster/core communication</param>
         public WorldClusterServer(ILogger<WorldClusterServer> logger, IOptions<WorldClusterConfiguration> configuration, 
-            IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker, IWorldCache worldCache,
+            IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker,
             IClusterCoreClient clusterCoreClient, ICorePacketFactory corePacketFactory)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _handlerInvoker = handlerInvoker;
-            _worldCache = worldCache;
-            
+
             _clusterCoreClient = clusterCoreClient;
             _corePacketFactory = corePacketFactory;
             
@@ -55,7 +58,12 @@ namespace Rhisis.Cluster.WorldCluster.Server
                 ClientBacklog, 
                 ClientBufferSize);
         }
-        
+
+        public bool HasWorldWithId(int id)
+        {
+            return Worlds.SingleOrDefault(w => w.Id == id) != null;
+        }
+
         protected override void OnAfterStart()
         {
             _logger.LogInformation($"'{nameof(WorldClusterServer)}' is started and listening on {ServerConfiguration.Host}:{ServerConfiguration.Port}.");
@@ -74,8 +82,7 @@ namespace Rhisis.Cluster.WorldCluster.Server
         /// <inheritdoc />
         protected override void OnClientDisconnected(WorldClusterServerClient client)
         {
-            _worldCache.Remove(client.ServerInfo);
-            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, _worldCache);
+            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, Worlds);
             
             _logger.LogInformation($"World server {client.ServerInfo.Name} disconnected, removed {client.ServerInfo.Name} from the world cache");
         }

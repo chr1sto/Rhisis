@@ -31,7 +31,8 @@ namespace Rhisis.Login.Core
         /// <param name="logger">Logger.</param>
         /// <param name="configuration">Core server configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public CoreServer(ILogger<CoreServer> logger, IOptions<CoreConfiguration> configuration, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker)
+        public CoreServer(ILogger<CoreServer> logger, IOptions<CoreConfiguration> configuration, 
+            IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker)
         {
             _logger = logger;
             CoreConfiguration = configuration.Value;
@@ -46,7 +47,7 @@ namespace Rhisis.Login.Core
         /// <inheritdoc />
         protected override void OnAfterStart()
         {
-            _logger.LogInformation($"{nameof(CoreServer)} started!");
+            _logger.LogInformation($"{nameof(CoreServer)} is started and listen on {ServerConfiguration.Host}:{ServerConfiguration.Port}.");
         }
 
         /// <inheritdoc />

@@ -86,7 +86,7 @@ namespace Rhisis.World
         protected override void OnAfterStart()
         {
             _worldServerTaskManager.Start();
-            _logger.LogInformation("'{0}' world server is started and listen on {1}:{2}.",
+            _logger.LogInformation("'{0}' world server is started and listenening on {1}:{2}.",
                 _worldConfiguration.Name, ServerConfiguration.Host, ServerConfiguration.Port);
         }
 
@@ -111,12 +111,6 @@ namespace Rhisis.World
         {
             _logger.LogInformation("Client disconnected from {0}.", serverClient.Socket.RemoteEndPoint);
         }
-
-        /// <inheritdoc />
-        //protected override void OnError(Exception exception)
-        //{
-        //    this._logger.LogError("WorldServer Error: {0}", exception.Message);
-        //}
 
         /// <inheritdoc />
         public IPlayerEntity GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;

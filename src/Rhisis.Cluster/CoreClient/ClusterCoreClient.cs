@@ -1,14 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Client;
 using Sylver.Network.Data;
-using System;
-using System.Collections.Generic;
-using Rhisis.Cluster.CoreClient.Packets;
-using Rhisis.Cluster.Models;
 
 namespace Rhisis.Cluster.CoreClient
 {

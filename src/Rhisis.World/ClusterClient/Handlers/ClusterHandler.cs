@@ -60,7 +60,8 @@ namespace Rhisis.World.ClusterClient.Handlers
                     break;
                 default:
                     _logger.LogTrace("Core authentification result: {0}", authenticationResult);
-                    _logger.LogCritical("Unable to authenticate World Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
+                    _logger.LogCritical("Unable to authenticate World Core client. " +
+                                        "Reason: Cannot recognize cluster server. You probably have to update all servers.");
                     break;
             }
 

@@ -95,6 +95,12 @@ namespace Rhisis.Login.Core.Handlers
                 var worldServer = new WorldServerInfo(serverId, serverName, serverHost, serverPort, parentClusterId);
                 clusterServerInfo.Worlds.Add(worldServer);
             }
+            
+            _logger.LogInformation($"[{clusterServerInfo.Id}] Cluster '{clusterServerInfo.Name}' has {clusterServerInfo.Worlds.Count} worlds");
+            clusterServerInfo.Worlds.ForEach(w =>
+            {
+                _logger.LogInformation($"   ({w.Id}) World '{w.Name}' @ {w.Host}:{w.Port}");
+            });
         }
     }
 }

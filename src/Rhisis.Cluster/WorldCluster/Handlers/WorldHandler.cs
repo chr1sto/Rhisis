@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.CoreClient;
 using Rhisis.Cluster.CoreClient.Packets;
-using Rhisis.Cluster.Models;
 using Rhisis.Cluster.WorldCluster.Packets;
 using Rhisis.Cluster.WorldCluster.Server;
 using Rhisis.Core.Structures.Configuration;
@@ -19,7 +18,6 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
         private readonly IWorldPacketFactory _worldPacketFactory;
         
         private readonly ClusterConfiguration _clusterConfiguration;
-        private readonly IWorldCache _worldCache;
 
         private readonly ICorePacketFactory _corePacketFactory;
         private readonly IClusterCoreClient _clusterCoreClient;
@@ -33,10 +31,9 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
         /// <param name="clusterCoreClient">Core client</param>
         /// <param name="corePacketFactory">Packet creator for cluster/core communication</param>
         /// <param name="worldPacketFactory">Core server packet factory.</param>
-        /// <param name="worldCache">World cache to save world servers into</param>
         public WorldHandler(ILogger<WorldHandler> logger, IWorldClusterServer worldClusterServer, IClusterServer clusterServer,
             IClusterCoreClient clusterCoreClient, ICorePacketFactory corePacketFactory,
-            IWorldPacketFactory worldPacketFactory, IWorldCache worldCache)
+            IWorldPacketFactory worldPacketFactory)
         {
             _logger = logger;
             _worldClusterServer = worldClusterServer;
@@ -44,7 +41,6 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
             _corePacketFactory = corePacketFactory;
             _worldPacketFactory = worldPacketFactory;
             _clusterConfiguration = clusterServer.ClusterConfiguration;
-            _worldCache = worldCache;
         }
         
         [HandlerAction(WorldClusterPacketType.Authenticate)]
@@ -56,9 +52,6 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
             var port = packet.Read<int>();
             var parentClusterId = packet.Read<int>();
             var password = packet.Read<string>();
-            var worldInfo = new WorldServerInfo(id, name, host, port, parentClusterId);
-
-            var worldClusterConfiguration = _worldClusterServer.WorldClusterConfiguration;
 
             if (parentClusterId != _clusterConfiguration.Id)
             {
@@ -70,7 +63,7 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
                 _worldClusterServer.DisconnectClient(client.Id);
             }
 
-            if (worldClusterConfiguration.Password != password)
+            if (_worldClusterServer.WorldClusterConfiguration.Password != password)
             {
                 _logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused. Reason: " +
                                    $"wrong password.");
@@ -79,7 +72,7 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
                 _worldClusterServer.DisconnectClient(client.Id);
             }
 
-            if (_worldCache.Contains(worldInfo))
+            if (_worldClusterServer.HasWorldWithId(id))
             {
                 _logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused." +
                                    $" Reason: An other World server with id '{id}' is already connected to Cluster Server '{_clusterConfiguration.Name}'.");
@@ -87,16 +80,15 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
                 _worldClusterServer.DisconnectClient(client.Id);
                 return;
             }
-
-            client.ServerInfo = worldInfo;
-            _worldCache.Add(worldInfo);
+            
+            client.ServerInfo = new WorldServerInfo(id, name, host, port, parentClusterId);
 
             _logger.LogInformation(
                 $"World server '{name}' authenticated and is connected" +
                 $" to world cluster server from {client.Socket.RemoteEndPoint}.");
                 
             _worldPacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.Success);
-            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, _worldCache);
+            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, _worldClusterServer.Worlds);
         }
     }
 }

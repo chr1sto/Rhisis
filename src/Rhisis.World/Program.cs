@@ -45,8 +45,8 @@ namespace Rhisis.World
 
                     // World server configuration
                     services.AddSingleton<IWorldServer, WorldServer>();
-                    // services.AddSingleton<IHostedService, WorldServerService>();
-
+                    services.AddSingleton<IHostedService, WorldServerService>();
+                    
                     // World cluster server client configuration
                     services.AddSingleton<IWorldClusterClient, WorldClusterClient>();
                     services.AddSingleton<IHostedService, WorldClusterClientService>();
