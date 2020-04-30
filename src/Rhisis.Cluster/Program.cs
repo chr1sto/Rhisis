@@ -15,6 +15,7 @@ using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.IO;
 using System.Threading.Tasks;
+using Rhisis.Cluster.WorldCluster;
 
 namespace Rhisis.Cluster
 {
@@ -42,16 +43,21 @@ namespace Rhisis.Cluster
                     services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddGameResources();
-
-                    // Core client configuration
-                    services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
-                    services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
-                    services.AddSingleton<IHostedService, ClusterCoreClientService>();
+                    
+                    // World cluster server configuration
+                    services.AddSingleton<IWorldClusterServer, WorldClusterServer>();
+                    // services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
+                    services.AddSingleton<IHostedService, WorldClusterServerService>();
 
                     // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();
                     services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
                     services.AddSingleton<IHostedService, ClusterServerService>();
+
+                    // Core client configuration
+                    services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
+                    services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
+                    services.AddSingleton<IHostedService, ClusterCoreClientService>();
                 })
                 .ConfigureLogging(builder =>
                 {
