@@ -23,12 +23,12 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Handles the MODIFY_STATUS for updating a player's statistics.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.MODIFY_STATUS)]
-        public void OnModifyStatus(IWorldClient client, ModifyStatusPacket packet)
+        public void OnModifyStatus(IWorldServerClient serverClient, ModifyStatusPacket packet)
         {
-            _statisticsSystem.UpdateStatistics(client.Player, 
+            _statisticsSystem.UpdateStatistics(serverClient.Player, 
                 packet.Strength, packet.Stamina, packet.Dexterity, packet.Intelligence);
         }
     }

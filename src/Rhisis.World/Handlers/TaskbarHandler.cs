@@ -27,49 +27,49 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Adds a new applet to the applet taskbar.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.ADDAPPLETTASKBAR)]
-        public void OnAddTaskbarApplet(IWorldClient client, AddTaskbarAppletPacket packet)
+        public void OnAddTaskbarApplet(IWorldServerClient serverClient, AddTaskbarAppletPacket packet)
         {
             var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, packet.ObjectId, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
 
-            _taskbarSystem.AddApplet(client.Player, shortcutToAdd);
+            _taskbarSystem.AddApplet(serverClient.Player, shortcutToAdd);
         }
 
         /// <summary>
         /// Removes an applet from the applet taskbar.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.REMOVEAPPLETTASKBAR)]
-        public void OnRemoveTaskbarApplet(IWorldClient client, RemoveTaskbarAppletPacket packet)
+        public void OnRemoveTaskbarApplet(IWorldServerClient serverClient, RemoveTaskbarAppletPacket packet)
         {
-            _taskbarSystem.RemoveApplet(client.Player, packet.SlotIndex);
+            _taskbarSystem.RemoveApplet(serverClient.Player, packet.SlotIndex);
         }
 
         /// <summary>
         /// Adds an item to the item taskbar.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.ADDITEMTASKBAR)]
-        public void OnAddTaskbarItem(IWorldClient client, AddTaskbarItemPacket packet)
+        public void OnAddTaskbarItem(IWorldServerClient serverClient, AddTaskbarItemPacket packet)
         {
             var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, packet.ObjectId, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
 
-            _taskbarSystem.AddItem(client.Player, shortcutToAdd, packet.SlotLevelIndex);
+            _taskbarSystem.AddItem(serverClient.Player, shortcutToAdd, packet.SlotLevelIndex);
         }
 
         /// <summary>
         /// Removes an item from the item taskbar.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.REMOVEITEMTASKBAR)]
-        public void OnRemoveTaskbarItem(IWorldClient client, RemoveTaskbarItemPacket packet)
+        public void OnRemoveTaskbarItem(IWorldServerClient serverClient, RemoveTaskbarItemPacket packet)
         {
-            _taskbarSystem.RemoveItem(client.Player, packet.SlotLevelIndex, packet.SlotIndex);
+            _taskbarSystem.RemoveItem(serverClient.Player, packet.SlotLevelIndex, packet.SlotIndex);
         }
     }
 }

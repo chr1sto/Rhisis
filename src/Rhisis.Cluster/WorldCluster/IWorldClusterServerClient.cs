@@ -1,7 +1,8 @@
-﻿namespace Rhisis.Cluster.WorldCluster
+﻿using Sylver.Network.Common;
+
+namespace Rhisis.Cluster.WorldCluster
 {
-    public interface IWorldClusterServerClient
+    public interface IWorldClusterServerClient : INetUser
     {
-        
     }
 }

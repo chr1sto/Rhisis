@@ -28,45 +28,45 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Updates the player's skill levels.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.DOUSESKILLPOINT)]
-        public void OnDoUseSkillPoints(IWorldClient client, DoUseSkillPointsPacket packet)
+        public void OnDoUseSkillPoints(IWorldServerClient serverClient, DoUseSkillPointsPacket packet)
         {
             if (!packet.Skills.Any())
             {
-                _logger.LogWarning($"Player {client.Player} tried to update skills, but no skills were sent.");
+                _logger.LogWarning($"Player {serverClient.Player} tried to update skills, but no skills were sent.");
                 return;
             }
 
-            _skillSystem.UpdateSkills(client.Player, packet.Skills);
+            _skillSystem.UpdateSkills(serverClient.Player, packet.Skills);
         }
 
         /// <summary>
         /// Use a skill for a given player.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.USESKILL)]
-        public void OnUseSkill(IWorldClient client, UseSkillPacket packet)
+        public void OnUseSkill(IWorldServerClient serverClient, UseSkillPacket packet)
         {
             if (packet.SkillIndex < 0 || packet.SkillIndex > (int)DefineJob.JobMax.MAX_SKILLS)
             {
-                _logger.LogWarning($"Player {client.Player} tried to use an unknown skill: '{packet.SkillIndex}'.");
-                _skillPacketFactory.SendSkillCancellation(client.Player);
+                _logger.LogWarning($"Player {serverClient.Player} tried to use an unknown skill: '{packet.SkillIndex}'.");
+                _skillPacketFactory.SendSkillCancellation(serverClient.Player);
                 return;
             }
 
             if (packet.TargetObjectId < 0)
             {
-                _logger.LogWarning($"Player {client.Player} tried to use a skill on an unknown target.");
-                _skillPacketFactory.SendSkillCancellation(client.Player);
+                _logger.LogWarning($"Player {serverClient.Player} tried to use a skill on an unknown target.");
+                _skillPacketFactory.SendSkillCancellation(serverClient.Player);
                 return;
             }
 
-            SkillInfo skill = client.Player.SkillTree.GetSkillByIndex(packet.SkillIndex);
+            SkillInfo skill = serverClient.Player.SkillTree.GetSkillByIndex(packet.SkillIndex);
 
-            _skillSystem.UseSkill(client.Player, skill, packet.TargetObjectId, packet.UseType);
+            _skillSystem.UseSkill(serverClient.Player, skill, packet.TargetObjectId, packet.UseType);
         }
     }
 }

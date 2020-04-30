@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace Rhisis.World
 {
-    public sealed partial class WorldServer : NetServer<WorldClient>, IWorldServer
+    public sealed partial class WorldServer : NetServer<WorldServerClient>, IWorldServer
     {
         private const int ClientBufferSize = 128;
         private const int ClientBacklog = 50;
@@ -97,19 +97,19 @@ namespace Rhisis.World
         }
 
         /// <inheritdoc />
-        protected override void OnClientConnected(WorldClient client)
+        protected override void OnClientConnected(WorldServerClient serverClient)
         {
-            client.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldClient>>(),
+            serverClient.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldServerClient>>(),
                 _serviceProvider.GetRequiredService<IHandlerInvoker>(),
                 _serviceProvider.GetRequiredService<IWorldServerPacketFactory>());
 
-            _logger.LogInformation("New client connected from {0}.", client.Socket.RemoteEndPoint);
+            _logger.LogInformation("New client connected from {0}.", serverClient.Socket.RemoteEndPoint);
         }
 
         /// <inheritdoc />
-        protected override void OnClientDisconnected(WorldClient client)
+        protected override void OnClientDisconnected(WorldServerClient serverClient)
         {
-            _logger.LogInformation("Client disconnected from {0}.", client.Socket.RemoteEndPoint);
+            _logger.LogInformation("Client disconnected from {0}.", serverClient.Socket.RemoteEndPoint);
         }
 
         /// <inheritdoc />

@@ -24,17 +24,17 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Opens a dialog script.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming <see cref="DialogPacket"/>.</param>
         [HandlerAction(PacketType.SCRIPTDLG)]
-        public void OnDialogScript(IWorldClient client, DialogPacket packet)
+        public void OnDialogScript(IWorldServerClient serverClient, DialogPacket packet)
         {
             if (packet.ObjectId <= 0)
             {
                 throw new ArgumentException("Invalid object id.");
             }
 
-            _dialogSystem.OpenNpcDialog(client.Player, packet.ObjectId, packet.Key, packet.QuestId);
+            _dialogSystem.OpenNpcDialog(serverClient.Player, packet.ObjectId, packet.Key, packet.QuestId);
         }
     }
 }

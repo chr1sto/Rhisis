@@ -31,12 +31,12 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// On melee attack.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.MELEE_ATTACK)]
-        public void OnMeleeAttack(IWorldClient client, MeleeAttackPacket packet)
+        public void OnMeleeAttack(IWorldServerClient serverClient, MeleeAttackPacket packet)
         {
-            var target = client.Player.FindEntity<IMonsterEntity>(packet.ObjectId);
+            var target = serverClient.Player.FindEntity<IMonsterEntity>(packet.ObjectId);
 
             if (target == null)
             {
@@ -44,26 +44,26 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            Item weaponItem = client.Player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? client.Player.Hand;
+            Item weaponItem = serverClient.Player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? serverClient.Player.Hand;
 
             if (weaponItem != null && weaponItem.Data?.AttackSpeed != packet.WeaponAttackSpeed)
             {
-                _logger.LogCritical($"Player {client.Player.Object.Name} has changed his weapon speed.");
+                _logger.LogCritical($"Player {serverClient.Player.Object.Name} has changed his weapon speed.");
                 return;
             }
 
-            _battleSystem.MeleeAttack(client.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
+            _battleSystem.MeleeAttack(serverClient.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
         }
 
         /// <summary>
         /// On magic attack.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Magic attack incoming packet.</param>
         [HandlerAction(PacketType.MAGIC_ATTACK)]
-        public void OnMagicAttack(IWorldClient client, MagicAttackPacket packet)
+        public void OnMagicAttack(IWorldServerClient serverClient, MagicAttackPacket packet)
         {
-            var target = client.Player.FindEntity<IMonsterEntity>(packet.TargetObjectId);
+            var target = serverClient.Player.FindEntity<IMonsterEntity>(packet.TargetObjectId);
 
             if (target == null)
             {
@@ -76,18 +76,18 @@ namespace Rhisis.World.Handlers
                 _logger.LogWarning($"Magic attack power cannot be less than 0.");
             }
 
-            _battleSystem.MagicAttack(client.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower));
+            _battleSystem.MagicAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower));
         }
 
         /// <summary>
         /// On ranged attack.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Range attack incoming packet.</param>
         [HandlerAction(PacketType.RANGE_ATTACK)]
-        public void OnRangeAttack(IWorldClient client, RangeAttackPacket packet)
+        public void OnRangeAttack(IWorldServerClient serverClient, RangeAttackPacket packet)
         {
-            var target = client.Player.FindEntity<IMonsterEntity>(packet.ObjectId);
+            var target = serverClient.Player.FindEntity<IMonsterEntity>(packet.ObjectId);
 
             if (target == null)
             {
@@ -100,7 +100,7 @@ namespace Rhisis.World.Handlers
                 _logger.LogWarning($"Range attack power cannot be less than 0.");
             }
 
-            _battleSystem.RangeAttack(client.Player, target, packet.AttackMessage, Math.Max(0, packet.Power));
+            _battleSystem.RangeAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.Power));
         }
     }
 }

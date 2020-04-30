@@ -10,13 +10,13 @@ namespace Rhisis.World.Packets.Internal
     internal class WorldServerPacketFactory : IWorldServerPacketFactory
     {
         /// <inheritdoc />
-        public void SendWelcome(IWorldClient client, uint sessionId)
+        public void SendWelcome(IWorldServerClient serverClient, uint sessionId)
         {
             using var packet = new FFPacket(PacketType.WELCOME);
 
             packet.Write(sessionId);
 
-            client.Send(packet);
+            serverClient.Send(packet);
         }
     }
 }

@@ -31,19 +31,19 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Handles a Send Exp Server request.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="serverClient"></param>
         /// <param name="packet"></param>
         [HandlerAction(PacketType.SEND_TO_SERVER_EXP)]
-        public void OnSendExpServerHandler(IWorldClient client, ExperiencePacket packet)
+        public void OnSendExpServerHandler(IWorldServerClient serverClient, ExperiencePacket packet)
         {
-            if (client.Player.PlayerData.Authority == AuthorityType.GameMaster || client.Player.PlayerData.Authority == AuthorityType.Administrator)
+            if (serverClient.Player.PlayerData.Authority == AuthorityType.GameMaster || serverClient.Player.PlayerData.Authority == AuthorityType.Administrator)
             {
-                _logger.LogTrace($"{client.Player.Object.Name} gives himself {packet.Experience} experience point.");
-                _expSystem.GiveExeperience(client.Player, packet.Experience);
+                _logger.LogTrace($"{serverClient.Player.Object.Name} gives himself {packet.Experience} experience point.");
+                _expSystem.GiveExeperience(serverClient.Player, packet.Experience);
             } 
             else 
             {
-                throw new ArgumentException($"{client.Player.Object.Name} cannot send to himself exp server while beeing {client.Player.PlayerData.Authority}.");
+                throw new ArgumentException($"{serverClient.Player.Object.Name} cannot send to himself exp server while beeing {serverClient.Player.PlayerData.Authority}.");
             }
         }
     }

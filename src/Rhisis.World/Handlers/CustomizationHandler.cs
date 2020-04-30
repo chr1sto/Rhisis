@@ -26,23 +26,23 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Changes the face of a player.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="serverClient"></param>
         /// <param name="packet"></param>
         [HandlerAction(PacketType.CHANGEFACE)]
-        public void OnChangeFace(IWorldClient client, ChangeFacePacket packet)
+        public void OnChangeFace(IWorldServerClient serverClient, ChangeFacePacket packet)
         {
-            _customizationSystem.ChangeFace(client.Player, packet.ObjectId, packet.FaceNumber, packet.UseCoupon);
+            _customizationSystem.ChangeFace(serverClient.Player, packet.ObjectId, packet.FaceNumber, packet.UseCoupon);
         }
 
         /// <summary>
         /// Changes the hair and color of a player.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="serverClient"></param>
         /// <param name="packet"></param>
         [HandlerAction(PacketType.SET_HAIR)]
-        public void OnSetHair(IWorldClient client, SetHairPacket packet)
+        public void OnSetHair(IWorldServerClient serverClient, SetHairPacket packet)
         {
-            _customizationSystem.ChangeHair(client.Player, packet.HairId, packet.R, packet.G, packet.B, packet.UseCoupon);
+            _customizationSystem.ChangeHair(serverClient.Player, packet.HairId, packet.R, packet.G, packet.B, packet.UseCoupon);
         }
     }
 }
