@@ -7,6 +7,8 @@ using Sylver.Network.Client;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
+using Rhisis.Cluster.CoreClient.Packets;
+using Rhisis.Cluster.Models;
 
 namespace Rhisis.Cluster.CoreClient
 {
@@ -15,30 +17,26 @@ namespace Rhisis.Cluster.CoreClient
         private const int BufferSize = 64;
 
         private readonly ILogger<ClusterCoreClient> _logger;
-        private readonly CoreConfiguration _coreConfiguration;
         private readonly IHandlerInvoker _handlerInvoker;
 
         /// <inheritdoc />
-        public ClusterConfiguration ClusterConfiguration { get; }
-
-        /// <inheritdoc />
-        public IList<WorldServerInfo> WorldServers { get; }
+        public CoreConfiguration CoreConfiguration { get; }
 
         /// <summary>
         /// Creates a new <see cref="ClusterCoreClient"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="handlerInvoker">Handler invoker.</param>
-        /// <param name="clusterConfiguration">Cluster server configuration.</param>
         /// <param name="coreConfiguration">Core server configuration.</param>
-        public ClusterCoreClient(ILogger<ClusterCoreClient> logger, IHandlerInvoker handlerInvoker, IOptions<ClusterConfiguration> clusterConfiguration, IOptions<CoreConfiguration> coreConfiguration)
+        /// <param name="packetFactory">Packet factory for core</param>
+
+        public ClusterCoreClient(ILogger<ClusterCoreClient> logger, IHandlerInvoker handlerInvoker, 
+            IOptions<CoreConfiguration> coreConfiguration, ICorePacketFactory packetFactory)
         {
             _logger = logger;
             _handlerInvoker = handlerInvoker;
-            _coreConfiguration = coreConfiguration.Value;
-            ClusterConfiguration = clusterConfiguration.Value;
-            ClientConfiguration = new NetClientConfiguration(_coreConfiguration.Host, _coreConfiguration.Port, BufferSize);
-            WorldServers = new List<WorldServerInfo>();
+            CoreConfiguration = coreConfiguration.Value;
+            ClientConfiguration = new NetClientConfiguration(CoreConfiguration.Host, CoreConfiguration.Port, BufferSize);
         }
 
         /// <inheritdoc />
@@ -51,15 +49,7 @@ namespace Rhisis.Cluster.CoreClient
         protected override void OnDisconnected()
         {
             _logger.LogInformation("Disconnected from core server.");
-
-            // TODO: try to reconnect.
         }
-
-        /// <inheritdoc />
-        //protected override void OnSocketError(SocketError socketError)
-        //{
-        //    this._logger.LogError($"An error occured on Cluster core client: {socketError}");
-        //}
 
         /// <inheritdoc />
         public override void HandleMessage(INetPacketStream packet)

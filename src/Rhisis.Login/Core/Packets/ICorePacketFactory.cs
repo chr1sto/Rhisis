@@ -17,12 +17,5 @@ namespace Rhisis.Login.Core.Packets
         /// <param name="client">Client.</param>
         /// <param name="authenticationResultType">Authentication result type.</param>
         void SendAuthenticationResult(ICoreServerClient client, CoreAuthenticationResultType authenticationResultType);
-
-        /// <summary>
-        /// Sends the world server list to a cluster client.
-        /// </summary>
-        /// <param name="client">Cluster client.</param>
-        /// <param name="worldServers">World server list.</param>
-        void SendUpdateWorldList(ICoreServerClient client, IEnumerable<WorldServerInfo> worldServers);
     }
 }

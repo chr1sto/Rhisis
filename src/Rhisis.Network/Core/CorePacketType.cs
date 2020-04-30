@@ -8,7 +8,6 @@
         Welcome,
         Authenticate,
         AuthenticationResult,
-        Disconnect,
         UpdateClusterWorldsList
     }
 }

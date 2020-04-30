@@ -1,11 +1,17 @@
 ﻿using Rhisis.Network.Core;
 using Sylver.Network.Server;
 using System.Collections.Generic;
+using Rhisis.Core.Structures.Configuration;
 
 namespace Rhisis.Login.Core
 {
     public interface ICoreServer : INetServer
     {
+        /// <summary>
+        /// Contains the server core configuration
+        /// </summary>
+        CoreConfiguration CoreConfiguration { get; }
+        
         /// <summary>
         /// Gets the cluster client by its cluster server id.
         /// </summary>

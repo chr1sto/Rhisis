@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Cluster.CoreClient;
+using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Cluster.Models;
 using Rhisis.Cluster.WorldCluster.Packets;
 using Rhisis.Cluster.WorldCluster.Server;
@@ -19,19 +21,27 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
         private readonly ClusterConfiguration _clusterConfiguration;
         private readonly IWorldCache _worldCache;
 
+        private readonly ICorePacketFactory _corePacketFactory;
+        private readonly IClusterCoreClient _clusterCoreClient;
+
         /// <summary>
         /// Creates a new <see cref="WorldHandler"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="worldClusterServer">Core server instance.</param>
         /// <param name="clusterServer">Used to get the cluster configuration</param>
+        /// <param name="clusterCoreClient">Core client</param>
+        /// <param name="corePacketFactory">Packet creator for cluster/core communication</param>
         /// <param name="worldPacketFactory">Core server packet factory.</param>
         /// <param name="worldCache">World cache to save world servers into</param>
-        public WorldHandler(ILogger<WorldHandler> logger, IWorldClusterServer worldClusterServer, IClusterServer clusterServer, 
+        public WorldHandler(ILogger<WorldHandler> logger, IWorldClusterServer worldClusterServer, IClusterServer clusterServer,
+            IClusterCoreClient clusterCoreClient, ICorePacketFactory corePacketFactory,
             IWorldPacketFactory worldPacketFactory, IWorldCache worldCache)
         {
             _logger = logger;
             _worldClusterServer = worldClusterServer;
+            _clusterCoreClient = clusterCoreClient;
+            _corePacketFactory = corePacketFactory;
             _worldPacketFactory = worldPacketFactory;
             _clusterConfiguration = clusterServer.ClusterConfiguration;
             _worldCache = worldCache;
@@ -86,6 +96,7 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
                 $" to world cluster server from {client.Socket.RemoteEndPoint}.");
                 
             _worldPacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.Success);
+            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, _worldCache);
         }
     }
 }

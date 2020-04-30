@@ -57,12 +57,12 @@ namespace Rhisis.Cluster
                     // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();
                     services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
-                    // services.AddSingleton<IHostedService, ClusterServerService>();
+                    services.AddSingleton<IHostedService, ClusterServerService>();
 
                     // Core client configuration
                     services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
                     services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
-                    // services.AddSingleton<IHostedService, ClusterCoreClientService>();
+                    services.AddSingleton<IHostedService, ClusterCoreClientService>();
                 })
                 .ConfigureLogging(builder =>
                 {

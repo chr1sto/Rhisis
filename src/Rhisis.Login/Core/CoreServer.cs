@@ -20,9 +20,10 @@ namespace Rhisis.Login.Core
         private const int ClientBacklog = 50;
         private const int ClientBufferSize = 64;
         private readonly ILogger<CoreServer> _logger;
-        private readonly CoreConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHandlerInvoker _handlerInvoker;
+        
+        public CoreConfiguration CoreConfiguration { get; }
 
         /// <summary>
         /// Creates a new <see cref="CoreServer"/> instance.
@@ -33,11 +34,11 @@ namespace Rhisis.Login.Core
         public CoreServer(ILogger<CoreServer> logger, IOptions<CoreConfiguration> configuration, IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker)
         {
             _logger = logger;
-            _configuration = configuration.Value;
+            CoreConfiguration = configuration.Value;
             _serviceProvider = serviceProvider;
             _handlerInvoker = handlerInvoker;
-            ServerConfiguration = new NetServerConfiguration(_configuration.Host, 
-                _configuration.Port, 
+            ServerConfiguration = new NetServerConfiguration(CoreConfiguration.Host, 
+                CoreConfiguration.Port, 
                 ClientBacklog, 
                 ClientBufferSize);
         }
@@ -51,26 +52,17 @@ namespace Rhisis.Login.Core
         /// <inheritdoc />
         protected override void OnClientConnected(CoreServerClient connection)
         {
+            _logger.LogTrace($"New incoming cluster core client connection from {connection.Socket.RemoteEndPoint}.");
+            
             var corePacketFactory = _serviceProvider.GetRequiredService<ICorePacketFactory>();
-
             connection.Initialize(_serviceProvider.GetRequiredService<ILogger<CoreServerClient>>(), _handlerInvoker);
-
             corePacketFactory.SendWelcome(connection);
-
-            _logger.LogTrace($"New incoming Core client connection from {connection.Socket.RemoteEndPoint}.");
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(CoreServerClient connection)
         {
-            _handlerInvoker.Invoke(CorePacketType.Disconnect, connection);
         }
-
-        /// <inheritdoc />
-        //protected override void OnError(Exception exception)
-        //{
-        //    this._logger.LogError(exception, $"An error occured in {nameof(CoreServer)}.");
-        //}
 
         /// <inheritdoc />
         public CoreServerClient GetClusterServer(int clusterId)
@@ -93,6 +85,6 @@ namespace Rhisis.Login.Core
 
         /// <inheritdoc />
         public IEnumerable<ClusterServerInfo> GetConnectedClusters() 
-            => Clients.Where(x => x.ServerInfo.GetType() == typeof(ClusterServerInfo)).Select(x => x.ServerInfo as ClusterServerInfo);
+            => Clients.Where(x => x.ServerInfo is ClusterServerInfo).Select(x => x.ServerInfo as ClusterServerInfo);
     }
 }

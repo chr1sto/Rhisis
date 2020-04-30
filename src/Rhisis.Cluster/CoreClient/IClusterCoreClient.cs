@@ -1,4 +1,5 @@
-﻿using Rhisis.Network.Core;
+﻿using Rhisis.Core.Structures.Configuration;
+using Rhisis.Network.Core;
 
 namespace Rhisis.Cluster.CoreClient
 {
@@ -7,5 +8,9 @@ namespace Rhisis.Cluster.CoreClient
     /// </summary>
     public interface IClusterCoreClient : ICoreClient
     {
+        /// <summary>
+        /// Core configuration for core server to connect to
+        /// </summary>
+        CoreConfiguration CoreConfiguration { get; }
     }
 }
