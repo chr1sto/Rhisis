@@ -34,6 +34,11 @@
         /// Gets the WorldServer configuration key.
         /// </summary>
         public const string WorldServer = "worldServer";
+        
+        /// <summary>
+        /// Gets the WorldClusterServer configuration key.
+        /// </summary>
+        public const string WorldClusterServer = "worldClusterServer";
 
         /// <summary>
         /// Gets the WorldServer configuration file path.

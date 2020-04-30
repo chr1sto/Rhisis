@@ -21,7 +21,7 @@ namespace Rhisis.World.ClusterClient
         public WorldConfiguration WorldServerConfiguration { get; }
 
         /// <inheritdoc />
-        public CoreConfiguration CoreClientConfiguration { get; }
+        public WorldClusterConfiguration WorldClusterClientConfiguration { get; }
 
         /// <inheritdoc />
         public string RemoteEndPoint => Socket.RemoteEndPoint.ToString();
@@ -31,36 +31,29 @@ namespace Rhisis.World.ClusterClient
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="worldConfiguration">World server configuration.</param>
-        /// <param name="coreConfiguration">Core server configuration.</param>
+        /// <param name="worldClusterConfiguration">World cluster server configuration.</param>
         /// <param name="handlerInvoker">Handler invoker.</param>
-        public WorldClusterClient(ILogger<WorldClusterClient> logger, IOptions<WorldConfiguration> worldConfiguration, IOptions<CoreConfiguration> coreConfiguration, IHandlerInvoker handlerInvoker)
+        public WorldClusterClient(ILogger<WorldClusterClient> logger, IOptions<WorldConfiguration> worldConfiguration, 
+            IOptions<WorldClusterConfiguration> worldClusterConfiguration, IHandlerInvoker handlerInvoker)
         {
             _logger = logger;
             WorldServerConfiguration = worldConfiguration.Value;
-            CoreClientConfiguration = coreConfiguration.Value;
+            WorldClusterClientConfiguration = worldClusterConfiguration.Value;
             _handlerInvoker = handlerInvoker;
-            ClientConfiguration = new NetClientConfiguration(CoreClientConfiguration.Host, CoreClientConfiguration.Port, BufferSize);
+            ClientConfiguration = new NetClientConfiguration(WorldClusterClientConfiguration.Host, WorldClusterClientConfiguration.Port, BufferSize);
         }
 
         /// <inheritdoc />
         protected override void OnConnected()
         {
-            _logger.LogInformation($"{nameof(WorldClusterClient)} connected to core server.");
+            _logger.LogInformation($"{nameof(WorldClusterClient)} connected to world cluster server.");
         }
 
         /// <inheritdoc />
         protected override void OnDisconnected()
         {
-            _logger.LogInformation($"{nameof(WorldClusterClient)} disconnected from core server.");
-
-            // TODO: try to reconnect.
+            _logger.LogInformation($"{nameof(WorldClusterClient)} disconnected from world cluster  server.");
         }
-
-        /// <inheritdoc />
-        //protected override void OnSocketError(SocketError socketError)
-        //{
-        //    this._logger.LogError($"An error occured on {nameof(WorldCoreClient)}: {socketError}");
-        //}
 
         /// <inheritdoc />
         public override void HandleMessage(INetPacketStream packet)

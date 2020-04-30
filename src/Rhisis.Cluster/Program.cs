@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -38,8 +38,9 @@ namespace Rhisis.Cluster
                     services.AddMemoryCache();
 
                     services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.ClusterServer));
+                    services.Configure<WorldClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.WorldClusterServer));
                     services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-                    
+
                     services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddGameResources();

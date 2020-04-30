@@ -12,9 +12,9 @@ namespace Rhisis.World.ClusterClient
         WorldConfiguration WorldServerConfiguration { get; }
 
         /// <summary>
-        /// Gets the core client configuration.
+        /// Gets the world cluster server configuration for the client to connect to.
         /// </summary>
-        CoreConfiguration CoreClientConfiguration { get; }
+        WorldClusterConfiguration WorldClusterClientConfiguration { get; }
 
         /// <summary>
         /// Gets the remote end point (IP and port) for this client.
