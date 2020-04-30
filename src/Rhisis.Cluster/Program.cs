@@ -47,7 +47,7 @@ namespace Rhisis.Cluster
                     
                     // World cluster server configuration
                     services.AddSingleton<IWorldClusterServer, WorldClusterServer>();
-                    // services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
+                    services.AddSingleton<IWorldPacketFactory, WorldPacketFactory>();
                     services.AddSingleton<IHostedService, WorldClusterServerService>();
 
                     // Cluster server configuration

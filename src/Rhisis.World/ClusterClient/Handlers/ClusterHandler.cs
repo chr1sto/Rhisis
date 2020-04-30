@@ -8,17 +8,17 @@ using Sylver.Network.Data;
 namespace Rhisis.World.ClusterClient.Handlers
 {
     [Handler]
-    public class CommonClusterHandler
+    public class ClusterHandler
     {
-        private readonly ILogger<CommonClusterHandler> _logger;
+        private readonly ILogger<ClusterHandler> _logger;
         private readonly IClusterPacketFactory _clusterPacketFactory;
 
         /// <summary>
-        /// Creates a new <see cref="CommonClusterHandler"/> instance.
+        /// Creates a new <see cref="ClusterHandler"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="clusterPacketFactory">Core packet factory.</param>
-        public CommonClusterHandler(ILogger<CommonClusterHandler> logger, IClusterPacketFactory clusterPacketFactory)
+        public ClusterHandler(ILogger<ClusterHandler> logger, IClusterPacketFactory clusterPacketFactory)
         {
             _logger = logger;
             _clusterPacketFactory = clusterPacketFactory;
@@ -29,10 +29,10 @@ namespace Rhisis.World.ClusterClient.Handlers
         /// </summary>
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(CorePacketType.Welcome)]
-        public void OnWelcome(IWorldClusterClient client, INetPacketStream _)
+        [HandlerAction(WorldClusterPacketType.Handshake)]
+        public void OnWelcome(IWorldClusterClient client)
         {
-            _clusterPacketFactory.SendAuthentication(client, client.WorldServerConfiguration);
+            _clusterPacketFactory.SendAuthentication(client);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Rhisis.World.ClusterClient.Handlers
         /// </summary>
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(CorePacketType.AuthenticationResult)]
+        [HandlerAction(WorldClusterPacketType.AuthenticationResult)]
         public void OnAuthenticationResult(IWorldClusterClient _, INetPacketStream packet)
         {
             var authenticationResult = (CoreAuthenticationResultType)(packet.Read<uint>());

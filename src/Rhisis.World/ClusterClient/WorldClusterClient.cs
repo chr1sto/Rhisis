@@ -69,12 +69,12 @@ namespace Rhisis.World.ClusterClient
             try
             {
                 packetHeaderNumber = packet.Read<uint>();
-                _handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
+                _handlerInvoker.Invoke((WorldClusterPacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentNullException)
             {
-                if (Enum.IsDefined(typeof(CorePacketType), packetHeaderNumber))
-                    _logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(CorePacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), RemoteEndPoint);
+                if (Enum.IsDefined(typeof(WorldClusterPacketType), packetHeaderNumber))
+                    _logger.LogWarning("Received an unimplemented Core packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(WorldClusterPacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), RemoteEndPoint);
                 else
                     _logger.LogWarning("[SECURITY] Received an unknown Core packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), RemoteEndPoint);
             }

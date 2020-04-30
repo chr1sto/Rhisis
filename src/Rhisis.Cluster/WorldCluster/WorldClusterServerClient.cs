@@ -1,5 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
+using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
@@ -28,7 +30,38 @@ namespace Rhisis.Cluster.WorldCluster
 
         public override void HandleMessage(INetPacketStream packet)
         {
-            throw new System.NotImplementedException();
+            uint packetHeaderNumber = 0;
+
+            if (Socket == null)
+            {
+                _logger.LogTrace("Skip to handle world cluster packet from null socket. Reason: socket is not connected.");
+                return;
+            }
+
+            try
+            {
+                packetHeaderNumber = packet.Read<uint>();
+                _handlerInvoker.Invoke((WorldClusterPacketType)packetHeaderNumber, this, packet);
+            }
+            catch (ArgumentException)
+            {
+                if (Enum.IsDefined(typeof(WorldClusterPacketType), packetHeaderNumber))
+                {
+                    _logger.LogWarning("Received an unimplemented world cluster packet {0} (0x{1}) from {2}.",
+                        Enum.GetName(typeof(WorldClusterPacketType), packetHeaderNumber),
+                        packetHeaderNumber.ToString("X2"),
+                        Socket.RemoteEndPoint);
+                }
+                else
+                {
+                    _logger.LogWarning($"Received an unknown world cluster packet 0x{packetHeaderNumber.ToString("X2")} from {Socket.RemoteEndPoint}.");
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"An error occured while handling a world cluster packet.");
+                _logger.LogDebug(exception.InnerException?.StackTrace);
+            }
         }
     }
 }
