@@ -12,7 +12,7 @@ namespace Rhisis.Cluster.WorldCluster
         private readonly IWorldClusterServer _worldClusterServer;
 
         /// <summary>
-        /// Creates a new <see cref="CoreServerService"/> instance.
+        /// Creates a new <see cref="WorldClusterServerService"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="worldClusterServer">Core server.</param>

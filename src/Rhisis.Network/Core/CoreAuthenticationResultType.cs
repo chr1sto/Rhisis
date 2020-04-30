@@ -8,7 +8,6 @@
         Success,
         FailedUnknownServer,
         FailedClusterExists,
-        FailedNoCluster,
         FailedWorldExists,
         FailedWrongPassword
     }

@@ -27,9 +27,9 @@ namespace Rhisis.Login
         /// </summary>
         /// <param name="logger">Logger</param>
         /// <param name="loginConfiguration">Login server configuration.</param>
-        /// <param name="iscConfiguration">ISC configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, IServiceProvider serviceProvider, IRhisisDatabase database)
+        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, 
+            IServiceProvider serviceProvider, IRhisisDatabase database)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;

@@ -15,7 +15,7 @@ namespace Rhisis.Core.Structures.Configuration
         /// </summary>
         [DataMember(Name = "host")]
         [DefaultValue("127.0.0.1")]
-        [Display(Name = "Core server host address", Order = 0)]
+        [Display(Name = "World cluster server host address", Order = 0)]
         public string Host { get; set; }
 
         /// <summary>
@@ -23,14 +23,14 @@ namespace Rhisis.Core.Structures.Configuration
         /// </summary>
         [DataMember(Name = "port")]
         [DefaultValue(28001)]
-        [Display(Name = "Core server listening port", Order = 1)]
+        [Display(Name = "World cluster listening port", Order = 1)]
         public int Port { get; set; }
 
         /// <summary>
         /// Get or sets the Inter-Server password.
         /// </summary>
         [DataMember(Name = "password")]
-        [Display(Name = "Core server password", Order = 3)]
+        [Display(Name = "World cluster server password", Order = 3)]
         [PasswordPropertyText]
         public string Password { get; set; }
     }

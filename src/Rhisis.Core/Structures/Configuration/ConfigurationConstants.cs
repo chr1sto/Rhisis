@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets the CoreServer configuration key.
         /// </summary>
-        public const string CoreServer = "core";
+        public const string CoreServer = "coreServer";
 
         /// <summary>
         /// Gets the LoginServer configuration key.
