@@ -1,4 +1,5 @@
-﻿using Rhisis.Network.Core;
+﻿using Rhisis.Cluster.WorldCluster.Server;
+using Rhisis.Network.Core;
 
 namespace Rhisis.Cluster.WorldCluster.Packets
 {
@@ -8,7 +9,7 @@ namespace Rhisis.Cluster.WorldCluster.Packets
         /// Sends a welcome packet to a client.
         /// </summary>
         /// <param name="client">Client.</param>
-        void SendWelcome(IWorldClusterServerClient client);
+        void SendHandshake(IWorldClusterServerClient client);
 
         /// <summary>
         /// Sends the authentication result to a client.

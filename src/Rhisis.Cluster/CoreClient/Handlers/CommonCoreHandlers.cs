@@ -70,36 +70,36 @@ namespace Rhisis.Cluster.CoreClient.Handlers
             Environment.Exit((int)authenticationResult);
         }
 
-        /// <summary>
-        /// Updates the cluster's world servers list.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="packet"></param>
-        [HandlerAction(CorePacketType.UpdateClusterWorldsList)]
-        public void OnUpdateClusterWorldsList(IClusterCoreClient _, INetPacketStream packet)
-        {
-            int numberOfWorldServers = packet.Read<int>();
-
-            _clusterServer.WorldServers.Clear();
-
-            for (var i = 0; i < numberOfWorldServers; ++i)
-            {
-                int serverId = packet.Read<int>();
-                string serverHost = packet.Read<string>();
-                string serverName = packet.Read<string>();
-                int serverPort = packet.Read<int>();
-                int parentClusterId = packet.Read<int>();
-
-                if (parentClusterId != _clusterServer.ClusterConfiguration.Id)
-                {
-                    _logger.LogCritical($"Cannot add server '{serverName}' to current cluster. Ids doesn't match.");
-                    continue;
-                }
-
-                var worldServer = new WorldServerInfo(serverId, serverName, serverHost, serverPort, parentClusterId);
-
-                _clusterServer.WorldServers.Add(worldServer);
-            }
-        }
+        // /// <summary>
+        // /// Updates the cluster's world servers list.
+        // /// </summary>
+        // /// <param name="client"></param>
+        // /// <param name="packet"></param>
+        // [HandlerAction(CorePacketType.UpdateClusterWorldsList)]
+        // public void OnUpdateClusterWorldsList(IClusterCoreClient _, INetPacketStream packet)
+        // {
+        //     int numberOfWorldServers = packet.Read<int>();
+        //
+        //     _clusterServer.WorldServers.Clear();
+        //
+        //     for (var i = 0; i < numberOfWorldServers; ++i)
+        //     {
+        //         int serverId = packet.Read<int>();
+        //         string serverHost = packet.Read<string>();
+        //         string serverName = packet.Read<string>();
+        //         int serverPort = packet.Read<int>();
+        //         int parentClusterId = packet.Read<int>();
+        //
+        //         if (parentClusterId != _clusterServer.ClusterConfiguration.Id)
+        //         {
+        //             _logger.LogCritical($"Cannot add server '{serverName}' to current cluster. Ids doesn't match.");
+        //             continue;
+        //         }
+        //
+        //         var worldServer = new WorldServerInfo(serverId, serverName, serverHost, serverPort, parentClusterId);
+        //
+        //         _clusterServer.WorldServers.Add(worldServer);
+        //     }
+        // }
     }
 }

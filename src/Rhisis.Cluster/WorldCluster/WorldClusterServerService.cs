@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Rhisis.Cluster.WorldCluster.Server;
 
 namespace Rhisis.Cluster.WorldCluster
 {

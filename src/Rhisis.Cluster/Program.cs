@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,7 +15,10 @@ using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.IO;
 using System.Threading.Tasks;
+using Rhisis.Cluster.Models;
 using Rhisis.Cluster.WorldCluster;
+using Rhisis.Cluster.WorldCluster.Packets;
+using Rhisis.Cluster.WorldCluster.Server;
 
 namespace Rhisis.Cluster
 {
@@ -49,16 +52,17 @@ namespace Rhisis.Cluster
                     services.AddSingleton<IWorldClusterServer, WorldClusterServer>();
                     services.AddSingleton<IWorldPacketFactory, WorldPacketFactory>();
                     services.AddSingleton<IHostedService, WorldClusterServerService>();
+                    services.AddSingleton<IWorldCache, WorldCache>();
 
                     // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();
                     services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
-                    services.AddSingleton<IHostedService, ClusterServerService>();
+                    // services.AddSingleton<IHostedService, ClusterServerService>();
 
                     // Core client configuration
                     services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
                     services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
-                    services.AddSingleton<IHostedService, ClusterCoreClientService>();
+                    // services.AddSingleton<IHostedService, ClusterCoreClientService>();
                 })
                 .ConfigureLogging(builder =>
                 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Cluster.Client;
@@ -8,12 +9,8 @@ using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Network;
-using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.Cluster
 {
@@ -31,9 +28,6 @@ namespace Rhisis.Cluster
 
         /// <inheritdoc />
         public ClusterConfiguration ClusterConfiguration { get; }
-
-        /// <inheritdoc />
-        public IList<WorldServerInfo> WorldServers { get; } = new List<WorldServerInfo>();
 
         /// <summary>
         /// Creates a new <see cref="ClusterServer"/> instance.
@@ -90,11 +84,6 @@ namespace Rhisis.Cluster
         protected override void OnClientDisconnected(ClusterClient client)
         {
             _logger.LogInformation($"Client disconnected from {client.Socket.RemoteEndPoint}.");
-        }
-
-        public WorldServerInfo GetWorldServerById(int id)
-        {
-            return WorldServers.SingleOrDefault(w => w.Id == id);
         }
     }
 }

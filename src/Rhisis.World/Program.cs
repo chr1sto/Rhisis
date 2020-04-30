@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,7 +45,7 @@ namespace Rhisis.World
 
                     // World server configuration
                     services.AddSingleton<IWorldServer, WorldServer>();
-                    services.AddSingleton<IHostedService, WorldServerService>();
+                    // services.AddSingleton<IHostedService, WorldServerService>();
 
                     // World cluster server client configuration
                     services.AddSingleton<IWorldClusterClient, WorldClusterClient>();

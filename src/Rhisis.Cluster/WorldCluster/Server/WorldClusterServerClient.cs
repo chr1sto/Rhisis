@@ -6,12 +6,14 @@ using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
 
-namespace Rhisis.Cluster.WorldCluster
+namespace Rhisis.Cluster.WorldCluster.Server
 {
     public class WorldClusterServerClient : NetServerClient, IWorldClusterServerClient
     {
         private ILogger<WorldClusterServerClient> _logger;
         private IHandlerInvoker _handlerInvoker;
+        
+        public WorldServerInfo ServerInfo { get; set; }
         
         public WorldClusterServerClient(Socket socketConnection) : base(socketConnection)
         {

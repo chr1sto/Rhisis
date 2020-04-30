@@ -48,13 +48,15 @@ namespace Rhisis.World.ClusterClient.Handlers
             switch (authenticationResult)
             {
                 case CoreAuthenticationResultType.Success:
-                    _logger.LogInformation("World Core client authenticated succesfully.");
+                    _logger.LogInformation("World server authenticated succesfully with parent cluster server.");
                     return;
-                case CoreAuthenticationResultType.FailedClusterExists:
-                    _logger.LogCritical("Unable to authenticate World Core client. Reason: an other Cluster server (with the same id) is already connected.");
-                    break;
                 case CoreAuthenticationResultType.FailedUnknownServer:
-                    _logger.LogCritical("Unable to authenticate World Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
+                    _logger.LogCritical("Unable to authenticate world server. " +
+                                        "Reason: world cluster server doesn't recognize this server. You probably have to update all servers.");
+                    break;
+                case CoreAuthenticationResultType.FailedWrongPassword:
+                    _logger.LogCritical("Unable to authenticate world server. " +
+                                        "Reason: wrong password.");
                     break;
                 default:
                     _logger.LogTrace("Core authentification result: {0}", authenticationResult);

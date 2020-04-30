@@ -19,10 +19,8 @@ namespace Rhisis.World.ClusterClient.Packets
                 packet.Write(config.Name);
                 packet.Write(config.Host);
                 packet.Write(config.Port);
-                packet.Write((byte)ServerType.World);
                 packet.Write(config.ClusterId);
-
-                // TODO: add more information to packet if needed.
+                packet.Write(client.WorldClusterClientConfiguration.Password);
                 client.Send(packet);
             }
         }
