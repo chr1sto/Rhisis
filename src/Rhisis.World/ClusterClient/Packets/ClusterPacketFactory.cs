@@ -14,7 +14,7 @@ namespace Rhisis.World.ClusterClient.Packets
             using (var packet = new NetPacket())
             {
                 var config = client.WorldServerConfiguration;
-                packet.Write((uint)WorldClusterPacketType.Authenticate);
+                packet.Write((uint)CorePacketType.Authenticate);
                 packet.Write(config.Id);
                 packet.Write(config.Name);
                 packet.Write(config.Host);

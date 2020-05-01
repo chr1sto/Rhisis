@@ -11,7 +11,7 @@ namespace Rhisis.Cluster.WorldCluster.Packets
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)WorldClusterPacketType.Handshake);
+                packet.Write((uint)CorePacketType.Welcome);
                 client.Send(packet);
             }
         }
@@ -21,7 +21,7 @@ namespace Rhisis.Cluster.WorldCluster.Packets
         {
             using (var packet = new NetPacket())
             {
-                packet.Write((uint)WorldClusterPacketType.AuthenticationResult);
+                packet.Write((uint)CorePacketType.AuthenticationResult);
                 packet.Write((uint)authenticationResultType);
                 client.Send(packet);
             }

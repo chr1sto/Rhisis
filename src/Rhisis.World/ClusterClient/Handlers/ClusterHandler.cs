@@ -29,7 +29,7 @@ namespace Rhisis.World.ClusterClient.Handlers
         /// </summary>
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(WorldClusterPacketType.Handshake)]
+        [HandlerAction(CorePacketType.Welcome)]
         public void OnWelcome(IWorldClusterClient client)
         {
             _clusterPacketFactory.SendAuthentication(client);
@@ -40,7 +40,7 @@ namespace Rhisis.World.ClusterClient.Handlers
         /// </summary>
         /// <param name="client">Client.</param>
         /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(WorldClusterPacketType.AuthenticationResult)]
+        [HandlerAction(CorePacketType.AuthenticationResult)]
         public void OnAuthenticationResult(IWorldClusterClient _, INetPacketStream packet)
         {
             var authenticationResult = (CoreAuthenticationResultType)(packet.Read<uint>());

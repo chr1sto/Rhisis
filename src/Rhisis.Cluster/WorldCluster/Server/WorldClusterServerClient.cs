@@ -43,14 +43,14 @@ namespace Rhisis.Cluster.WorldCluster.Server
             try
             {
                 packetHeaderNumber = packet.Read<uint>();
-                _handlerInvoker.Invoke((WorldClusterPacketType)packetHeaderNumber, this, packet);
+                _handlerInvoker.Invoke((CorePacketType)packetHeaderNumber, this, packet);
             }
             catch (ArgumentException)
             {
-                if (Enum.IsDefined(typeof(WorldClusterPacketType), packetHeaderNumber))
+                if (Enum.IsDefined(typeof(CorePacketType), packetHeaderNumber))
                 {
                     _logger.LogWarning("Received an unimplemented world cluster packet {0} (0x{1}) from {2}.",
-                        Enum.GetName(typeof(WorldClusterPacketType), packetHeaderNumber),
+                        Enum.GetName(typeof(CorePacketType), packetHeaderNumber),
                         packetHeaderNumber.ToString("X2"),
                         Socket.RemoteEndPoint);
                 }

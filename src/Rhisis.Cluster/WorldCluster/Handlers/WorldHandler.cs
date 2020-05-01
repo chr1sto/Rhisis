@@ -43,7 +43,7 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
             _clusterConfiguration = clusterServer.ClusterConfiguration;
         }
         
-        [HandlerAction(WorldClusterPacketType.Authenticate)]
+        [HandlerAction(CorePacketType.Authenticate)]
         public void OnAuthenticate(IWorldClusterServerClient client, INetPacketStream packet)
         {
             var id = packet.Read<int>();
