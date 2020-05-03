@@ -26,12 +26,12 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Handles a chat request.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="serverClient"></param>
         /// <param name="packet"></param>
         [HandlerAction(PacketType.CHAT)]
-        public void OnChat(IWorldClient client, ChatPacket packet)
+        public void OnChat(IWorldServerClient serverClient, ChatPacket packet)
         {
-            _chatSystem.Chat(client.Player, packet.Message);
+            _chatSystem.Chat(serverClient.Player, packet.Message);
         }
     }
 }

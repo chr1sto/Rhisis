@@ -1,10 +1,10 @@
 ﻿using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Network.Core;
+using Sylver.Network.Client;
 
-namespace Rhisis.World.CoreClient
+namespace Rhisis.World.ClusterClient
 {
-    public interface IWorldCoreClient : ICoreClient
+    public interface IWorldClusterClient : INetClient
     {
         /// <summary>
         /// Gets the world server configuration.
@@ -12,9 +12,9 @@ namespace Rhisis.World.CoreClient
         WorldConfiguration WorldServerConfiguration { get; }
 
         /// <summary>
-        /// Gets the core client configuration.
+        /// Gets the world cluster server configuration for the client to connect to.
         /// </summary>
-        CoreConfiguration CoreClientConfiguration { get; }
+        WorldClusterConfiguration WorldClusterClientConfiguration { get; }
 
         /// <summary>
         /// Gets the remote end point (IP and port) for this client.

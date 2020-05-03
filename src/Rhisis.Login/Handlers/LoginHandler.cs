@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
 using Rhisis.Core.Structures.Configuration;
@@ -10,10 +12,8 @@ using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
 using Sylver.HandlerInvoker.Attributes;
-using System;
-using System.Linq;
 
-namespace Rhisis.Login
+namespace Rhisis.Login.Handlers
 {
     [Handler]
     public class LoginHandler

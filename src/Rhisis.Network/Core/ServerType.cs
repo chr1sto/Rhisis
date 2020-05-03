@@ -101,5 +101,17 @@ namespace Rhisis.Network.Core
         {
             ParentClusterId = parentClusterId;
         }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return obj is WorldServerInfo wsi && Id.Equals(wsi.Id);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }

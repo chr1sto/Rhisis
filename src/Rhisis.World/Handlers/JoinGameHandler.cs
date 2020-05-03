@@ -39,10 +39,10 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Prepares the player to join the world.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming join packet.</param>
         [HandlerAction(PacketType.JOIN)]
-        public void OnJoin(IWorldClient client, JoinPacket packet)
+        public void OnJoin(IWorldServerClient serverClient, JoinPacket packet)
         {
             DbCharacter character = _database.Characters.Include(x => x.User).FirstOrDefault(x => x.Id == packet.PlayerId);
 
@@ -65,11 +65,11 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            client.Player = _playerFactory.CreatePlayer(character);
-            client.Player.Connection = client;
-            _worldSpawnPacketFactory.SendPlayerSpawn(client.Player);
-            client.Player.Object.Spawned = true;
-            client.Player.PlayerData.LoggedInAt = DateTime.UtcNow;
+            serverClient.Player = _playerFactory.CreatePlayer(character);
+            serverClient.Player.Connection = serverClient;
+            _worldSpawnPacketFactory.SendPlayerSpawn(serverClient.Player);
+            serverClient.Player.Object.Spawned = true;
+            serverClient.Player.PlayerData.LoggedInAt = DateTime.UtcNow;
         }
     }
 }

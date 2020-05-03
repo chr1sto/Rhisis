@@ -15,6 +15,10 @@ using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.IO;
 using System.Threading.Tasks;
+using Rhisis.Cluster.WorldCluster;
+using Rhisis.Cluster.WorldCluster.Packets;
+using Rhisis.Cluster.WorldCluster.Server;
+using Rhisis.Network.Core;
 
 namespace Rhisis.Cluster
 {
@@ -37,21 +41,28 @@ namespace Rhisis.Cluster
                     services.AddMemoryCache();
 
                     services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.ClusterServer));
+                    services.Configure<WorldClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.WorldClusterServer));
                     services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-                    
+
                     services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddGameResources();
-
-                    // Core client configuration
-                    services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
-                    services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
-                    services.AddSingleton<IHostedService, ClusterCoreClientService>();
+                    
+                    // World cluster server configuration
+                    services.AddSingleton<IWorldClusterServer, WorldClusterServer>();
+                    services.AddSingleton<IWorldPacketFactory, WorldPacketFactory>();
+                    services.AddSingleton<IHostedService, WorldClusterServerService>();
+                    services.AddSingleton<ICache<int, WorldServerInfo>, WorldCache>();
 
                     // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();
                     services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
                     services.AddSingleton<IHostedService, ClusterServerService>();
+
+                    // Core client configuration
+                    services.AddSingleton<IClusterCoreClient, ClusterCoreClient>();
+                    services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
+                    services.AddSingleton<IHostedService, ClusterCoreClientService>();
                 })
                 .ConfigureLogging(builder =>
                 {

@@ -15,6 +15,7 @@ using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Cluster.WorldCluster.Server;
 
 namespace Rhisis.Cluster.Handlers
 {
@@ -24,6 +25,7 @@ namespace Rhisis.Cluster.Handlers
         private readonly ILogger<CharacterHandler> _logger;
         private readonly IRhisisDatabase _database;
         private readonly IClusterServer _clusterServer;
+        private readonly ICache<int, WorldServerInfo> _worldCache;
         private readonly IGameResources _gameResources;
         private readonly IClusterPacketFactory _clusterPacketFactory;
 
@@ -35,13 +37,16 @@ namespace Rhisis.Cluster.Handlers
         /// <param name="clusterServer">Cluster server instance.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="clusterPacketFactory">Cluster server packet factory.</param>
-        public CharacterHandler(ILogger<CharacterHandler> logger, IRhisisDatabase database, IClusterServer clusterServer, IGameResources gameResources, IClusterPacketFactory clusterPacketFactory)
+        /// <param name="worldCache">World server information cache</param>
+        public CharacterHandler(ILogger<CharacterHandler> logger, IRhisisDatabase database, IClusterServer clusterServer, 
+            IGameResources gameResources, IClusterPacketFactory clusterPacketFactory, ICache<int, WorldServerInfo> worldCache)
         {
             _logger = logger;
             _database = database;
             _clusterServer = clusterServer;
             _gameResources = gameResources;
             _clusterPacketFactory = clusterPacketFactory;
+            _worldCache = worldCache;
         }
 
         /// <summary>
@@ -52,7 +57,7 @@ namespace Rhisis.Cluster.Handlers
         [HandlerAction(PacketType.GETPLAYERLIST)]
         public void OnGetPlayerList(IClusterClient client, GetPlayerListPacket packet)
         {
-            WorldServerInfo selectedWorldServer = _clusterServer.GetWorldServerById(packet.ServerId);
+            WorldServerInfo selectedWorldServer = _worldCache.TryGetOrDefault(packet.ServerId);
 
             if (selectedWorldServer == null)
             {

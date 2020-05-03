@@ -26,33 +26,30 @@ namespace Rhisis.CLI.Commands.Configure
         private string ConfigurationFile => !string.IsNullOrEmpty(ClusterConfigurationFile) ? ClusterConfigurationFile : ConfigurationConstants.ClusterServerPath;
 
         /// <summary>
-        /// Creates a new <see cref="ClusterServerConfigurationCommand"/> instance.
-        /// </summary>
-        /// <param name="consoleHelper">Console helpers.</param>
-        public ClusterServerConfigurationCommand(ConsoleHelper consoleHelper)
-        {
-            _consoleHelper = consoleHelper;
-        }
-
-        /// <summary>
         /// Executes the "configure cluster" command.
         /// </summary>
         public void OnExecute()
         {
             var clusterServerConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(ConfigurationFile, ConfigurationConstants.ClusterServer);
-            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
+            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
+            var worldClusterServerConfiguration = ConfigurationHelper.Load<WorldClusterConfiguration>(ConfigurationFile, ConfigurationConstants.WorldClusterServer);
             var clusterConfiguration = new ObjectConfigurationFiller<ClusterConfiguration>(clusterServerConfiguration);
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
+            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
+            var worldClusterConfiguration = new ObjectConfigurationFiller<WorldClusterConfiguration>(worldClusterServerConfiguration);
 
-            Console.WriteLine("----- Cluster Server -----");
-            clusterConfiguration.Fill();
             Console.WriteLine("----- Core Server -----");
             coreConfiguration.Fill();
             coreConfiguration.Value.Password = MD5.GetMD5Hash(coreConfiguration.Value.Password);
+            
+            Console.WriteLine("----- Cluster Server -----");
+            clusterConfiguration.Fill();
+            worldClusterConfiguration.Fill();
+            worldClusterConfiguration.Value.Password = MD5.GetMD5Hash(worldClusterConfiguration.Value.Password);
 
             Console.WriteLine("##### Configuration review #####");
-            clusterConfiguration.Show("Cluster Server configuration");
             coreConfiguration.Show("Core server configuration");
+            clusterConfiguration.Show("Cluster Server configuration");
+            worldClusterConfiguration.Show("World cluster server configuration");
 
             bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
@@ -61,12 +58,22 @@ namespace Rhisis.CLI.Commands.Configure
                 var configuration = new Dictionary<string, object>
                 {
                     { ConfigurationConstants.ClusterServer, clusterConfiguration.Value },
+                    { ConfigurationConstants.WorldClusterServer, worldClusterConfiguration.Value },
                     { ConfigurationConstants.CoreServer, coreConfiguration.Value }
                 };
 
                 ConfigurationHelper.Save(ConfigurationFile, configuration);
                 Console.WriteLine($"Cluster Server configuration saved in {ConfigurationFile}!");
             }
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ClusterServerConfigurationCommand"/> instance.
+        /// </summary>
+        /// <param name="consoleHelper">Console helpers.</param>
+        public ClusterServerConfigurationCommand(ConsoleHelper consoleHelper)
+        {
+            _consoleHelper = consoleHelper;
         }
     }
 }

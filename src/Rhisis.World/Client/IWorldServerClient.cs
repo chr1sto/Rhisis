@@ -3,7 +3,7 @@ using Sylver.Network.Common;
 
 namespace Rhisis.World.Client
 {
-    public interface IWorldClient : INetUser
+    public interface IWorldServerClient : INetUser
     {
         /// <summary>
         /// Gets the ID assigned to this session.

@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets the CoreServer configuration key.
         /// </summary>
-        public const string CoreServer = "core";
+        public const string CoreServer = "coreServer";
 
         /// <summary>
         /// Gets the LoginServer configuration key.
@@ -34,6 +34,11 @@
         /// Gets the WorldServer configuration key.
         /// </summary>
         public const string WorldServer = "worldServer";
+        
+        /// <summary>
+        /// Gets the WorldClusterServer configuration key.
+        /// </summary>
+        public const string WorldClusterServer = "worldClusterServer";
 
         /// <summary>
         /// Gets the WorldServer configuration file path.

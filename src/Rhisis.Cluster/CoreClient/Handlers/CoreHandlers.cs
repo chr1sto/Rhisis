@@ -4,27 +4,32 @@ using Rhisis.Network.Core;
 using Sylver.HandlerInvoker.Attributes;
 using Sylver.Network.Data;
 using System;
+using Rhisis.Cluster.WorldCluster.Server;
+using Rhisis.Core.Resources;
 
 namespace Rhisis.Cluster.CoreClient.Handlers
 {
     [Handler]
-    public sealed class CommonCoreHandlers
+    public sealed class CoreHandlers
     {
-        private readonly ILogger<CommonCoreHandlers> _logger;
+        private readonly ILogger<CoreHandlers> _logger;
         private readonly ICorePacketFactory _corePacketFactory;
         private readonly IClusterServer _clusterServer;
+        private readonly ICache<int, WorldServerInfo> _worldCache;
 
         /// <summary>
-        /// Creates a new <see cref="CommonCoreHandlers"/> instance.
+        /// Creates a new <see cref="CoreHandlers"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="corePacketFactory">Core packet factory.</param>
         /// <param name="clusterServer">Cluster server instance.</param>
-        public CommonCoreHandlers(ILogger<CommonCoreHandlers> logger, ICorePacketFactory corePacketFactory, IClusterServer clusterServer)
-        {
+        /// <param name="worldCache">Stores world server information</param>
+        public CoreHandlers(ILogger<CoreHandlers> logger, ICorePacketFactory corePacketFactory,
+            IClusterServer clusterServer, ICache<int, WorldServerInfo> worldCache) {
             _logger = logger;
             _corePacketFactory = corePacketFactory;
             _clusterServer = clusterServer;
+            _worldCache = worldCache;
         }
 
         /// <summary>
@@ -43,15 +48,18 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         /// <param name="client"></param>
         /// <param name="packet"></param>
         [HandlerAction(CorePacketType.AuthenticationResult)]
-        public void OnAuthenticationResult(IClusterCoreClient _, INetPacketStream packet)
+        public void OnAuthenticationResult(IClusterCoreClient client, INetPacketStream packet)
         {
             var authenticationResult = (CoreAuthenticationResultType)(packet.Read<uint>());
 
             switch (authenticationResult)
             {
                 case CoreAuthenticationResultType.Success:
-                    _logger.LogInformation("Cluster Core client authenticated succesfully.");
+                {
+                    _logger.LogInformation("Cluster Core client authenticated successfully.");
+                    _corePacketFactory.SendUpdateWorldList(client, _worldCache.Items);
                     return;
+                }
                 case CoreAuthenticationResultType.FailedClusterExists:
                     _logger.LogCritical("Unable to authenticate Cluster Core client. Reason: an other Cluster server (with the same id) is already connected.");
                     break;
@@ -59,7 +67,7 @@ namespace Rhisis.Cluster.CoreClient.Handlers
                     _logger.LogCritical("Unable to authenticate Cluster Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
                     break;
                 default:
-                    _logger.LogTrace("Core authentification result: {0}", authenticationResult);
+                    _logger.LogTrace("Cluster core authentication result: {0}", authenticationResult);
                     _logger.LogCritical("Unable to authenticate Cluster Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
                     break;
             }
@@ -68,38 +76,6 @@ namespace Rhisis.Cluster.CoreClient.Handlers
                 Console.ReadLine();
 
             Environment.Exit((int)authenticationResult);
-        }
-
-        /// <summary>
-        /// Updates the cluster's world servers list.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="packet"></param>
-        [HandlerAction(CorePacketType.UpdateClusterWorldsList)]
-        public void OnUpdateClusterWorldsList(IClusterCoreClient _, INetPacketStream packet)
-        {
-            int numberOfWorldServers = packet.Read<int>();
-
-            _clusterServer.WorldServers.Clear();
-
-            for (var i = 0; i < numberOfWorldServers; ++i)
-            {
-                int serverId = packet.Read<int>();
-                string serverHost = packet.Read<string>();
-                string serverName = packet.Read<string>();
-                int serverPort = packet.Read<int>();
-                int parentClusterId = packet.Read<int>();
-
-                if (parentClusterId != _clusterServer.ClusterConfiguration.Id)
-                {
-                    _logger.LogCritical($"Cannot add server '{serverName}' to current cluster. Ids doesn't match.");
-                    continue;
-                }
-
-                var worldServer = new WorldServerInfo(serverId, serverName, serverHost, serverPort, parentClusterId);
-
-                _clusterServer.WorldServers.Add(worldServer);
-            }
         }
     }
 }

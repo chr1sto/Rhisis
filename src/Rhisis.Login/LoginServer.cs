@@ -22,17 +22,14 @@ namespace Rhisis.Login
         private readonly IServiceProvider _serviceProvider;
         private readonly IRhisisDatabase _database;
 
-        /// <inheritdoc />
-        //protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
-
         /// <summary>
         /// Creates a new <see cref="LoginServer"/> instance.
         /// </summary>
         /// <param name="logger">Logger</param>
         /// <param name="loginConfiguration">Login server configuration.</param>
-        /// <param name="iscConfiguration">ISC configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, IServiceProvider serviceProvider, IRhisisDatabase database)
+        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, 
+            IServiceProvider serviceProvider, IRhisisDatabase database)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;
@@ -76,16 +73,10 @@ namespace Rhisis.Login
         protected override void OnClientDisconnected(LoginClient client)
         {
             if (string.IsNullOrEmpty(client.Username))
-                _logger.LogInformation($"Unknwon client disconnected from {client.Socket.RemoteEndPoint}.");
+                _logger.LogInformation($"Unknown client disconnected from {client.Socket.RemoteEndPoint}.");
             else
                 _logger.LogInformation($"Client '{client.Username}' disconnected from {client.Socket.RemoteEndPoint}.");
         }
-
-        /// <inheritdoc />
-        //protected override void OnError(Exception exception)
-        //{
-        //    this._logger.LogInformation($"{nameof(LoginServer)} socket error: {exception.Message}");
-        //}
 
         /// <inheritdoc />
         public ILoginClient GetClientByUsername(string username)

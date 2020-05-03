@@ -23,7 +23,7 @@ namespace Rhisis.World.Handlers
         }
 
         [HandlerAction(PacketType.QUEST_CHECK)]
-        public void OnQuestCheck(IWorldClient client, QuestCheckPacket questCheckPacket)
+        public void OnQuestCheck(IWorldServerClient serverClient, QuestCheckPacket questCheckPacket)
         {
             if (questCheckPacket.QuestId <= 0)
             {
@@ -31,7 +31,7 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            _questSystem.CheckQuest(client.Player, questCheckPacket.QuestId, questCheckPacket.Checked);
+            _questSystem.CheckQuest(serverClient.Player, questCheckPacket.QuestId, questCheckPacket.Checked);
         }
     }
 }

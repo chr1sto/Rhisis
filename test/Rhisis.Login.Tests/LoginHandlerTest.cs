@@ -13,6 +13,7 @@ using Sylver.HandlerInvoker;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using Rhisis.Login.Handlers;
 using Xunit;
 using Rhisis.Testing.Abstract;
 

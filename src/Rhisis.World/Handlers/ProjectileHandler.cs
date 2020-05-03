@@ -29,12 +29,12 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Indicates that a projectile has been fired.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Projectile packet.</param>
         [HandlerAction(PacketType.SFX_ID)]
-        public void OnProjectileLaunched(IWorldClient client, SfxIdPacket packet)
+        public void OnProjectileLaunched(IWorldServerClient serverClient, SfxIdPacket packet)
         {
-            var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(client.Player, packet.IdSfxHit);
+            var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(serverClient.Player, packet.IdSfxHit);
 
             if (projectile != null)
             {
@@ -42,19 +42,19 @@ namespace Rhisis.World.Handlers
 
                 if (projectile.Target.Id != packet.TargetId)
                 {
-                    _logger.LogError($"Invalid projectile target for '{client.Player}'");
+                    _logger.LogError($"Invalid projectile target for '{serverClient.Player}'");
                     isProjectileValid = false;
                 }
 
                 if (projectile.Type != (AttackFlags)packet.Type)
                 {
-                    _logger.LogError($"Invalid projectile type for '{client.Player}'");
+                    _logger.LogError($"Invalid projectile type for '{serverClient.Player}'");
                     isProjectileValid = false;
                 }
 
                 if (!isProjectileValid)
                 {
-                    _projectileSystem.RemoveProjectile(client.Player, packet.IdSfxHit);
+                    _projectileSystem.RemoveProjectile(serverClient.Player, packet.IdSfxHit);
                 }
             }
         }
@@ -62,12 +62,12 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Indicates that a projectile has arrivied and hit its target.
         /// </summary>
-        /// <param name="client">Current client.</param>
+        /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Projectile hit packet.</param>
         [HandlerAction(PacketType.SFX_HIT)]
-        public void OnProjectileArrived(IWorldClient client, SfxHitPacket packet)
+        public void OnProjectileArrived(IWorldServerClient serverClient, SfxHitPacket packet)
         {
-            var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(client.Player, packet.Id);
+            var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(serverClient.Player, packet.Id);
 
             if (projectile != null)
             {
@@ -75,11 +75,11 @@ namespace Rhisis.World.Handlers
 
                 if (projectile.Type == AttackFlags.AF_MAGIC && projectile is MagicProjectileInfo magicProjectile)
                 {
-                    isProjectileValid = packet.AttackerId == client.Player.Id && packet.MagicPower == magicProjectile.MagicPower;
+                    isProjectileValid = packet.AttackerId == serverClient.Player.Id && packet.MagicPower == magicProjectile.MagicPower;
                 }
                 else if (projectile.Type == AttackFlags.AF_MAGICSKILL && projectile is MagicSkillProjectileInfo magicSkillProjectile)
                 {
-                    isProjectileValid = packet.AttackerId == client.Player.Id && packet.SkillId == magicSkillProjectile.Skill.SkillId;
+                    isProjectileValid = packet.AttackerId == serverClient.Player.Id && packet.SkillId == magicSkillProjectile.Skill.SkillId;
                 }
                 else if (projectile.Type == AttackFlags.AF_RANGE)
                 {
@@ -93,12 +93,12 @@ namespace Rhisis.World.Handlers
                 }
                 else
                 {
-                    _logger.LogError($"Invalid projectile information for player '{client.Player}'.");
+                    _logger.LogError($"Invalid projectile information for player '{serverClient.Player}'.");
                 }
             }
             else
             {
-                _logger.LogError($"Cannot find projectile with id '{packet.Id}' for '{client.Player}'.");
+                _logger.LogError($"Cannot find projectile with id '{packet.Id}' for '{serverClient.Player}'.");
             }
         }
     }

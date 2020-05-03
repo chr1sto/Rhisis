@@ -42,12 +42,12 @@ namespace Rhisis.Login
                     // Login Server
                     services.AddSingleton<ILoginServer, LoginServer>();
                     services.AddSingleton<ILoginPacketFactory, LoginPacketFactory>();
-                    services.AddSingleton<IHostedService, LoginServerService>(); // LoginServer service starting the server
+                    services.AddSingleton<IHostedService, LoginServerService>();
 
                     // Core Server
                     services.AddSingleton<ICoreServer, CoreServer>();
                     services.AddSingleton<ICorePacketFactory, CorePacketFactory>();
-                    services.AddSingleton<IHostedService, CoreServerService>(); // CoreServer service starting the core server
+                    services.AddSingleton<IHostedService, CoreServerService>();
                 })
                 .ConfigureLogging(builder =>
                 {

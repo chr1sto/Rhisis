@@ -1,20 +1,20 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
-namespace Rhisis.World.CoreClient
+namespace Rhisis.World.ClusterClient
 {
-    public sealed class WorldCoreClientService : IHostedService
+    public sealed class WorldClusterClientService : IHostedService
     {
-        private readonly IWorldCoreClient _worldCoreClient;
+        private readonly IWorldClusterClient _worldClusterClient;
 
         /// <summary>
-        /// Creates a new <see cref="WorldCoreClientService"/> instance.
+        /// Creates a new <see cref="WorldClusterClientService"/> instance.
         /// </summary>
-        /// <param name="worldCoreClient">World core client.</param>
-        public WorldCoreClientService(IWorldCoreClient worldCoreClient)
+        /// <param name="worldClusterClient">World core client.</param>
+        public WorldClusterClientService(IWorldClusterClient worldClusterClient)
         {
-            _worldCoreClient = worldCoreClient;
+            _worldClusterClient = worldClusterClient;
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Rhisis.World.CoreClient
         /// <returns></returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _worldCoreClient.Connect();
+            _worldClusterClient.Connect();
 
             return Task.CompletedTask;
         }
@@ -36,7 +36,7 @@ namespace Rhisis.World.CoreClient
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _worldCoreClient.Disconnect();
+            _worldClusterClient.Disconnect();
 
             return Task.CompletedTask;
         }

@@ -8,6 +8,6 @@ namespace Rhisis.World.Packets
         /// Sends a welcome packet to the client.
         /// </summary>
         /// <param name="player">Current client.</param>
-        void SendWelcome(IWorldClient client, uint sessionId);
+        void SendWelcome(IWorldServerClient serverClient, uint sessionId);
     }
 }

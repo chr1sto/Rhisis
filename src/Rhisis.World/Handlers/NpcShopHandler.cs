@@ -23,32 +23,32 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Player requests to open a NPC shop.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.OPENSHOPWND)]
-        public void OnOpenShopWindow(IWorldClient client, OpenShopWindowPacket packet)
+        public void OnOpenShopWindow(IWorldServerClient serverClient, OpenShopWindowPacket packet)
         {
-            _npcShopSystem.OpenShop(client.Player, packet.ObjectId);
+            _npcShopSystem.OpenShop(serverClient.Player, packet.ObjectId);
         }
 
         /// <summary>
         /// Player closes a opened NPC shop.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.CLOSESHOPWND)]
-        public void OnCloseShopWindow(IWorldClient client)
+        public void OnCloseShopWindow(IWorldServerClient serverClient)
         {
-            _npcShopSystem.CloseShop(client.Player);
+            _npcShopSystem.CloseShop(serverClient.Player);
         }
 
         /// <summary>
         /// Player buys an item from a NPC shop.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.BUYITEM)]
-        public void OnBuyItem(IWorldClient client, BuyItemPacket packet)
+        public void OnBuyItem(IWorldServerClient serverClient, BuyItemPacket packet)
         {
             var npcShopItem = new NpcShopItemInfo
             {
@@ -57,18 +57,18 @@ namespace Rhisis.World.Handlers
                 Tab = packet.Tab
             };
 
-            _npcShopSystem.BuyItem(client.Player, npcShopItem, packet.Quantity);
+            _npcShopSystem.BuyItem(serverClient.Player, npcShopItem, packet.Quantity);
         }
 
         /// <summary>
         /// Player sells an item at a NPC shop.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.SELLITEM)]
-        public void OnSellItem(IWorldClient client, SellItemPacket packet)
+        public void OnSellItem(IWorldServerClient serverClient, SellItemPacket packet)
         {
-            _npcShopSystem.SellItem(client.Player, packet.ItemUniqueId, packet.Quantity);
+            _npcShopSystem.SellItem(serverClient.Player, packet.ItemUniqueId, packet.Quantity);
         }
     }
 }

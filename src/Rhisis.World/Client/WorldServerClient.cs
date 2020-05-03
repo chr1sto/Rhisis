@@ -11,9 +11,9 @@ using System.Net.Sockets;
 
 namespace Rhisis.World.Client
 {
-    public sealed class WorldClient : NetServerClient, IWorldClient
+    public sealed class WorldServerClient : NetServerClient, IWorldServerClient
     {
-        private ILogger<WorldClient> _logger;
+        private ILogger<WorldServerClient> _logger;
         private IHandlerInvoker _handlerInvoker;
 
         /// <inheritdoc />
@@ -23,10 +23,10 @@ namespace Rhisis.World.Client
         public IPlayerEntity Player { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="WorldClient"/> instance.
+        /// Creates a new <see cref="WorldServerClient"/> instance.
         /// </summary>
         /// <param name="socketConnection">Socket connectin.</param>
-        public WorldClient(Socket socketConnection)
+        public WorldServerClient(Socket socketConnection)
             : base(socketConnection)
         {
             SessionId = RandomHelper.GenerateSessionKey();
@@ -35,7 +35,7 @@ namespace Rhisis.World.Client
         /// <summary>
         /// Initialize the client and send welcome packet.
         /// </summary>
-        public void Initialize(ILogger<WorldClient> logger, IHandlerInvoker handlerInvoker, IWorldServerPacketFactory worldServerPacketFactory)
+        public void Initialize(ILogger<WorldServerClient> logger, IHandlerInvoker handlerInvoker, IWorldServerPacketFactory worldServerPacketFactory)
         {
             _logger = logger;
             _handlerInvoker = handlerInvoker;
@@ -50,7 +50,7 @@ namespace Rhisis.World.Client
 
             if (Socket == null)
             {
-                _logger.LogTrace($"Skip to handle world packet from null socket. Reason: {nameof(WorldClient)} is not connected.");
+                _logger.LogTrace($"Skip to handle world packet from null socket. Reason: {nameof(WorldServerClient)} is not connected.");
                 return;
             }
 

@@ -25,16 +25,16 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Handles the destination position snapshot.
         /// </summary>
-        /// <param name="client">Client.</param>
+        /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(SnapshotType.DESTPOS)]
-        public void OnSnapshotSetDestPosition(IWorldClient client, SetDestPositionPacket packet)
+        public void OnSnapshotSetDestPosition(IWorldServerClient serverClient, SetDestPositionPacket packet)
         {
-            client.Player.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
-            client.Player.Moves.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
-            client.Player.Follow.Reset();
+            serverClient.Player.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
+            serverClient.Player.Moves.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
+            serverClient.Player.Follow.Reset();
 
-            _moverPacketFactory.SendDestinationPosition(client.Player);
+            _moverPacketFactory.SendDestinationPosition(serverClient.Player);
         }
     }
 }

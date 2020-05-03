@@ -42,9 +42,9 @@ namespace Rhisis.CLI.Commands.Configure
         public void OnExecute()
         {
             var worldServerConfiguration = ConfigurationHelper.Load<WorldConfiguration>(ConfigurationFile, ConfigurationConstants.WorldServer);
-            var coreServerConfiguratinon = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
+            var worldClusterConfiguration = ConfigurationHelper.Load<WorldClusterConfiguration>(ConfigurationFile, ConfigurationConstants.WorldClusterServer);
             var worldConfiguration = new ObjectConfigurationFiller<WorldConfiguration>(worldServerConfiguration);
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguratinon);
+            var worldClusterServerConfiguration = new ObjectConfigurationFiller<WorldClusterConfiguration>(worldClusterConfiguration);
 
             Console.WriteLine("----- World Server -----");
             worldConfiguration.Fill();
@@ -54,13 +54,13 @@ namespace Rhisis.CLI.Commands.Configure
                 "WI_DUNGEON_FL_MAS"
             };
 
-            Console.WriteLine("----- Core Server -----");
-            coreConfiguration.Fill();
-            coreConfiguration.Value.Password = MD5.GetMD5Hash(coreConfiguration.Value.Password);
+            Console.WriteLine("----- World cluster Server -----");
+            worldClusterServerConfiguration.Fill();
+            worldClusterServerConfiguration.Value.Password = MD5.GetMD5Hash(worldClusterServerConfiguration.Value.Password);
 
             Console.WriteLine("##### Configuration review #####");
             worldConfiguration.Show("World Server configuration");
-            coreConfiguration.Show("Core server configuration");
+            worldClusterServerConfiguration.Show("World cluster configuration");
 
             bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
@@ -69,7 +69,7 @@ namespace Rhisis.CLI.Commands.Configure
                 var configuration = new Dictionary<string, object>
                 {
                     { ConfigurationConstants.WorldServer, worldConfiguration.Value },
-                    { ConfigurationConstants.CoreServer, coreConfiguration.Value }
+                    { ConfigurationConstants.WorldClusterServer, worldClusterServerConfiguration.Value }
                 };
 
                 ConfigurationHelper.Save(ConfigurationFile, configuration);

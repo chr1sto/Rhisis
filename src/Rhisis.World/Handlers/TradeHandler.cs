@@ -17,51 +17,51 @@ namespace Rhisis.World.Handlers
         }
 
         [HandlerAction(PacketType.CONFIRMTRADE)]
-        public void OnTradeRequest(IWorldClient client, TradeRequestPacket packet)
+        public void OnTradeRequest(IWorldServerClient serverClient, TradeRequestPacket packet)
         {
-            _tradeSystem.RequestTrade(client.Player, packet.TargetId);
+            _tradeSystem.RequestTrade(serverClient.Player, packet.TargetId);
         }
 
         [HandlerAction(PacketType.CONFIRMTRADECANCEL)]
-        public void OnTradeRequestCancel(IWorldClient client, TradeRequestPacket packet)
+        public void OnTradeRequestCancel(IWorldServerClient serverClient, TradeRequestPacket packet)
         {
-            _tradeSystem.DeclineTradeRequest(client.Player, packet.TargetId);
+            _tradeSystem.DeclineTradeRequest(serverClient.Player, packet.TargetId);
         }
 
         [HandlerAction(PacketType.TRADE)]
-        public void OnTrade(IWorldClient client, TradeRequestPacket packet)
+        public void OnTrade(IWorldServerClient serverClient, TradeRequestPacket packet)
         {
-            _tradeSystem.StartTrade(client.Player, packet.TargetId);
+            _tradeSystem.StartTrade(serverClient.Player, packet.TargetId);
         }
 
         [HandlerAction(PacketType.TRADEPUT)]
-        public void OnTradePut(IWorldClient client, TradePutPacket packet)
+        public void OnTradePut(IWorldServerClient serverClient, TradePutPacket packet)
         {
-            _tradeSystem.PutItem(client.Player, packet.ItemUniqueId, packet.Count, packet.ItemType, packet.Position);
+            _tradeSystem.PutItem(serverClient.Player, packet.ItemUniqueId, packet.Count, packet.ItemType, packet.Position);
         }
 
         [HandlerAction(PacketType.TRADEPUTGOLD)]
-        public void OnTradePutGold(IWorldClient client, TradePutGoldPacket packet)
+        public void OnTradePutGold(IWorldServerClient serverClient, TradePutGoldPacket packet)
         {
-            _tradeSystem.PutGold(client.Player, packet.Gold);
+            _tradeSystem.PutGold(serverClient.Player, packet.Gold);
         }
 
         [HandlerAction(PacketType.TRADECANCEL)]
-        public void OnTradeCancel(IWorldClient client, TradeCancelPacket packet)
+        public void OnTradeCancel(IWorldServerClient serverClient, TradeCancelPacket packet)
         {
-            _tradeSystem.CancelTrade(client.Player, packet.Mode);
+            _tradeSystem.CancelTrade(serverClient.Player, packet.Mode);
         }
 
         [HandlerAction(PacketType.TRADEOK)]
-        public void OnTradeOk(IWorldClient client)
+        public void OnTradeOk(IWorldServerClient serverClient)
         {
-            _tradeSystem.ConfirmTrade(client.Player);
+            _tradeSystem.ConfirmTrade(serverClient.Player);
         }
 
         [HandlerAction(PacketType.TRADECONFIRM)]
-        public void OnTradeConfirm(IWorldClient client)
+        public void OnTradeConfirm(IWorldServerClient serverClient)
         {
-            _tradeSystem.LastConfirmTrade(client.Player);
+            _tradeSystem.LastConfirmTrade(serverClient.Player);
         }
     }
 }
