@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Network.Core;
 using Sylver.Network.Data;
 
@@ -13,7 +14,7 @@ namespace Rhisis.World.ClusterClient.Packets
         {
             using (var packet = new NetPacket())
             {
-                var config = client.WorldServerConfiguration;
+                WorldConfiguration config = client.WorldServerConfiguration;
                 packet.Write((uint)CorePacketType.Authenticate);
                 packet.Write(config.Id);
                 packet.Write(config.Name);

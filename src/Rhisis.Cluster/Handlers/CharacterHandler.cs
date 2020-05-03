@@ -25,7 +25,7 @@ namespace Rhisis.Cluster.Handlers
         private readonly ILogger<CharacterHandler> _logger;
         private readonly IRhisisDatabase _database;
         private readonly IClusterServer _clusterServer;
-        private readonly IWorldClusterServer _worldClusterServer;
+        private readonly ICache<int, WorldServerInfo> _worldCache;
         private readonly IGameResources _gameResources;
         private readonly IClusterPacketFactory _clusterPacketFactory;
 
@@ -39,14 +39,14 @@ namespace Rhisis.Cluster.Handlers
         /// <param name="clusterPacketFactory">Cluster server packet factory.</param>
         /// <param name="worldCache">World server information cache</param>
         public CharacterHandler(ILogger<CharacterHandler> logger, IRhisisDatabase database, IClusterServer clusterServer, 
-            IGameResources gameResources, IClusterPacketFactory clusterPacketFactory, IWorldClusterServer worldClusterServer)
+            IGameResources gameResources, IClusterPacketFactory clusterPacketFactory, ICache<int, WorldServerInfo> worldCache)
         {
             _logger = logger;
             _database = database;
             _clusterServer = clusterServer;
             _gameResources = gameResources;
             _clusterPacketFactory = clusterPacketFactory;
-            _worldClusterServer = worldClusterServer;
+            _worldCache = worldCache;
         }
 
         /// <summary>
@@ -57,8 +57,7 @@ namespace Rhisis.Cluster.Handlers
         [HandlerAction(PacketType.GETPLAYERLIST)]
         public void OnGetPlayerList(IClusterClient client, GetPlayerListPacket packet)
         {
-            WorldServerInfo selectedWorldServer = _worldClusterServer.Worlds
-                .SingleOrDefault(w => w.Id == packet.ServerId);
+            WorldServerInfo selectedWorldServer = _worldCache.TryGetOrDefault(packet.ServerId);
 
             if (selectedWorldServer == null)
             {

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Rhisis.Cluster.WorldCluster;
 using Rhisis.Cluster.WorldCluster.Packets;
 using Rhisis.Cluster.WorldCluster.Server;
+using Rhisis.Network.Core;
 
 namespace Rhisis.Cluster
 {
@@ -51,6 +52,7 @@ namespace Rhisis.Cluster
                     services.AddSingleton<IWorldClusterServer, WorldClusterServer>();
                     services.AddSingleton<IWorldPacketFactory, WorldPacketFactory>();
                     services.AddSingleton<IHostedService, WorldClusterServerService>();
+                    services.AddSingleton<ICache<int, WorldServerInfo>, WorldCache>();
 
                     // Cluster server configuration
                     services.AddSingleton<IClusterServer, ClusterServer>();

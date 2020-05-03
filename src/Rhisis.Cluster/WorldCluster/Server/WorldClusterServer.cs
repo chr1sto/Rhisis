@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Rhisis.Cluster.CoreClient;
 using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Cluster.WorldCluster.Packets;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
@@ -26,11 +27,9 @@ namespace Rhisis.Cluster.WorldCluster.Server
         private readonly ICorePacketFactory _corePacketFactory;
         private readonly IClusterCoreClient _clusterCoreClient;
 
-        public WorldClusterConfiguration WorldClusterConfiguration { get; }
+        private readonly ICache<int, WorldServerInfo> _worldCache;
 
-        public IEnumerable<WorldServerInfo> Worlds => Clients
-            .Where(c => c.ServerInfo != null)
-            .Select(c => c.ServerInfo);
+        public WorldClusterConfiguration WorldClusterConfiguration { get; }
 
         /// <summary>
         /// Creates a new <see cref="WorldClusterServer"/> instance.
@@ -41,9 +40,11 @@ namespace Rhisis.Cluster.WorldCluster.Server
         /// <param name="handlerInvoker">Packet invoker</param>
         /// <param name="clusterCoreClient">Core client</param>
         /// <param name="corePacketFactory">Packet creator for cluster/core communication</param>
+        /// <param name="worldCache">The cache that holds the world information</param>
         public WorldClusterServer(ILogger<WorldClusterServer> logger, IOptions<WorldClusterConfiguration> configuration, 
             IServiceProvider serviceProvider, IHandlerInvoker handlerInvoker,
-            IClusterCoreClient clusterCoreClient, ICorePacketFactory corePacketFactory)
+            IClusterCoreClient clusterCoreClient, ICorePacketFactory corePacketFactory,
+            ICache<int, WorldServerInfo> worldCache)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
@@ -51,6 +52,8 @@ namespace Rhisis.Cluster.WorldCluster.Server
 
             _clusterCoreClient = clusterCoreClient;
             _corePacketFactory = corePacketFactory;
+
+            _worldCache = worldCache;
             
             WorldClusterConfiguration = configuration.Value;
             ServerConfiguration = new NetServerConfiguration(WorldClusterConfiguration.Host, 
@@ -58,12 +61,7 @@ namespace Rhisis.Cluster.WorldCluster.Server
                 ClientBacklog, 
                 ClientBufferSize);
         }
-
-        public bool HasWorldWithId(int id)
-        {
-            return Worlds.SingleOrDefault(w => w.Id == id) != null;
-        }
-
+        
         protected override void OnAfterStart()
         {
             _logger.LogInformation($"'{nameof(WorldClusterServer)}' is started and listening on {ServerConfiguration.Host}:{ServerConfiguration.Port}.");
@@ -82,7 +80,8 @@ namespace Rhisis.Cluster.WorldCluster.Server
         /// <inheritdoc />
         protected override void OnClientDisconnected(WorldClusterServerClient client)
         {
-            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, Worlds);
+            _worldCache.Remove(client.ServerInfo.Id);
+            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, _worldCache.Items);
             
             _logger.LogInformation($"World server {client.ServerInfo.Name} disconnected, removed {client.ServerInfo.Name} from the world cache");
         }

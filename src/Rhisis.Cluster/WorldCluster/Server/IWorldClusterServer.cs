@@ -8,9 +8,5 @@ namespace Rhisis.Cluster.WorldCluster.Server
     public interface IWorldClusterServer : INetServer
     {
         public WorldClusterConfiguration WorldClusterConfiguration { get; }
-        
-        public IEnumerable<WorldServerInfo> Worlds { get; }
-
-        public bool HasWorldWithId(int id);
     }
 }

@@ -5,6 +5,7 @@ using Sylver.HandlerInvoker.Attributes;
 using Sylver.Network.Data;
 using System;
 using Rhisis.Cluster.WorldCluster.Server;
+using Rhisis.Core.Resources;
 
 namespace Rhisis.Cluster.CoreClient.Handlers
 {
@@ -14,7 +15,7 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         private readonly ILogger<CoreHandlers> _logger;
         private readonly ICorePacketFactory _corePacketFactory;
         private readonly IClusterServer _clusterServer;
-        private readonly IWorldClusterServer _worldClusterServer;
+        private readonly ICache<int, WorldServerInfo> _worldCache;
 
         /// <summary>
         /// Creates a new <see cref="CoreHandlers"/> instance.
@@ -22,13 +23,13 @@ namespace Rhisis.Cluster.CoreClient.Handlers
         /// <param name="logger">Logger.</param>
         /// <param name="corePacketFactory">Core packet factory.</param>
         /// <param name="clusterServer">Cluster server instance.</param>
-        /// <param name="worldClusterServer">Stores world server information</param>
+        /// <param name="worldCache">Stores world server information</param>
         public CoreHandlers(ILogger<CoreHandlers> logger, ICorePacketFactory corePacketFactory,
-            IClusterServer clusterServer, IWorldClusterServer worldClusterServer) {
+            IClusterServer clusterServer, ICache<int, WorldServerInfo> worldCache) {
             _logger = logger;
             _corePacketFactory = corePacketFactory;
             _clusterServer = clusterServer;
-            _worldClusterServer = worldClusterServer;
+            _worldCache = worldCache;
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace Rhisis.Cluster.CoreClient.Handlers
                 case CoreAuthenticationResultType.Success:
                 {
                     _logger.LogInformation("Cluster Core client authenticated successfully.");
-                    _corePacketFactory.SendUpdateWorldList(client, _worldClusterServer.Worlds);
+                    _corePacketFactory.SendUpdateWorldList(client, _worldCache.Items);
                     return;
                 }
                 case CoreAuthenticationResultType.FailedClusterExists:

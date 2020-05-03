@@ -3,6 +3,7 @@ using Rhisis.Cluster.CoreClient;
 using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Cluster.WorldCluster.Packets;
 using Rhisis.Cluster.WorldCluster.Server;
+using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker.Attributes;
@@ -21,6 +22,7 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
 
         private readonly ICorePacketFactory _corePacketFactory;
         private readonly IClusterCoreClient _clusterCoreClient;
+        private readonly ICache<int, WorldServerInfo> _worldCache;
 
         /// <summary>
         /// Creates a new <see cref="WorldHandler"/> instance.
@@ -31,9 +33,10 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
         /// <param name="clusterCoreClient">Core client</param>
         /// <param name="corePacketFactory">Packet creator for cluster/core communication</param>
         /// <param name="worldPacketFactory">Core server packet factory.</param>
+        /// <param name="worldCache">The cache that holds the world information</param>
         public WorldHandler(ILogger<WorldHandler> logger, IWorldClusterServer worldClusterServer, IClusterServer clusterServer,
             IClusterCoreClient clusterCoreClient, ICorePacketFactory corePacketFactory,
-            IWorldPacketFactory worldPacketFactory)
+            IWorldPacketFactory worldPacketFactory, ICache<int, WorldServerInfo> worldCache)
         {
             _logger = logger;
             _worldClusterServer = worldClusterServer;
@@ -41,6 +44,7 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
             _corePacketFactory = corePacketFactory;
             _worldPacketFactory = worldPacketFactory;
             _clusterConfiguration = clusterServer.ClusterConfiguration;
+            _worldCache = worldCache;
         }
         
         [HandlerAction(CorePacketType.Authenticate)]
@@ -72,7 +76,7 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
                 _worldClusterServer.DisconnectClient(client.Id);
             }
 
-            if (_worldClusterServer.HasWorldWithId(id))
+            if (_worldCache.TryGetOrDefault(id) != null)
             {
                 _logger.LogWarning($"World server '{name}' incoming connection from {client.Socket.RemoteEndPoint} refused." +
                                    $" Reason: An other World server with id '{id}' is already connected to Cluster Server '{_clusterConfiguration.Name}'.");
@@ -82,13 +86,14 @@ namespace Rhisis.Cluster.WorldCluster.Handlers
             }
             
             client.ServerInfo = new WorldServerInfo(id, name, host, port, parentClusterId);
+            _worldCache.Add(id, client.ServerInfo);
 
             _logger.LogInformation(
                 $"World server '{name}' authenticated and is connected" +
                 $" to world cluster server from {client.Socket.RemoteEndPoint}.");
                 
             _worldPacketFactory.SendAuthenticationResult(client, CoreAuthenticationResultType.Success);
-            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, _worldClusterServer.Worlds);
+            _corePacketFactory.SendUpdateWorldList(_clusterCoreClient, _worldCache.Items);
         }
     }
 }
