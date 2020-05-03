@@ -17,7 +17,7 @@ namespace Rhisis.Cluster.CoreClient.Packets
         void SendAuthentication(IClusterCoreClient client, ClusterConfiguration clusterConfiguration);
         
         /// <summary>
-        /// Sends the world server list to a cluster client.
+        /// Sends the world server list to a core server through it's client.
         /// </summary>
         /// <param name="client">Cluster client.</param>
         /// <param name="worldServers">World server list.</param>

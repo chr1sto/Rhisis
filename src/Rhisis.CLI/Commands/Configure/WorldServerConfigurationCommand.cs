@@ -60,7 +60,7 @@ namespace Rhisis.CLI.Commands.Configure
 
             Console.WriteLine("##### Configuration review #####");
             worldConfiguration.Show("World Server configuration");
-            worldClusterServerConfiguration.Show("World clusterconfiguration");
+            worldClusterServerConfiguration.Show("World cluster configuration");
 
             bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
