@@ -12,6 +12,9 @@ using Rhisis.Login.Packets;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Login;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
+using System;
+using System.Linq;
 
 namespace Rhisis.Login.Handlers
 {
@@ -95,7 +98,7 @@ namespace Rhisis.Login.Handlers
                 case AuthenticationResult.Success:
                     if (_loginServer.IsClientConnected(certifyPacket.Username))
                     {
-                        AuthenticationFailed(client, ErrorType.DUPLICATE_ACCOUNT, "client already connected", disconnectClient: false);
+                        AuthenticationFailed(client, ErrorType.DUPLICATE_ACCOUNT, "client already connected");
                         return;
                     }
 
@@ -113,12 +116,23 @@ namespace Rhisis.Login.Handlers
         }
 
         /// <summary>
+        /// Disconnects the client when it receives an error packet.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="_"></param>
+        [HandlerAction(PacketType.ERROR)]
+        public void OnError(ILoginClient client, INetPacketStream _)
+        {
+            client.Disconnect();
+        }
+
+        /// <summary>
         /// Closes an existing connection.
         /// </summary>
         /// <param name="client">Client.</param>
         /// <param name="closeConnectionPacket">Close connection packet.</param>
         [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
-        public void OnCloseExistingConnection(ILoginClient client, CloseConnectionPacket closeConnectionPacket)
+        public void OnCloseExistingConnection(ILoginClient _, CloseConnectionPacket closeConnectionPacket)
         {
             var otherConnectedClient = _loginServer.GetClientByUsername(closeConnectionPacket.Username);
 
@@ -137,20 +151,16 @@ namespace Rhisis.Login.Handlers
         /// <param name="client">Client.</param>
         /// <param name="error">Authentication error type.</param>
         /// <param name="reason">Authentication error reason.</param>
-        /// <param name="disconnectClient">A boolean value that indicates if we disconnect the client or not.</param>
-        private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason, bool disconnectClient = true)
+        private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason)
         {
             _logger.LogWarning($"Unable to authenticate user from {client.Socket.RemoteEndPoint}. Reason: {reason}");
             _loginPacketFactory.SendLoginError(client, error);
-
-            if (disconnectClient)
-                client.Disconnect();
         }
 
         /// <summary>
         /// Authenticates a user.
         /// </summary>
-        /// <param name="username">Username</param>
+        /// <param name="user">Database user.</param>
         /// <param name="password">Password</param>
         /// <returns>Authentication result</returns>
         private AuthenticationResult Authenticate(DbUser user, string password)

@@ -21,7 +21,7 @@
     <PackageReference Include="NLog" Version="4.7.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.2" />
     <PackageReference Include="Sylver.HandlerInvoker" Version="1.0.0" />
-    <PackageReference Include="Sylver.Network" Version="1.2.0" />
+    <PackageReference Include="Sylver.Network" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>
