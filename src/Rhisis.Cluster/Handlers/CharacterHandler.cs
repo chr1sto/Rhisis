@@ -285,7 +285,7 @@ namespace Rhisis.Cluster.Handlers
         private IEnumerable<DbCharacter> GetCharacters(int userId)
         {
             const int EquipOffset = 42;
-            IEnumerable<DbCharacter> dbCharacters = _database.Characters.Include(x => x.Items).Where(x => x.UserId == userId && !x.IsDeleted);
+            IEnumerable<DbCharacter> dbCharacters = _database.Characters.AsNoTracking().Include(x => x.Items).Where(x => x.UserId == userId && !x.IsDeleted);
 
             for (int i = 0; i < dbCharacters.Count(); i++)
             {
