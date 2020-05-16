@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: "\U0001F680Feature request"
 about: Suggest an idea for Rhisis
 title: ''
 labels: feature-request
