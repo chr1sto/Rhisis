@@ -103,11 +103,16 @@ namespace Rhisis.World
         {
             foreach (IMapInstance map in _mapManager.Maps)
             {
+                foreach (IWorldEntity mapEntity in map.Entities.Values)
+                {
+                    actionToExecute(mapEntity);
+                }
+
                 foreach (IMapLayer layer in map.Layers)
                 {
-                    foreach (IWorldEntity entity in layer.Entities.Values)
+                    foreach (IWorldEntity layerEntity in layer.Entities.Values)
                     {
-                        actionToExecute(entity);
+                        actionToExecute(layerEntity);
                     }
                 }
             }
