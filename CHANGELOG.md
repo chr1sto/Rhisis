@@ -6,6 +6,12 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [0.5.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.5) - 2020-05-30
 
+
+## [0.4.2](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.2) - 2020-MM-dd
+
+
+## [Released]
+
 ## [0.4.1](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.1) - 2020-05-18
 
 ### Fixes
@@ -17,7 +23,6 @@ This is the changelog of the Rhisis project. All notable changes to this project
 - [world] Fix inventory saving issue ([#372](https://github.com/Eastrall/Rhisis/issues/372))
 - [cluster] Fix character with dual weapons on character selection screen ([#373](https://github.com/Eastrall/Rhisis/issues/373))
 
-## [Released]
 
 ## [0.4.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.4) - 2020-04-29
 
