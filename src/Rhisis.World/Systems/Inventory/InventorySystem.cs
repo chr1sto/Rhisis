@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
@@ -85,7 +86,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == player.PlayerData.Id);
+            DbCharacter character = _database.Characters.Include(x => x.Items).FirstOrDefault(x => x.Id == player.PlayerData.Id);
             IEnumerable<DbItem> itemsToDelete = (from dbItem in character.Items
                                                  let inventoryItem = player.Inventory.GetItem(x => x != null && x.DbId == dbItem.Id)
                                                  where !dbItem.IsDeleted && inventoryItem == null
