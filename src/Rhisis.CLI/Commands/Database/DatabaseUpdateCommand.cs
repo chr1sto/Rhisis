@@ -41,7 +41,7 @@ namespace Rhisis.CLI.Commands.Database
                     DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
                 }
 
-                DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
+                DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
                 
                 if (dbConfig is null)
                 {
