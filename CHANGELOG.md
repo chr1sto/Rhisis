@@ -6,11 +6,16 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [0.5.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.5) - 2020-05-30
 
-## [0.4.1](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.1) - 
+## [0.4.1](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.1) - 2020-05-18
 
 ### Fixes
 
 - [login] Fix server crash when a client logs in with invalid credentials ([#358](https://github.com/Eastrall/Rhisis/pull/358))
+- [world] Fix NPC shops crash ([#374](https://github.com/Eastrall/Rhisis/pull/374))
+- [world] Fix NPC oral dialog texts ([#365](https://github.com/Eastrall/Rhisis/pull/365))
+- [world] Fix NPC shop purchase item with error "User ID already exists" ([#382](https://github.com/Eastrall/Rhisis/pull/382))
+- [world] Fix inventory saving issue ([#372](https://github.com/Eastrall/Rhisis/issues/372))
+- [cluster] Fix character with dual weapons on character selection screen ([#373](https://github.com/Eastrall/Rhisis/issues/373))
 
 ## [Released]
 
