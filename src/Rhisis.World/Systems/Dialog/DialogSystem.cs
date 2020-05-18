@@ -107,6 +107,12 @@ namespace Rhisis.World.Systems.Dialog
                     if (!npc.NpcData.HasDialog)
                     {
                         _logger.LogError($"NPC '{npc.Object.Name}' doesn't have a dialog.");
+
+                        if (dialogKey == DialogConstants.Bye)
+                        {
+                            _npcDialogPacketFactory.SendCloseDialog(player);
+                        }
+
                         return;
                     }
 
