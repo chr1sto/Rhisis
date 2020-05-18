@@ -207,7 +207,7 @@ namespace Rhisis.World.Game.Structures
             packet.Write(UniqueId);
             packet.Write(Id);
             packet.Write(0); // Serial number
-            packet.Write(Data?.Name.TakeCharacters(32) ?? "[undefined]");
+            packet.Write(Data?.Name.TakeCharacters(31) ?? "[undefined]");
             packet.Write((short) Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp
