@@ -12,7 +12,7 @@ namespace Rhisis.Network
         public const byte Header = 0x5E;
         public const uint NullId = 0xFFFFFFFF;
 
-        private static readonly Encoding FlyFFWriteStringEncoding = Encoding.GetEncoding(0);
+        private static readonly Encoding FlyFFWriteStringEncoding = Encoding.GetEncoding(1252);
         private static readonly Encoding FlyFFReadStringEncoding = Encoding.GetEncoding(1252);
         private short _mergedPacketCount;
 
