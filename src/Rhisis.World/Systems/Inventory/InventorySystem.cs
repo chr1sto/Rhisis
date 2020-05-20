@@ -78,7 +78,10 @@ namespace Rhisis.World.Systems.Inventory
                 {
                     Item item = _itemFactory.CreateItem(databaseItem);
 
-                    player.Inventory.SetItemAtIndex(item, item.Slot);
+                    if (item != null)
+                    {
+                        player.Inventory.SetItemAtIndex(item, item.Slot);
+                    }
                 }
             }
         }
@@ -88,7 +91,7 @@ namespace Rhisis.World.Systems.Inventory
         {
             DbCharacter character = _database.Characters.Include(x => x.Items).FirstOrDefault(x => x.Id == player.PlayerData.Id);
             IEnumerable<DbItem> itemsToDelete = (from dbItem in character.Items
-                                                 let inventoryItem = player.Inventory.GetItem(x => x != null && x.DbId == dbItem.Id)
+                                                 let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id)
                                                  where !dbItem.IsDeleted && inventoryItem == null
                                                  select dbItem).ToList();
 
@@ -102,7 +105,7 @@ namespace Rhisis.World.Systems.Inventory
             // Add or update items
             foreach (Item item in player.Inventory)
             {
-                if (item == null)
+                if (item == null || item.Id == -1)
                 {
                     continue;
                 }
@@ -277,7 +280,8 @@ namespace Rhisis.World.Systems.Inventory
 
             if (itemToDelete.Quantity <= 0)
             {
-                player.Inventory.SetItemAtSlot(null, itemToDelete.Slot);
+                itemToDelete.Reset();
+                //player.Inventory.SetItemAtSlot(null, itemToDelete.Slot);
             }
 
             return quantityToDelete;
@@ -416,7 +420,7 @@ namespace Rhisis.World.Systems.Inventory
                 throw new ArgumentNullException(nameof(itemToUse), $"Cannot find item with unique id: '{itemUniqueId}' in {player.Object.Name} inventory.");
             }
 
-            if (part != -1)
+            if (part >= 0)
             {
                 if (part >= MaxHumanParts)
                 {

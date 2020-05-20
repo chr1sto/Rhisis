@@ -44,8 +44,17 @@ namespace Rhisis.World.Game.Components
             MaxCapacity = maxCapacity;
             MaxStorageCapacity = maxStorageCapacity;
             ExtraCapacity = MaxCapacity - MaxStorageCapacity;
-            _items = new List<Item>(Enumerable.Repeat((Item)null, MaxCapacity));
             _itemsMask = Enumerable.Range(0, MaxCapacity).ToArray();
+            _items = new List<Item>(MaxCapacity);
+
+            for (int i = 0; i < MaxCapacity; i++)
+            {
+                _items.Add(new Item
+                {
+                    Slot = i,
+                    UniqueId = i
+                });
+            }
         }
 
         /// <summary>
@@ -53,7 +62,17 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="predicate">Match predicate.</param>
         /// <returns>Item matching the predicate function; null otherwise.</returns>
-        public Item GetItem(Func<Item, bool> predicate) => _items.FirstOrDefault(predicate);
+        public Item GetItem(Func<Item, bool> predicate)
+        {
+            Item item = _items.FirstOrDefault(predicate);
+
+            if (item == null)
+            {
+                return null;
+            }
+
+            return item.Id != -1 ? item : null;
+        }
 
         /// <summary>
         /// Gets an item by its id.
@@ -74,7 +93,14 @@ namespace Rhisis.World.Game.Components
                 throw new IndexOutOfRangeException();
             }
 
-            return _items[_itemsMask[slot]];
+            Item item = _items[_itemsMask[slot]];
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), $"No item found at slot {slot}.");
+            }
+
+            return item.Id != -1 ? item : null;
         }
 
         /// <summary>
@@ -89,14 +115,21 @@ namespace Rhisis.World.Game.Components
                 throw new IndexOutOfRangeException();
             }
 
-            return _items[index];
+            Item item = _items[index];
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), $"No item found at index {index}.");
+            }
+
+            return item.Id != -1 ? item : null;
         }
 
         /// <summary>
         /// Gets the number of items of the inventory.
         /// </summary>
         /// <returns></returns>
-        public int GetItemCount() => _items.Count(x => x != null);
+        public int GetItemCount() => _items.Count(x => x.Id != -1);
 
         /// <summary>
         /// Check if there is available slots in the container.
@@ -112,7 +145,7 @@ namespace Rhisis.World.Game.Components
         {
             for (int i = 0; i < MaxStorageCapacity; i++)
             {
-                if (_items[_itemsMask[i]] == null)
+                if (_items[_itemsMask[i]].Id == -1)
                 {
                     return i;
                 }
@@ -171,13 +204,13 @@ namespace Rhisis.World.Game.Components
                 packet.Write(itemIndex);
             }
 
-            packet.Write((byte)_items.Count(x => x != null));
+            packet.Write((byte)GetItemCount());
 
             for (int i = 0; i < MaxCapacity; i++)
             {
                 Item item = _items.ElementAt(i);
 
-                if (item != null)
+                if (item.Id != -1)
                 {
                     packet.Write((byte)i);
                     item.Serialize(packet);
@@ -186,7 +219,7 @@ namespace Rhisis.World.Game.Components
 
             for (int i = 0; i < MaxCapacity; i++)
             {
-                packet.Write(_items[i]?.Slot ?? -1);
+                packet.Write(_items[i].Slot);
             }
         }
 

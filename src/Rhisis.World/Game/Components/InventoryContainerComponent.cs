@@ -54,7 +54,7 @@ namespace Rhisis.World.Game.Components
                 return null;
             }
 
-            return _items[_itemsMask[equipedItemSlot]];
+            return GetItemAtSlot(equipedItemSlot);
         }
 
         /// <summary>
@@ -72,7 +72,9 @@ namespace Rhisis.World.Game.Components
         public int? GetItemCoolTimeGroup(Item item)
         {
             if (item.Data.CoolTime <= 0)
+            {
                 return null;
+            }
 
             return item.Data.ItemKind2 switch
             {
