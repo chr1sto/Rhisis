@@ -280,7 +280,8 @@ namespace Rhisis.World.Systems.Inventory
 
             if (itemToDelete.Quantity <= 0)
             {
-                player.Inventory.SetItemAtSlot(null, itemToDelete.Slot);
+                itemToDelete.Reset();
+                //player.Inventory.SetItemAtSlot(null, itemToDelete.Slot);
             }
 
             return quantityToDelete;

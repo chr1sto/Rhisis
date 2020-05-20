@@ -95,6 +95,11 @@ namespace Rhisis.World.Game.Components
 
             Item item = _items[_itemsMask[slot]];
 
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), $"No item found at slot {slot}.");
+            }
+
             return item.Id != -1 ? item : null;
         }
 
@@ -111,6 +116,11 @@ namespace Rhisis.World.Game.Components
             }
 
             Item item = _items[index];
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), $"No item found at index {index}.");
+            }
 
             return item.Id != -1 ? item : null;
         }

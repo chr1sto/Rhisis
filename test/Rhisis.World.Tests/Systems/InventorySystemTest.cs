@@ -199,6 +199,7 @@ namespace Rhisis.World.Tests.Systems
             int deleteQuantity = itemToDelete.Quantity;
 
             int deletedAmount = Service.DeleteItem(_player, itemUniqueId, deleteQuantity);
+            Item deletedItem = _player.Inventory.GetItemAtSlot(itemToDeleteSlot);
 
             Assert.Equal(deleteQuantity, deletedAmount);
             Assert.Null(_player.Inventory.GetItemAtSlot(itemToDeleteSlot));
