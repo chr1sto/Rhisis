@@ -6,11 +6,18 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [0.5.0](https://github.com/Eastrall/Rhisis/releases/tag/v0.5) - 2020-05-30
 
-
-## [0.4.2](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.2) - 2020-MM-dd
-
-
 ## [Released]
+
+## [0.4.2](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.2) - 2020-05-20
+
+### Fixes
+
+- ![world] Fix string encoding ([#389](https://github.com/Eastrall/Rhisis/pull/389))
+- ![world] Fix consumable items ([#392](https://github.com/Eastrall/Rhisis/pull/392))
+- ![world] Fix sell item at NPC shops ([#392](https://github.com/Eastrall/Rhisis/pull/392))
+- ![world] Sold items doesn't come back to inventory anymore ([#392](https://github.com/Eastrall/Rhisis/pull/392))
+- ![world] Fix item equip/unequip process when equiping a dropped item armor ([#392](https://github.com/Eastrall/Rhisis/pull/392))
+- ![world] Fix item drop from inventory ([#393](https://github.com/Eastrall/Rhisis/pull/393))
 
 ## [0.4.1](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.1) - 2020-05-18
 
