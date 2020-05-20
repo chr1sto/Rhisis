@@ -49,7 +49,7 @@ namespace Rhisis.World.Systems.Drop
                 newItem.Drop.DespawnTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.DespawnTime;
             }
 
-            owner.Object.CurrentLayer.AddEntity(newItem);
+            entity.Object.CurrentLayer.AddEntity(newItem);
         }
 
         /// <inheritdoc />
