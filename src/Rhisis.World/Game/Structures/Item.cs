@@ -13,7 +13,7 @@ namespace Rhisis.World.Game.Structures
     /// <summary>
     /// FlyFF item structure.
     /// </summary>
-    [DebuggerDisplay("({Quantity}) {Data.Name} +{Refine} ({Element}+{ElementRefine})")]
+    [DebuggerDisplay("({Quantity}) {Data?.Name ?? \"Empty\"} +{Refine} ({Element}+{ElementRefine})")]
     public class Item : ItemDescriptor
     {
         public const int RefineMax = 10;
@@ -242,9 +242,6 @@ namespace Rhisis.World.Game.Structures
                 Quantity = Quantity
             };
         }
-
-        [Obsolete("This should not be used anymore")]
-        public bool IsEquipped() => Slot > InventorySystem.EquipOffset;
 
         /// <summary>
         /// Reset the item.
