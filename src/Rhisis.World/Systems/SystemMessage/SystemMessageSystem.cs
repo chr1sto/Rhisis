@@ -1,4 +1,5 @@
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Extensions;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using System;
@@ -26,10 +27,8 @@ namespace Rhisis.World.Systems.SystemMessage
             {
                 throw new ArgumentNullException(nameof(sysMessage), $"Cannot send an empty message for all the worldserver's players.");
             }
-            else
-            {
-                _systemMessagePacketFactory.SendSystemMessage(player, sysMessage);
-            }
+
+            _systemMessagePacketFactory.SendSystemMessage(player, sysMessage.TakeCharacters(511));
         }
     }
 }

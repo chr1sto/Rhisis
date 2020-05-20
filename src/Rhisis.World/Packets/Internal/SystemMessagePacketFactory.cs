@@ -24,9 +24,8 @@ namespace Rhisis.World.Packets.Internal
         public void SendSystemMessage(IPlayerEntity player, string message)
         {
             using var packet = new FFPacket();
-            
-            packet.StartNewMergedPacket(player.Id, SnapshotType.GMCHAT);
-            packet.Write(message.Length);
+
+            packet.WriteHeader(PacketType.SYSTEM);
             packet.Write(message);
 
             _worldServer.SendToAll(packet);

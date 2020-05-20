@@ -26,16 +26,14 @@ namespace Rhisis.World.Game.Chat
         /// <inheritdoc />
         public void Execute(IPlayerEntity player, object[] parameters)
         {
-            if (parameters.Length >= 1)
-            {
-                string sysMsg = $"[{player.Object.Name}] " + string.Join(" ", parameters);
-                _sysMessageSystem.SystemMessage(player, sysMsg);
-                _logger.LogTrace($"Player '{player.Object.Name}' sent the following system message : '{sysMsg}'.");            
-            }
-            else 
+            if (parameters.Length < 1)
             {
                 throw new ArgumentException("You must have at least one parameter to send a message.");
             }
+
+            string sysMsg = $"[{player.Object.Name}] " + string.Join(" ", parameters);
+            _sysMessageSystem.SystemMessage(player, sysMsg);
+            _logger.LogTrace($"Player '{player.Object.Name}' sent the following system message : '{sysMsg}'.");
         }
     }
 }
