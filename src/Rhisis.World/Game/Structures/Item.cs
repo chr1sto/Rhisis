@@ -60,12 +60,11 @@ namespace Rhisis.World.Game.Structures
         }
 
         /// <summary>
-        /// Create an <see cref="Item"/> with an id and a quantity.
+        /// Creates a <see cref="Item"/> instance with an id.
         /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Item quantity</param>
-        public Item(int id, int quantity)
-            : this(id, quantity, -1, -1, -1)
+        /// <param name="id">Item Id.</param>
+        public Item(int id)
+            : this(id, -1, -1, -1, -1)
         {
         }
 
