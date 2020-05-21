@@ -27,5 +27,12 @@ namespace Rhisis.World.Packets
         /// </summary>
         /// <param name="player">Current player</param>
         void SendSkillCancellation(IPlayerEntity player);
+
+        /// <summary>
+        /// Sends the skill reset packet to the given player.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="skillPoints">Skill points.</param>
+        void SendSkillReset(IPlayerEntity player, ushort skillPoints);
     }
 }

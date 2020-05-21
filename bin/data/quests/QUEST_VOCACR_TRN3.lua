@@ -18,6 +18,9 @@ QUEST_VOCACR_TRN3 = {
 			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any', refine = 2 },
 		},
 		job = 'JOB_ACROBAT',
+		restat = true,
+		reskill = true,
+		skillPoints = 50
 	},
 	end_conditions = {
 		items = {

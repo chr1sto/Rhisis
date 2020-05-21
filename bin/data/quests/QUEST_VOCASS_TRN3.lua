@@ -18,6 +18,9 @@ QUEST_VOCASS_TRN3 = {
 			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any', refine = 2 },
 		},
 		job = 'JOB_ASSIST',
+		restat = true,
+		reskill = true,
+		skillPoints = 60
 	},
 	end_conditions = {
 		items = {

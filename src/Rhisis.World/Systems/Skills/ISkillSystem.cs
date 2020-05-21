@@ -38,5 +38,18 @@ namespace Rhisis.World.Systems.Skills
         /// <param name="skill">Skill to use.</param>
         /// <returns>True if the player can use the skill; false otherwise.</returns>
         bool CanUseSkill(IPlayerEntity player, SkillInfo skill);
+
+        /// <summary>
+        /// Resets player skills.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        void Reskill(IPlayerEntity player);
+
+        /// <summary>
+        /// Add skill points to the given player.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="skillPoints">Skill points amount to give.</param>
+        void AddSkillPoints(IPlayerEntity player, ushort skillPoints);
     }
 }

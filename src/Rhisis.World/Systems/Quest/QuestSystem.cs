@@ -17,6 +17,8 @@ using Rhisis.World.Systems.Experience;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Job;
 using Rhisis.World.Systems.PlayerData;
+using Rhisis.World.Systems.Skills;
+using Rhisis.World.Systems.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +49,8 @@ namespace Rhisis.World.Systems.Quest
         private readonly IInventorySystem _inventorySystem;
         private readonly IExperienceSystem _experienceSystem;
         private readonly IJobSystem _jobSystem;
+        private readonly IStatisticsSystem _statisticsSystem;
+        private readonly ISkillSystem _skillSystem;
         private readonly IQuestPacketFactory _questPacketFactory;
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
@@ -56,6 +60,7 @@ namespace Rhisis.World.Systems.Quest
 
         public QuestSystem(ILogger<QuestSystem> logger, IRhisisDatabase database, IGameResources gameResources,
             IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IJobSystem jobSystem,
+            IStatisticsSystem statisticsSystem, ISkillSystem skillSystem,
             IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
             _logger = logger;
@@ -65,6 +70,8 @@ namespace Rhisis.World.Systems.Quest
             _inventorySystem = inventorySystem;
             _experienceSystem = experienceSystem;
             _jobSystem = jobSystem;
+            _statisticsSystem = statisticsSystem;
+            _skillSystem = skillSystem;
             _questPacketFactory = questPacketFactory;
             _npcDialogPacketFactory = npcDialogPacketFactory;
             _textPacketFactory = textPacketFactory;
@@ -488,6 +495,7 @@ namespace Rhisis.World.Systems.Quest
             if (expReward > 0)
             {
                 _experienceSystem.GiveExeperience(player, expReward);
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPEXP);
             }
 
             if (quest.Rewards.HasJobReward())
@@ -500,8 +508,20 @@ namespace Rhisis.World.Systems.Quest
                 }
             }
 
-            // TODO: restat
-            // TODO: give extra points
+            if (quest.Rewards.Restat)
+            {
+                _statisticsSystem.Restat(player);
+            }
+
+            if (quest.Rewards.Reskill)
+            {
+                _skillSystem.Reskill(player);
+            }
+
+            if (quest.Rewards.SkillPoints > 0)
+            {
+                _skillSystem.AddSkillPoints(player, quest.Rewards.SkillPoints);
+            }
 
             questToFinish.IsFinished = true;
             questToFinish.State = QuestStateType.Completed;

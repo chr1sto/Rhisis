@@ -4,6 +4,7 @@ using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Scripting.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,15 @@ namespace Rhisis.Scripting.Quests
         /// <inheritdoc />
         public IEnumerable<QuestItem> Items { get; }
 
+        /// <inheritdoc />
+        public bool Restat { get; }
+
+        /// <inheritdoc />
+        public bool Reskill { get; }
+
+        /// <inheritdoc />
+        public ushort SkillPoints { get; }
+
         /// <summary>
         /// Creates a new <see cref="QuestRewards"/> instance.
         /// </summary>
@@ -53,12 +63,12 @@ namespace Rhisis.Scripting.Quests
             {
                 if (gold is LuaTable goldRangeTable)
                 {
-                    _minGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.Min);
-                    _maxGold = LuaScriptHelper.GetValue<int>(goldRangeTable, QuestScriptConstants.Max);
+                    _minGold = goldRangeTable.Get<int>(QuestScriptConstants.Min);
+                    _maxGold = goldRangeTable.Get<int>(QuestScriptConstants.Max);
                 }
                 else
                 {
-                    _gold = LuaScriptHelper.GetValue<int>(questRewardsLuaTable, QuestScriptConstants.Gold);
+                    _gold = questRewardsLuaTable.Get<int>(QuestScriptConstants.Gold);
                 }
             }
 
@@ -68,30 +78,34 @@ namespace Rhisis.Scripting.Quests
             {
                 if (experience is LuaTable experienceRangeTable)
                 {
-                    _minExperience = LuaScriptHelper.GetValue<long>(experienceRangeTable, QuestScriptConstants.Min);
-                    _maxExperience = LuaScriptHelper.GetValue<long>(experienceRangeTable, QuestScriptConstants.Max);
+                    _minExperience = experienceRangeTable.Get<long>(QuestScriptConstants.Min);
+                    _maxExperience = experienceRangeTable.Get<long>(QuestScriptConstants.Max);
                 }
                 else
                 {
-                    _experience = LuaScriptHelper.GetValue<long>(questRewardsLuaTable, QuestScriptConstants.Experience);
+                    _experience = questRewardsLuaTable.Get<long>(QuestScriptConstants.Experience);
                 }
             }
 
             if (questRewardsLuaTable[QuestScriptConstants.Items] is LuaTable items)
             {
-                Items = items.Values.ToArray<LuaTable>().Select(x => new QuestItem
+                Items = items.Values.ToArray<LuaTable>().Select(lua => new QuestItem
                 {
-                    Id = LuaScriptHelper.GetValue<string>(x, "id"),
-                    Quantity = LuaScriptHelper.GetValue<int>(x, "quantity"),
-                    Sex = LuaScriptHelper.GetValue<GenderType>(x, "sex"),
-                    Refine = LuaScriptHelper.GetValue<byte>(x, "refine"),
-                    Element = LuaScriptHelper.GetValue<ElementType>(x, "element"),
-                    ElementRefine = LuaScriptHelper.GetValue<byte>(x, "element_refine")
+                    Id = lua.Get<string>("id"),
+                    Quantity = lua.Get<int>("quantity"),
+                    Sex = lua.Get<GenderType>("sex"),
+                    Refine = lua.Get<byte>("refine"),
+                    Element = lua.Get<ElementType>("element"),
+                    ElementRefine = lua.Get<byte>("element_refine")
                 }).ToList();
             }
 
-            _rewardJob = LuaScriptHelper.GetValue<DefineJob.Job>(questRewardsLuaTable, QuestScriptConstants.Job);
+            _rewardJob = questRewardsLuaTable.Get<DefineJob.Job>(QuestScriptConstants.Job);
             _rewardJobFunction = mainLuaTable[QuestScriptHooksConstants.ChangeJobReward] as LuaFunction;
+
+            Restat = questRewardsLuaTable.Get<bool>(QuestScriptConstants.Restat);
+            Reskill = questRewardsLuaTable.Get<bool>(QuestScriptConstants.Reskill);
+            SkillPoints = questRewardsLuaTable.Get<ushort>(QuestScriptConstants.SkillPoints);
         }
 
         /// <inheritdoc />

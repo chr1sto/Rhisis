@@ -21,6 +21,21 @@ namespace Rhisis.Core.Structures.Game.Quests
         IEnumerable<QuestItem> Items { get; }
 
         /// <summary>
+        /// Gets a boolean value that indiciates if the system should restat the player.
+        /// </summary>
+        bool Restat { get; }
+
+        /// <summary>
+        /// Gets a boolean value that indiciates if the systme should reskill the player.
+        /// </summary>
+        bool Reskill { get; }
+
+        /// <summary>
+        /// Gets the number of skills points to offer to the player.
+        /// </summary>
+        ushort SkillPoints { get; }
+
+        /// <summary>
         /// Gets the reward job based on the player information.
         /// </summary>
         /// <param name="player">Current player entity information.</param>

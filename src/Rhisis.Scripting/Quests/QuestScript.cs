@@ -1,6 +1,7 @@
 ﻿using NLua;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Scripting.Extensions;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -59,9 +60,9 @@ namespace Rhisis.Scripting.Quests
         {
             Id = questId;
             Name = questName;
-            Title = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.Title);
-            StartCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.StartCharacter);
-            EndCharacter = LuaScriptHelper.GetValue<string>(luaScriptTable, QuestScriptConstants.EndCharacter);
+            Title = luaScriptTable.Get<string>(QuestScriptConstants.Title);
+            StartCharacter = luaScriptTable.Get<string>(QuestScriptConstants.StartCharacter);
+            EndCharacter = luaScriptTable.Get<string>(QuestScriptConstants.EndCharacter);
 
             if (string.IsNullOrEmpty(EndCharacter))
             {

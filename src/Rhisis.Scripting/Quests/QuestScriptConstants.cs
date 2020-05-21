@@ -54,6 +54,11 @@
 
         public const string NotFinishedDialogs = "not_finished";
 
+        public const string Restat = "restat";
+
+        public const string Reskill = "reskill";
+
+        public const string SkillPoints = "skillPoints";
     }
 
     public class QuestScriptHooksConstants
