@@ -18,6 +18,9 @@ QUEST_VOCMER_TRN3 = {
 			{ id = 'II_CHR_SYS_SCR_ACTIVITION', quantity = 1, sex = 'Any', refine = 2 },
 		},
 		job = 'JOB_MERCENARY',
+		restat = true,
+		reskill = true,
+		skillPoints = 40
 	},
 	end_conditions = {
 		items = {

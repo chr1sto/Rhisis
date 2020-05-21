@@ -46,5 +46,15 @@ namespace Rhisis.World.Packets.Internal
 
             SendToPlayer(player, packet);
         }
+
+        public void SendSkillReset(IPlayerEntity player, ushort skillPoints)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(player.Id, SnapshotType.INITSKILLPOINT);
+            packet.Write((int)skillPoints);
+
+            SendToPlayer(player, packet);
+        }
     }
 }

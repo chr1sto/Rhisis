@@ -2,6 +2,7 @@
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Helpers;
 using Rhisis.World.Packets;
 
 namespace Rhisis.World.Systems.Statistics
@@ -22,7 +23,6 @@ namespace Rhisis.World.Systems.Statistics
             _playerPacketFactory = playerPacketFactory;
         }
 
-        /// <inheritdoc />
         public void UpdateStatistics(IPlayerEntity player, ushort strength, ushort stamina, ushort dexterity, ushort intelligence)
         {
             _logger.LogDebug("Modify sttus");
@@ -50,6 +50,23 @@ namespace Rhisis.World.Systems.Statistics
             player.Attributes.IncreaseAttribute(DefineAttributes.DEX, dexterity);
             player.Attributes.IncreaseAttribute(DefineAttributes.INT, intelligence);
             player.Statistics.StatPoints -= (ushort)total;
+
+            _playerPacketFactory.SendPlayerUpdateState(player);
+        }
+
+        public void Restat(IPlayerEntity player)
+        {
+            const int DefaultAttributePoints = 15;
+
+            player.Attributes[DefineAttributes.STR] = DefaultAttributePoints;
+            player.Attributes[DefineAttributes.STA] = DefaultAttributePoints;
+            player.Attributes[DefineAttributes.DEX] = DefaultAttributePoints;
+            player.Attributes[DefineAttributes.INT] = DefaultAttributePoints;
+            player.Attributes[DefineAttributes.HP] = PlayerHelper.GetMaxHP(player);
+            player.Attributes[DefineAttributes.MP] = PlayerHelper.GetMaxMP(player);
+            player.Attributes[DefineAttributes.FP] = PlayerHelper.GetMaxFP(player);
+
+            player.Statistics.StatPoints = (ushort)((player.Object.Level - 1) * 2);
 
             _playerPacketFactory.SendPlayerUpdateState(player);
         }

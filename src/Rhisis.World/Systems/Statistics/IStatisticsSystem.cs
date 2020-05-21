@@ -13,5 +13,11 @@ namespace Rhisis.World.Systems.Statistics
         /// <param name="dexterity">Dexterity.</param>
         /// <param name="intelligence">Intelligence.</param>
         void UpdateStatistics(IPlayerEntity player, ushort strength, ushort stamina, ushort dexterity, ushort intelligence);
+
+        /// <summary>
+        /// Resets player statistics.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        void Restat(IPlayerEntity player);
     }
 }

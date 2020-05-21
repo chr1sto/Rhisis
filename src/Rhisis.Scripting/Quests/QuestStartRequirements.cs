@@ -2,6 +2,7 @@
 using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Scripting.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,12 +29,12 @@ namespace Rhisis.Scripting.Quests
         /// <param name="questStartRequirementsTable">Quest requirements lua table.</param>
         internal QuestStartRequirements(LuaTable questStartRequirementsTable)
         {
-            MinLevel = LuaScriptHelper.GetValue<int>(questStartRequirementsTable, QuestScriptConstants.MinLevel);
-            MaxLevel = LuaScriptHelper.GetValue<int>(questStartRequirementsTable, QuestScriptConstants.MaxLevel);
+            MinLevel = questStartRequirementsTable.Get<int>(QuestScriptConstants.MinLevel);
+            MaxLevel = questStartRequirementsTable.Get<int>(QuestScriptConstants.MaxLevel);
             Jobs = (questStartRequirementsTable[QuestScriptConstants.Job] as LuaTable)?.Values
                 .ToArray<string>()
                 .Select(x => (DefineJob.Job)Enum.Parse(typeof(DefineJob.Job), x));
-            PreviousQuestId = LuaScriptHelper.GetValue<string>(questStartRequirementsTable, QuestScriptConstants.PreviousQuest);
+            PreviousQuestId = questStartRequirementsTable.Get<string>(QuestScriptConstants.PreviousQuest);
         }
     }
 }

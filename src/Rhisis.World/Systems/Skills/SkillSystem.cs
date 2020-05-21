@@ -42,13 +42,17 @@ namespace Rhisis.World.Systems.Skills
         private readonly IProjectileSystem _projectileSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
+        private readonly IPlayerPacketFactory _playerPacketFactory;
         private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
         /// <inheritdoc />
         public int Order => 1;
 
-        public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources, IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
+        public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources, 
+            IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, 
+            ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, IPlayerPacketFactory playerPacketFactory,
+            ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _database = database;
@@ -58,6 +62,7 @@ namespace Rhisis.World.Systems.Skills
             _projectileSystem = projectileSystem;
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;
+            _playerPacketFactory = playerPacketFactory;
             _specialEffectPacketFactory = specialEffectPacketFactory;
             _moverPacketFactory = moverPacketFactory;
         }
@@ -339,6 +344,26 @@ namespace Rhisis.World.Systems.Skills
             // TODO: more skill checks
 
             return true;
+        }
+
+        public void Reskill(IPlayerEntity player)
+        {
+            foreach (SkillInfo skill in player.SkillTree.Skills)
+            {
+                player.Statistics.SkillPoints += (ushort)(skill.Level * SkillPointUsage[skill.Data.JobType]);
+                skill.Level = 0;
+            }
+
+            _skillPacketFactory.SendSkillReset(player, player.Statistics.SkillPoints);
+        }
+
+        public void AddSkillPoints(IPlayerEntity player, ushort skillPoints)
+        {
+            if (skillPoints > 0)
+            {
+                player.Statistics.SkillPoints += skillPoints;
+                _playerPacketFactory.SendPlayerExperience(player);
+            }
         }
 
         /// <summary>
