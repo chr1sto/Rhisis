@@ -137,12 +137,15 @@ namespace Rhisis.Cluster.Packets
                     packet.Write(character.Intelligence);
                     packet.Write(0); // Mode ??
 
-                    IEnumerable<DbItem> equipedItems = character.Items.Where(x => x.ItemSlot > 42);
+                    const int EquipOffset = 42;
+                    IEnumerable<DbItem> equipedItems = character.Items.Where(x => x.ItemSlot > EquipOffset && !x.IsDeleted);
 
                     packet.Write(equipedItems.Count());
 
                     foreach (DbItem item in equipedItems)
+                    {
                         packet.Write(item.ItemId);
+                    }
                 }
 
                 packet.Write(0); // Messenger?
