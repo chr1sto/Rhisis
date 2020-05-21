@@ -5,12 +5,22 @@ using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Systems.Experience
 {
     [Injectable]
     public sealed class ExperienceSystem : IExperienceSystem
     {
+        private static readonly IReadOnlyDictionary<DefineJob.JobType, int> _experienceLevelLimits = new Dictionary<DefineJob.JobType, int>()
+        {
+            { DefineJob.JobType.JTYPE_BASE, (int)DefineJob.JobMax.MAX_JOB_LEVEL },
+            { DefineJob.JobType.JTYPE_EXPERT, (int)DefineJob.JobMax.MAX_JOB_LEVEL + (int)DefineJob.JobMax.MAX_EXP_LEVEL },
+            { DefineJob.JobType.JTYPE_PRO, (int)DefineJob.JobMax.MAX_LEVEL },
+            { DefineJob.JobType.JTYPE_MASTER, (int)DefineJob.JobMax.MAX_LEVEL },
+            { DefineJob.JobType.JTYPE_HERO, (int)DefineJob.JobMax.MAX_LEGEND_LEVEL }
+        };
+
         private readonly IGameResources _gameResources;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
@@ -60,6 +70,13 @@ namespace Rhisis.World.Systems.Experience
         /// <returns>True if the player has level up; false otherwise.</returns>
         private bool GiveExperienceToPlayer(IPlayerEntity player, long experience)
         {
+            if (HasReachedMaxLevel(player))
+            {
+                player.PlayerData.Experience = 0;
+
+                return false;
+            }
+
             var nextLevel = player.Object.Level + 1;
             CharacterExpTableData nextLevelExpTable = _gameResources.ExpTables.GetCharacterExp(nextLevel);
             player.PlayerData.Experience += experience;
@@ -71,7 +88,9 @@ namespace Rhisis.World.Systems.Experience
                 ProcessLevelUp(player, (ushort)nextLevelExpTable.Gp);
 
                 if (remainingExp > 0)
+                {
                     GiveExperienceToPlayer(player, remainingExp); // Multiple level up
+                }
 
                 return true;
             }
@@ -116,6 +135,21 @@ namespace Rhisis.World.Systems.Experience
             player.Attributes[DefineAttributes.HP] = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);
             player.Attributes[DefineAttributes.MP] = HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, player.PlayerData.JobData.MaxMpFactor, true);
             player.Attributes[DefineAttributes.FP] = HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, player.PlayerData.JobData.MaxFpFactor, true);
+        }
+
+        /// <summary>
+        /// Checks if the player has reached the maximum level for its job.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <returns>True if the player has reached the maximum level for its job; false otherwise.</returns>
+        private bool HasReachedMaxLevel(IPlayerEntity player)
+        {
+            if (!_experienceLevelLimits.TryGetValue(player.PlayerData.JobData.Type, out int limitLevel))
+            {
+                return false;
+            }
+
+            return player.Object.Level >= limitLevel;
         }
     }
 }
