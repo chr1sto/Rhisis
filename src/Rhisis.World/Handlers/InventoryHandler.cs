@@ -1,4 +1,5 @@
-﻿using Rhisis.Network.Packets;
+﻿using Microsoft.Extensions.Logging;
+using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Systems.Inventory;
@@ -12,14 +13,17 @@ namespace Rhisis.World.Handlers
     [Handler]
     public class InventoryHandler
     {
+        private readonly ILogger<InventoryHandler> _logger;
         private readonly IInventorySystem _inventorySystem;
 
         /// <summary>
         /// Creates a new <see cref="InventoryHandler"/> instance.
         /// </summary>
+        /// <param name="logger">Logger.</param>
         /// <param name="inventorySystem">Inventory System.</param>
-        public InventoryHandler(IInventorySystem inventorySystem)
+        public InventoryHandler(ILogger<InventoryHandler> logger, IInventorySystem inventorySystem)
         {
+            _logger = logger;
             _inventorySystem = inventorySystem;
         }
 
@@ -75,6 +79,12 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.DOUSEITEM)]
         public void OnUseItem(IWorldServerClient serverClient, DoUseItemPacket packet)
         {
+            if (!string.IsNullOrWhiteSpace(serverClient.Player.PlayerData.CurrentShopName))
+            {
+                _logger.LogTrace($"Player {serverClient.Player} tried to use an item while visiting a NPC shop.");
+                return;
+            }
+
             _inventorySystem.UseItem(serverClient.Player, packet.UniqueItemId, packet.Part);
         }
     }
