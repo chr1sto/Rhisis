@@ -25,8 +25,7 @@ namespace Rhisis.World.Packets
         /// <param name="motionOption">Motion options.</param>
         /// <param name="tickCount">Tick count.</param>
         void SendMoverMoved(IWorldEntity entity, Vector3 beginPosition, Vector3 destinationPosition,
-            float angle, uint state, uint stateFlag, uint motion, int motionEx, int loop, uint motionOption,
-            long tickCount);
+            float angle, int state, int stateFlag, int motion, int motionEx, int loop, int motionOption, long tickCount);
 
         /// <summary>
         /// Sends a information telling that the entity has a different behavior.

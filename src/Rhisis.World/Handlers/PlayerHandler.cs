@@ -82,21 +82,19 @@ namespace Rhisis.World.Handlers
             // TODO: Check if player is flying
 
             serverClient.Player.Follow.Reset();
-            serverClient.Player.Battle.Reset();
+            serverClient.Player.Battle.Reset(); 
+            serverClient.Player.Moves.DestinationPosition.Reset();
             serverClient.Player.Object.Position = packet.BeginPosition + packet.DestinationPosition;
             serverClient.Player.Object.Angle = packet.Angle;
             serverClient.Player.Object.MovingFlags = (ObjectState)packet.State;
             serverClient.Player.Object.MotionFlags = (StateFlags)packet.StateFlag;
-            serverClient.Player.Moves.IsMovingWithKeyboard = serverClient.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE) || 
-                serverClient.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE);
-            serverClient.Player.Moves.DestinationPosition = packet.BeginPosition + packet.DestinationPosition;
 
             _moverPacketFactory.SendMoverMoved(serverClient.Player,
                 packet.BeginPosition,
                 packet.DestinationPosition,
                 serverClient.Player.Object.Angle, 
-                (uint)serverClient.Player.Object.MovingFlags, 
-                (uint)serverClient.Player.Object.MotionFlags,
+                (int)serverClient.Player.Object.MovingFlags, 
+                (int)serverClient.Player.Object.MotionFlags,
                 packet.Motion,
                 packet.MotionEx,
                 packet.Loop,
@@ -115,13 +113,11 @@ namespace Rhisis.World.Handlers
 
             // TODO: check if player is flying
 
+            serverClient.Player.Moves.DestinationPosition.Reset();
             serverClient.Player.Object.Position = packet.BeginPosition + packet.DestinationPosition;
             serverClient.Player.Object.Angle = packet.Angle;
             serverClient.Player.Object.MovingFlags = (ObjectState)packet.State;
             serverClient.Player.Object.MotionFlags = (StateFlags)packet.StateFlag;
-            serverClient.Player.Moves.IsMovingWithKeyboard = serverClient.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE) ||
-                serverClient.Player.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE);
-            serverClient.Player.Moves.DestinationPosition = packet.BeginPosition + packet.DestinationPosition;
 
             _moverPacketFactory.SendMoverBehavior(serverClient.Player,
                 packet.BeginPosition,

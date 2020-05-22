@@ -3,6 +3,9 @@ using Rhisis.Core.Structures;
 
 namespace Rhisis.Network.Packets.World
 {
+    /// <summary>
+    /// Structure for the <see cref="PacketType.PLAYERMOVED"/> packet.
+    /// </summary>
     public class PlayerMovedPacket : IPacketDeserializer
     {
         /// <summary>
@@ -28,12 +31,12 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the state flag. (Motion flag)
         /// </summary>
-        public uint StateFlag { get; private set; }
+        public int StateFlag { get; private set; }
 
         /// <summary>
         /// Gets the motion.
         /// </summary>
-        public uint Motion { get; private set; }
+        public int Motion { get; private set; }
 
         /// <summary>
         /// Gets the motion ex.
@@ -48,7 +51,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the motion option.
         /// </summary>
-        public uint MotionOption { get; private set; }
+        public int MotionOption { get; private set; }
 
         /// <summary>
         /// Gets the tick count.
@@ -62,11 +65,11 @@ namespace Rhisis.Network.Packets.World
             DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
             Angle = packet.Read<float>();
             State = packet.Read<uint>();
-            StateFlag = packet.Read<uint>();
-            Motion = packet.Read<uint>();
+            StateFlag = packet.Read<int>();
+            Motion = packet.Read<int>();
             MotionEx = packet.Read<int>();
             Loop = packet.Read<int>();
-            MotionOption = packet.Read<uint>();
+            MotionOption = packet.Read<int>();
             TickCount = packet.Read<long>();
         }
     }

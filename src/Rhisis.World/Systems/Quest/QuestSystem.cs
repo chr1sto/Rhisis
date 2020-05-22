@@ -461,14 +461,6 @@ namespace Rhisis.World.Systems.Quest
                 }
             }
 
-            // Give gold reward
-            int goldReward = quest.Rewards.Gold;
-
-            if (goldReward > 0 && _playerDataSystem.IncreaseGold(player, goldReward))
-            {
-                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, goldReward.ToString("###,###,###,###"), player.PlayerData.Gold.ToString("###,###,###,###"));
-            }
-
             // Remove quest items from inventory
             if (quest.EndConditions.Items != null && quest.EndConditions.Items.Any())
             {
@@ -489,12 +481,16 @@ namespace Rhisis.World.Systems.Quest
                 }
             }
 
-            // Give experience
-            long expReward = quest.Rewards.Experience;
-
-            if (expReward > 0)
+            if (quest.Rewards.Gold > 0 && _playerDataSystem.IncreaseGold(player, quest.Rewards.Gold))
             {
-                _experienceSystem.GiveExeperience(player, expReward);
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPMONEY, 
+                    quest.Rewards.Gold.ToString("###,###,###,###"), 
+                    player.PlayerData.Gold.ToString("###,###,###,###"));
+            }
+
+            if (quest.Rewards.Experience > 0)
+            {
+                _experienceSystem.GiveExeperience(player, quest.Rewards.Experience);
                 _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPEXP);
             }
 

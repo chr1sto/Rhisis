@@ -13,7 +13,7 @@ namespace Rhisis.World.Packets.Internal
     internal class MoverPacketFactory : PacketFactoryBase, IMoverPacketFactory
     {
         /// <inheritdoc />
-        public void SendMoverMoved(IWorldEntity entity, Vector3 beginPosition, Vector3 destinationPosition, float angle, uint state, uint stateFlag, uint motion, int motionEx, int loop, uint motionOption, long tickCount)
+        public void SendMoverMoved(IWorldEntity entity, Vector3 beginPosition, Vector3 destinationPosition, float angle, int state, int stateFlag, int motion, int motionEx, int loop, int motionOption, long tickCount)
         {
             using var packet = new FFPacket();
 
@@ -29,7 +29,7 @@ namespace Rhisis.World.Packets.Internal
             {
                 if (playerEntity.PlayerData.Mode.HasFlag(ModeType.TRANSPARENT_MODE)) 
                 {
-                    packet.Write(ObjectState.OBJSTA_STAND);
+                    packet.Write((int)ObjectState.OBJSTA_STAND);
                 }
                 else
                 {
