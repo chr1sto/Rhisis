@@ -126,28 +126,8 @@ namespace Rhisis.World.Systems.Mobility
 
         private void UpdatePosition(ILivingEntity entity, float x, float z)
         {
-            if (entity is IPlayerEntity && entity.Moves.IsMovingWithKeyboard)
-            {
-                float angle = entity.Object.Angle;
-                var movementX = (float)(Math.Sin(angle * (Math.PI / 180)) * Math.Sqrt(x * x + z * z));
-                var movementZ = (float)(Math.Cos(angle * (Math.PI / 180)) * Math.Sqrt(x * x + z * z));
-
-                if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE))
-                {
-                    entity.Object.Position.X += movementX;
-                    entity.Object.Position.Z -= movementZ;
-                }
-                else if (entity.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_BMOVE))
-                {
-                    entity.Object.Position.X -= movementX;
-                    entity.Object.Position.Z += movementZ;
-                }
-            }
-            else
-            {
-                entity.Object.Position.X += x;
-                entity.Object.Position.Z += z;
-            }
+            entity.Object.Position.X += x;
+            entity.Object.Position.Z += z;
         }
     }
 }

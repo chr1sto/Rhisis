@@ -22,8 +22,6 @@ namespace Rhisis.World.Game.Components
 
         public bool ReturningToOriginalPosition { get; set; }
 
-        public bool IsMovingWithKeyboard { get; set; }
-
         public MovableComponent()
         {
             DestinationPosition = new Vector3();
