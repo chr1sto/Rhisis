@@ -8,6 +8,20 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Released]
 
+## [0.4.3](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.2) - 2020-05-23
+
+### Fixes
+
+- ![world] Fix `/system` and `/sys` GM command ([#396](https://github.com/Eastrall/Rhisis/pull/396))
+- ![cluster] Fix duplicate weapon on character screen ([#402](https://github.com/Eastrall/Rhisis/pull/402))
+- ![world] Prevent user from level up if it has reached the maximum level for its job ([#406](https://github.com/Eastrall/Rhisis/pull/406))
+- ![world] Fix broken jump animation ([#410](https://github.com/Eastrall/Rhisis/pull/410))
+- ![world] Prevent user from using an item if visiting a NPC shop ([#412](https://github.com/Eastrall/Rhisis/pull/412))
+
+### Features
+
+- ![world] Add `restat`, `reskill` and `skillPoints` entries to the Quest API ([#408](https://github.com/Eastrall/Rhisis/pull/408))
+
 ## [0.4.2](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.2) - 2020-05-20
 
 ### Fixes
