@@ -46,7 +46,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.World.Tests", "test\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Scripting", "src\Rhisis.Scripting\Rhisis.Scripting.csproj", "{28B8CF39-9385-4794-9614-9762A02ED66D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Testing", "test\Rhisis.Testing\Rhisis.Testing.csproj", "{D76C60D9-9859-4B92-8574-074B1EEE7FEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Testing", "test\Rhisis.Testing\Rhisis.Testing.csproj", "{D76C60D9-9859-4B92-8574-074B1EEE7FEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

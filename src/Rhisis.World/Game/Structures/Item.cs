@@ -2,9 +2,7 @@
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Database.Entities;
-using Rhisis.World.Systems.Inventory;
 using Sylver.Network.Data;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -16,17 +14,18 @@ namespace Rhisis.World.Game.Structures
     [DebuggerDisplay("({Quantity}) {Data?.Name ?? \"Empty\"} +{Refine} ({Element}+{ElementRefine})")]
     public class Item : ItemDescriptor
     {
+        public const int Empty = -1;
         public const int RefineMax = 10;
 
         /// <summary>
         /// Flyff item refine table.
         /// </summary>
-        public static readonly IReadOnlyCollection<int> RefineTable = new[] {0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24};
+        public static readonly IReadOnlyCollection<int> RefineTable = new[] { 0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24 };
 
         /// <summary>
         /// Gets the item unique Id.
         /// </summary>
-        public int UniqueId { get; set; }
+        public int Index { get; set; }
 
         /// <summary>
         /// Gets the creator id of the item.
@@ -52,10 +51,10 @@ namespace Rhisis.World.Game.Structures
         /// Creates an empty <see cref="Item"/>.
         /// </summary>
         /// <remarks>
-        /// All values set to -1.
+        /// All values set to <see cref="Empty"/>.
         /// </remarks>
         public Item()
-            : this(-1, -1, -1, -1, -1)
+            : this(Empty, Empty, Empty, Empty, Empty)
         {
         }
 
@@ -64,7 +63,7 @@ namespace Rhisis.World.Game.Structures
         /// </summary>
         /// <param name="id">Item Id.</param>
         public Item(int id)
-            : this(id, -1, -1, -1, -1)
+            : this(id, Empty, Empty, Empty, Empty)
         {
         }
 
@@ -76,7 +75,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="creatorId">Id of the character that created the object (for GM)</param>
         /// <param name="slot">Item slot</param>
         public Item(int id, int quantity, int creatorId, int slot)
-            : this(id, quantity, creatorId, slot, -1)
+            : this(id, quantity, creatorId, slot, Empty)
         {
         }
 
@@ -92,7 +91,7 @@ namespace Rhisis.World.Game.Structures
             : this(id, quantity, creatorId, slot, uniqueId, 0)
         {
         }
-        
+
         /// <summary>
         /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot and refine.
         /// </summary>
@@ -157,7 +156,7 @@ namespace Rhisis.World.Game.Structures
             Quantity = quantity;
             CreatorId = creatorId;
             Slot = slot;
-            UniqueId = uniqueId;
+            Index = uniqueId;
             Refine = refine;
             Element = element;
             ElementRefine = elementRefine;
@@ -201,18 +200,18 @@ namespace Rhisis.World.Game.Structures
         /// Serialize the item into the packet.
         /// </summary>
         /// <param name="packet"></param>
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(INetPacketStream packet, int itemIndex)
         {
-            packet.Write(UniqueId);
+            packet.Write(itemIndex);
             packet.Write(Id);
             packet.Write(0); // Serial number
             packet.Write(Data?.Name.TakeCharacters(31) ?? "[undefined]");
-            packet.Write((short) Quantity);
+            packet.Write((short)Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp
             packet.Write(0); // Repair
             packet.Write<byte>(0); // flag ?
-            packet.Write((int) Refine);
+            packet.Write((int)Refine);
             packet.Write(0); // guild id (cloaks?)
             packet.Write((byte)Element);
             packet.Write((int)ElementRefine);
@@ -226,7 +225,7 @@ namespace Rhisis.World.Game.Structures
             packet.Write<byte>(0); // pet
             packet.Write(0); // m_bTranformVisPet
         }
-        
+
         /// <summary>
         /// Clones this <see cref="Item"/>.
         /// </summary>
@@ -237,9 +236,20 @@ namespace Rhisis.World.Game.Structures
             {
                 ExtraUsed = ExtraUsed,
                 Slot = Slot,
-                UniqueId = UniqueId,
+                Index = Index,
                 Quantity = Quantity
             };
+        }
+
+        public void CopyFrom(Item itemToCopy)
+        {
+            Id = itemToCopy.Id;
+            CreatorId = itemToCopy.CreatorId;
+            Refine = itemToCopy.Refine;
+            Element = itemToCopy.Element;
+            ElementRefine = itemToCopy.ElementRefine;
+            Quantity = itemToCopy.Quantity;
+            Data = itemToCopy.Data;
         }
 
         /// <summary>
@@ -247,15 +257,15 @@ namespace Rhisis.World.Game.Structures
         /// </summary>
         public void Reset()
         {
-            Id = -1;
+            Id = Empty;
             DbId = -1;
             Quantity = 0;
-            CreatorId = -1;
+            CreatorId = Empty;
             Refine = 0;
             Element = 0;
             ElementRefine = 0;
             ExtraUsed = 0;
-            Slot = -1;
+            Slot = Empty;
             Data = null;
         }
 

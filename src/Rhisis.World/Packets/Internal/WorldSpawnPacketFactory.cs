@@ -368,14 +368,13 @@ namespace Rhisis.World.Packets.Internal
             }
             else if (entityToSpawn.Type == WorldEntityType.Drop)
             {
-                var dropItemEntity = entityToSpawn as IItemEntity;
-                if (dropItemEntity is null)
+                if (!(entityToSpawn is IItemEntity dropItemEntity))
                 {
                     packet.Dispose();
                     return;
                 }
 
-                dropItemEntity.Drop.Item.Serialize(packet);
+                dropItemEntity.Drop.Item.Serialize(packet, -1);
             }
 
             SendToPlayer(player, packet);

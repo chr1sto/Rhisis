@@ -67,5 +67,28 @@ namespace Rhisis.Core.Structures.Game
 
         [IgnoreDataMember]
         public JobData Parent { get; set; }
+
+        /// <summary>
+        /// Checks if the given job is anterior to the player's job.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="job">Job.</param>
+        /// <returns>True if the given job is anterior to the player's job; false otherwise.</returns>
+        public bool IsAnteriorJob(DefineJob.Job job)
+        {
+            JobData jobData = this;
+
+            while (jobData != null)
+            {
+                if (jobData.Id == job)
+                {
+                    return true;
+                }
+
+                jobData = jobData.Parent;
+            }
+
+            return false;
+        }
     }
 }

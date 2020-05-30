@@ -31,8 +31,8 @@ namespace Rhisis.World.Packets.Internal
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.DOEQUIP);
-            packet.Write(item.UniqueId);
-            packet.Write((byte)0); // Guild id
+            packet.Write((byte)item.Index);
+            packet.Write(0); // Guild id
             packet.Write(Convert.ToByte(equip));
             packet.Write(item.Id);
             packet.Write(item.Refines);
@@ -49,9 +49,9 @@ namespace Rhisis.World.Packets.Internal
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.CREATEITEM);
             packet.Write<byte>(0);
-            item.Serialize(packet);
+            item.Serialize(packet, -1);
             packet.Write<byte>(1);
-            packet.Write((byte)item.UniqueId);
+            packet.Write((byte)item.Index);
             packet.Write((short)item.Quantity);
 
             SendToPlayer(entity, packet);

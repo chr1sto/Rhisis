@@ -11,6 +11,8 @@ namespace Rhisis.World.Game.Components
 {
     public class ItemContainerComponent : IPacketSerializer, IEnumerable<Item>
     {
+        protected const int Empty = -1;
+
         protected readonly List<Item> _items;
         protected readonly int[] _itemsMask;
 
@@ -44,16 +46,50 @@ namespace Rhisis.World.Game.Components
             MaxCapacity = maxCapacity;
             MaxStorageCapacity = maxStorageCapacity;
             ExtraCapacity = MaxCapacity - MaxStorageCapacity;
-            _itemsMask = Enumerable.Range(0, MaxCapacity).ToArray();
-            _items = new List<Item>(MaxCapacity);
+            _itemsMask = new int[MaxCapacity];
+            _items = Enumerable.Repeat((Item)null, MaxCapacity).ToList();
 
             for (int i = 0; i < MaxCapacity; i++)
             {
-                _items.Add(new Item
+                _items[i] = new Item(Empty)
                 {
-                    Slot = i,
-                    UniqueId = i
-                });
+                    Index = i
+                };
+
+                if (i < MaxStorageCapacity)
+                {
+                    _items[i].Slot = i;
+                    _itemsMask[i] = i;
+                }
+                else
+                {
+                    _itemsMask[i] = Empty;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initializes the item container.
+        /// </summary>
+        /// <param name="items">Items.</param>
+        public void Initialize(IEnumerable<Item> items)
+        {
+            int itemIndex;
+            int itemsCount = Math.Min(items.Count(), MaxCapacity);
+
+            for (itemIndex = 0; itemIndex < itemsCount; itemIndex++)
+            {
+                Item item = items.ElementAtOrDefault(itemIndex);
+
+                if (item != null)
+                {
+                    int slot = item.Slot;
+
+                    _items[slot].CopyFrom(item);
+                    _items[slot].Slot = slot;
+                    _items[slot].Index = slot;
+                    _itemsMask[slot] = slot;
+                }
             }
         }
 
@@ -71,7 +107,7 @@ namespace Rhisis.World.Game.Components
                 return null;
             }
 
-            return item.Id != -1 ? item : null;
+            return item.Id != Empty ? item : null;
         }
 
         /// <summary>
@@ -88,19 +124,26 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public Item GetItemAtSlot(int slot)
         {
-            if (slot < 0 || slot > MaxCapacity)
+            if (slot < 0 || slot >= MaxCapacity)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            Item item = _items[_itemsMask[slot]];
+            int itemIndex = _itemsMask[slot];
+
+            if (itemIndex < 0 || itemIndex >= MaxCapacity)
+            {
+                return null;
+            }
+
+            Item item = _items[itemIndex];
 
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item), $"No item found at slot {slot}.");
             }
 
-            return item.Id != -1 ? item : null;
+            return item.Id != Empty ? item : null;
         }
 
         /// <summary>
@@ -122,36 +165,89 @@ namespace Rhisis.World.Game.Components
                 throw new ArgumentNullException(nameof(item), $"No item found at index {index}.");
             }
 
-            return item.Id != -1 ? item : null;
+            return item.Id != Empty ? item : null;
         }
 
         /// <summary>
         /// Gets the number of items of the inventory.
         /// </summary>
         /// <returns></returns>
-        public int GetItemCount() => _items.Count(x => x.Id != -1);
+        public int GetItemCount() => _items.Count(x => x.Id != Empty);
+
+        /// <summary>
+        /// Gts the number of items in the inventory storage area.
+        /// </summary>
+        /// <returns></returns>
+        public int GetItemCountInStorage() => _items.GetRange(0, MaxStorageCapacity).Count(x => x.Id != Empty);
 
         /// <summary>
         /// Check if there is available slots in the container.
         /// </summary>
         /// <returns>True if there is available slots; false otherwise.</returns>
-        public bool HasAvailableSlots() => GetAvailableSlot() != -1;
+        [Obsolete]
+        public bool HasAvailableSlots() => GetAvailableSlot() != Empty;
+
+        /// <summary>
+        /// Check if the item container can store the given item.
+        /// </summary>
+        /// <param name="itemToStore">Item to store.</param>
+        /// <returns>True if the item container can store the item; false otherwise.</returns>
+        public bool CanStoreItem(Item itemToStore)
+        {
+            if (itemToStore == null)
+            {
+                return false;
+            }
+
+            int quantityToStore = itemToStore.Quantity;
+            int itemToStoreMaxQuantity = itemToStore.Data.PackMax;
+
+            for (int i = 0; i < MaxStorageCapacity; i++)
+            {
+                Item item = GetItemAtSlot(i);
+
+                if (item == null)
+                {
+                    if (quantityToStore > itemToStoreMaxQuantity)
+                    {
+                        quantityToStore -= itemToStoreMaxQuantity;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else if (item.Id == itemToStore.Id)
+                {
+                    if (item.Quantity + quantityToStore > itemToStoreMaxQuantity)
+                    {
+                        quantityToStore -= itemToStoreMaxQuantity - item.Quantity;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Get an available slot number.
         /// </summary>
-        /// <returns>Slot number if available; -1 otherwise.</returns>
+        /// <returns>Slot number if available; <see cref="Empty"/> otherwise.</returns>
         public int GetAvailableSlot()
         {
             for (int i = 0; i < MaxStorageCapacity; i++)
             {
-                if (_items[_itemsMask[i]].Id == -1)
+                if (_itemsMask[i] == Empty || _items[_itemsMask[i]].Id == Empty)
                 {
                     return i;
                 }
             }
 
-            return -1;
+            return Empty;
         }
 
         /// <summary>
@@ -169,6 +265,19 @@ namespace Rhisis.World.Game.Components
         public void Swap(int sourceSlot, int destinationSlot)
         {
             _itemsMask.Swap(sourceSlot, destinationSlot);
+
+            int itemSourceIndex = _itemsMask[sourceSlot];
+            int itemDestinationIndex = _itemsMask[destinationSlot];
+
+            if (itemSourceIndex != Empty)
+            {
+                _items[itemSourceIndex].Slot = sourceSlot;
+            }
+
+            if (itemDestinationIndex != Empty)
+            {
+                _items[itemDestinationIndex].Slot = destinationSlot;
+            }
         }
 
         /// <summary>
@@ -178,11 +287,10 @@ namespace Rhisis.World.Game.Components
         /// <param name="index">Index.</param>
         public void SetItemAtIndex(Item item, int index)
         {
-            _items[index] = item;
-
             if (item != null)
             {
-                item.UniqueId = index;
+                _items[index] = item;
+                _items[index].Index = index;
             }
         }
 
@@ -193,15 +301,110 @@ namespace Rhisis.World.Game.Components
         /// <param name="slot">Slot.</param>
         public void SetItemAtSlot(Item item, int slot)
         {
+            item.Slot = slot;
+
             SetItemAtIndex(item, _itemsMask[slot]);
+        }
+
+        /// <summary>
+        /// Adds an item to the item container.
+        /// </summary>
+        /// <param name="itemToAdd">Item to add.</param>
+        public IEnumerable<ItemCreationResult> AddItem(Item itemToAdd)
+        {
+            int quantity = itemToAdd.Quantity;
+            var result = new List<ItemCreationResult>();
+
+            if (!CanStoreItem(itemToAdd))
+            {
+                return result;
+            }
+
+            if (itemToAdd.Data.IsStackable)
+            {
+                for (int i = 0; i < MaxStorageCapacity; i++)
+                {
+                    int itemIndex = _itemsMask[i];
+
+                    if (itemIndex < 0 || itemIndex >= MaxCapacity)
+                    {
+                        continue;
+                    }
+
+                    Item inventoryItem = _items[itemIndex];
+
+                    if (inventoryItem.Id == itemToAdd.Id && inventoryItem.Quantity < inventoryItem.Data.PackMax)
+                    {
+                        if (inventoryItem.Quantity + quantity > inventoryItem.Data.PackMax)
+                        {
+                            quantity -= inventoryItem.Data.PackMax - inventoryItem.Quantity;
+                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
+                        }
+                        else
+                        {
+                            inventoryItem.Quantity += quantity;
+                            quantity = 0;
+                        }
+
+                        result.Add(new ItemCreationResult(ItemCreationActionType.Update, inventoryItem));
+
+                        if (quantity == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (quantity > 0)
+            {
+                for (int i = 0; i < MaxStorageCapacity; i++)
+                {
+                    int itemIndex = _itemsMask[i];
+
+                    if (itemIndex < 0 || itemIndex >= MaxCapacity)
+                    {
+                        continue;
+                    }
+
+                    Item inventoryItem = _items[itemIndex];
+
+                    if (inventoryItem.Id == Empty)
+                    {
+                        inventoryItem.CopyFrom(itemToAdd);
+                        inventoryItem.Index = itemIndex;
+                        inventoryItem.Slot = i;
+
+                        if (quantity > inventoryItem.Data.PackMax)
+                        {
+                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
+                            quantity -= inventoryItem.Quantity;
+                        }
+                        else
+                        {
+                            inventoryItem.Quantity = quantity;
+                            quantity = 0;
+                        }
+
+                        result.Add(new ItemCreationResult(ItemCreationActionType.Add, inventoryItem));
+
+                        if (quantity == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
         public void Serialize(INetPacketStream packet)
         {
-            foreach (int itemIndex in _itemsMask)
+            for (int i = 0; i < MaxCapacity; i++)
             {
-                packet.Write(itemIndex);
+                packet.Write(_itemsMask[i]);
             }
 
             packet.Write((byte)GetItemCount());
@@ -210,10 +413,10 @@ namespace Rhisis.World.Game.Components
             {
                 Item item = _items.ElementAt(i);
 
-                if (item.Id != -1)
+                if (item.Id != Empty)
                 {
                     packet.Write((byte)i);
-                    item.Serialize(packet);
+                    item.Serialize(packet, item.Index);
                 }
             }
 

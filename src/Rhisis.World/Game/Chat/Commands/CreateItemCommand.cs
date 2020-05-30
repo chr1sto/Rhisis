@@ -45,11 +45,6 @@ namespace Rhisis.World.Game.Chat
                 throw new ArgumentException($"Create item command must have at least one parameter.", nameof(parameters));
             }
 
-            if (!player.Inventory.HasAvailableSlots())
-            {
-                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                return;
-            }
             int quantity = parameters.Length >= 2 ? Convert.ToInt32(parameters[1]) : 1;
             byte refine = parameters.Length >= 3 ? Convert.ToByte(parameters[2]) : (byte)0;
             ElementType element = parameters.Length >= 4 ? (ElementType)Enum.Parse(typeof(ElementType), parameters[3].ToString(), true) : default;
@@ -66,8 +61,16 @@ namespace Rhisis.World.Game.Chat
                 itemToCreate = _itemFactory.CreateItem(itemId, refine, element, elementRefine, player.PlayerData.Id);
             }
 
-            if(itemToCreate != null)
+            if (!player.Inventory.CanStoreItem(itemToCreate))
+            {
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+                return;
+            }
+
+            if (itemToCreate != null)
+            {
                 _inventorySystem.CreateItem(player, itemToCreate, quantity, player.PlayerData.Id);
+            }
         }
     }
 }

@@ -142,14 +142,14 @@ namespace Rhisis.World.Tests.Systems
                 Assert.Null(_player.Inventory.GetItemAtSlot(sourceSlot));
                 Assert.NotNull(destinationItem);
                 Assert.Equal(sourceItemQuantity + destinationItemQuantity, destinationItem.Quantity);
-                _inventoryPacketFactoryMock.Verify(x => x.SendItemUpdate(_player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity), Times.Once());
+                _inventoryPacketFactoryMock.Verify(x => x.SendItemUpdate(_player, UpdateItemType.UI_NUM, destinationItem.Index, destinationItem.Quantity), Times.Once());
             }
             else
             {
                 Assert.Equal(destinationItemQuantity - sourceItemQuantity, sourceItem.Quantity);
                 Assert.Equal(itemPackMax, destinationItem.Quantity);
-                _inventoryPacketFactoryMock.Verify(x => x.SendItemUpdate(_player, UpdateItemType.UI_NUM, sourceItem.UniqueId, sourceItem.Quantity), Times.Once());
-                _inventoryPacketFactoryMock.Verify(x => x.SendItemUpdate(_player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity), Times.Once());
+                _inventoryPacketFactoryMock.Verify(x => x.SendItemUpdate(_player, UpdateItemType.UI_NUM, sourceItem.Index, sourceItem.Quantity), Times.Once());
+                _inventoryPacketFactoryMock.Verify(x => x.SendItemUpdate(_player, UpdateItemType.UI_NUM, destinationItem.Index, destinationItem.Quantity), Times.Once());
             }
         }
 
@@ -195,7 +195,7 @@ namespace Rhisis.World.Tests.Systems
 
             int itemToDeleteSlot = GetRandomSlotInUse();
             Item itemToDelete = _player.Inventory.GetItemAtSlot(itemToDeleteSlot);
-            int itemUniqueId = itemToDelete.UniqueId;
+            int itemUniqueId = itemToDelete.Index;
             int deleteQuantity = itemToDelete.Quantity;
 
             int deletedAmount = Service.DeleteItem(_player, itemUniqueId, deleteQuantity);
@@ -214,7 +214,7 @@ namespace Rhisis.World.Tests.Systems
 
             int itemToDeleteSlot = GetRandomSlotInUse();
             Item itemToDelete = _player.Inventory.GetItemAtSlot(itemToDeleteSlot);
-            int itemUniqueId = itemToDelete.UniqueId;
+            int itemUniqueId = itemToDelete.Index;
             int itemInitialQuantity = itemToDelete.Quantity;
             int deleteQuantity = itemInitialQuantity / 2;
 
@@ -244,7 +244,7 @@ namespace Rhisis.World.Tests.Systems
             int itemToDeleteSlot = GetRandomSlotInUse();
             Item itemToDelete = _player.Inventory.GetItemAtSlot(itemToDeleteSlot);
 
-            int deletedAmount = Service.DeleteItem(_player, itemToDelete.UniqueId, 0);
+            int deletedAmount = Service.DeleteItem(_player, itemToDelete.Index, 0);
 
             Assert.Equal(0, deletedAmount);
         }

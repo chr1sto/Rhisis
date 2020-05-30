@@ -208,7 +208,7 @@ namespace Rhisis.World.Systems.Inventory
                 item.Quantity--;
             }
 
-            _inventoryPacketFactory.SendItemUpdate(player, itemUpdateType, item.UniqueId, item.Quantity);
+            _inventoryPacketFactory.SendItemUpdate(player, itemUpdateType, item.Index, item.Quantity);
 
             if (item.Data.SfxObject3 != 0)
             {
