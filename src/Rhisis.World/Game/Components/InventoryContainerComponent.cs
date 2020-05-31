@@ -58,6 +58,53 @@ namespace Rhisis.World.Game.Components
         }
 
         /// <summary>
+        /// Equips an item to the given destination part.
+        /// </summary>
+        /// <param name="itemToEquip">Item to equip.</param>
+        /// <param name="destinationPart">Destination part.</param>
+        /// <returns>True if the item has been equiped; false otherwise.</returns>
+        public bool Equip(Item itemToEquip, ItemPartType destinationPart)
+        {
+            int sourceSlot = itemToEquip.Slot;
+            int destinationSlot = MaxStorageCapacity + (int)destinationPart;
+
+            if (itemToEquip.Slot == destinationSlot || itemToEquip.Slot >= MaxCapacity || destinationSlot >= MaxCapacity)
+            {
+                return false;
+            }
+
+            Swap(sourceSlot, destinationSlot);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Unequip an item.
+        /// </summary>
+        /// <param name="itemToUnequip">Item to unequip.</param>
+        /// <returns>True if the item has been unequiped; false otherwise.</returns>
+        public bool Unequip(Item itemToUnequip)
+        {
+            int slot = itemToUnequip.Slot;
+
+            if (slot >= MaxCapacity)
+            {
+                return false;
+            }
+
+            int availableSlot = GetAvailableSlot();
+
+            if (availableSlot != Empty)
+            {
+                Swap(slot, availableSlot);
+                
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Checks if the given item is equiped.
         /// </summary>
         /// <param name="item">Item to check.</param>

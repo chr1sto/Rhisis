@@ -13,6 +13,8 @@ using Rhisis.World.Game.Entities.Internal;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Structures;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.World.Game.Factories.Internal
@@ -76,23 +78,25 @@ namespace Rhisis.World.Game.Factories.Internal
 
             if (npc.NpcData != null && npc.NpcData.HasShop)
             {
+                const int NpcShopItemsPerTab = 100;
                 ShopData npcShopData = npc.NpcData.Shop;
                 npc.Shop = new ItemContainerComponent[npcShopData.Items.Length];
 
                 for (var i = 0; i < npcShopData.Items.Length; i++)
                 {
-                    npc.Shop[i] = new ItemContainerComponent(100);
+                    npc.Shop[i] = new ItemContainerComponent(NpcShopItemsPerTab);
 
-                    for (var j = 0; j < npcShopData.Items[i].Count && j < npc.Shop[i].MaxCapacity; j++)
+                    IEnumerable<Item> shopTabItems = npcShopData.Items[i].Select((item, index) =>
                     {
-                        ItemDescriptor item = npcShopData.Items[i][j];
                         Item shopItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
 
-                        shopItem.Slot = j;
+                        shopItem.Slot = index;
                         shopItem.Quantity = shopItem.Data.PackMax;
 
-                        npc.Shop[i].SetItemAtIndex(shopItem, j);
-                    }
+                        return shopItem;
+                    });
+
+                    npc.Shop[i].Initialize(shopTabItems.Take(NpcShopItemsPerTab));
                 }
             }
 

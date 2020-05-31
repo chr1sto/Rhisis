@@ -57,7 +57,7 @@ namespace Rhisis.World.Systems.Taskbar
                     if (item is null)
                         return;
 
-                    shortcut = new Shortcut(dbShortcut.SlotIndex, dbShortcut.Type, (uint)item.UniqueId, dbShortcut.ObjectType, dbShortcut.ObjectIndex, dbShortcut.UserId, dbShortcut.ObjectData, dbShortcut.Text);
+                    shortcut = new Shortcut(dbShortcut.SlotIndex, dbShortcut.Type, (uint)item.Index, dbShortcut.ObjectType, dbShortcut.ObjectIndex, dbShortcut.UserId, dbShortcut.ObjectData, dbShortcut.Text);
                 }
                 else
                 {

@@ -166,8 +166,8 @@ namespace Rhisis.World.Systems.Trade
             player.Trade.Items.SetItemAtIndex(inventoryItem.Clone(), destinationSlot);
             player.Trade.ItemCount++;
 
-            _tradePacketFactory.SendTradePut(player, trader: player, (byte)destinationSlot, (byte)itemType, (byte)inventoryItem.UniqueId, (short)tradingQuantity);
-            _tradePacketFactory.SendTradePut(target, trader: player, (byte)destinationSlot, (byte)itemType, (byte)inventoryItem.UniqueId, (short)tradingQuantity);
+            _tradePacketFactory.SendTradePut(player, trader: player, (byte)destinationSlot, (byte)itemType, (byte)inventoryItem.Index, (short)tradingQuantity);
+            _tradePacketFactory.SendTradePut(target, trader: player, (byte)destinationSlot, (byte)itemType, (byte)inventoryItem.Index, (short)tradingQuantity);
         }
 
         /// <inheritdoc />
@@ -451,7 +451,7 @@ namespace Rhisis.World.Systems.Trade
 
                 if (futureQuantity <= 0)
                 {
-                    _inventorySystem.DeleteItem(player, item.UniqueId, item.ExtraUsed, sendToPlayer: false);
+                    _inventorySystem.DeleteItem(player, item.Index, item.ExtraUsed, sendToPlayer: false);
                 }
 
                 _inventorySystem.CreateItem(target, newItem, tradeQuantity, sendToPlayer: false);

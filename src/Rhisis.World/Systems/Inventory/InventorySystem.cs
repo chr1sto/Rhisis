@@ -6,7 +6,6 @@ using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
@@ -70,20 +69,12 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public void Initialize(IPlayerEntity player)
         {
-            IEnumerable<DbItem> items = _database.Items.Where(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted);
-            
-            if (items != null)
-            {
-                foreach (DbItem databaseItem in items)
-                {
-                    Item item = _itemFactory.CreateItem(databaseItem);
+            IEnumerable<Item> items = _database.Items
+                .Where(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted)
+                .OrderBy(x => x.ItemSlot)
+                .Select(x => _itemFactory.CreateItem(x));
 
-                    if (item != null)
-                    {
-                        player.Inventory.SetItemAtIndex(item, item.Slot);
-                    }
-                }
-            }
+            player.Inventory.Initialize(items);
         }
 
         /// <inheritdoc />
@@ -105,7 +96,7 @@ namespace Rhisis.World.Systems.Inventory
             // Add or update items
             foreach (Item item in player.Inventory)
             {
-                if (item == null || item.Id == -1)
+                if (item == null || item.Id == Item.Empty)
                 {
                     continue;
                 }
@@ -148,104 +139,34 @@ namespace Rhisis.World.Systems.Inventory
         /// <inheritdoc />
         public int CreateItem(IPlayerEntity player, ItemDescriptor item, int quantity, int creatorId = -1, bool sendToPlayer = true)
         {
-            int createdAmount = 0;
+            Item itemToCreate = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
+            itemToCreate.Quantity = quantity;
 
-            if (item.Data.IsStackable)
+            IEnumerable<ItemCreationResult> creationResult = player.Inventory.AddItem(itemToCreate);
+
+            if (creationResult.Any())
             {
-                for (var i = 0; i < InventoryContainerComponent.InventorySize; i++)
+                if (sendToPlayer)
                 {
-                    Item inventoryItem = player.Inventory.GetItemAtIndex(i);
-
-                    if (inventoryItem?.Id == item.Id)
+                    foreach (ItemCreationResult itemResult in creationResult)
                     {
-                        if (inventoryItem.Quantity + quantity > item.Data.PackMax)
+                        if (itemResult.ActionType == ItemCreationActionType.Add)
                         {
-                            int boughtQuantity = inventoryItem.Data.PackMax - inventoryItem.Quantity;
-
-                            createdAmount = boughtQuantity;
-                            quantity -= boughtQuantity;
-                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
+                            _inventoryPacketFactory.SendItemCreation(player, itemResult.Item);
                         }
-                        else
+                        else if (itemResult.ActionType == ItemCreationActionType.Update)
                         {
-                            createdAmount = quantity;
-                            inventoryItem.Quantity += quantity;
-                            quantity = 0;
+                            _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemResult.Item.Index, itemResult.Item.Quantity);
                         }
-
-                        if (sendToPlayer)
-                        {
-                            _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
-                        }
-                    }
-                }
-
-                if (quantity > 0)
-                {
-                    int availableSlot = player.Inventory.GetAvailableSlot();
-
-                    if (availableSlot == -1)
-                    {
-                        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                    }
-                    else
-                    {
-                        Item newItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
-
-                        if (newItem == null)
-                        {
-                            throw new ArgumentNullException(nameof(newItem));
-                        }
-
-                        newItem.Quantity = quantity;
-                        newItem.Slot = availableSlot;
-
-                        player.Inventory.SetItemAtSlot(newItem, availableSlot);
-
-                        if (sendToPlayer)
-                        {
-                            _inventoryPacketFactory.SendItemCreation(player, newItem);
-                        }
-
-                        createdAmount += quantity;
                     }
                 }
             }
             else
             {
-                while (quantity > 0)
-                {
-                    int availableSlot = player.Inventory.GetAvailableSlot();
-
-                    if (availableSlot == -1)
-                    {
-                        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                        break;
-                    }
-
-                    Item newItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
-
-                    if (newItem == null)
-                    {
-                        throw new ArgumentNullException(nameof(newItem));
-                    }
-
-                    newItem.Quantity = 1;
-                    newItem.Slot = availableSlot;
-
-                    player.Inventory.SetItemAtSlot(newItem, availableSlot);
-
-                    if (sendToPlayer)
-                    {
-                        _inventoryPacketFactory.SendItemCreation(player, newItem);
-                    }
-
-                    createdAmount++;
-                    quantity--;
-                }
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
             }
 
-            return createdAmount;
+            return creationResult.Sum(x => x.Item.Quantity);
         }
 
         /// <inheritdoc />
@@ -275,13 +196,12 @@ namespace Rhisis.World.Systems.Inventory
 
             if (sendToPlayer)
             {
-                _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToDelete.UniqueId, itemToDelete.Quantity);
+                _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToDelete.Index, itemToDelete.Quantity);
             }
 
             if (itemToDelete.Quantity <= 0)
             {
                 itemToDelete.Reset();
-                //player.Inventory.SetItemAtSlot(null, itemToDelete.Slot);
             }
 
             return quantityToDelete;
@@ -323,25 +243,18 @@ namespace Rhisis.World.Systems.Inventory
                     destinationItem.Quantity = destinationItem.Data.PackMax;
                     sourceItem.Quantity = newQuantity - sourceItem.Data.PackMax;
 
-                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, sourceItem.UniqueId, sourceItem.Quantity);
-                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, sourceItem.Index, sourceItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.Index, destinationItem.Quantity);
                 }
                 else
                 {
                     destinationItem.Quantity = newQuantity;
-                    DeleteItem(player, sourceItem.UniqueId, sourceItem.Quantity);
-                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.UniqueId, destinationItem.Quantity);
+                    DeleteItem(player, sourceItem.Index, sourceItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.Index, destinationItem.Quantity);
                 }
             }
             else
             {
-                sourceItem.Slot = destinationSlot;
-
-                if (destinationItem != null && destinationItem.Slot != -1)
-                {
-                    destinationItem.Slot = sourceSlot;
-                }
-
                 player.Inventory.Swap(sourceSlot, destinationSlot);
 
                 if (sendToPlayer)
@@ -365,18 +278,12 @@ namespace Rhisis.World.Systems.Inventory
 
             if (isItemEquiped)
             {
-                int availableSlot = player.Inventory.GetAvailableSlot();
-
-                if (availableSlot == -1)
+                if (player.Inventory.Unequip(itemToEquip))
                 {
-                    _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                    return false;
+                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, false);
+
+                    _logger.LogDebug($"Unequip {itemToEquip} to slot {itemToEquip.Slot}");
                 }
-
-                MoveItem(player, (byte)itemToEquip.Slot, (byte)availableSlot, sendToPlayer: false);
-                _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, false);
-
-                _logger.LogDebug($"Unequip {itemToEquip} to slot {itemToEquip.Slot}");
             }
             else
             {
@@ -391,20 +298,21 @@ namespace Rhisis.World.Systems.Inventory
                 {
                     _logger.LogDebug($"Unequip {equipedItem} and equip {itemToEquip}");
 
-                    if (!EquipItem(player, equipedItem.UniqueId, (int)equipedItem.Data.Parts))
+                    if (player.Inventory.Unequip(equipedItem))
                     {
-                        _logger.LogWarning($"Failed to unequip {equipedItem} to equip {itemToEquip}");
-                        return false;
+                        _logger.LogDebug($"Unequip {equipedItem} to slot {equipedItem.Slot}");
                     }
-
                 }
 
-                int equipIndex = (int)itemToEquip.Data.Parts + InventoryContainerComponent.EquipOffset;
+                ItemPartType destinationPart = itemToEquip.Data.Parts;
+                // TODO: check dual weapon
 
-                MoveItem(player, (byte)itemToEquip.Slot, (byte)equipIndex, sendToPlayer: false);
-                _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, true);
+                if (player.Inventory.Equip(itemToEquip, destinationPart))
+                {
+                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, true);
 
-                _logger.LogDebug($"Equip {itemToEquip}");
+                    _logger.LogDebug($"Equip {itemToEquip}");
+                }
             }
 
             return true;
@@ -570,15 +478,30 @@ namespace Rhisis.World.Systems.Inventory
         {
             if (item.Data.ItemSex != int.MaxValue && item.Data.ItemSex != player.VisualAppearance.Gender)
             {
-                _logger.LogDebug("Wrong sex for armor");
+                _logger.LogTrace("Wrong sex for armor");
                 _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGSEX, item.Data.Name);
                 return false;
             }
 
             if (player.Object.Level < item.Data.LimitLevel)
             {
-                _logger.LogDebug("Player level to low");
+                _logger.LogTrace("Player level to low");
                 _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQLEVEL, item.Data.LimitLevel.ToString());
+                return false;
+            }
+
+            if (!player.PlayerData.JobData.IsAnteriorJob(item.Data.ItemJob))
+            {
+                _logger.LogTrace($"Player {player} tried to equip '{item.Data.Name}', but doesn't have the required job: '{item.Data.ItemJob}'.");
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGJOB);
+                return false;
+            }
+
+            Item equipedItem = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon);
+
+            if (item.Data.ItemKind3 == ItemKind3.ARROW && (equipedItem == null || equipedItem.Data.ItemKind3 != ItemKind3.BOW))
+            {
+                _logger.LogTrace($"Player {player} tried to equip arrows without having a bow equiped.");
                 return false;
             }
 

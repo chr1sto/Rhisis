@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
+using Rhisis.Cluster.Structures;
 using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
@@ -77,13 +78,15 @@ namespace Rhisis.Cluster.Handlers
                 return;
             }
 
-            IEnumerable<DbCharacter> userCharacters = GetCharacters(dbUser.Id);
+            IEnumerable<ClusterCharacter> characters = GetCharacters(dbUser.Id);
 
-            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, userCharacters);
+            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, characters);
             _clusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
 
             if (_clusterServer.ClusterConfiguration.EnableLoginProtect)
+            {
                 _clusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
+            }
         }
 
         /// <summary>
@@ -168,9 +171,9 @@ namespace Rhisis.Cluster.Handlers
 
             _logger.LogInformation($"Character '{newCharacter.Name}' has been created successfully for user '{dbUser.Username}' from {client.Socket.RemoteEndPoint}.");
 
-            IEnumerable<DbCharacter> dbCharacters = GetCharacters(dbUser.Id);
+            IEnumerable<ClusterCharacter> characters = GetCharacters(dbUser.Id);
 
-            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, dbCharacters);
+            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, characters);
         }
 
         /// <summary>
@@ -224,7 +227,7 @@ namespace Rhisis.Cluster.Handlers
 
             _logger.LogInformation($"Character '{characterToDelete.Name}' has been deleted successfully for user '{packet.Username}' from {client.Socket.RemoteEndPoint}.");
 
-            IEnumerable<DbCharacter> dbCharacters = GetCharacters(dbUser.Id);
+            IEnumerable<ClusterCharacter> dbCharacters = GetCharacters(dbUser.Id);
 
             _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, dbCharacters);
         }
@@ -282,11 +285,12 @@ namespace Rhisis.Cluster.Handlers
         /// </summary>
         /// <param name="userId">User id.</param>
         /// <returns>Collection of <see cref="DbCharacter"/>.</returns>
-        private IEnumerable<DbCharacter> GetCharacters(int userId)
+        private IEnumerable<ClusterCharacter> GetCharacters(int userId)
         {
             return _database.Characters.AsNoTracking()
                 .Include(x => x.Items)
-                .Where(x => x.UserId == userId && !x.IsDeleted);
+                .Where(x => x.UserId == userId && !x.IsDeleted)
+                .Select(x => new ClusterCharacter(x));
         }
     }
 }

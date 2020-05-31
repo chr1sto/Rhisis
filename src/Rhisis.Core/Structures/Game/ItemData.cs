@@ -33,6 +33,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwItemKind3")]
         public ItemKind3 ItemKind3 { get; set; }
 
+        [DataMember(Name = "dwItemJob")]
+        public DefineJob.Job ItemJob { get; set; }
+
         [DataMember(Name = "dwItemSex")]
         [DefaultValue(int.MaxValue)]
         public int ItemSex { get; set; }

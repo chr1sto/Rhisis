@@ -1,10 +1,10 @@
 ﻿using Rhisis.Network.Packets;
-using Rhisis.Database.Entities;
 using System.Collections.Generic;
 using Rhisis.Network;
 using Rhisis.Core.IO;
 using System.Linq;
 using Rhisis.Cluster.Client;
+using Rhisis.Cluster.Structures;
 
 namespace Rhisis.Cluster.Packets
 {
@@ -100,7 +100,7 @@ namespace Rhisis.Cluster.Packets
         }
 
         /// <inheritdoc />
-        public void SendPlayerList(IClusterClient client, int authenticationKey, IEnumerable<DbCharacter> characters)
+        public void SendPlayerList(IClusterClient client, int authenticationKey, IEnumerable<ClusterCharacter> characters)
         {
             using (var packet = new FFPacket())
             {
@@ -111,23 +111,23 @@ namespace Rhisis.Cluster.Packets
 
                 foreach (var character in characters)
                 {
-                    packet.Write((int)character.Slot);
+                    packet.Write(character.Slot);
                     packet.Write(1); // this number represents the selected character in the window
                     packet.Write(character.MapId);
-                    packet.Write(0x0B + character.Gender); // Model id
+                    packet.Write(0x0B + (byte)character.Gender); // Model id
                     packet.Write(character.Name);
-                    packet.Write(character.PosX);
-                    packet.Write(character.PosY);
-                    packet.Write(character.PosZ);
+                    packet.Write(character.PositionX);
+                    packet.Write(character.PositionY);
+                    packet.Write(character.PositionZ);
                     packet.Write(character.Id);
                     packet.Write(0); // Party id
                     packet.Write(0); // Guild id
                     packet.Write(0); // War Id
                     packet.Write(character.SkinSetId);
                     packet.Write(character.HairId);
-                    packet.Write((uint)character.HairColor);
+                    packet.Write(character.HairColor);
                     packet.Write(character.FaceId);
-                    packet.Write(character.Gender);
+                    packet.Write((byte)character.Gender);
                     packet.Write(character.JobId);
                     packet.Write(character.Level);
                     packet.Write(0); // Job Level (Maybe master or hero ?)
@@ -137,14 +137,11 @@ namespace Rhisis.Cluster.Packets
                     packet.Write(character.Intelligence);
                     packet.Write(0); // Mode ??
 
-                    const int EquipOffset = 42;
-                    IEnumerable<DbItem> equipedItems = character.Items.Where(x => x.ItemSlot > EquipOffset && !x.IsDeleted);
+                    packet.Write(character.EquipedItems.Count());
 
-                    packet.Write(equipedItems.Count());
-
-                    foreach (DbItem item in equipedItems)
+                    foreach (int equipedItemId in character.EquipedItems)
                     {
-                        packet.Write(item.ItemId);
+                        packet.Write(equipedItemId);
                     }
                 }
 

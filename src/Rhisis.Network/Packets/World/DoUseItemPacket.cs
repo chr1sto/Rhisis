@@ -30,7 +30,11 @@ namespace Rhisis.Network.Packets.World
             UniqueItemId = (packet.Read<int>() >> 16) & 0xFFFF;
             ObjectId = packet.Read<int>();
             Part = packet.Read<int>();
-            FlightSpeed = packet.Read<float>();
+
+            if (!packet.IsEndOfStream)
+            {
+                FlightSpeed = packet.Read<float>();
+            }
         }
     }
 }

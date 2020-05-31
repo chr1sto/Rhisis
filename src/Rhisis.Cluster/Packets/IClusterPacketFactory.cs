@@ -1,4 +1,5 @@
 ﻿using Rhisis.Cluster.Client;
+using Rhisis.Cluster.Structures;
 using Rhisis.Database.Entities;
 using Rhisis.Network.Packets;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace Rhisis.Cluster.Packets
         /// <param name="client">Client.</param>
         /// <param name="authenticationKey">Client authentication key.</param>
         /// <param name="characters">A list of the client's available characters.</param>
-        void SendPlayerList(IClusterClient client, int authenticationKey, IEnumerable<DbCharacter> characters);
+        void SendPlayerList(IClusterClient client, int authenticationKey, IEnumerable<ClusterCharacter> characters);
 
         /// <summary>
         /// Sends the selected world server host address.
