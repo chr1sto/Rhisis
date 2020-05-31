@@ -140,6 +140,8 @@ namespace Rhisis.World.Systems.Inventory
         public int CreateItem(IPlayerEntity player, ItemDescriptor item, int quantity, int creatorId = -1, bool sendToPlayer = true)
         {
             Item itemToCreate = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
+            itemToCreate.Quantity = quantity;
+
             IEnumerable<ItemCreationResult> creationResult = player.Inventory.AddItem(itemToCreate);
 
             if (creationResult.Any())
