@@ -153,9 +153,9 @@ namespace Rhisis.World.Game.Components
         /// <returns></returns>
         public Item GetItemAtIndex(int index)
         {
-            if (index < 0 || index > MaxCapacity)
+            if (index < 0 || index >= MaxCapacity)
             {
-                throw new IndexOutOfRangeException();
+                return null;
             }
 
             Item item = _items[index];
@@ -397,6 +397,26 @@ namespace Rhisis.World.Game.Components
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Remove the given item from the item container.
+        /// </summary>
+        /// <param name="itemToRemove">Item to remove.</param>
+        public void RemoveItem(Item itemToRemove)
+        {
+            if (itemToRemove == null || itemToRemove.Slot >= MaxCapacity)
+            {
+                return;
+            }
+
+            itemToRemove.Reset();
+
+            if (itemToRemove.Slot >= MaxStorageCapacity)
+            {
+                _itemsMask[itemToRemove.Slot] = Empty;
+                itemToRemove.Slot = Empty;
+            }
         }
 
         /// <inheritdoc />

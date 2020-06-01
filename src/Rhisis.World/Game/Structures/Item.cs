@@ -265,7 +265,6 @@ namespace Rhisis.World.Game.Structures
             Element = 0;
             ElementRefine = 0;
             ExtraUsed = 0;
-            Slot = Empty;
             Data = null;
         }
 
