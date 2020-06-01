@@ -1,21 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
+﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
+using Rhisis.Core.Structures.Configuration.World;
+using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Drop.EventArgs;
 
 namespace Rhisis.World.Systems.Drop
 {
-    [System(SystemType.Notifiable)]
-    public class DropSystem : ISystem
+    [Injectable]
+    public sealed class DropSystem : IDropSystem
     {
         public const long MaxDropChance = 3000000000;
         private const int DropGoldLimit1 = 9;
@@ -23,92 +20,55 @@ namespace Rhisis.World.Systems.Drop
         private const int DropGoldLimit3 = 99;
         private const float DropCircleRadius = 0.1f;
 
-        private static readonly ILogger<DropSystem> Logger = DependencyContainer.Instance.Resolve<ILogger<DropSystem>>();
-
-        /// <inheritdoc />
-        public WorldEntityType Type => WorldEntityType.Mover;
-
-        /// <inheritdoc />
-        public void Execute(IEntity entity, SystemEventArgs args)
-        {
-            if (args == null)
-            {
-                Logger.LogError($"Cannot execute {nameof(DropSystem)}. Arguments are null.");
-                return;
-            }
-
-            if (!args.CheckArguments())
-            {
-                Logger.LogError($"Cannot execute {nameof(DropSystem)} action: {args.GetType()} due to invalid arguments.");
-                return;
-            }
-
-            switch (args)
-            {
-                case DropItemEventArgs dropItemEventArgs:
-                    this.DropItem(entity, dropItemEventArgs);
-                    break;
-                case DropGoldEventArgs dropGoldEventArgs:
-                    this.DropGold(entity, dropGoldEventArgs);
-                    break;
-            }
-        }
+        private readonly IItemFactory _itemFactory;
+        private readonly WorldConfiguration _worldServerConfiguration;
 
         /// <summary>
-        /// Drops an item to the current entity layer.
+        /// Creates a new <see cref="DropSystem"/> instance.
         /// </summary>
-        /// <param name="entity">Entity</param>
-        /// <param name="e">Drop item event</param>
-        private void DropItem(IEntity entity, DropItemEventArgs e)
+        /// <param name="itemFactory">Item factory.</param>
+        /// <param name="worldServerConfiguration">World server configuration.</param>
+        public DropSystem(IItemFactory itemFactory, IOptions<WorldConfiguration> worldServerConfiguration)
         {
-            var worldServerConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
-            var drop = entity.Object.CurrentLayer.CreateEntity<ItemEntity>();
-
-            drop.Drop.Item = new Item(e.Item.Id, e.Item.Quantity, -1, -1, -1, e.Item.Refine);
-
-            if (e.Owner != null)
-            {
-                drop.Drop.Owner = e.Owner;
-                drop.Drop.OwnershipTime = Time.TimeInSeconds() + worldServerConfiguration.Drops.OwnershipTime;
-                drop.Drop.DespawnTime = Time.TimeInSeconds() + worldServerConfiguration.Drops.DespawnTime;
-            }
-
-            drop.Object = new ObjectComponent
-            {
-                MapId = entity.Object.MapId,
-                LayerId = entity.Object.LayerId,
-                ModelId = e.Item.Id,
-                Name = drop.Drop.Item.Data.Name,
-                Spawned = true,
-                Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, DropCircleRadius),
-                Type = WorldObjectType.Item
-            };
+            _itemFactory = itemFactory;
+            _worldServerConfiguration = worldServerConfiguration.Value;
         }
 
-        /// <summary>
-        /// Drops gold to the current entity layer.
-        /// </summary>
-        /// <param name="entity">Entity</param>
-        /// <param name="e">Drop gold event</param>
-        private void DropGold(IEntity entity, DropGoldEventArgs e)
+        /// <inheritdoc />
+        public void DropItem(IWorldEntity entity, ItemDescriptor item, IWorldEntity owner, int quantity = 1)
         {
-            int goldAmount = e.GoldAmount;
+            Item droppedItem = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine);
+            IItemEntity newItem = _itemFactory.CreateItemEntity(entity.Object.CurrentMap, entity.Object.CurrentLayer, droppedItem, owner);
+
+            newItem.Drop.Item.Quantity = quantity;
+            newItem.Object.Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, DropCircleRadius);
+
+            if (newItem.Drop.HasOwner)
+            {
+                newItem.Drop.OwnershipTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.OwnershipTime;
+                newItem.Drop.DespawnTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.DespawnTime;
+            }
+
+            entity.Object.CurrentLayer.AddEntity(newItem);
+        }
+
+        /// <inheritdoc />
+        public void DropGold(IWorldEntity entity, int goldAmount, IWorldEntity owner)
+        {
             int goldItemId = DefineItem.II_GOLD_SEED1;
-            var worldServerConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
+            int gold = goldAmount * _worldServerConfiguration.Rates.Gold;
 
-            goldAmount *= worldServerConfiguration.Rates.Gold;
-
-            if (goldAmount <= 0)
+            if (gold <= 0)
                 return;
 
-            if (goldAmount > (DropGoldLimit1 * worldServerConfiguration.Rates.Gold))
+            if (gold > (DropGoldLimit1 * _worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED2;
-            else if (goldAmount > (DropGoldLimit2 * worldServerConfiguration.Rates.Gold))
+            else if (gold > (DropGoldLimit2 * _worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED3;
-            else if (goldAmount > (DropGoldLimit3 * worldServerConfiguration.Rates.Gold))
+            else if (gold > (DropGoldLimit3 * _worldServerConfiguration.Rates.Gold))
                 goldItemId = DefineItem.II_GOLD_SEED4;
 
-            this.DropItem(entity, new DropItemEventArgs(new Item(goldItemId, goldAmount), e.Owner));
+            DropItem(entity, new Item(goldItemId), owner, gold);
         }
     }
 }

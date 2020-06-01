@@ -1,4 +1,5 @@
 ﻿using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,14 +20,25 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets a value that indicates if the object is currently fighting.
         /// </summary>
-        public bool IsFighting => this.Target != null || this.Targets.Any();
+        public bool IsFighting => Target != null || Targets.Any();
+
+        /// <summary>
+        /// Gets the collection of active projectiles.
+        /// </summary>
+        public IDictionary<int, ProjectileInfo> Projectiles { get; }
+
+        /// <summary>
+        /// Gets the last projectile id.
+        /// </summary>
+        public int LastProjectileId { get; set; } = 1;
 
         /// <summary>
         /// Creates and initializes the <see cref="BattleComponent"/>.
         /// </summary>
         public BattleComponent()
         {
-            this.Targets = new List<ILivingEntity>();
+            Targets = new List<ILivingEntity>();
+            Projectiles = new Dictionary<int, ProjectileInfo>();
         }
 
         /// <summary>
@@ -34,8 +46,8 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public void Reset()
         {
-            this.Target = null;
-            this.Targets.Clear();
+            Target = null;
+            Targets.Clear();
         }
     }
 }

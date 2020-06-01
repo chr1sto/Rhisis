@@ -1,53 +1,37 @@
-﻿using Ether.Network.Packets;
-using System;
+﻿using System;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="SetDestPositionPacket"/> structure.
-    /// </summary>
-    public struct SetDestPositionPacket : IEquatable<SetDestPositionPacket>
+    public class SetDestPositionPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the X coordinate.
         /// </summary>
-        public float X { get; }
+        public float X { get; private set; }
 
         /// <summary>
         /// Gets the Y coordinate.
         /// </summary>
-        public float Y { get; }
+        public float Y { get; private set; }
 
         /// <summary>
         /// Gets the Z coordinate.
         /// </summary>
-        public float Z { get; }
+        public float Z { get; private set; }
 
         /// <summary>
         /// Gets the forward state.
         /// </summary>
-        public byte Forward { get; }
+        public bool Forward { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="SetDestPositionPacket"/> instance.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public SetDestPositionPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.X = packet.Read<float>();
-            this.Y = packet.Read<float>();
-            this.Z = packet.Read<float>();
-            this.Forward = packet.Read<byte>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="SetDestPositionPacket"/> objects.
-        /// </summary>
-        /// <param name="other">Other <see cref="SetDestPositionPacket"/></param>
-        /// <returns></returns>
-        public bool Equals(SetDestPositionPacket other)
-        {
-            throw new NotImplementedException();
+            X = packet.Read<float>();
+            Y = packet.Read<float>();
+            Z = packet.Read<float>();
+            Forward = Convert.ToBoolean(packet.Read<byte>());
         }
     }
 }

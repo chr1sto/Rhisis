@@ -150,15 +150,11 @@ namespace Rhisis.Core.Cryptography
             if (keySize != 128 && keySize != 192 && keySize != 256)
                 throw new InvalidOperationException("The key size of the Aes encryption must be 128, 192 or 256 bits. Please check https://blogs.msdn.microsoft.com/shawnfa/2006/10/09/the-differences-between-rijndael-and-aes/ for more informations.");
 
-            var crypto = new AesCryptoServiceProvider
+            using (var crypto = new AesCryptoServiceProvider {KeySize = keySize, BlockSize = 128})
             {
-                KeySize = keySize,
-                BlockSize = 128
-            };
-
-            crypto.GenerateKey();
-
-            return Convert.ToBase64String(crypto.Key);
+                crypto.GenerateKey();
+                return Convert.ToBase64String(crypto.Key);
+            }
         }
     }
 }

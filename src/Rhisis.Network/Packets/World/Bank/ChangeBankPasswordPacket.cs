@@ -1,52 +1,36 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Bank
 {
-    /// <summary>
-    /// Defines the <see cref="ChangeBankPasswordPacket"/> structure.
-    /// </summary>
-    public struct ChangeBankPasswordPacket : IEquatable<ChangeBankPasswordPacket>
+    public class ChangeBankPasswordPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the old password.
         /// </summary>
-        public string OldPassword { get; set; }
+        public string OldPassword { get; private set; }
 
         /// <summary>
         /// Gets the new password.
         /// </summary>
-        public string NewPassword { get; set; }
+        public string NewPassword { get; private set; }
 
         /// <summary>
         /// Gets the id.
         /// </summary>
-        public uint Id { get; set; }
+        public uint Id { get; private set; }
 
         /// <summary>
         /// Gets the item id.
         /// </summary>
-        public uint ItemId { get; set; }
+        public uint ItemId { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="ChangeBankPasswordPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public ChangeBankPasswordPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.OldPassword = packet.Read<string>();
-            this.NewPassword = packet.Read<string>();
-            this.Id = packet.Read<uint>();
-            this.ItemId = packet.Read<uint>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="ChangeBankPasswordPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="ChangeBankPasswordPacket"/></param>
-        public bool Equals(ChangeBankPasswordPacket other)
-        {
-            return this.OldPassword == other.OldPassword && this.NewPassword == other.NewPassword && this.Id == other.Id && this.ItemId == other.ItemId;
+            OldPassword = packet.Read<string>();
+            NewPassword = packet.Read<string>();
+            Id = packet.Read<uint>();
+            ItemId = packet.Read<uint>();
         }
     }
 }

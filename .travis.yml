@@ -1,33 +1,30 @@
 # General build informations
 language: csharp
-sudo: required
 mono: none
+os: linux
 dist: xenial
-dotnet: 2.2
-
-matrix:
-  env:
-    - DOTNET_CLI_TELEMETRY_OPTOUT=1
+dotnet: 3.1.100
 
 # Define the jobs
 jobs:
     include:
       - stage: "Build"
         script: 
-        - dotnet build src/Rhisis.Core/  --configuration Release
-        - dotnet build src/Rhisis.Database/ --configuration Release
-        - dotnet build src/Rhisis.Business/ --configuration Release
         - dotnet build src/Rhisis.Login/ --configuration Release
         - dotnet build src/Rhisis.Cluster/ --configuration Release
         - dotnet build src/Rhisis.World/ --configuration Release
         name: "Rhisis Servers"
       - script:
-        - dotnet build src/Rhisis.API/ --configuration Release
         - dotnet build src/Rhisis.CLI/ --configuration Release
         name: "Rhisis Tools"
 
       - stage: "Tests"
         script: 
-        - dotnet test test/Rhisis.Core.Test/
-        - dotnet test test/Rhisis.Business.Tests/
+        - dotnet test test/Rhisis.Core.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
+        - dotnet test test/Rhisis.Login.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
+        - dotnet test test/Rhisis.Cluster.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
+        - dotnet test test/Rhisis.World.Tests/ -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
         name: "Rhisis Tests"
+
+# after_script:
+#  - bash <(curl -s https://codecov.io/bash) 

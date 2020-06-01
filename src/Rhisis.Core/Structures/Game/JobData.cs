@@ -1,12 +1,15 @@
-﻿using System.Runtime.Serialization;
+﻿using Rhisis.Core.Data;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace Rhisis.Core.Structures.Game
 {
     [DataContract]
+    [DebuggerDisplay("{Name}")]
     public class JobData
     {
         [DataMember(Order = 0)]
-        public int Id { get; set; }
+        public DefineJob.Job Id { get; set; }
 
         [DataMember(Order = 1)]
         public float AttackSpeed { get; set; }
@@ -58,5 +61,34 @@ namespace Rhisis.Core.Structures.Game
 
         [DataMember(Order = 17)]
         public float Critical { get; set; }
+
+        [IgnoreDataMember]
+        public DefineJob.JobType Type { get; set; }
+
+        [IgnoreDataMember]
+        public JobData Parent { get; set; }
+
+        /// <summary>
+        /// Checks if the given job is anterior to the player's job.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="job">Job.</param>
+        /// <returns>True if the given job is anterior to the player's job; false otherwise.</returns>
+        public bool IsAnteriorJob(DefineJob.Job job)
+        {
+            JobData jobData = this;
+
+            while (jobData != null)
+            {
+                if (jobData.Id == job)
+                {
+                    return true;
+                }
+
+                jobData = jobData.Parent;
+            }
+
+            return false;
+        }
     }
 }

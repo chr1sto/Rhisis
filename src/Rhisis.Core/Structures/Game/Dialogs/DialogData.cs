@@ -53,11 +53,11 @@ namespace Rhisis.Core.Structures.Game.Dialogs
         /// <param name="byeText"></param>
         public DialogData(string name, string oralText, string introText, string byeText)
         {
-            this.Name = name;
-            this.OralText = oralText;
-            this.IntroText = new[] { introText };
-            this.ByeText = byeText;
-            this.Links = new List<DialogLink>();
+            Name = name;
+            OralText = oralText;
+            IntroText = new[] { introText };
+            ByeText = byeText;
+            Links = new List<DialogLink>();
         }
     }
 }

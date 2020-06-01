@@ -1,40 +1,24 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
-namespace Rhisis.Network.Packets.World.Packet
+namespace Rhisis.Network.Packets.World.Party
 {
-    /// <summary>
-    /// Defines the <see cref="PartyChangeNamePacket"/> structure.
-    /// </summary>
-    public struct PartyChangeNamePacket : IEquatable<PartyChangeNamePacket>
+    public class PartyChangeNamePacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the player id.
         /// </summary>
-        public uint PlayerId { get; set; }
+        public uint PlayerId { get; private set; }
 
         /// <summary>
         /// Gets the name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="PartyChangeNamePacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public PartyChangeNamePacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.Name = packet.Read<string>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="PartyChangeNamePacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="PartyChangeNamePacket"/></param>
-        public bool Equals(PartyChangeNamePacket other)
-        {
-            return this.PlayerId == other.PlayerId && this.Name == other.Name;
+            PlayerId = packet.Read<uint>();
+            Name = packet.Read<string>();
         }
     }
 }

@@ -1,45 +1,74 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Network;
-using Rhisis.Network.Packets;
+﻿using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
+using Rhisis.World.Client;
 using Rhisis.World.Systems.NpcShop;
-using Rhisis.World.Systems.NpcShop.EventArgs;
+using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.World.Handlers
 {
-    public static class NpcShopHandler
+    [Handler]
+    public sealed class NpcShopHandler
     {
-        [PacketHandler(PacketType.OPENSHOPWND)]
-        public static void OnOpenShopWindow(WorldClient client, INetPacketStream packet)
-        {
-            var openShopPacket = new OpenShopWindowPacket(packet);
-            var npcEvent = new NpcShopOpenEventArgs(openShopPacket.ObjectId);
+        private readonly INpcShopSystem _npcShopSystem;
 
-            client.Player.NotifySystem<NpcShopSystem>(npcEvent);
+        /// <summary>
+        /// Creates a new <see cref="NpcShopHandler"/>.
+        /// </summary>
+        /// <param name="npcShopSystem"></param>
+        public NpcShopHandler(INpcShopSystem npcShopSystem)
+        {
+            _npcShopSystem = npcShopSystem;
         }
 
-        [PacketHandler(PacketType.CLOSESHOPWND)]
-        public static void OnCloseShopWindow(WorldClient client, INetPacketStream packet)
+        /// <summary>
+        /// Player requests to open a NPC shop.
+        /// </summary>
+        /// <param name="serverClient">Client.</param>
+        /// <param name="packet">Incoming packet.</param>
+        [HandlerAction(PacketType.OPENSHOPWND)]
+        public void OnOpenShopWindow(IWorldServerClient serverClient, OpenShopWindowPacket packet)
         {
-            client.Player.NotifySystem<NpcShopSystem>(new NpcShopCloseEventArgs());
+            _npcShopSystem.OpenShop(serverClient.Player, packet.ObjectId);
         }
 
-        [PacketHandler(PacketType.BUYITEM)]
-        public static void OnBuyItem(WorldClient client, INetPacketStream packet)
+        /// <summary>
+        /// Player closes a opened NPC shop.
+        /// </summary>
+        /// <param name="serverClient">Client.</param>
+        /// <param name="packet">Incoming packet.</param>
+        [HandlerAction(PacketType.CLOSESHOPWND)]
+        public void OnCloseShopWindow(IWorldServerClient serverClient)
         {
-            var buyItemPacket = new BuyItemPacket(packet);
-            var npcShopEvent = new NpcShopBuyEventArgs(buyItemPacket.ItemId, buyItemPacket.Quantity, buyItemPacket.Tab, buyItemPacket.Slot);
-
-            client.Player.NotifySystem<NpcShopSystem>(npcShopEvent);
+            _npcShopSystem.CloseShop(serverClient.Player);
         }
 
-        [PacketHandler(PacketType.SELLITEM)]
-        public static void OnSellItem(WorldClient client, INetPacketStream packet)
+        /// <summary>
+        /// Player buys an item from a NPC shop.
+        /// </summary>
+        /// <param name="serverClient">Client.</param>
+        /// <param name="packet">Incoming packet.</param>
+        [HandlerAction(PacketType.BUYITEM)]
+        public void OnBuyItem(IWorldServerClient serverClient, BuyItemPacket packet)
         {
-            var sellItemPacket = new SellItemPacket(packet);
-            var npcShopEvent = new NpcShopSellEventArgs(sellItemPacket.ItemUniqueId, sellItemPacket.Quantity);
+            var npcShopItem = new NpcShopItemInfo
+            {
+                ItemId = packet.ItemId,
+                Slot = packet.Slot,
+                Tab = packet.Tab
+            };
 
-            client.Player.NotifySystem<NpcShopSystem>(npcShopEvent);
+            _npcShopSystem.BuyItem(serverClient.Player, npcShopItem, packet.Quantity);
+        }
+
+        /// <summary>
+        /// Player sells an item at a NPC shop.
+        /// </summary>
+        /// <param name="serverClient">Client.</param>
+        /// <param name="packet">Incoming packet.</param>
+        [HandlerAction(PacketType.SELLITEM)]
+        public void OnSellItem(IWorldServerClient serverClient, SellItemPacket packet)
+        {
+            _npcShopSystem.SellItem(serverClient.Player, packet.ItemUniqueId, packet.Quantity);
         }
     }
 }

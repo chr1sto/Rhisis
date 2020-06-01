@@ -1,25 +1,16 @@
-﻿using Ether.Network.Packets;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Systems.Taskbar;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.World.Game.Components
 {
     public class TaskbarComponent
     {
-        public TaskbarAppletContainerComponent Applets { get; }
+        public TaskbarAppletContainerComponent Applets { get; set; }
 
-        public TaskbarItemContainerComponent Items { get; }
+        public TaskbarItemContainerComponent Items { get; set; }
 
-        public TaskbarQueueContainerComponent Queue { get; }
+        public TaskbarQueueContainerComponent Queue { get; set; }
 
         public int ActionPoints { get; set; } = 100;
-
-        public TaskbarComponent()
-        {
-            Applets = new TaskbarAppletContainerComponent(TaskbarSystem.MaxTaskbarApplets);
-            Items = new TaskbarItemContainerComponent(TaskbarSystem.MaxTaskbarItems, TaskbarSystem.MaxTaskbarItemLevels);
-            Queue = new TaskbarQueueContainerComponent(TaskbarSystem.MaxTaskbarQueue);
-        }
 
         public void Serialize(INetPacketStream packet)
         {

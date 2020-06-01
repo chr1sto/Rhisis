@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.Structures;
 using System;
 using System.IO;
+using System.Net;
 
 namespace Rhisis.Core.Resources
 {
@@ -20,7 +21,7 @@ namespace Rhisis.Core.Resources
         public WldFile(string filePath)
             : base(filePath, FileMode.Open, FileAccess.Read)
         {
-            this.Read();
+            Read();
         }
 
         /// <summary>
@@ -37,10 +38,14 @@ namespace Rhisis.Core.Resources
             string revivalKey = string.Empty;
 
             while (!reader.EndOfStream)
-            {
-                var line = reader.ReadLine().Trim().ToLower();
+            { 
+                string lineContent = reader.ReadLine();
+                if (lineContent is null)
+                    continue;
 
-                if (line.StartsWith("//") || string.IsNullOrEmpty(line))
+                string line = lineContent.Trim().ToLower();
+
+                if (string.IsNullOrEmpty(line) || line.StartsWith("//"))
                     continue;
 
                 string[] lineArray = line.Split(SplitCharacters, StringSplitOptions.RemoveEmptyEntries);
@@ -48,7 +53,7 @@ namespace Rhisis.Core.Resources
                 switch (lineArray[0].ToLower())
                 {
                     case "size":
-                        size = this.ReadSize(lineArray);
+                        size = ReadSize(lineArray);
                         break;
                     case "indoor":
                         isIndoor = lineArray[1] == "1" ? true : false;
@@ -66,7 +71,10 @@ namespace Rhisis.Core.Resources
                 }
             }
 
-            this.WorldInformations = new WldFileInformations((int)size?.X, (int)size?.Z, mpu, isIndoor, canFly, revivalMapId, revivalKey);
+            if (size is null)
+                return;
+
+            WorldInformations = new WldFileInformations((int)size.X, (int)size.Z, mpu, isIndoor, canFly, revivalMapId, revivalKey);
         }
 
         /// <summary>

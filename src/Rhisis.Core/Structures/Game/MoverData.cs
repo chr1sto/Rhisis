@@ -142,6 +142,9 @@ namespace Rhisis.Core.Structures.Game
         [DataMember(Name = "dwAttackSpeed")]
         public int AttackSpeed { get; set; }
 
+        /// <summary>
+        /// Gets or sets the monster correction value.
+        /// </summary>
         [DataMember(Name = "dwCorrectionValue")]
         public int CorrectionValue { get; set; }
 
@@ -150,6 +153,42 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         [DataMember(Name = "dwExpValue")]
         public long Experience { get; set; }
+
+        /// <summary>
+        /// Gets or sets the monster element type.
+        /// </summary>
+        [DataMember(Name = "eElementType")]
+        public ElementType Element { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resitance to electricity.
+        /// </summary>
+        [DataMember(Name = "fResistElecricity")]
+        public float ElectricityResistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resistance to fire.
+        /// </summary>
+        [DataMember(Name = "fResistFire")]
+        public float FireResitance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resitance to wind.
+        /// </summary>
+        [DataMember(Name = "fResistWind")]
+        public float WindResistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resitance to water.
+        /// </summary>
+        [DataMember(Name = "fResistWater")]
+        public float WaterResistance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the mover's resistance to earth.
+        /// </summary>
+        [DataMember(Name = "fResistEarth")]
+        public float EarthResistance { get; set; }
 
         /// <summary>
         /// Gets or sets the minimal amount of gold dropped when the mover dies.
@@ -186,11 +225,11 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         public MoverData()
         {
-            this.DropItems = new List<DropItemData>();
-            this.DropItemsKind = new List<DropItemKindData>();
+            DropItems = new List<DropItemData>();
+            DropItemsKind = new List<DropItemKindData>();
         }
 
         /// <inheritdoc />
-        public override string ToString() => this.Name;
+        public override string ToString() => Name;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Resources;
-using Rhisis.World.Game.Core;
+using Rhisis.World.Game.Entities;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Maps.Regions
@@ -15,32 +15,32 @@ namespace Rhisis.World.Game.Maps.Regions
 
         public int Count { get; private set; }
 
-        public IList<IEntity> Entities { get; private set; }
+        public IList<IWorldEntity> Entities { get; private set; }
 
         public MapRespawnRegion(int x, int z, int width, int length, int time, WorldObjectType type, int modelId, int count) 
             : base(x, z, width, length)
         {
-            this.ModelId = modelId;
-            this.Time = time;
-            this.ObjectType = type;
-            this.Count = count;
-            this.Entities = new List<IEntity>();
+            ModelId = modelId;
+            Time = time;
+            ObjectType = type;
+            Count = count;
+            Entities = new List<IWorldEntity>();
         }
 
         public override object Clone()
         {
-            var region = new MapRespawnRegion(this.X, this.Z, this.Width, this.Length, this.Time, this.ObjectType, this.ModelId, this.Count)
+            var region = new MapRespawnRegion(X, Z, Width, Length, Time, ObjectType, ModelId, Count)
             {
-                IsActive = this.IsActive
+                IsActive = IsActive
             };
             
             return region;
         }
 
-        public static IMapRespawnRegion FromRgnElement(RgnRespawn7 rgnRespawn)
+        public static IMapRespawnRegion FromRgnElement(RgnRespawn7 region)
         {
-            return new MapRespawnRegion(rgnRespawn.Left, rgnRespawn.Top, rgnRespawn.Width, rgnRespawn.Length, 
-                rgnRespawn.Time, (WorldObjectType)rgnRespawn.Type, rgnRespawn.Model, rgnRespawn.Count);
+            return new MapRespawnRegion(region.Left, region.Top, region.Right - region.Left, region.Bottom - region.Top, 
+                region.Time, (WorldObjectType)region.Type, region.Model, region.Count);
         }
     }
 }

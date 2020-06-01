@@ -13,7 +13,6 @@ namespace Rhisis.Database.Entities
         /// Gets or sets the character name.
         /// </summary>
         [Required]
-        [Encrypted]
         public string Name { get; set; }
         
         /// <summary>
@@ -37,7 +36,7 @@ namespace Rhisis.Database.Entities
         /// <summary>
         /// Gets or sets the character class.
         /// </summary>
-        public int ClassId { get; set; }
+        public int JobId { get; set; }
         
         /// <summary>
         /// Gets or sets the character gold amount.
@@ -48,7 +47,8 @@ namespace Rhisis.Database.Entities
         /// Gets or sets the character slot.
         /// </summary>
         [Required]
-        public int Slot { get; set; }
+        [Column(TypeName = "TINYINT")]
+        public byte Slot { get; set; }
         
         /// <summary>
         /// Gets or sets the character strength.
@@ -142,6 +142,7 @@ namespace Rhisis.Database.Entities
         /// <summary>
         /// Gets or sets the character bank code.
         /// </summary>
+        [Column(TypeName = "SMALLINT(4)")]
         public int BankCode { get; set; }
         
         /// <summary>
@@ -206,10 +207,10 @@ namespace Rhisis.Database.Entities
 
         public DbCharacter()
         {
-            this.Items = new HashSet<DbItem>();
-            this.ReceivedMails = new HashSet<DbMail>();
-            this.SentMails = new HashSet<DbMail>();
-            this.TaskbarShortcuts = new HashSet<DbShortcut>();
+            Items = new HashSet<DbItem>();
+            ReceivedMails = new HashSet<DbMail>();
+            SentMails = new HashSet<DbMail>();
+            TaskbarShortcuts = new HashSet<DbShortcut>();
         }
     }
 }

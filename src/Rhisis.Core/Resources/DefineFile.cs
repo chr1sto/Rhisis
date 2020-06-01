@@ -23,17 +23,17 @@ namespace Rhisis.Core.Resources
         /// </summary>
         /// <param name="define"></param>
         /// <returns></returns>
-        public object this[string define] => this.GetValue<object>(define);
+        public object this[string define] => GetValue<object>(define);
 
         /// <summary>
         /// Gets the define directive.
         /// </summary>
-        public IReadOnlyDictionary<string, object> Defines => this._defines as IReadOnlyDictionary<string, object>;
+        public IReadOnlyDictionary<string, object> Defines => _defines as IReadOnlyDictionary<string, object>;
 
         /// <summary>
         /// Gets the number of definitions.
         /// </summary>
-        public int Count => this._defines.Count;
+        public int Count => _defines.Count;
 
         /// <summary>
         /// Creates a new DefineFile instance.
@@ -41,10 +41,10 @@ namespace Rhisis.Core.Resources
         /// <param name="filePath">Define file path</param>
         public DefineFile(string filePath)
         {
-            this._scanner = new FileTokenScanner(filePath, @"([\t# ])");
-            this._defines = new Dictionary<string, object>();
+            _scanner = new FileTokenScanner(filePath, @"([\t# ])");
+            _defines = new Dictionary<string, object>();
 
-            this.Read();
+            Read();
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Rhisis.Core.Resources
         /// <returns></returns>
         public T GetValue<T>(string defineKey)
         {
-            if (this._defines.TryGetValue(defineKey, out object value))
+            if (_defines.TryGetValue(defineKey, out object value))
                 return (T)Convert.ChangeType(value, typeof(T));
 
             throw new KeyNotFoundException();
@@ -66,24 +66,29 @@ namespace Rhisis.Core.Resources
         /// </summary>
         private void Read()
         {
-            this._scanner.Read();
+            _scanner.Read();
 
             string token = null;
-            while ((token = this._scanner.GetToken()) != null)
+            while ((token = _scanner.GetToken()) != null)
             {
-                if (token == "#" && this._scanner.GetToken() == "define")
+                if (token == "#" && _scanner.GetToken() == "define")
                 {
-                    string defineName = this._scanner.GetToken();
+                    string defineName = _scanner.GetToken();
 
-                    if (this._scanner.CurrentTokenIs("#"))
+                    if (_scanner.CurrentTokenIs("#"))
                         continue;
 
-                    object defineValue = this.ParseDefineValue(this._scanner.GetToken());
+                    var defineValueToken = _scanner.GetToken();
 
-                    if (this._defines.ContainsKey(defineName))
-                        this._defines[defineName] = defineValue;
+                    if (defineValueToken is null)
+                        continue;
+
+                    object defineValue = ParseDefineValue(defineValueToken);
+
+                    if (_defines.ContainsKey(defineName))
+                        _defines[defineName] = defineValue;
                     else
-                        this._defines.Add(defineName, defineValue);
+                        _defines.Add(defineName, defineValue);
                 }
             }
         }
@@ -93,8 +98,9 @@ namespace Rhisis.Core.Resources
         /// </summary>
         public void Dispose()
         {
-            if (this._defines.Any())
-                this._defines.Clear();
+            if (_defines.Any())
+                _defines.Clear();
+            _scanner.Dispose();
         }
 
         /// <summary>
@@ -108,9 +114,9 @@ namespace Rhisis.Core.Resources
 
             try
             {
-                if (this._defines.ContainsKey(defineValue))
+                if (_defines.ContainsKey(defineValue))
                 {
-                    newDefineValue = this._defines[defineValue];
+                    newDefineValue = _defines[defineValue];
                 }
                 else if (defineValue.StartsWith(DwordCast, StringComparison.OrdinalIgnoreCase))
                 {

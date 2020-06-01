@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Services;
 using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 
 namespace Rhisis.CLI.Commands.User
 {
-    [Command("create", Description = "Created a new user")]
+    [Command("create", Description = "Create a new user")]
     public sealed class UserCreateCommand
     {
-        private readonly IDatabase _database;
+        private readonly DatabaseFactory _databaseFactory;
         private readonly ConsoleHelper _consoleHelper;
 
         [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
@@ -21,17 +23,22 @@ namespace Rhisis.CLI.Commands.User
 
         public UserCreateCommand(DatabaseFactory databaseFactory, ConsoleHelper consoleHelper)
         {
+            _databaseFactory = databaseFactory;
             _consoleHelper = consoleHelper;
-            
-            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
-                DatabaseConfigurationFile = Application.DefaultDatabaseConfigurationFile;
-            
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile);
-            _database = databaseFactory.GetDatabase(dbConfig);
         }
 
         public void OnExecute()
         {
+            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
+
+            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
+            if (dbConfig is null)
+            {
+                Console.WriteLine("Couldn't load database configuration file during execution of user create command.");
+                return;
+            }
+
             var user = new DbUser();
 
             Console.Write("Username: ");
@@ -54,7 +61,7 @@ namespace Rhisis.CLI.Commands.User
             user.Authority = (int)_consoleHelper.ReadEnum<AuthorityType>();
 
             Console.WriteLine("--------------------------------");
-            Console.WriteLine("User account informations:");
+            Console.WriteLine("User account information:");
             Console.WriteLine($"Username: {user.Username}");
             Console.WriteLine($"Email: {user.Email}");
             Console.WriteLine($"Authority: {(AuthorityType)user.Authority}");
@@ -64,7 +71,9 @@ namespace Rhisis.CLI.Commands.User
 
             if (response)
             {
-                if (this._database.Users.HasAny(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
+                using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
+                
+                if (database.Users.Any(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.WriteLine($"User '{user.Username}' is already used.");
                     return;
@@ -76,7 +85,7 @@ namespace Rhisis.CLI.Commands.User
                     return;
                 }
 
-                if (_database.Users.HasAny(x => x.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase)))
+                if (database.Users.Any(x => x.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.WriteLine($"Email '{user.Email}' is already used.");
                     return;
@@ -90,8 +99,9 @@ namespace Rhisis.CLI.Commands.User
 
                 user.Password = MD5.GetMD5Hash(passwordSalt, user.Password);
 
-                this._database.Users.Create(user);
-                this._database.Complete();
+                database.Users.Add(user);
+                database.SaveChanges();
+
                 Console.WriteLine($"User '{user.Username}' created.");
             }
         }

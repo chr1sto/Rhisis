@@ -17,14 +17,14 @@ namespace Rhisis.Core.Resources.Include
 
         public Variable(string name, object value)
         {
-            this.Name = name;
-            this.Value = value;
+            Name = name;
+            Value = value;
         }
 
         public void Dispose()
         {
-            this.Name = string.Empty;
-            this.Value = null;
+            Name = string.Empty;
+            Value = null;
         }
     }
 }

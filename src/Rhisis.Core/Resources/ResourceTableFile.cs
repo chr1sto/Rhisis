@@ -1,6 +1,10 @@
-﻿using Rhisis.Core.IO;
+﻿using Rhisis.Core.Attributes;
+using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +17,7 @@ namespace Rhisis.Core.Resources
     /// </summary>
     public class ResourceTableFile : FileStream, IDisposable
     {
+        private const string UndefinedValue = "NULL";
         private static readonly char[] DefaultSeparator = new char[] { '\t' };
         private readonly IDictionary<string, int> _defines;
         private readonly IDictionary<string, string> _texts;
@@ -27,7 +32,7 @@ namespace Rhisis.Core.Resources
         /// <summary>
         /// Gets the amount of valid data within the <see cref="ResourceTableFile"/>.
         /// </summary>
-        public int Count => this._datas.Count;
+        public int Count => _datas.Count;
 
         /// <summary>
         /// Creates a new <see cref="ResourceTableFile"/> instance.
@@ -81,18 +86,18 @@ namespace Rhisis.Core.Resources
         public ResourceTableFile(string path, int headerLineIndex, char[] separators, IDictionary<string, int> defines, IDictionary<string, string> texts)
             : base(path, FileMode.Open, FileAccess.Read)
         {
-            this._datas = new List<IEnumerable<string>>();
-            this._reader = new StreamReader(this);
-            this._headerLineIndex = headerLineIndex;
-            this._separators = separators;
-            this._defines = defines;
-            this._texts = texts;
-            this._ignoreHeader = this._headerLineIndex < 0;
+            _datas = new List<IEnumerable<string>>();
+            _reader = new StreamReader(this);
+            _headerLineIndex = headerLineIndex;
+            _separators = separators;
+            _defines = defines;
+            _texts = texts;
+            _ignoreHeader = _headerLineIndex < 0;
 
-            if (!this._ignoreHeader)
-                this._headers = this.ReadHeader();
+            if (!_ignoreHeader)
+                _headers = ReadHeader();
             
-            this.ReadContent();
+            ReadContent();
         }
 
         /// <summary>
@@ -103,21 +108,24 @@ namespace Rhisis.Core.Resources
         public IEnumerable<T> GetRecords<T>() where T : class, new()
         {
             var records = new List<T>();
-            var typeProperties = this.GetPropertiesWithDataMemberAttribute<T>();
+            var typeProperties = GetPropertiesWithDataMemberAttribute<T>();
+            int currentIndex = 0;
 
-            foreach (var record in this._datas)
+            foreach (var record in _datas)
             {
-                T obj = (T)Activator.CreateInstance(typeof(T));
+                var obj = (T)Activator.CreateInstance(typeof(T));
 
                 foreach (var property in typeProperties)
                 {
-                    DataMemberAttribute attribute = this.GetDataMemberAttribute(property);
+                    DataMemberAttribute attribute = GetPropertyAttribute<DataMemberAttribute>(property);
+                    DefaultValueAttribute defaultValue = GetPropertyAttribute<DefaultValueAttribute>(property);
+                    DataIndexAttribute dataIndexAttribute = GetPropertyAttribute<DataIndexAttribute>(property);
                     int index = -1;
                     
                     if (attribute != null)
                     {
-                        if (!string.IsNullOrEmpty(attribute.Name) && !this._ignoreHeader)
-                            index = this._headers.IndexOf(attribute.Name);
+                        if (!string.IsNullOrEmpty(attribute.Name) && !_ignoreHeader)
+                            index = _headers.IndexOf(attribute.Name);
                         else
                             index = attribute.Order;
                     }
@@ -126,14 +134,22 @@ namespace Rhisis.Core.Resources
                     {
                         object value = record.ElementAt(index);
 
-                        if (property.PropertyType.BaseType == typeof(Enum))
-                            value = Enum.ToObject(property.PropertyType, Convert.ToInt32(value));
+                        if (value.ToString() == UndefinedValue)
+                        {
+                            value = defaultValue != null ? defaultValue.Value : GetTypeDefaultValue(property.PropertyType);
+                        }
 
-                        property.SetValue(obj, Convert.ChangeType(value, property.PropertyType));
+                        property.SetValue(obj, ConvertValueToType(value, property.PropertyType));
+                    }
+
+                    if (dataIndexAttribute != null)
+                    {
+                        property.SetValue(obj, ConvertValueToType(currentIndex, property.PropertyType));
                     }
                 }
 
                 records.Add(obj);
+                currentIndex++;
             }
 
             return records;
@@ -145,12 +161,12 @@ namespace Rhisis.Core.Resources
         /// <returns></returns>
         private IList<string> ReadHeader()
         {
-            for (int i = 0; i < this._headerLineIndex; i++)
-                this._reader.ReadLine();
+            for (int i = 0; i < _headerLineIndex; i++)
+                _reader.ReadLine();
 
-            return this._reader.ReadLine()
+            return _reader.ReadLine()
                         .Replace("/", string.Empty)
-                        .Split(this._separators, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(_separators, StringSplitOptions.RemoveEmptyEntries)
                         .ToList();
         }
 
@@ -159,9 +175,9 @@ namespace Rhisis.Core.Resources
         /// </summary>
         private void ReadContent()
         {
-            while (!this._reader.EndOfStream)
+            while (!_reader.EndOfStream)
             {
-                string line = this._reader.ReadLine();
+                string line = _reader.ReadLine();
 
                 if (!string.IsNullOrEmpty(line) && !line.StartsWith(FileTokenScanner.SingleLineComment))
                 {
@@ -171,22 +187,22 @@ namespace Rhisis.Core.Resources
                     line = line.Replace(",,", ",=,").Replace(",", "\t");
                     string[] content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (!this._ignoreHeader)
+                    if (!_ignoreHeader)
                     {
-                        if (content.Length == this._headers.Count)
+                        if (content.Length == _headers.Count)
                         {
                             for (int i = 0; i < content.Length; i++)
-                                content[i] = this.Transform(content[i]);
+                                content[i] = Transform(content[i]);
 
-                            this._datas.Add(content);
+                            _datas.Add(content);
                         }
                     }
                     else
                     {
                         for (int i = 0; i < content.Length; i++)
-                            content[i] = this.Transform(content[i]);
+                            content[i] = Transform(content[i]);
 
-                        this._datas.Add(content);
+                        _datas.Add(content);
                     }
                 }
             }
@@ -200,13 +216,13 @@ namespace Rhisis.Core.Resources
         /// <returns></returns>
         private string Transform(string data)
         {
-            if (this._defines != null && this._defines.ContainsKey(data))
-                return this._defines[data].ToString();
-            else if (this._texts != null && this._texts.ContainsKey(data))
-                return this._texts[data];
+            if (_defines != null && _defines.ContainsKey(data))
+                return _defines[data].ToString();
+            else if (_texts != null && _texts.ContainsKey(data))
+                return _texts[data];
 
             return data
-                .Replace("=", "0")
+                .Replace("=", UndefinedValue)
                 .Replace(",", ".")
                 .Replace("\"", string.Empty);
         }
@@ -224,12 +240,48 @@ namespace Rhisis.Core.Resources
         }
 
         /// <summary>
-        /// Gets the <see cref="DataMemberAttribute"/> name value from the given property.
+        /// Gets the generic attribute value from the given property.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        private DataMemberAttribute GetDataMemberAttribute(PropertyInfo property) 
-            => property.GetCustomAttribute(typeof(DataMemberAttribute)) as DataMemberAttribute;
+        private T GetPropertyAttribute<T>(PropertyInfo property) where T : Attribute 
+            => property.GetCustomAttribute(typeof(T)) as T;
+
+        /// <summary>
+        /// Gets the type default value.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private object GetTypeDefaultValue(Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
+
+        /// <summary>
+        /// Converts the given value into a given type.
+        /// </summary>
+        /// <param name="value">Value to convert.</param>
+        /// <param name="type">Target type.</param>
+        /// <returns></returns>
+        private object ConvertValueToType(object value, Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                    return null;
+
+                type = Nullable.GetUnderlyingType(type);
+            }
+
+            if (type.IsEnum)
+            {
+                value = Enum.ToObject(type, Convert.ToInt32(value));
+            }
+
+            if (type == typeof(bool))
+            {
+                value = Convert.ToBoolean(Convert.ToInt32(value));
+            }
+
+            return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+        }
 
         /// <summary>
         /// Disposes the resources.
@@ -239,8 +291,9 @@ namespace Rhisis.Core.Resources
         {
             if (disposing)
             {
-                this._headers?.Clear();
-                this._datas?.Clear();
+                _headers?.Clear();
+                _datas?.Clear();
+                _reader?.Dispose();
             }
 
             base.Dispose(disposing);

@@ -1,94 +1,89 @@
-﻿using Ether.Network.Packets;
-using Ether.Network.Server;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rhisis.Cluster.ISC;
+using Microsoft.Extensions.Options;
+using Rhisis.Cluster.Client;
+using Rhisis.Cluster.Packets;
+using Rhisis.Core.Resources;
+using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Database;
 using Rhisis.Network;
-using Rhisis.Network.ISC.Structures;
-using Rhisis.Network.Packets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Sylver.HandlerInvoker;
+using Sylver.Network.Server;
 
 namespace Rhisis.Cluster
 {
+    /// <summary>
+    /// Cluster server.
+    /// </summary>
     public class ClusterServer : NetServer<ClusterClient>, IClusterServer
     {
+        private const int ClientBufferSize = 128;
+        private const int ClientBacklog = 50;
         private readonly ILogger<ClusterServer> _logger;
-        private readonly ClusterConfiguration _clusterConfiguration;
-
-        /// <summary>
-        /// Gets the ISC client.
-        /// </summary>
-        public static ISCClient InterClient { get; private set; }
-
-        /// <summary>
-        /// Gets the list of the connected world servers of this cluster.
-        /// </summary>
-        public static IReadOnlyCollection<WorldServerInfo> WorldServers => InterClient.WorldServers as IReadOnlyCollection<WorldServerInfo>;
-
-        /// <summary>
-        /// Gets the cluster server's configuration.
-        /// </summary>
-        public ClusterConfiguration ClusterConfiguration { get; private set; }
+        private readonly IGameResources _gameResources;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IRhisisDatabase _database;
 
         /// <inheritdoc />
-        protected override IPacketProcessor PacketProcessor { get; } = new FlyffPacketProcessor();
+        public ClusterConfiguration ClusterConfiguration { get; }
 
         /// <summary>
         /// Creates a new <see cref="ClusterServer"/> instance.
         /// </summary>
-        public ClusterServer(ILogger<ClusterServer> logger, ClusterConfiguration clusterConfiguration)
+        /// <param name="logger">Logger.</param>
+        /// <param name="clusterConfiguration">Cluster Server configuration.</param>
+        /// <param name="gameResources">Game resources.</param>
+        /// <param name="serviceProvider">Service provider.</param>
+        public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IGameResources gameResources, IServiceProvider serviceProvider, IRhisisDatabase database)
         {
-            this._logger = logger;
-            this._clusterConfiguration = clusterConfiguration;
-            this.Configuration.Host = this._clusterConfiguration.Host;
-            this.Configuration.Port = this._clusterConfiguration.Port;
-            this.Configuration.MaximumNumberOfConnections = 1000;
-            this.Configuration.Backlog = 100;
-            this.Configuration.BufferSize = 4096;
-
-            this._logger.LogTrace("Host: {0}, Port: {1}, MaxNumberOfConnections: {2}, Backlog: {3}, BufferSize: {4}",
-                this.Configuration.Host,
-                this.Configuration.Port,
-                this.Configuration.MaximumNumberOfConnections,
-                this.Configuration.Backlog,
-                this.Configuration.BufferSize);
+            _logger = logger;
+            ClusterConfiguration = clusterConfiguration.Value;
+            _gameResources = gameResources;
+            _serviceProvider = serviceProvider;
+            _database = database;
+            PacketProcessor = new FlyffPacketProcessor();
+            ServerConfiguration = new NetServerConfiguration(ClusterConfiguration.Host,
+                ClusterConfiguration.Port,
+                ClientBacklog,
+                ClientBufferSize);
         }
 
         /// <inheritdoc />
-        protected override void Initialize()
+        protected override void OnBeforeStart()
         {
-            this._logger.LogInformation("Connection to ISC server on {0}:{1}...", this._clusterConfiguration.ISC.Host, this._clusterConfiguration.ISC.Port);
-            InterClient = new ISCClient(this._clusterConfiguration);
-            InterClient.Connect();
+            if (!_database.IsAlive())
+            {
+                throw new InvalidProgramException($"Cannot start {nameof(ClusterServer)}. Failed to reach database.");
+            }
 
-            //TODO: Implement this log inside OnStarted method when will be available.
-            this._logger.LogInformation("'{0}' cluster server is started and listen on {1}:{2}.", 
-                InterClient.ClusterConfiguration.Name, this.Configuration.Host, this.Configuration.Port);
+            _gameResources.Load(typeof(DefineLoader), typeof(JobLoader));
+        }
+
+        /// <inheritdoc />
+        protected override void OnAfterStart()
+        {
+            _logger.LogInformation($"'{ClusterConfiguration.Name}' cluster server is started and listening on {ServerConfiguration.Host}:{ServerConfiguration.Port}.");
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(ClusterClient client)
         {
-            this._logger.LogInformation("New client connected from {0}.", client.RemoteEndPoint);
+            _logger.LogInformation($"New client connected to {nameof(ClusterServer)} from {client.Socket.RemoteEndPoint}.");
 
-            CommonPacketFactory.SendWelcome(client, client.SessionId);
+            client.Initialize(this,
+                _serviceProvider.GetRequiredService<ILogger<ClusterClient>>(),
+                _serviceProvider.GetRequiredService<IHandlerInvoker>());
+
+            var clusterPacketFactory =  _serviceProvider.GetRequiredService<IClusterPacketFactory>();
+            clusterPacketFactory.SendWelcome(client);
         }
 
         /// <inheritdoc />
         protected override void OnClientDisconnected(ClusterClient client)
         {
-            this._logger.LogInformation("Client disconnected from {0}.", client.RemoteEndPoint);
+            _logger.LogInformation($"Client disconnected from {client.Socket.RemoteEndPoint}.");
         }
-
-        /// <inheritdoc />
-        protected override void OnError(Exception exception)
-        {
-            this._logger.LogInformation($"Socket error: {exception.Message}");
-        }
-
-        /// <inheritdoc />
-        public WorldServerInfo GetWorldServerById(int id) => WorldServers.FirstOrDefault(x => x.Id == id);
     }
 }

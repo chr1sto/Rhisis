@@ -13,7 +13,7 @@ namespace Rhisis.Core.Resources.Dyo
         /// <summary>
         /// Gets the Dyo elements collection.
         /// </summary>
-        public IReadOnlyCollection<DyoElement> Elements => this._elements as IReadOnlyCollection<DyoElement>;
+        public IReadOnlyCollection<DyoElement> Elements => _elements as IReadOnlyCollection<DyoElement>;
 
         /// <summary>
         /// Creates a new <see cref="DyoFile"/> instance.
@@ -22,7 +22,7 @@ namespace Rhisis.Core.Resources.Dyo
         public DyoFile(string dyoFilePath)
             : base(dyoFilePath, FileMode.Open, FileAccess.Read)
         {
-            this._elements = new List<DyoElement>();
+            _elements = new List<DyoElement>();
             var memoryReader = new BinaryReader(this);
 
             while (memoryReader.BaseStream.Position < memoryReader.BaseStream.Length)
@@ -50,7 +50,7 @@ namespace Rhisis.Core.Resources.Dyo
 
                 rgnElement.ElementType = (int)type;
                 rgnElement.Read(memoryReader);
-                this._elements.Add(rgnElement);
+                _elements.Add(rgnElement);
             }
         }
         
@@ -59,7 +59,7 @@ namespace Rhisis.Core.Resources.Dyo
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IEnumerable<T> GetElements<T>() where T : DyoElement => this._elements.Where(x => x is T).Select(x => x as T);
+        public IEnumerable<T> GetElements<T>() where T : DyoElement => _elements.Where(x => x is T).Select(x => x as T);
 
         /// <summary>
         /// Dispose the <see cref="DyoFile"/> resources.
@@ -69,7 +69,7 @@ namespace Rhisis.Core.Resources.Dyo
         {
             if (disposing)
             {
-                this._elements.Clear();
+                _elements.Clear();
             }
 
             base.Dispose(disposing);

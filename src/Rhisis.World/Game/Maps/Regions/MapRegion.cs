@@ -25,9 +25,9 @@ namespace Rhisis.World.Game.Maps.Regions
         /// <inheritdoc />
         public virtual object Clone()
         {
-            return new MapRegion(this.X, this.Z, this.Width, this.Length)
+            return new MapRegion(X, Z, Width, Length)
             {
-                IsActive = this.IsActive
+                IsActive = IsActive
             };
         }
     }

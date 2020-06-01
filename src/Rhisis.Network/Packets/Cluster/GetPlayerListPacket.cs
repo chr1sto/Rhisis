@@ -1,36 +1,26 @@
-﻿using Ether.Network.Packets;
-using System;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public struct GetPlayerListPacket : IEquatable<GetPlayerListPacket>
+    public class GetPlayerListPacket : IPacketDeserializer
     {
-        public string BuildVersion { get; }
+        public string BuildVersion { get; private set; }
 
-        public int AuthenticationKey { get; }
+        public int AuthenticationKey { get; private set; }
         
-        public string Username { get; }
+        public string Username { get; private set; }
 
-        public string Password { get; }
+        public string Password { get; private set; }
 
-        public int ServerId { get; }
+        public int ServerId { get; private set; }
 
-        public GetPlayerListPacket(INetPacketStream packet)
+        public void Deserialize(INetPacketStream packet)
         {
-            this.BuildVersion = packet.Read<string>();
-            this.AuthenticationKey = packet.Read<int>();
-            this.Username = packet.Read<string>();
-            this.Password = packet.Read<string>();
-            this.ServerId = packet.Read<int>();
-        }
-
-        public bool Equals(GetPlayerListPacket other)
-        {
-            return this.BuildVersion == other.BuildVersion
-                && this.AuthenticationKey == other.AuthenticationKey
-                && this.Username == other.Username
-                && this.Password == other.Password
-                && this.ServerId == other.ServerId;
+            BuildVersion = packet.Read<string>();
+            AuthenticationKey = packet.Read<int>();
+            Username = packet.Read<string>();
+            Password = packet.Read<string>();
+            ServerId = packet.Read<int>();
         }
     }
 }

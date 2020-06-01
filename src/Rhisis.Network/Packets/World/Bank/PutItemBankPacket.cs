@@ -1,46 +1,30 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Bank
 {
-    /// <summary>
-    /// Defines the <see cref="PutItemBankPacket"/> structure.
-    /// </summary>
-    public struct PutItemBankPacket : IEquatable<PutItemBankPacket>
+    public class PutItemBankPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the slot.
         /// </summary>
-        public byte Slot { get; set; }
+        public byte Slot { get; private set; }
 
         /// <summary>
         /// Gets the id.
         /// </summary>
-        public byte Id { get; set; }
+        public byte Id { get; private set; }
 
         /// <summary>
-        /// Gets the iten number.
+        /// Gets the item number.
         /// </summary>
-        public short ItemNumber { get; set; }
+        public short ItemNumber { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="PutItemBankPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public PutItemBankPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Slot = packet.Read<byte>();
-            this.Id = packet.Read<byte>();
-            this.ItemNumber = packet.Read<short>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="PutItemBankPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="PutItemBankPacket"/></param>
-        public bool Equals(PutItemBankPacket other)
-        {
-            return this.Slot == other.Slot && this.Id == other.Id && this.ItemNumber == other.ItemNumber;
+            Slot = packet.Read<byte>();
+            Id = packet.Read<byte>();
+            ItemNumber = packet.Read<short>();
         }
     }
 }

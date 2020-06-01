@@ -1,40 +1,24 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="ExpBoxInfoPacket"/> structure.
-    /// </summary>
-    public struct ExpBoxInfoPacket : IEquatable<ExpBoxInfoPacket>
+    public class ExpBoxInfoPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the player id.
         /// </summary>
-        public uint PlayerId { get; set; }
+        public uint PlayerId { get; private set; }
 
         /// <summary>
         /// Gets the object id.
         /// </summary>
-        public uint ObjectId { get; set; }
+        public uint ObjectId { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="ExpBoxInfoPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public ExpBoxInfoPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.ObjectId = packet.Read<uint>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="ExpBoxInfoPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="ExpBoxInfoPacket"/></param>
-        public bool Equals(ExpBoxInfoPacket other)
-        {
-            return this.PlayerId == other.PlayerId && this.ObjectId == other.ObjectId;
+            PlayerId = packet.Read<uint>();
+            ObjectId = packet.Read<uint>();
         }
     }
 }

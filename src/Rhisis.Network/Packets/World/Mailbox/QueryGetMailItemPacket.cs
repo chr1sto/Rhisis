@@ -1,32 +1,18 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Mailbox
 {
-    public struct QueryGetMailItemPacket : IEquatable<QueryGetMailItemPacket>
+    public class QueryGetMailItemPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the id of the mail
         /// </summary>
-        public int MailId { get; }
+        public int MailId { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="QueryGetMailItemPacket"/> instance.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public QueryGetMailItemPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.MailId = packet.Read<int>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="QueryGetMailItemPacket"/> objects.
-        /// </summary>
-        /// <param name="other">Other <see cref="QueryGetMailItemPacket"/></param>
-        /// <returns></returns>
-        public bool Equals(QueryGetMailItemPacket other)
-        {
-            throw new NotImplementedException();
+            MailId = packet.Read<int>();
         }
     }
 }

@@ -1,23 +1,32 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Game.Behaviors
 {
     /// <summary>
-    /// Describes the behavior of an AI (Behavior)
+    /// Provides a mechanism to manage an entity behavior.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IBehavior<in T> where T : IEntity
+    public interface IBehavior
     {
         /// <summary>
         /// Updates the AI/Behavior.
         /// </summary>
-        /// <param name="entity">Entity to update</param>
-        void Update(T entity);
+        void Update();
 
         /// <summary>
         /// Process an action when the entity arrives to its destination.
         /// </summary>
-        /// <param name="entity">Entity to update.</param>
-        void OnArrived(T entity);
+        void OnArrived();
+
+        /// <summary>
+        /// Process an action when an entity is killed.
+        /// </summary>
+        /// <param name="killedEntity">Killed entity.</param>
+        void OnTargetKilled(ILivingEntity killedEntity);
+
+        /// <summary>
+        /// Process an action when the current entity is killed.
+        /// </summary>
+        /// <param name="killerEntity">Killer.</param>
+        void OnKilled(ILivingEntity killerEntity);
     }
 }

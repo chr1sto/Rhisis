@@ -1,20 +1,14 @@
-﻿using Ether.Network.Packets;
-using System;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public struct QueryTickCountPacket : IEquatable<QueryTickCountPacket>
+    public class QueryTickCountPacket : IPacketDeserializer
     {
-        public uint Time { get; }
+        public uint Time { get; private set; }
 
-        public QueryTickCountPacket(INetPacketStream packet)
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Time = packet.Read<uint>();
-        }
-
-        public bool Equals(QueryTickCountPacket other)
-        {
-            return this.Time == other.Time;
+            Time = packet.Read<uint>();
         }
     }
 }

@@ -1,23 +1,24 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets
 {
-    public class PacketHeader
+    public class PacketHeader : IPacketDeserializer
     {
-        public byte Header { get; }
+        public byte Header { get; private set; }
 
-        public int HashLength { get; }
+        public int HashLength { get; private set; }
 
-        public int Length { get; }
+        public int Length { get; private set; }
 
-        public int HashData { get; }
+        public int HashData { get; private set; }
 
-        public PacketHeader(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Header = packet.Read<byte>();
-            this.HashLength = packet.Read<int>();
-            this.Length = packet.Read<int>();
-            this.HashData = packet.Read<int>();
+            Header = packet.Read<byte>();
+            HashLength = packet.Read<int>();
+            Length = packet.Read<int>();
+            HashData = packet.Read<int>();
         }
     }
 }

@@ -1,22 +1,17 @@
-﻿using Ether.Network.Packets;
-using System;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.Login
 {
-    public struct CloseConnectionPacket : IEquatable<CloseConnectionPacket>
+    public class CloseConnectionPacket : IPacketDeserializer
     {
-        public string Username { get; }
+        public string Username { get; private set; }
 
-        public string Password { get; }
+        public string Password { get; private set; }
 
-        public CloseConnectionPacket(INetPacketStream packet)
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Username = packet.Read<string>();
-            this.Password = packet.Read<string>();
+            Username = packet.Read<string>();
+            Password = packet.Read<string>();
         }
-
-        public bool Equals(CloseConnectionPacket other) =>
-            this.Username.Equals(other.Username, StringComparison.OrdinalIgnoreCase) &&
-            this.Password.Equals(other.Password, StringComparison.OrdinalIgnoreCase);
     }
 }

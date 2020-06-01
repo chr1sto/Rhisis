@@ -1,34 +1,18 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="ExperiencePacket"/> structure.
-    /// </summary>
-    public struct ExperiencePacket : IEquatable<ExperiencePacket>
+    public class ExperiencePacket : IPacketDeserializer
     {
         /// <summary>
-        /// Gets the id.
+        /// Gets the experience amount.
         /// </summary>
-        public long Experience { get; set; }
+        public long Experience { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="ExperiencePacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public ExperiencePacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Experience = packet.Read<long>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="ExperiencePacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="ExperiencePacket"/></param>
-        public bool Equals(ExperiencePacket other)
-        {
-            return this.Experience == other.Experience;
+            Experience = packet.Read<long>();
         }
     }
 }

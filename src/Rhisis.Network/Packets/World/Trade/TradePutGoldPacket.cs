@@ -1,12 +1,16 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Trade
 {
-    public class TradePutGoldPacket
+    public class TradePutGoldPacket : IPacketDeserializer
     {
-        public int Gold { get; }
+        /// <summary>
+        /// Gets the amount of gold the player has placed in the trade.
+        /// </summary>
+        public int Gold { get; private set; }
 
-        public TradePutGoldPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             Gold = packet.Read<int>();
         }

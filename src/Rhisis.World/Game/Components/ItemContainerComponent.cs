@@ -1,13 +1,21 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Rhisis.Core.Extensions;
+using Rhisis.Network.Packets;
 using Rhisis.World.Game.Structures;
+using Sylver.Network.Data;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.World.Game.Components
 {
-    public class ItemContainerComponent
+    public class ItemContainerComponent : IPacketSerializer, IEnumerable<Item>
     {
+        protected const int Empty = -1;
+
+        protected readonly List<Item> _items;
+        protected readonly int[] _itemsMask;
+
         /// <summary>
         /// Gets the <see cref="ItemContainerComponent"/> max capacity.
         /// </summary>
@@ -19,9 +27,9 @@ namespace Rhisis.World.Game.Components
         public int MaxStorageCapacity { get; }
 
         /// <summary>
-        /// Gets the list of items in this <see cref="ItemContainerComponent"/>.
+        /// Gets the extra storage capacity.
         /// </summary>
-        public List<Item> Items { get; }
+        public int ExtraCapacity { get; }
 
         /// <summary>
         /// Creates a new <see cref="ItemContainerComponent"/> instance.
@@ -35,184 +43,393 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public ItemContainerComponent(int maxCapacity, int maxStorageCapacity)
         {
-            this.MaxCapacity = maxCapacity;
-            this.MaxStorageCapacity = maxStorageCapacity;
-            this.Items = new List<Item>(new Item[this.MaxCapacity]);
+            MaxCapacity = maxCapacity;
+            MaxStorageCapacity = maxStorageCapacity;
+            ExtraCapacity = MaxCapacity - MaxStorageCapacity;
+            _itemsMask = new int[MaxCapacity];
+            _items = Enumerable.Repeat((Item)null, MaxCapacity).ToList();
 
-            for (var i = 0; i < this.MaxCapacity; i++)
+            for (int i = 0; i < MaxCapacity; i++)
             {
-                this.Items[i] = new Item
+                _items[i] = new Item(Empty)
                 {
-                    UniqueId = i
+                    Index = i
                 };
-            }
-        }
 
-        /// <summary>
-        /// Gets the valid items count
-        /// </summary>
-        /// <returns></returns>
-        public int GetItemCount()
-        {
-            var count = 0;
-
-            for (var i = 0; i < MaxStorageCapacity; i++)
-            {
-                if (Items[i] != null && Items[i].Slot != -1)
-                    count++;
-            }
-
-            return count;
-        }
-
-        /// <summary>
-        /// Gets the item by the unique id.
-        /// </summary>
-        /// <param name="uniqueId"></param>
-        /// <returns></returns>
-        public Item GetItem(int uniqueId) => this.Items.FirstOrDefault(x => x.UniqueId == uniqueId);
-
-        /// <summary>
-        /// Gets the item by the given predicate
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public Item GetItem(Func<Item, bool> predicate) => this.Items.FirstOrDefault(predicate);
-
-        /// <summary>
-        /// Gets the items matching the predicate.
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns>Collection of <see cref="Item"/>.</returns>
-        public IEnumerable<Item> GetItems(Func<Item, bool> predicate) => this.Items.Where(predicate);
-
-        /// <summary>
-        /// Gets the item by item id
-        /// </summary>
-        /// <param name="itemId"></param>
-        /// <returns></returns>
-        public Item GetItemById(int itemId) => GetItem(x => x.Data != null && x.Data.Id == itemId);
-
-        /// <summary>
-        /// Gets the items matching the item id.
-        /// </summary>
-        /// <param name="itemId">Item id.</param>
-        /// <returns>Colletion of <see cref="Item"/>.</returns>
-        public IEnumerable<Item> GetItemsById(int itemId) => this.GetItems(x => x.Id == itemId);
-
-        /// <summary>
-        /// Gets whether the container contains at least one item of the specified item id.
-        /// </summary>
-        /// <param name="itemId"></param>
-        /// <returns></returns>
-        public bool HasItem(int itemId)
-        {
-            var item = GetItemById(itemId);
-            if (item == null)
-                return false;
-
-            return item.Quantity > 0;
-        }
-
-        /// <summary>
-        /// Removes the specified amount of the specified item from container.
-        /// </summary>
-        /// <param name="itemId"></param>
-        /// <param name="amount"></param>
-        public void RemoveItems(int itemId, int amount = 1)
-        {
-            var item = GetItemById(itemId);
-            if (item == null)
-                return;
-
-            if (item.Quantity > amount)
-                item.Quantity -= amount;
-            else if (item.Quantity <= amount)
-            {
-                item.Quantity = 0;
-                this[item.Slot] = new Item()
+                if (i < MaxStorageCapacity)
                 {
-                    UniqueId = item.UniqueId
-                };
-            }
-        }
-
-        /// <summary>
-        /// Gets the item by slot.
-        /// </summary>
-        /// <param name="slot"></param>
-        /// <returns></returns>
-        public Item this[int slot]
-        {
-            get => Items[slot];
-            set => Items[slot] = value;
-        }
-
-        /// <summary>
-        /// Returs the position of an available slot.
-        /// </summary>
-        /// <returns></returns>
-        public int GetAvailableSlot()
-        {
-            for (var i = 0; i < MaxStorageCapacity; i++)
-            {
-                if (this.Items[i] != null && this.Items[i].Slot == -1)
-                    return i;
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// Check if there is any available slots.
-        /// </summary>
-        /// <returns></returns>
-        public bool HasAvailableSlots() => this.GetAvailableSlot() != -1;
-
-        /// <summary>
-        /// Creates an item in this item container.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        public bool CreateItem(Item item)
-        {
-            if (item?.Data == null)
-                return false;
-
-            int availableSlot = this.GetAvailableSlot();
-
-            if (availableSlot < 0)
-                return false;
-
-            item.Slot = availableSlot;
-            item.UniqueId = this.Items[availableSlot].UniqueId;
-            this.Items[availableSlot] = item;
-
-            return true;
-        }
-
-        /// <summary>
-        /// Serialize the ItemContainer.
-        /// </summary>
-        /// <param name="packet"></param>
-        public void Serialize(INetPacketStream packet)
-        {
-            for (var i = 0; i < this.MaxCapacity; ++i)
-                packet.Write(this.Items[i].UniqueId);
-
-            packet.Write((byte)this.Items.Count(x => x.Id != -1));
-
-            for (var i = 0; i < this.MaxCapacity; ++i)
-            {
-                if (this.Items[i].Id > 0)
+                    _items[i].Slot = i;
+                    _itemsMask[i] = i;
+                }
+                else
                 {
-                    packet.Write((byte)this.Items[i].Slot);
-                    this.Items[i].Serialize(packet);
+                    _itemsMask[i] = Empty;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initializes the item container.
+        /// </summary>
+        /// <param name="items">Items.</param>
+        public void Initialize(IEnumerable<Item> items)
+        {
+            int itemIndex;
+            int itemsCount = Math.Min(items.Count(), MaxCapacity);
+
+            for (itemIndex = 0; itemIndex < itemsCount; itemIndex++)
+            {
+                Item item = items.ElementAtOrDefault(itemIndex);
+
+                if (item != null)
+                {
+                    int slot = item.Slot;
+
+                    _items[slot].CopyFrom(item);
+                    _items[slot].Slot = slot;
+                    _items[slot].Index = slot;
+                    _itemsMask[slot] = slot;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets an item matching a given predicate.
+        /// </summary>
+        /// <param name="predicate">Match predicate.</param>
+        /// <returns>Item matching the predicate function; null otherwise.</returns>
+        public Item GetItem(Func<Item, bool> predicate)
+        {
+            Item item = _items.FirstOrDefault(predicate);
+
+            if (item == null)
+            {
+                return null;
+            }
+
+            return item.Id != Empty ? item : null;
+        }
+
+        /// <summary>
+        /// Gets an item by its id.
+        /// </summary>
+        /// <param name="id">Item id.</param>
+        /// <returns>Item if found; null otherwise.</returns>
+        public Item GetItemById(int id) => GetItem(x => x.Id == id);
+
+        /// <summary>
+        /// Gets the item at a given slot.
+        /// </summary>
+        /// <param name="slot">Container slot.</param>
+        /// <returns></returns>
+        public Item GetItemAtSlot(int slot)
+        {
+            if (slot < 0 || slot >= MaxCapacity)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            int itemIndex = _itemsMask[slot];
+
+            if (itemIndex < 0 || itemIndex >= MaxCapacity)
+            {
+                return null;
+            }
+
+            Item item = _items[itemIndex];
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), $"No item found at slot {slot}.");
+            }
+
+            return item.Id != Empty ? item : null;
+        }
+
+        /// <summary>
+        /// Gets the item at a given index (or unique id).
+        /// </summary>
+        /// <param name="index">Index or Unique Id.</param>
+        /// <returns></returns>
+        public Item GetItemAtIndex(int index)
+        {
+            if (index < 0 || index > MaxCapacity)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            Item item = _items[index];
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), $"No item found at index {index}.");
+            }
+
+            return item.Id != Empty ? item : null;
+        }
+
+        /// <summary>
+        /// Gets the number of items of the inventory.
+        /// </summary>
+        /// <returns></returns>
+        public int GetItemCount() => _items.Count(x => x.Id != Empty);
+
+        /// <summary>
+        /// Gts the number of items in the inventory storage area.
+        /// </summary>
+        /// <returns></returns>
+        public int GetItemCountInStorage() => _items.GetRange(0, MaxStorageCapacity).Count(x => x.Id != Empty);
+
+        /// <summary>
+        /// Check if there is available slots in the container.
+        /// </summary>
+        /// <returns>True if there is available slots; false otherwise.</returns>
+        [Obsolete]
+        public bool HasAvailableSlots() => GetAvailableSlot() != Empty;
+
+        /// <summary>
+        /// Check if the item container can store the given item.
+        /// </summary>
+        /// <param name="itemToStore">Item to store.</param>
+        /// <returns>True if the item container can store the item; false otherwise.</returns>
+        public bool CanStoreItem(Item itemToStore)
+        {
+            if (itemToStore == null)
+            {
+                return false;
+            }
+
+            int quantityToStore = itemToStore.Quantity;
+            int itemToStoreMaxQuantity = itemToStore.Data.PackMax;
+
+            for (int i = 0; i < MaxStorageCapacity; i++)
+            {
+                Item item = GetItemAtSlot(i);
+
+                if (item == null)
+                {
+                    if (quantityToStore > itemToStoreMaxQuantity)
+                    {
+                        quantityToStore -= itemToStoreMaxQuantity;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else if (item.Id == itemToStore.Id)
+                {
+                    if (item.Quantity + quantityToStore > itemToStoreMaxQuantity)
+                    {
+                        quantityToStore -= itemToStoreMaxQuantity - item.Quantity;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
 
-            for (var i = 0; i < this.MaxCapacity; ++i)
-                packet.Write(this.Items[i].UniqueId);
+            return false;
         }
+
+        /// <summary>
+        /// Get an available slot number.
+        /// </summary>
+        /// <returns>Slot number if available; <see cref="Empty"/> otherwise.</returns>
+        public int GetAvailableSlot()
+        {
+            for (int i = 0; i < MaxStorageCapacity; i++)
+            {
+                if (_itemsMask[i] == Empty || _items[_itemsMask[i]].Id == Empty)
+                {
+                    return i;
+                }
+            }
+
+            return Empty;
+        }
+
+        /// <summary>
+        /// Checks if the given slot is available.
+        /// </summary>
+        /// <param name="slot">Slot.</param>
+        /// <returns>True if the slot is available; false otherwise.</returns>
+        public bool IsSlotAvailable(int slot) => GetItemAtSlot(slot) == null;
+
+        /// <summary>
+        /// Swap two slots.
+        /// </summary>
+        /// <param name="sourceSlot">Source slot.</param>
+        /// <param name="destinationSlot">Destination slot.</param>
+        public void Swap(int sourceSlot, int destinationSlot)
+        {
+            _itemsMask.Swap(sourceSlot, destinationSlot);
+
+            int itemSourceIndex = _itemsMask[sourceSlot];
+            int itemDestinationIndex = _itemsMask[destinationSlot];
+
+            if (itemSourceIndex != Empty)
+            {
+                _items[itemSourceIndex].Slot = sourceSlot;
+            }
+
+            if (itemDestinationIndex != Empty)
+            {
+                _items[itemDestinationIndex].Slot = destinationSlot;
+            }
+        }
+
+        /// <summary>
+        /// Sets an item at a given index.
+        /// </summary>
+        /// <param name="item">Index to set.</param>
+        /// <param name="index">Index.</param>
+        public void SetItemAtIndex(Item item, int index)
+        {
+            if (item != null)
+            {
+                _items[index] = item;
+                _items[index].Index = index;
+            }
+        }
+
+        /// <summary>
+        /// Sets an item at a given slot.
+        /// </summary>
+        /// <param name="item">Item to set.</param>
+        /// <param name="slot">Slot.</param>
+        public void SetItemAtSlot(Item item, int slot)
+        {
+            item.Slot = slot;
+
+            SetItemAtIndex(item, _itemsMask[slot]);
+        }
+
+        /// <summary>
+        /// Adds an item to the item container.
+        /// </summary>
+        /// <param name="itemToAdd">Item to add.</param>
+        public IEnumerable<ItemCreationResult> AddItem(Item itemToAdd)
+        {
+            int quantity = itemToAdd.Quantity;
+            var result = new List<ItemCreationResult>();
+
+            if (!CanStoreItem(itemToAdd))
+            {
+                return result;
+            }
+
+            if (itemToAdd.Data.IsStackable)
+            {
+                for (int i = 0; i < MaxStorageCapacity; i++)
+                {
+                    int itemIndex = _itemsMask[i];
+
+                    if (itemIndex < 0 || itemIndex >= MaxCapacity)
+                    {
+                        continue;
+                    }
+
+                    Item inventoryItem = _items[itemIndex];
+
+                    if (inventoryItem.Id == itemToAdd.Id && inventoryItem.Quantity < inventoryItem.Data.PackMax)
+                    {
+                        if (inventoryItem.Quantity + quantity > inventoryItem.Data.PackMax)
+                        {
+                            quantity -= inventoryItem.Data.PackMax - inventoryItem.Quantity;
+                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
+                        }
+                        else
+                        {
+                            inventoryItem.Quantity += quantity;
+                            quantity = 0;
+                        }
+
+                        result.Add(new ItemCreationResult(ItemCreationActionType.Update, inventoryItem));
+
+                        if (quantity == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (quantity > 0)
+            {
+                for (int i = 0; i < MaxStorageCapacity; i++)
+                {
+                    int itemIndex = _itemsMask[i];
+
+                    if (itemIndex < 0 || itemIndex >= MaxCapacity)
+                    {
+                        continue;
+                    }
+
+                    Item inventoryItem = _items[itemIndex];
+
+                    if (inventoryItem.Id == Empty)
+                    {
+                        inventoryItem.CopyFrom(itemToAdd);
+                        inventoryItem.Index = itemIndex;
+                        inventoryItem.Slot = i;
+
+                        if (quantity > inventoryItem.Data.PackMax)
+                        {
+                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
+                            quantity -= inventoryItem.Quantity;
+                        }
+                        else
+                        {
+                            inventoryItem.Quantity = quantity;
+                            quantity = 0;
+                        }
+
+                        result.Add(new ItemCreationResult(ItemCreationActionType.Add, inventoryItem));
+
+                        if (quantity == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public void Serialize(INetPacketStream packet)
+        {
+            for (int i = 0; i < MaxCapacity; i++)
+            {
+                packet.Write(_itemsMask[i]);
+            }
+
+            packet.Write((byte)GetItemCount());
+
+            for (int i = 0; i < MaxCapacity; i++)
+            {
+                Item item = _items.ElementAt(i);
+
+                if (item.Id != Empty)
+                {
+                    packet.Write((byte)i);
+                    item.Serialize(packet, item.Index);
+                }
+            }
+
+            for (int i = 0; i < MaxCapacity; i++)
+            {
+                packet.Write(_items[i].Slot);
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerator<Item> GetEnumerator() => _items.GetEnumerator();
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

@@ -1,41 +1,34 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.GuildCombat
 {
-    /// <summary>
-    /// Defines the <see cref="SelectPlayerGuildCombatPacket"/> structure.
-    /// </summary>
-    public struct SelectPlayerGuildCombatPacket : IEquatable<SelectPlayerGuildCombatPacket>
+    public class SelectPlayerGuildCombatPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the window.
         /// </summary>
-        public bool Window { get; set; }
+        public bool Window { get; private set; }
 
         /// <summary>
         /// Gets the defender id.
         /// </summary>
-        public uint? DefenderId { get; set; }
+        public uint? DefenderId { get; private set; }
 
         /// <summary>
         /// Gets the SelectPlayer size.
         /// </summary>
-        public int? Size { get; set; }
+        public int? Size { get; private set; }
 
         /// <summary>
         /// Gets the players to select.
         /// </summary>
-        public uint?[] SelectPlayer { get; set; }
+        public uint?[] SelectPlayer { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="SelectPlayerGuildCombatPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public SelectPlayerGuildCombatPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Window = packet.Read<int>() == 1;
-            if (!this.Window)
+            Window = packet.Read<int>() == 1;
+            if (!Window)
             {
                 DefenderId = packet.Read<uint>();
                 Size = packet.Read<int>();
@@ -49,15 +42,6 @@ namespace Rhisis.Network.Packets.World.GuildCombat
                 Size = null;
                 SelectPlayer = null;
             }
-        }
-
-        /// <summary>
-        /// Compares two <see cref="SelectPlayerGuildCombatPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="SelectPlayerGuildCombatPacket"/></param>
-        public bool Equals(SelectPlayerGuildCombatPacket other)
-        {
-            return this.Window == other.Window && this.DefenderId == other.DefenderId && this.Size == other.Size && this.SelectPlayer == other.SelectPlayer;
         }
     }
 }

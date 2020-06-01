@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 
@@ -9,26 +9,23 @@ namespace Rhisis.Core.Resources.Loaders
     public sealed class DefineLoader : IGameResourceLoader
     {
         private readonly ILogger<DefineLoader> _logger;
-
-        /// <summary>
-        /// Gets the defines dictionary.
-        /// </summary>
-        public IDictionary<string, int> Defines { get; }
+        private readonly IMemoryCache _cache;
 
         /// <summary>
         /// Creates a new <see cref="DefineLoader"/> instance.
         /// </summary>
         /// <param name="logger">Logger</param>
-        public DefineLoader(ILogger<DefineLoader> logger)
+        public DefineLoader(ILogger<DefineLoader> logger, IMemoryCache cache)
         {
-            this._logger = logger;
-            this.Defines = new Dictionary<string, int>();
+            _logger = logger;
+            _cache = cache;
         }
 
         /// <inheritdoc />
         public void Load()
         {
-            var headerFiles = from x in Directory.GetFiles(GameResources.ResourcePath, "*.*", SearchOption.AllDirectories)
+            var defines = new ConcurrentDictionary<string, int>();
+            var headerFiles = from x in Directory.GetFiles(GameResourcesConstants.Paths.ResourcePath, "*.*", SearchOption.AllDirectories)
                               where DefineFile.Extensions.Contains(Path.GetExtension(x))
                               select x;
 
@@ -40,24 +37,19 @@ namespace Rhisis.Core.Resources.Loaders
                     {
                         var isIntValue = int.TryParse(define.Value.ToString(), out int intValue);
 
-                        if (isIntValue && !this.Defines.ContainsKey(define.Key))
-                            this.Defines.Add(define.Key, intValue);
+                        if (isIntValue && !defines.ContainsKey(define.Key))
+                            defines.TryAdd(define.Key, intValue);
                         else
                         {
-                            this._logger.LogWarning(GameResources.ObjectIgnoredMessage, "Define", define.Key,
+                            _logger.LogWarning(GameResourcesConstants.Errors.ObjectIgnoredMessage, "Define", define.Key,
                                 isIntValue ? "already declared" : $"'{define.Value}' is not a integer value");
                         }
                     }
                 }
             }
 
-            this._logger.LogInformation("-> {0} defines found.", this.Defines.Count);
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            this.Defines.Clear();
+            _cache.Set(GameResourcesConstants.Defines, defines);
+            _logger.LogInformation("-> {0} defines found.", defines.Count);
         }
     }
 }

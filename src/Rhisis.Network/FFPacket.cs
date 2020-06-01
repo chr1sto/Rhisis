@@ -1,4 +1,4 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 using System.IO;
 using System.Text;
 
@@ -11,13 +11,21 @@ namespace Rhisis.Network
     {
         public const byte Header = 0x5E;
         public const uint NullId = 0xFFFFFFFF;
-        
+
+        private static readonly Encoding FlyFFWriteStringEncoding = Encoding.GetEncoding(1252);
+        private static readonly Encoding FlyFFReadStringEncoding = Encoding.GetEncoding(1252);
         private short _mergedPacketCount;
+
+        /// <inheritdoc />
+        protected override Encoding ReadEncoding => FlyFFReadStringEncoding;
+
+        /// <inheritdoc />
+        protected override Encoding WriteEncoding => FlyFFWriteStringEncoding;
 
         /// <summary>
         /// Gets the FFPacket buffer.
         /// </summary>
-        public override byte[] Buffer => this.BuildPacketBuffer();
+        public override byte[] Buffer => BuildPacketBuffer();
 
         /// <summary>
         /// Creates a new FFPacket in write-only mode.
@@ -35,7 +43,7 @@ namespace Rhisis.Network
         public FFPacket(object packetHeader)
             : this()
         {
-            this.WriteHeader(packetHeader);
+            WriteHeader(packetHeader);
         }
 
         /// <summary>
@@ -51,63 +59,7 @@ namespace Rhisis.Network
         /// Write packet header.
         /// </summary>
         /// <param name="packetHeader">FFPacket header</param>
-        public void WriteHeader(object packetHeader) => this.Write((uint)packetHeader);
-
-        /// <summary>
-        /// Write data into a packet.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        public override void Write<T>(T value)
-        {
-            if (typeof(T) == typeof(string))
-            {
-                this.WriteString(value as string);
-                return;
-            }
-
-            base.Write(value);
-        }
-
-        /// <summary>
-        /// Read data.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public override T Read<T>()
-        {
-            if (typeof(T) == typeof(string))
-                return (T)(object)this.ReadString();
-
-            return base.Read<T>();
-        }
-
-        /// <summary>
-        /// Read FF String.
-        /// </summary>
-        /// <returns></returns>
-        private string ReadString()
-        {
-            var size = this.Read<int>();
-
-            return size == 0 ? string.Empty : Encoding.GetEncoding(1252).GetString(this.ReadBytes(size));
-        }
-
-        /// <summary>
-        /// Read a specified number of bytes.
-        /// </summary>
-        /// <param name="count">Number of bytes to read</param>
-        /// <returns></returns>
-        public byte[] ReadBytes(int count) => this.ReadArray<byte>(count);
-
-        /// <summary>
-        /// Write FF string.
-        /// </summary>
-        /// <param name="value"></param>
-        private void WriteString(string value)
-        {
-            base.Write(Encoding.GetEncoding(0).GetBytes(value));
-        }
+        public void WriteHeader(object packetHeader) => Write((uint)packetHeader);
 
         /// <summary>
         /// Builds the packet buffer.
@@ -115,11 +67,11 @@ namespace Rhisis.Network
         /// <returns></returns>
         private byte[] BuildPacketBuffer()
         {
-            long oldPointer = this.Position;
+            long oldPointer = Position;
 
-            this.Seek(1, SeekOrigin.Begin);
-            base.Write(this.Size - 5);
-            this.Seek(oldPointer, SeekOrigin.Begin);
+            Seek(1, SeekOrigin.Begin);
+            base.Write((int)Length - 5);
+            Seek(oldPointer, SeekOrigin.Begin);
 
             return base.Buffer;
         }
@@ -134,21 +86,21 @@ namespace Rhisis.Network
         {
             var packet = (uint)command;
 
-            if (this._mergedPacketCount == 0)
+            if (_mergedPacketCount == 0)
             {
-                this.Write((int)mainCommand);
-                this.Write(0);
-                this.Write(++this._mergedPacketCount);
+                Write((int)mainCommand);
+                Write(0);
+                Write(++_mergedPacketCount);
             }
             else
             {
-                this.Seek(13, SeekOrigin.Begin);
-                this.Write(++this._mergedPacketCount);
-                this.Seek(0, SeekOrigin.End);
+                Seek(13, SeekOrigin.Begin);
+                Write(++_mergedPacketCount);
+                Seek(0, SeekOrigin.End);
             }
 
-            this.Write(moverId);
-            this.Write((short)packet);
+            Write(moverId);
+            Write((short)packet);
         }
 
         /// <summary>
@@ -156,6 +108,6 @@ namespace Rhisis.Network
         /// </summary>
         /// <param name="moverId"></param>
         /// <param name="command"></param>
-        public void StartNewMergedPacket(uint moverId, object command) => this.StartNewMergedPacket(moverId, command, 0xFFFFFF00);
+        public void StartNewMergedPacket(uint moverId, object command) => StartNewMergedPacket(moverId, command, 0xFFFFFF00);
     }
 }

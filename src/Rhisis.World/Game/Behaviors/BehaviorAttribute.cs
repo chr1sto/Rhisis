@@ -26,8 +26,8 @@ namespace Rhisis.World.Game.Behaviors
         /// Creates a new default <see cref="BehaviorAttribute"/> instance.
         /// </summary>
         /// <param name="behaviorType">Behavior type</param>
-        public BehaviorAttribute(BehaviorType behaviorType, bool IsDefault = false)
-            : this(behaviorType, DefaultMoverId, IsDefault)
+        public BehaviorAttribute(BehaviorType behaviorType, bool isDefault = false)
+            : this(behaviorType, DefaultMoverId, isDefault)
         { }
 
         /// <summary>
@@ -35,11 +35,12 @@ namespace Rhisis.World.Game.Behaviors
         /// </summary>
         /// <param name="behaviorType">Behavior type</param>
         /// <param name="moverId"></param>
-        public BehaviorAttribute(BehaviorType behaviorType, int moverId, bool IsDefault = false)
+        /// <param name="isDefault">Indicates that this is a default behavior.</param>
+        public BehaviorAttribute(BehaviorType behaviorType, int moverId, bool isDefault = false)
         {
-            this.Type = behaviorType;
-            this.MoverId = moverId;
-            this.IsDefault = IsDefault;
+            Type = behaviorType;
+            MoverId = moverId;
+            IsDefault = isDefault;
         }
     }
 }

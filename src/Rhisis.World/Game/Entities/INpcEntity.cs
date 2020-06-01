@@ -1,11 +1,11 @@
 ﻿using Rhisis.Core.Structures.Game;
-using Rhisis.World.Game.Behaviors;
+using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities
 {
-    public interface INpcEntity : IEntity
+    public interface INpcEntity : ILivingEntity, IWorldEntity
     {
         /// <summary>
         /// Gets or sets the npc's shop item containers.
@@ -18,16 +18,11 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets the NPC data.
         /// </summary>
-        NpcData Data { get; }
+        NpcData NpcData { get; }
 
         /// <summary>
-        /// Gets the NPC behavior.
+        /// Gets the NPC quests.
         /// </summary>
-        IBehavior<INpcEntity> Behavior { get; set; }
-
-        /// <summary>
-        /// Gets or sets the NPC timers.
-        /// </summary>
-        NpcTimerComponent Timers { get; set; }
+        IEnumerable<IQuestScript> Quests { get; }
     }
 }

@@ -1,91 +1,76 @@
-﻿using System;
-using Ether.Network.Packets;
-using Rhisis.Core.Data;
+﻿using Sylver.Network.Data;
 using Rhisis.Core.Structures;
 
 namespace Rhisis.Network.Packets.World
 {
     /// <summary>
-    /// Defines the <see cref="PlayerMovedPacket"/> structure.
+    /// Structure for the <see cref="PacketType.PLAYERMOVED"/> packet.
     /// </summary>
-    public struct PlayerMovedPacket : IEquatable<PlayerMovedPacket>
+    public class PlayerMovedPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the BeginPosition.
         /// </summary>
-        public Vector3 BeginPosition { get; }
+        public Vector3 BeginPosition { get; private set; }
 
         /// <summary>
         /// Gets the DestinationPosition.
         /// </summary>
-        public Vector3 DestinationPosition { get; }
+        public Vector3 DestinationPosition { get; private set; }
 
         /// <summary>
         /// Gets the Angle.
         /// </summary>
-        public float Angle { get; }
+        public float Angle { get; private set; }
 
         /// <summary>
         /// Gets the object state (MovingFlag).
         /// </summary>
-        public uint State { get; }
+        public uint State { get; private set; }
 
         /// <summary>
         /// Gets the state flag. (Motion flag)
         /// </summary>
-        public uint StateFlag { get; }
+        public int StateFlag { get; private set; }
 
         /// <summary>
         /// Gets the motion.
         /// </summary>
-        public uint Motion { get; }
+        public int Motion { get; private set; }
 
         /// <summary>
         /// Gets the motion ex.
         /// </summary>
-        public int MotionEx { get; }
+        public int MotionEx { get; private set; }
 
         /// <summary>
         /// Gets the loop.
         /// </summary>
-        public int Loop { get; }
+        public int Loop { get; private set; }
 
         /// <summary>
         /// Gets the motion option.
         /// </summary>
-        public uint MotionOption { get; }
+        public int MotionOption { get; private set; }
 
         /// <summary>
         /// Gets the tick count.
         /// </summary>
-        public long TickCount { get; }
+        public long TickCount { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="SetDestPositionPacket"/> instance.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public PlayerMovedPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            this.DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            this.Angle = packet.Read<float>();
-            this.State = packet.Read<uint>();
-            this.StateFlag = packet.Read<uint>();
-            this.Motion = packet.Read<uint>();
-            this.MotionEx = packet.Read<int>();
-            this.Loop = packet.Read<int>();
-            this.MotionOption = packet.Read<uint>();
-            this.TickCount = packet.Read<long>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="PlayerMovedPacket"/> objects.
-        /// </summary>
-        /// <param name="other">Other <see cref="PlayerMovedPacket"/></param>
-        /// <returns></returns>
-        public bool Equals(PlayerMovedPacket other)
-        {
-            throw new NotImplementedException();
+            BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            Angle = packet.Read<float>();
+            State = packet.Read<uint>();
+            StateFlag = packet.Read<int>();
+            Motion = packet.Read<int>();
+            MotionEx = packet.Read<int>();
+            Loop = packet.Read<int>();
+            MotionOption = packet.Read<int>();
+            TickCount = packet.Read<long>();
         }
     }
 }

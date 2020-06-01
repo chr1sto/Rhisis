@@ -1,28 +1,13 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.GuildCombat
 {
-    /// <summary>
-    /// Defines the <see cref="RequestStatusPacket"/> structure.
-    /// </summary>
-    public struct RequestStatusPacket : IEquatable<RequestStatusPacket>
+    public class RequestStatusPacket : IPacketDeserializer
     {
-        /// <summary>
-        /// Creates a new <see cref="RequestStatusPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public RequestStatusPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-        }
-
-        /// <summary>
-        /// Compares two <see cref="RequestStatusPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="RequestStatusPacket"/></param>
-        public bool Equals(RequestStatusPacket other)
-        {
-            return true;
+            throw new System.NotImplementedException();
         }
     }
 }

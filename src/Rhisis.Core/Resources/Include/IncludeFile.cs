@@ -11,33 +11,33 @@ namespace Rhisis.Core.Resources.Include
         private readonly FileTokenScanner _scanner;
         private readonly ICollection<IStatement> _statements;
 
-        public IReadOnlyCollection<IStatement> Statements => this._statements as IReadOnlyCollection<IStatement>;
+        public IReadOnlyCollection<IStatement> Statements => _statements as IReadOnlyCollection<IStatement>;
 
         public IncludeFile(string filePath, string regexPattern = @"([(){}=,;\n\r\t])")
         {
-            this._scanner = new FileTokenScanner(filePath, regexPattern);
-            this._statements = new List<IStatement>();
+            _scanner = new FileTokenScanner(filePath, regexPattern);
+            _statements = new List<IStatement>();
 
-            this.Read();
+            Read();
         }
 
         private void Read()
         {
-            this._scanner.Read();
+            _scanner.Read();
 
             string token = null;
-            while ((token = this._scanner.GetToken()) != null)
+            while ((token = _scanner.GetToken()) != null)
             {
                 switch (token)
                 {
                     case "{":
-                        this._statements.Add(this.ParseBlock());
+                        _statements.Add(ParseBlock());
                         break;
                     case "(":
-                        this._statements.Add(this.ParseInstruction());
+                        _statements.Add(ParseInstruction());
                         break;
                     case "=":
-                        this._statements.Add(this.ParseVariable());
+                        _statements.Add(ParseVariable());
                         break;
                 }
             }
@@ -48,23 +48,23 @@ namespace Rhisis.Core.Resources.Include
             string token = null;
             var block = new Block()
             {
-                Name = this._scanner.GetPreviousToken()
+                Name = _scanner.GetPreviousToken()
             };
             
-            while ((token = this._scanner.GetToken()) != "}")
+            while ((token = _scanner.GetToken()) != "}")
             {
                 if (token == null)
                     break;
                 switch (token)
                 {
                     case "{":
-                        block.AddStatement(this.ParseBlock());
+                        block.AddStatement(ParseBlock());
                         break;
                     case "(":
-                        block.AddStatement(this.ParseInstruction());
+                        block.AddStatement(ParseInstruction());
                         break;
                     case "=":
-                        block.AddStatement(this.ParseVariable());
+                        block.AddStatement(ParseVariable());
                         break;
                     default:
                         block.AddUnknownStatement(token);
@@ -80,22 +80,23 @@ namespace Rhisis.Core.Resources.Include
             string parameter = null;
             var instruction = new Instruction
             {
-                Name = this._scanner.GetPreviousToken()
+                Name = _scanner.GetPreviousToken()
             };
 
-            while ((parameter = this._scanner.GetToken()) != ")")
+            while ((parameter = _scanner.GetToken()) != ")")
                 instruction.AddParameter(parameter);
 
-            this._scanner.GetToken();
+            if (_scanner.CurrentTokenIs(";"))
+                _scanner.GetToken();
 
             return instruction;
         }
 
         private Variable ParseVariable()
         {
-            string variableName = this._scanner.GetPreviousToken();
-            string variableValue = this._scanner.GetToken();
-            string endDelimiter = this._scanner.GetToken();
+            string variableName = _scanner.GetPreviousToken();
+            string variableValue = _scanner.GetToken();
+            string endDelimiter = _scanner.GetToken();
 
             if (endDelimiter != ";")
                 throw new InvalidDataException("Invalid variable format. Missing ';' for variable " + variableName);
@@ -103,17 +104,17 @@ namespace Rhisis.Core.Resources.Include
             return new Variable(variableName, variableValue);
         }
 
-        public Block GetBlock(string blockName) => this._statements.FirstOrDefault(x => x.Type == StatementType.Block && x.Name.Equals(blockName)) as Block;
+        public Block GetBlock(string blockName) => _statements.FirstOrDefault(x => x.Type == StatementType.Block && x.Name.Equals(blockName)) as Block;
 
         public void Dispose()
         {
-            foreach (IStatement statement in this._statements)
+            foreach (IStatement statement in _statements)
             {
                 statement.Dispose();
             }
 
-            this._statements.Clear();
-            this._scanner.Dispose();
+            _statements.Clear();
+            _scanner.Dispose();
         }
     }
 }

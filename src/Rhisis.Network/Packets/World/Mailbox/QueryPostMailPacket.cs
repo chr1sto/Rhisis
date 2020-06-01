@@ -1,63 +1,49 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Mailbox
 {
-    public struct QueryPostMailPacket : IEquatable<QueryPostMailPacket>
+    public class QueryPostMailPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the slot of the item.
         /// </summary>
-        public byte ItemSlot { get; }
+        public byte ItemSlot { get; private set; }
 
         /// <summary>
         /// Gets the quantity of the item.
         /// </summary>
-        public short ItemQuantity { get; }
+        public short ItemQuantity { get; private set; }
 
         /// <summary>
         /// Gets the receiver's name.
         /// </summary>
-        public string Receiver { get; }
+        public string Receiver { get; private set; }
 
         /// <summary>
         /// Gets the amount of gold.
         /// </summary>
-        public int Gold { get; }
+        public int Gold { get; private set; }
 
         /// <summary>
         /// Gets the title of the mail.
         /// </summary>
-        public string Title { get; }
+        public string Title { get; private set; }
 
         /// <summary>
         /// Gets the text of the mail.
         /// </summary>
-        public string Text { get; }
+        public string Text { get; private set; }
 
 
-        /// <summary>
-        /// Creates a new <see cref="QueryPostMailPacket"/> instance.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public QueryPostMailPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.ItemSlot = packet.Read<byte>();
-            this.ItemQuantity = packet.Read<short>();
-            this.Receiver = packet.Read<string>();
-            this.Gold = packet.Read<int>();
-            this.Title = packet.Read<string>();
-            this.Text = packet.Read<string>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="QueryPostMailPacket"/> objects.
-        /// </summary>
-        /// <param name="other">Other <see cref="QueryPostMailPacket"/></param>
-        /// <returns></returns>
-        public bool Equals(QueryPostMailPacket other)
-        {
-            throw new NotImplementedException();
+            ItemSlot = packet.Read<byte>();
+            ItemQuantity = packet.Read<short>();
+            Receiver = packet.Read<string>();
+            Gold = packet.Read<int>();
+            Title = packet.Read<string>();
+            Text = packet.Read<string>();
         }
     }
 }

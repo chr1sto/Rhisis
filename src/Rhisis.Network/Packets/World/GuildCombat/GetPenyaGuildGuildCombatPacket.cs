@@ -1,28 +1,13 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.GuildCombat
 {
-    /// <summary>
-    /// Defines the <see cref="GetPenyaGuildGuildCombatPacket"/> structure.
-    /// </summary>
-    public struct GetPenyaGuildGuildCombatPacket : IEquatable<GetPenyaGuildGuildCombatPacket>
+    public class GetPenyaGuildGuildCombatPacket : IPacketDeserializer
     {
-        /// <summary>
-        /// Creates a new <see cref="GetPenyaGuildGuildCombatPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public GetPenyaGuildGuildCombatPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-        }
-
-        /// <summary>
-        /// Compares two <see cref="GetPenyaGuildGuildCombatPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="GetPenyaGuildGuildCombatPacket"/></param>
-        public bool Equals(GetPenyaGuildGuildCombatPacket other)
-        {
-            return true;
+            throw new System.NotImplementedException();
         }
     }
 }

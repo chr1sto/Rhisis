@@ -35,11 +35,11 @@ namespace Rhisis.World.Game.Maps.Regions
         public MapRevivalRegion(int x, int z, int width, int length, int mapId, string key, Vector3 position, bool isChao, bool targetRevivalKey)
             : base(x, z, width, length)
         {
-            this.MapId = mapId;
-            this.Key = key;
-            this.RevivalPosition = position;
-            this.IsChaoRegion = isChao;
-            this.TargetRevivalKey = targetRevivalKey;
+            MapId = mapId;
+            Key = key;
+            RevivalPosition = position;
+            IsChaoRegion = isChao;
+            TargetRevivalKey = targetRevivalKey;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Rhisis.World.Game.Maps.Regions
         /// <param name="revivalMapId">Revival map id.</param>
         /// <returns>New <see cref="MapRevivalRegion"/> instance.</returns>
         public static IMapRevivalRegion FromRgnElement(RgnRegion3 region, int revivalMapId)
-            => new MapRevivalRegion(region.Left, region.Top, region.Right, region.Bottom,
+            => new MapRevivalRegion(region.Left, region.Top, region.Right - region.Left, region.Bottom - region.Top,
                                     revivalMapId, region.Key, region.Position.Clone(), region.ChaoKey, region.TargetKey);
     }
 }

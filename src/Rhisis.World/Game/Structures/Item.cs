@@ -1,25 +1,31 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Core.Resources;
+﻿using Rhisis.Core.Data;
+using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
-using Rhisis.World.Systems.Inventory;
+using Rhisis.Database.Entities;
+using Sylver.Network.Data;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Rhisis.World.Game.Structures
 {
     /// <summary>
     /// FlyFF item structure.
     /// </summary>
-    public class Item : ItemBase
+    [DebuggerDisplay("({Quantity}) {Data?.Name ?? \"Empty\"} +{Refine} ({Element}+{ElementRefine})")]
+    public class Item : ItemDescriptor
     {
+        public const int Empty = -1;
+        public const int RefineMax = 10;
+
         /// <summary>
         /// Flyff item refine table.
         /// </summary>
-        public static readonly IReadOnlyCollection<int> RefineTable = new[] {0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24};
+        public static readonly IReadOnlyCollection<int> RefineTable = new[] { 0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24 };
 
         /// <summary>
         /// Gets the item unique Id.
         /// </summary>
-        public int UniqueId { get; set; }
+        public int Index { get; set; }
 
         /// <summary>
         /// Gets the creator id of the item.
@@ -45,40 +51,19 @@ namespace Rhisis.World.Game.Structures
         /// Creates an empty <see cref="Item"/>.
         /// </summary>
         /// <remarks>
-        /// All values set to -1.
+        /// All values set to <see cref="Empty"/>.
         /// </remarks>
         public Item()
-            : this(-1, -1, -1, -1, -1)
+            : this(Empty, Empty, Empty, Empty, Empty)
         {
         }
 
         /// <summary>
-        /// Create an <see cref="Item"/> with an id.
+        /// Creates a <see cref="Item"/> instance with an id.
         /// </summary>
-        /// <param name="id">Item Id</param>
+        /// <param name="id">Item Id.</param>
         public Item(int id)
-            : this(id, 1, -1, -1, -1)
-        {
-        }
-
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id and a quantity.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Item quantity</param>
-        public Item(int id, int quantity)
-            : this(id, quantity, -1, -1, -1)
-        {
-        }
-
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity and creator id.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Item quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        public Item(int id, int quantity, int creatorId)
-            : this(id, quantity, creatorId, -1, -1)
+            : this(id, Empty, Empty, Empty, Empty)
         {
         }
 
@@ -90,7 +75,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="creatorId">Id of the character that created the object (for GM)</param>
         /// <param name="slot">Item slot</param>
         public Item(int id, int quantity, int creatorId, int slot)
-            : this(id, quantity, creatorId, slot, -1)
+            : this(id, quantity, creatorId, slot, Empty)
         {
         }
 
@@ -106,7 +91,7 @@ namespace Rhisis.World.Game.Structures
             : this(id, quantity, creatorId, slot, uniqueId, 0)
         {
         }
-        
+
         /// <summary>
         /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot and refine.
         /// </summary>
@@ -131,7 +116,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="uniqueId">Item unique id</param>
         /// <param name="refine">Item refine</param>
         /// <param name="element">Item element</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element)
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element)
             : this(id, quantity, creatorId, slot, uniqueId, refine, element, 0)
         {
         }
@@ -147,7 +132,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="refine">Item refine</param>
         /// <param name="element">Item element</param>
         /// <param name="elementRefine"></param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element, byte elementRefine)
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element, byte elementRefine)
             : this(id, quantity, creatorId, slot, uniqueId, refine, element, elementRefine, 0)
         {
         }
@@ -164,57 +149,72 @@ namespace Rhisis.World.Game.Structures
         /// <param name="element">Item element</param>
         /// <param name="elementRefine">Item element refine</param>
         /// <param name="extraUsed">Item extra used quantity</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, byte element,
+        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element,
             byte elementRefine, int extraUsed)
         {
-            this.Id = id;
-            this.Quantity = quantity;
-            this.CreatorId = creatorId;
-            this.Slot = slot;
-            this.UniqueId = uniqueId;
-            this.Refine = refine;
-            this.Element = element;
-            this.ElementRefine = elementRefine;
-            this.Data = GameResources.Instance.Items[this.Id];
-            this.ExtraUsed = extraUsed;
+            Id = id;
+            Quantity = quantity;
+            CreatorId = creatorId;
+            Slot = slot;
+            Index = uniqueId;
+            Refine = refine;
+            Element = element;
+            ElementRefine = elementRefine;
+            ExtraUsed = extraUsed;
         }
 
         /// <summary>
         /// Creates a new <see cref="Item"/> based on a database item.
         /// </summary>
         /// <param name="dbItem">Database item</param>
-        public Item(Database.Entities.DbItem dbItem)
+        /// <param name="itemData">Item data.</param>
+        public Item(DbItem dbItem, ItemData itemData)
             : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
-                dbItem.Element, dbItem.ElementRefine, 0)
+                (ElementType)dbItem.Element, dbItem.ElementRefine, 0)
         {
-            this.DbId = dbItem.Id;
+            DbId = dbItem.Id;
+            Data = itemData;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Item"/>.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="refine"></param>
+        /// <param name="element"></param>
+        /// <param name="elementRefine"></param>
+        /// <param name="itemData"></param>
+        /// <param name="creatorId"></param>
+        public Item(int id, byte refine, ElementType element, byte elementRefine, ItemData itemData, int creatorId)
+        {
+            Id = id;
+            Quantity = 1;
+            Refine = refine;
+            Element = element;
+            ElementRefine = elementRefine;
+            Data = itemData;
+            CreatorId = creatorId;
         }
 
         /// <summary>
         /// Serialize the item into the packet.
         /// </summary>
         /// <param name="packet"></param>
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(INetPacketStream packet, int itemIndex)
         {
-            packet.Write(this.UniqueId);
-            packet.Write(this.Id);
-            
+            packet.Write(itemIndex);
+            packet.Write(Id);
             packet.Write(0); // Serial number
-
-            if (this.Data != null)
-                packet.Write(this.Data.Name.Substring(0, this.Data.Name.Length > 31 ? 31 : this.Data.Name.Length));
-            else
-                packet.Write("Unknown");
-
-            packet.Write((short) this.Quantity);
+            packet.Write(Data?.Name.TakeCharacters(31) ?? "[undefined]");
+            packet.Write((short)Quantity);
             packet.Write<byte>(0); // Repair number
             packet.Write(0); // Hp
             packet.Write(0); // Repair
             packet.Write<byte>(0); // flag ?
-            packet.Write((int) this.Refine);
+            packet.Write((int)Refine);
             packet.Write(0); // guild id (cloaks?)
-            packet.Write(this.Element);
-            packet.Write((int) this.ElementRefine);
+            packet.Write((byte)Element);
+            packet.Write((int)ElementRefine);
             packet.Write(0); // m_nResistSMItemId
             packet.Write(0); // Piercing size
             packet.Write(0); // Ultimate piercing size
@@ -225,42 +225,54 @@ namespace Rhisis.World.Game.Structures
             packet.Write<byte>(0); // pet
             packet.Write(0); // m_bTranformVisPet
         }
-        
+
         /// <summary>
         /// Clones this <see cref="Item"/>.
         /// </summary>
         /// <returns></returns>
         public Item Clone()
         {
-            return new Item(this.Id, this.Quantity, this.CreatorId, this.Slot, this.UniqueId, this.Refine, this.Element,
-                this.ElementRefine, this.ExtraUsed);
+            return new Item(Id, Refine, Element, ElementRefine, Data, CreatorId)
+            {
+                ExtraUsed = ExtraUsed,
+                Slot = Slot,
+                Index = Index,
+                Quantity = Quantity
+            };
         }
 
-        public bool IsEquipped() => this.Slot > InventorySystem.EquipOffset;
+        public void CopyFrom(Item itemToCopy)
+        {
+            Id = itemToCopy.Id;
+            CreatorId = itemToCopy.CreatorId;
+            Refine = itemToCopy.Refine;
+            Element = itemToCopy.Element;
+            ElementRefine = itemToCopy.ElementRefine;
+            Quantity = itemToCopy.Quantity;
+            Data = itemToCopy.Data;
+        }
 
         /// <summary>
         /// Reset the item.
         /// </summary>
         public void Reset()
         {
-            this.Id = -1;
-            this.DbId = -1;
-            this.Quantity = 0;
-            this.CreatorId = -1;
-            this.Refine = 0;
-            this.Element = 0;
-            this.ElementRefine = 0;
-            this.ExtraUsed = 0;
-            this.Slot = -1;
+            Id = Empty;
+            DbId = -1;
+            Quantity = 0;
+            CreatorId = Empty;
+            Refine = 0;
+            Element = 0;
+            ElementRefine = 0;
+            ExtraUsed = 0;
+            Slot = Empty;
+            Data = null;
         }
 
         /// <summary>
         /// Returns the current <see cref="Item"/> on string format
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return $"{this.Data?.Name}";
-        }
+        public override string ToString() => $"{Data?.Name}";
     }
 }

@@ -1,41 +1,25 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World.Party
 {
-    /// <summary>
-    /// Defines the <see cref="PartySkillUsePacket"/> structure.
-    /// </summary>
-    public struct PartySkillUsePacket : IEquatable<PartySkillUsePacket>
+    public class PartySkillUsePacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the player id.
         /// </summary>
-        public uint PlayerId { get; set; }
+        public uint PlayerId { get; private set; }
 
         /// <summary>
         /// Gets the skill id.
         /// </summary>
-        public int SkillId { get; set; }
+        public int SkillId { get; private set; }
 
 
-        /// <summary>
-        /// Creates a new <see cref="PartySkillUsePacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public PartySkillUsePacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.PlayerId = packet.Read<uint>();
-            this.SkillId = packet.Read<int>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="PartySkillUsePacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="PartySkillUsePacket"/></param>
-        public bool Equals(PartySkillUsePacket other)
-        {
-            return this.PlayerId == other.PlayerId && this.SkillId == other.SkillId;
+            PlayerId = packet.Read<uint>();
+            SkillId = packet.Read<int>();
         }
     }
 }

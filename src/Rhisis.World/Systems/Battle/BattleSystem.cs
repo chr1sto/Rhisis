@@ -1,171 +1,235 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Helpers;
-using Rhisis.Core.IO;
-using Rhisis.Core.Resources.Loaders;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Common;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Drop;
-using Rhisis.World.Systems.Drop.EventArgs;
-using Rhisis.World.Systems.Leveling;
-using Rhisis.World.Systems.Leveling.EventArgs;
-using System.Linq;
+using Rhisis.World.Systems.Battle.Arbiters;
+using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.Projectile;
 
 namespace Rhisis.World.Systems.Battle
 {
-    [System(SystemType.Notifiable)]
-    public class BattleSystem : ISystem
+    [Injectable]
+    public class BattleSystem : IBattleSystem
     {
-        private static readonly ILogger<BattleSystem> Logger = DependencyContainer.Instance.Resolve<ILogger<BattleSystem>>();
-
-        /// <inheritdoc />
-        public WorldEntityType Type => WorldEntityType.Player | WorldEntityType.Monster;
-
-        /// <inheritdoc />
-        public void Execute(IEntity entity, SystemEventArgs args)
-        {
-            if (!args.CheckArguments())
-            {
-                Logger.LogError("Cannot execute battle action: {0} due to invalid arguments.", args.GetType());
-                return;
-            }
-
-            if (!(entity is ILivingEntity livingEntity))
-            {
-                Logger.LogError($"The non living entity {entity.Object.Name} tried to execute a battle action.");
-                return;
-            }
-
-            switch (args)
-            {
-                case MeleeAttackEventArgs meleeAttackEventArgs:
-                    this.ProcessMeleeAttack(livingEntity, meleeAttackEventArgs);
-                    break;
-            }
-        }
+        private readonly ILogger<BattleSystem> _logger;
+        private readonly IProjectileSystem _projectileSystem;
+        private readonly IInventorySystem _inventorySystem;
+        private readonly IBattlePacketFactory _battlePacketFactory;
+        private readonly IMoverPacketFactory _moverPacketFactory;
 
         /// <summary>
-        /// Process the melee attack algorithm.
+        /// Creates a new <see cref="BattleSystem"/> instance.
         /// </summary>
-        /// <param name="attacker">Attacker</param>
-        /// <param name="e">Melee attack event arguments</param>
-        private void ProcessMeleeAttack(ILivingEntity attacker, MeleeAttackEventArgs e)
+        /// <param name="logger">Logger.</param>
+        /// <param name="projectileSystem">Projectile system.</param>
+        /// <param name="inventorySystem">Inventory system.</param>
+        /// <param name="battlePacketFactory">Battle packet factory.</param>
+        /// <param name="moverPacketFactory">Mover packet factory.</param>
+        public BattleSystem(ILogger<BattleSystem> logger, IProjectileSystem projectileSystem, IInventorySystem inventorySystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
-            ILivingEntity defender = e.Target;
+            _logger = logger;
+            _projectileSystem = projectileSystem;
+            _inventorySystem = inventorySystem;
+            _battlePacketFactory = battlePacketFactory;
+            _moverPacketFactory = moverPacketFactory;
+        }
 
-            if (defender.Health.IsDead)
+        /// <inheritdoc />
+        public AttackResult DamageTarget(ILivingEntity attacker, ILivingEntity defender, IAttackArbiter attackArbiter, ObjectMessageType attackType)
+        {
+            if (!CanAttack(attacker, defender))
             {
-                Logger.LogError($"{attacker.Object.Name} cannot attack {defender.Object.Name} because target is already dead.");
-                this.ClearBattleTargets(defender);
-                this.ClearBattleTargets(attacker);
-                return;
+                ClearBattleTargets(defender);
+                ClearBattleTargets(attacker);
+                return null;
+            }
+
+            if (defender is IPlayerEntity undyingPlayer)
+            {
+                if (undyingPlayer.PlayerData.Mode == ModeType.MATCHLESS_MODE)
+                {
+                    _logger.LogDebug($"{attacker.Object.Name} wasn't able to inflict any damages to {defender.Object.Name} because he is in undying mode");
+                    return null;
+                }
+            }
+
+            AttackResult attackResult;
+
+            if (attacker is IPlayerEntity player && player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
+            {
+                attackResult = new AttackResult
+                {
+                    Damages = defender.Attributes[DefineAttributes.HP],
+                    Flags = AttackFlags.AF_GENERIC
+                };
+            }
+            else
+            {
+                attackResult = attackArbiter.CalculateDamages();
+            }
+
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS) || attackResult.Damages <= 0)
+            {
+                _battlePacketFactory.SendAddDamage(defender, attacker, attackResult.Flags, attackResult.Damages);
+
+                return attackResult;
             }
 
             attacker.Battle.Target = defender;
             defender.Battle.Target = attacker;
 
-            AttackResult meleeAttackResult = new MeleeAttackArbiter(attacker, defender).OnDamage();
-
-            Logger.LogDebug($"{attacker.Object.Name} inflicted {meleeAttackResult.Damages} to {defender.Object.Name}");
-
-            if (meleeAttackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
-                BattleHelper.KnockbackEntity(defender);
-
-            WorldPacketFactory.SendAddDamage(defender, attacker, meleeAttackResult.Flags, meleeAttackResult.Damages);
-            WorldPacketFactory.SendMeleeAttack(attacker, e.AttackType, defender.Id, e.UnknownParameter, meleeAttackResult.Flags);
-
-            defender.Health.Hp -= meleeAttackResult.Damages;
-            WorldPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
-
-            if (defender.Health.IsDead)
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_FLYING))
             {
-                Logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
-                defender.Health.Hp = 0;
-                this.ClearBattleTargets(defender);
-                this.ClearBattleTargets(attacker);
-                WorldPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Health.Hp);
+                BattleHelper.KnockbackEntity(defender);
+            }
 
-                if (defender is IMonsterEntity deadMonster && attacker is IPlayerEntity player)
-                {
-                    WorldPacketFactory.SendDie(player, defender, attacker, e.AttackType);
-                    var worldServerConfiguration = DependencyContainer.Instance.Resolve<WorldConfiguration>();
-                    var itemsData = DependencyContainer.Instance.Resolve<ItemLoader>();
-                    var expTable = DependencyContainer.Instance.Resolve<ExpTableLoader>();
+            _battlePacketFactory.SendAddDamage(defender, attacker, attackResult.Flags, attackResult.Damages);
 
-                    deadMonster.Timers.DespawnTime = Time.TimeInSeconds() + 5; // Configure this timer on world configuration
+            defender.Attributes[DefineAttributes.HP] -= attackResult.Damages;
+            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
 
-                    // Drop items
-                    int itemCount = 0;
-                    foreach (DropItemData dropItem in deadMonster.Data.DropItems)
-                    {
-                        if (itemCount >= deadMonster.Data.MaxDropItem)
-                            break;
+            CheckIfDefenderIsDead(attacker, defender, attackType);
 
-                        long dropChance = RandomHelper.LongRandom(0, DropSystem.MaxDropChance);
+            return attackResult;
+        }
 
-                        if (dropItem.Probability * worldServerConfiguration.Rates.Drop >= dropChance)
-                        {
-                            var item = new Item(dropItem.ItemId, 1, -1, -1, -1, (byte)RandomHelper.Random(0, dropItem.ItemMaxRefine));
+        /// <inheritdoc />
+        public void MeleeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, float attackSpeed)
+        {
+            IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender);
+            AttackResult meleeAttackResult = DamageTarget(attacker, defender, attackArbiter, attackType);
 
-                            deadMonster.NotifySystem<DropSystem>(new DropItemEventArgs(item, attacker));
-                            itemCount++;
-                        }
-                    }
-
-                    // Drop item kinds
-                    foreach (DropItemKindData dropItemKind in deadMonster.Data.DropItemsKind)
-                    {
-                        var itemsDataByItemKind = itemsData.GetItems(x => x.ItemKind3 == dropItemKind.ItemKind && x.Rare >= dropItemKind.UniqueMin && x.Rare <= dropItemKind.UniqueMax);
-
-                        if (!itemsDataByItemKind.Any())
-                            continue;
-
-                        var itemData = itemsDataByItemKind.ElementAt(RandomHelper.Random(0, itemsDataByItemKind.Count() - 1));
-
-                        int itemRefine = RandomHelper.Random(0, 10);
-
-                        for (int i = itemRefine; i >= 0; i--)
-                        {
-                            long itemDropProbability = (long)(expTable.GetDropLuck(itemData.Level > 120 ? 119 : itemData.Level, itemRefine) * (deadMonster.Data.CorrectionValue / 100f));
-                            long dropChance = RandomHelper.LongRandom(0, DropSystem.MaxDropChance);
-
-                            if (dropChance < itemDropProbability * worldServerConfiguration.Rates.Drop)
-                            {
-                                var item = new Item(itemData.Id, 1, -1, -1, -1, (byte)itemRefine);
-
-                                deadMonster.NotifySystem<DropSystem>(new DropItemEventArgs(item, attacker));
-                                break;
-                            }
-                        }
-                    }
-
-                    // Drop gold
-                    int goldDropped = RandomHelper.Random(deadMonster.Data.DropGoldMin, deadMonster.Data.DropGoldMax);
-                    deadMonster.NotifySystem<DropSystem>(new DropGoldEventArgs(goldDropped, attacker));
-
-                    // Give experience
-                    long experience = deadMonster.Data.Experience * worldServerConfiguration.Rates.Experience;
-                    player.NotifySystem<LevelSystem>(new ExperienceEventArgs(experience)); 
-                }
-                else if (defender is IPlayerEntity deadPlayer)
-                {
-                    WorldPacketFactory.SendDie(deadPlayer, defender, attacker, e.AttackType);
-                }
+            if (meleeAttackResult != null)
+            {
+                _battlePacketFactory.SendMeleeAttack(attacker, attackType, defender.Id, unknwonParam: 0, meleeAttackResult.Flags);
             }
         }
 
+        /// <inheritdoc />
+        public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower)
+        {
+            var projectile = new MagicProjectileInfo(attacker, defender, magicAttackPower, onArrived: () =>
+            {
+                IAttackArbiter magicAttackArbiter = new MagicAttackArbiter(attacker, defender, magicAttackPower);
+
+                DamageTarget(attacker, defender, magicAttackArbiter, ObjectMessageType.OBJMSG_ATK_MAGIC1);
+            });
+            int projectileId = _projectileSystem.CreateProjectile(projectile);
+
+            _battlePacketFactory.SendMagicAttack(attacker, ObjectMessageType.OBJMSG_ATK_MAGIC1, defender.Id, magicAttackPower, projectileId);
+        }
+
+        /// <inheritdoc />
+        public void RangeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int power)
+        {
+            if (attacker is IPlayerEntity player)
+            {
+                Item equipedItem = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon);
+
+                if (equipedItem == null || equipedItem.Data.WeaponType != WeaponType.RANGE_BOW)
+                {
+                    return;
+                }
+
+                Item bulletItem = player.Inventory.GetEquipedItem(ItemPartType.Bullet);
+
+                if (bulletItem == null || bulletItem.Data.ItemKind3 != ItemKind3.ARROW)
+                {
+                    return;
+                }
+
+                _inventorySystem.DeleteItem(player, bulletItem, 1);
+            }
+
+            var projectile = new RangeArrowProjectileInfo(attacker, defender, power, onArrived: () =>
+            {
+                IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender);
+                
+                DamageTarget(attacker, defender, attackArbiter, attackType);
+            });
+            int projectileId = _projectileSystem.CreateProjectile(projectile);
+
+            _battlePacketFactory.SendRangeAttack(attacker, ObjectMessageType.OBJMSG_ATK_RANGE1, defender.Id, power, projectileId);
+        }
+
+        /// <summary>
+        /// Check if the attacker entity can attack a defender entity.
+        /// </summary>
+        /// <param name="attacker">Attacker living entity.</param>
+        /// <param name="defender">Defender living entity.</param>
+        /// <returns></returns>
+        private bool CanAttack(ILivingEntity attacker, ILivingEntity defender)
+        {
+            if (attacker == defender)
+            {
+                _logger.LogError($"{attacker} cannot attack itself.");
+                return false;
+            }
+
+            if (attacker.IsDead)
+            {
+                _logger.LogError($"{attacker} cannot attack because its dead.");
+                return false;
+            }
+
+            if (defender.IsDead)
+            {
+                _logger.LogError($"{attacker} cannot attack {defender} because target is already dead.");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the defender has been killed by the attacker.
+        /// </summary>
+        /// <param name="attacker">Attacker living entity.</param>
+        /// <param name="defender">Defender living entity.</param>
+        /// <param name="attackType">Killing attack type.</param>
+        private void CheckIfDefenderIsDead(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType)
+        {
+            if (defender.IsDead)
+            {
+                _logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
+                defender.Attributes[DefineAttributes.HP] = 0;
+                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
+                ClearBattleTargets(defender);
+                ClearBattleTargets(attacker);
+
+                if (defender is IMonsterEntity && attacker is IPlayerEntity player)
+                {
+                    _battlePacketFactory.SendDie(player, defender, attacker, attackType);
+                }
+                else if (defender is IPlayerEntity && attacker is IPlayerEntity)
+                {
+                    // TODO: PVP
+                }
+                else if (defender is IPlayerEntity deadPlayer)
+                {
+                    _battlePacketFactory.SendDie(deadPlayer, defender, attacker, attackType);
+                }
+
+                attacker.Behavior.OnTargetKilled(defender);
+                defender.Behavior.OnKilled(attacker);
+            }
+        }
+
+        /// <summary>
+        /// Clears the battle targets.
+        /// </summary>
+        /// <param name="entity">Current entity.</param>
         private void ClearBattleTargets(ILivingEntity entity)
         {
-            entity.Follow.Target = null;
-            entity.Battle.Target = null;
-            entity.Battle.Targets.Clear();
+            entity.Follow.Reset();
+            entity.Object.MovingFlags &= ~ObjectState.OBJSTA_FMOVE;
+            entity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
+            entity.Moves.DestinationPosition.Reset();
+
+            entity.Battle.Reset();
         }
     }
 }

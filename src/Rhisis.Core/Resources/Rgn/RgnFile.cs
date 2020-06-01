@@ -12,7 +12,7 @@ namespace Rhisis.Core.Resources
         /// <summary>
         /// Gets the region elements collection.
         /// </summary>
-        public IReadOnlyCollection<RgnElement> Elements => this._elements as IReadOnlyCollection<RgnElement>;
+        public IReadOnlyCollection<RgnElement> Elements => _elements as IReadOnlyCollection<RgnElement>;
 
         /// <summary>
         /// Creates a new <see cref="RgnFile"/> instance.
@@ -21,8 +21,8 @@ namespace Rhisis.Core.Resources
         public RgnFile(string filePath)
             : base(filePath, FileMode.Open, FileAccess.Read)
         {
-            this._elements = new List<RgnElement>();
-            this.Read();
+            _elements = new List<RgnElement>();
+            Read();
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Rhisis.Core.Resources
         /// <returns></returns>
         public IEnumerable<T> GetElements<T>() where T : RgnElement
         {
-            return from x in this._elements
+            return from x in _elements
                    where x is T
                    select x as T;
         }
@@ -58,7 +58,7 @@ namespace Rhisis.Core.Resources
                     if (data.Length < 24)
                         continue;
 
-                    this._elements.Add(new RgnRespawn7(data));
+                    _elements.Add(new RgnRespawn7(data));
                 }
 
                 if (line.StartsWith("region3"))
@@ -66,7 +66,7 @@ namespace Rhisis.Core.Resources
                     if (data.Length < 32)
                         continue;
 
-                    this._elements.Add(new RgnRegion3(data));
+                    _elements.Add(new RgnRegion3(data));
                 }
 
                 // add more...
@@ -78,7 +78,7 @@ namespace Rhisis.Core.Resources
         {
             if (disposing)
             {
-                this._elements.Clear();
+                _elements.Clear();
             }
 
             base.Dispose(disposing);

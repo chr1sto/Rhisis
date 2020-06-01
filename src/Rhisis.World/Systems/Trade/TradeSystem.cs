@@ -1,520 +1,467 @@
-﻿using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Entities;
-using System;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
-using Rhisis.Core.Exceptions;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.Trade.EventArgs;
-using NLog;
-using Rhisis.World.Game.Core.Systems;
+using Rhisis.World.Systems.PlayerData;
+using System;
+using System.Linq;
 
 namespace Rhisis.World.Systems.Trade
 {
-    [System(SystemType.Notifiable)]
-    internal sealed class TradeSystem : ISystem
+    /// <summary>
+    /// Trade system.
+    /// </summary>
+    [Injectable]
+    public sealed class TradeSystem : ITradeSystem
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// Maximum trading items per player
         /// </summary>
         public const int MaxTrade = 25;
 
-        /// <inheritdoc />
-        public WorldEntityType Type => WorldEntityType.Player;
+        private readonly ILogger<TradeSystem> _logger;
+        private readonly ITradePacketFactory _tradePacketFactory;
+        private readonly ITextPacketFactory _textPacketFactory;
+        private readonly IPlayerDataSystem _playerDataSystem;
+        private readonly IInventorySystem _inventorySystem;
 
         /// <inheritdoc />
-        public void Execute(IEntity entity, SystemEventArgs e)
-        {
-            if (!e.CheckArguments() || !(entity is IPlayerEntity playerEntity))
-                return;
-
-            switch (e)
-            {
-                case TradeRequestEventArgs tradeRequestEventArgs:
-                    TradeRequest(playerEntity, tradeRequestEventArgs);
-                    break;
-                case TradeRequestCancelEventArgs tradeRequestCancelEventArgs:
-                    TradeRequestCancel(playerEntity, tradeRequestCancelEventArgs);
-                    break;
-                case TradeBeginEventArgs tradeBeginEventArgs:
-                    Trade(playerEntity, tradeBeginEventArgs);
-                    break;
-                case TradePutEventArgs tradePutEventArgs:
-                    PutItem(playerEntity, tradePutEventArgs);
-                    break;
-                case TradePutGoldEventArgs tradePutGoldEventArgs:
-                    PutGold(playerEntity, tradePutGoldEventArgs);
-                    break;
-                case TradeCancelEventArgs tradeCancelEventArgs:
-                    TradeCancel(playerEntity, tradeCancelEventArgs);
-                    break;
-                case TradeConfirmEventArgs tradeConfirmEventArgs:
-                    TradeConfirm(playerEntity, tradeConfirmEventArgs);
-                    break;
-                case TradeOkEventArgs tradeOkEventArgs:
-                    TradeOk(playerEntity, tradeOkEventArgs);
-                    break;
-                default:
-                    Logger.Warn("Unknown trade action type: {0} for player {1}", e.GetType(), entity.Object.Name);
-                    break;
-            }
-        }
+        public int Order => 2;
 
         /// <summary>
-        /// Send a new trade request
+        /// Creates a new <see cref="TradeSystem"/> instance.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private static void TradeRequest(IPlayerEntity player, TradeRequestEventArgs e)
+        /// <param name="logger">Logger.</param>
+        /// <param name="tradePacketFactory">Trade packet factory.</param>
+        /// <param name="textPacketFactory">Text packet factory.</param>
+        /// <param name="playerDataSystem">Player data system.</param>
+        /// <param name="inventorySystem">Inventory system.</param>
+        public TradeSystem(ILogger<TradeSystem> logger, ITradePacketFactory tradePacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem)
         {
-            Logger.Debug("Trade request");
-
-            if (e.TargetId == player.Id)
-            {
-                throw new RhisisSystemException($"Can't start a Trade with ourselve ({player.Object.Name})");
-            }
-
-            if (IsTrading(player))
-            {
-                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({player.Object.Name})");
-            }
-
-            var target = GetEntityFromContextOf(player, e.TargetId);
-            if (IsTrading(target))
-            {
-                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({target.Object.Name})");
-            }
-
-            WorldPacketFactory.SendTradeRequest(target, player.Id);
+            _logger = logger;
+            _tradePacketFactory = tradePacketFactory;
+            _textPacketFactory = textPacketFactory;
+            _playerDataSystem = playerDataSystem;
+            _inventorySystem = inventorySystem;
         }
 
-        /// <summary>
-        /// Cancel/deny a trade request
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private static void TradeRequestCancel(IPlayerEntity player, TradeRequestCancelEventArgs e)
+        /// <inheritdoc />
+        public void Initialize(IPlayerEntity player)
         {
-            Logger.Debug("Trade request cancel");
-
-            if (e.TargetId == player.Id)
-            {
-                throw new RhisisSystemException($"Can't cancel a Trade with ourselve ({player.Object.Name})");
-            }
-
-            var target = GetEntityFromContextOf(player, e.TargetId);
-            WorldPacketFactory.SendTradeRequestCancel(target, player.Id);
+            player.Trade = new TradeComponent(MaxTrade);
         }
 
-        /// <summary>
-        /// Start a new trade / accepting the trade
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private static void Trade(IPlayerEntity player, TradeBeginEventArgs e)
+        /// <inheritdoc />
+        public void Save(IPlayerEntity player)
         {
-            if (e.TargetId == player.Id)
+            // Nothing to do.
+        }
+
+        /// <inheritdoc />
+        public void RequestTrade(IPlayerEntity player, uint targetObjectId)
+        {
+            _logger.LogTrace($"Player '{player.Object.Name}' request trade to {targetObjectId}.");
+
+            if (player.Id == targetObjectId)
             {
-                throw new RhisisSystemException($"Can't start a Trade with ourselve ({player.Object.Name})");
+                throw new InvalidOperationException($"Can't start a Trade with ourselve ({player.Object.Name})");
             }
 
-            if (IsTrading(player))
+            IPlayerEntity target = GetTargetEntity(player, targetObjectId);
+
+            ThrowIfPlayerTrade(player, isTrading: true);
+            ThrowIfPlayerTrade(target, isTrading: true);
+
+            _tradePacketFactory.SendTradeRequest(player, target);
+        }
+
+        /// <inheritdoc />
+        public void DeclineTradeRequest(IPlayerEntity player, uint targetObjectId)
+        {
+            _logger.LogTrace($"Player '{player.Object.Name}' is declining trade.");
+
+            if (player.Id == targetObjectId)
             {
-                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({player.Object.Name})");
+                throw new InvalidOperationException($"Can't decline a Trade with ourselve ({player.Object.Name})");
             }
 
-            var target = GetEntityFromContextOf(player, e.TargetId);
-            if (IsTrading(target))
+            IPlayerEntity target = GetTargetEntity(player, targetObjectId);
+
+            _tradePacketFactory.SendTradeRequestCancel(player, target);
+        }
+
+        /// <inheritdoc />
+        public void StartTrade(IPlayerEntity player, uint targetObjectId)
+        {
+            if (player.Id == targetObjectId)
             {
-                throw new RhisisSystemException($"Can't start a Trade when one is already in progress ({target.Object.Name})");
+                throw new InvalidOperationException($"Can't start trading with ourselve ({player.Object.Name})");
             }
+
+            IPlayerEntity target = GetTargetEntity(player, targetObjectId);
+
+            _logger.LogTrace($"Trade is starting between '{player.Object.Name}' and '{target.Object.Name}'.");
+
+            ThrowIfPlayerTrade(player, isTrading: true);
+            ThrowIfPlayerTrade(target, isTrading: true);
 
             player.Trade.TargetId = target.Id;
             target.Trade.TargetId = player.Id;
 
-            WorldPacketFactory.SendTrade(player, target, player.Id);
-            WorldPacketFactory.SendTrade(target, player, player.Id);
+            _tradePacketFactory.SendTrade(player, target, player.Id);
+            _tradePacketFactory.SendTrade(target, player, player.Id);
         }
 
-        /// <summary>
-        /// Put an item to the current trade
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private static void PutItem(IPlayerEntity player, TradePutEventArgs e)
+        /// <inheritdoc />
+        public void PutItem(IPlayerEntity player, int itemUniqueId, int quantity, int itemType, int destinationSlot)
         {
-            Logger.Debug("Trade PutItem");
+            _logger.LogTrace($"Player '{player.Object.Name}' is putting item with unique id '{itemUniqueId}' to trade slot '{destinationSlot}'.");
+            ThrowIfPlayerTrade(player, isTrading: false);
 
-            if (IsNotTrading(player))
-            {
-                throw new RhisisSystemException($"No trade target {player.Object.Name}");
-            }
-            
-            var target = GetEntityFromContextOf(player, player.Trade.TargetId);
-            if (IsNotTrading(target))
-            {
-                CancelTrade(player);
-                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
-            }
+            IPlayerEntity target = GetTargetEntity(player, player.Trade.TargetId);
 
-            if (IsNotTradeState(player, TradeComponent.TradeState.Item) ||
-                IsNotTradeState(target, TradeComponent.TradeState.Item))
+            try
             {
-                throw new RhisisSystemException($"Not the right trade state {player.Object.Name}");
+                ThrowIfPlayerTrade(target, isTrading: false);
+            }
+            catch (InvalidOperationException)
+            {
+                CancelTradeAndRefund(player);
+                CancelTradeAndRefund(target);
+                throw;
             }
 
-            var item = player.Inventory.GetItem(e.ItemId);
-            if (item == null)
+            if (player.Trade.State != TradeComponent.TradeState.Item || target.Trade.State != TradeComponent.TradeState.Item)
             {
-                throw new ArgumentException($"TradeSystem: Cannot find item with unique id: {e.ItemId}");
-            }
-
-            if (e.Count > item.Quantity)
-            {
-                throw new ArgumentException($"TradeSystem: More quantity than available for: {e.ItemId}");
-            }
-
-            var slotItem = player.Trade.Items[e.Slot];
-            if (slotItem != null && slotItem.Id != -1)
-            {
+                _tradePacketFactory.SendTradePutError(player);
                 return;
             }
 
-            item.ExtraUsed = e.Count;
-            player.Trade.Items[e.Slot] = item;
+            Item inventoryItem = player.Inventory.GetItemAtIndex(itemUniqueId);
+
+            if (inventoryItem == null)
+            {
+                throw new ArgumentNullException($"Cannot find item with unique id '{itemUniqueId}' in '{player.Object.Name}' inventory.');");
+            }
+
+            if (!IsTradeItemValid(player, inventoryItem, out DefineText errorText))
+            {
+                _textPacketFactory.SendDefinedText(player, errorText);
+            }
+
+            int tradingQuantity = Math.Min(quantity, inventoryItem.Quantity);
+
+            if (!player.Trade.Items.IsSlotAvailable(destinationSlot))
+            {
+                _logger.LogTrace($"Destination slot '{destinationSlot}' is not available for player '{player.Object.Name}'");
+                return;
+            }
+
+            inventoryItem.ExtraUsed = tradingQuantity;
+
+            player.Trade.Items.SetItemAtIndex(inventoryItem.Clone(), destinationSlot);
             player.Trade.ItemCount++;
-            WorldPacketFactory.SendTradePut(player, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
-            WorldPacketFactory.SendTradePut(target, player.Id, e.Slot, e.ItemType, e.ItemId, e.Count);
+
+            _tradePacketFactory.SendTradePut(player, trader: player, (byte)destinationSlot, (byte)itemType, (byte)inventoryItem.Index, (short)tradingQuantity);
+            _tradePacketFactory.SendTradePut(target, trader: player, (byte)destinationSlot, (byte)itemType, (byte)inventoryItem.Index, (short)tradingQuantity);
         }
 
-        /// <summary>
-        /// Put gold to the current trade
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private static void PutGold(IPlayerEntity player, TradePutGoldEventArgs e)
+        /// <inheritdoc />
+        public void PutGold(IPlayerEntity player, int goldAmount)
         {
-            Logger.Debug("PutGold");
+            ThrowIfPlayerTrade(player, isTrading: false);
 
-            if (IsNotTrading(player))
+            IPlayerEntity target = GetTargetEntity(player, player.Trade.TargetId);
+
+            try
             {
-                throw new RhisisSystemException($"No trade target {player.Object.Name}");
+                ThrowIfPlayerTrade(target, isTrading: false);
+            }
+            catch (InvalidOperationException)
+            {
+                CancelTradeAndRefund(player);
+                CancelTradeAndRefund(target);
+                throw;
             }
 
-            var target = GetEntityFromContextOf(player, player.Trade.TargetId);
-            if (IsNotTrading(target))
-            {
-                CancelTrade(player);
-                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
-            }
+            int gold = Math.Min(player.PlayerData.Gold, goldAmount);
 
-            if (IsNotTradeState(player, TradeComponent.TradeState.Item) ||
-                IsNotTradeState(target, TradeComponent.TradeState.Item))
-            {
-                throw new RhisisSystemException($"Not the right trade state {player.Object.Name}");
-            }
+            player.PlayerData.Gold -= gold;
+            player.Trade.Gold += gold;
 
-            player.PlayerData.Gold -= e.Gold;
-            player.Trade.Gold += e.Gold;
-
-            WorldPacketFactory.SendTradePutGold(player, player.Id, player.Trade.Gold);
-            WorldPacketFactory.SendTradePutGold(target, player.Id, player.Trade.Gold);
+            _tradePacketFactory.SendTradePutGold(player, trader: player, player.Trade.Gold);
+            _tradePacketFactory.SendTradePutGold(target, trader: player, player.Trade.Gold);
         }
 
-        /// <summary>
-        /// Cancel the current trade
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private static void TradeCancel(IPlayerEntity player, TradeCancelEventArgs e)
+        /// <inheritdoc />
+        public void CancelTrade(IPlayerEntity player, int mode)
         {
-            Logger.Debug("Trade cancel");
+            if (player.Trade.TargetId == 0)
+                return;
 
-            if (IsNotTrading(player))
-            {
-                throw new RhisisSystemException($"No trade target {player.Object.Name}");
-            }
+            IPlayerEntity target = GetTargetEntity(player, player.Trade.TargetId);
 
-            var target = GetEntityFromContextOf(player, player.Trade.TargetId);
-            if (IsNotTrading(target))
-            {
-                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
-            }
+            _logger.LogTrace($"Trade canceled between '{player}' and '{target}'.");
 
-            CancelTrade(player, target, e.Mode);
+            ThrowIfPlayerTrade(player, isTrading: false);
+            ThrowIfPlayerTrade(target, isTrading: false);
+            CancelTradeAndRefund(player, mode);
+            CancelTradeAndRefund(target, mode);
         }
 
-        /// <summary>
-        /// Accept to validate trade
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private static void TradeOk(IPlayerEntity player, TradeOkEventArgs e)
+        /// <inheritdoc />
+        public void ConfirmTrade(IPlayerEntity player)
         {
-            Logger.Debug("Trade ok");
+            IPlayerEntity target = GetTargetEntity(player, player.Trade.TargetId);
 
-            if (IsNotTrading(player))
+            _logger.LogTrace($"Player {player} has confirmed the trade.");
+
+            try
             {
-                throw new RhisisSystemException($"No trade target {player.Object.Name}");
+                ThrowIfPlayerTrade(player, isTrading: false);
+                ThrowIfPlayerTrade(target, isTrading: false);
+            }
+            catch
+            {
+                CancelTradeAndRefund(player);
+                CancelTradeAndRefund(target);
+                throw;
             }
 
-            var target = GetEntityFromContextOf(player, player.Trade.TargetId);
-            if (IsNotTrading(target))
-            {
-                CancelTrade(player);
-                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
-            }
-
-            if (IsTradeState(player, TradeComponent.TradeState.Item))
+            if (player.Trade.State == TradeComponent.TradeState.Item)
             {
                 player.Trade.State = TradeComponent.TradeState.Ok;
             }
 
-            if (IsTradeState(target, TradeComponent.TradeState.Ok))
+            if (target.Trade.State == TradeComponent.TradeState.Ok)
             {
-                WorldPacketFactory.SendTradeLastConfirm(player);
-                WorldPacketFactory.SendTradeLastConfirm(target);
+                _tradePacketFactory.SendTradeLastConfirm(player);
+                _tradePacketFactory.SendTradeLastConfirm(target);
             }
             else
             {
-                WorldPacketFactory.SendTradeOk(player, player.Id);
-                WorldPacketFactory.SendTradeOk(target, player.Id);
+                _tradePacketFactory.SendTradeOk(player, player.Id);
+                _tradePacketFactory.SendTradeOk(target, player.Id);
             }
         }
 
-        private static void TradeConfirm(IPlayerEntity player, TradeConfirmEventArgs e)
+        /// <inheritdoc />
+        public void LastConfirmTrade(IPlayerEntity player)
         {
-            Logger.Debug("Trade confirm");
+            IPlayerEntity target = GetTargetEntity(player, player.Trade.TargetId);
 
-            if (IsNotTrading(player))
+            _logger.LogTrace($"Player {player} has finally confirmed the trade.");
+
+            try
             {
-                throw new RhisisSystemException($"No trade target {player.Object.Name}");
+                ThrowIfPlayerTrade(player, isTrading: false);
+                ThrowIfPlayerTrade(target, isTrading: false);
+            }
+            catch (InvalidOperationException)
+            {
+                CancelTradeAndRefund(player);
+                CancelTradeAndRefund(target);
+                throw;
             }
 
-            var target = GetEntityFromContextOf(player, player.Trade.TargetId);
-            if (IsNotTrading(target))
-            {
-                CancelTrade(player);
-                throw new RhisisSystemException($"Target is not trading {target.Object.Name}");
-            }
-
-            if (IsNotTradeState(player, TradeComponent.TradeState.Ok))
-            {
-                return;
-            }
-
-            if (IsTradeState(target, TradeComponent.TradeState.Ok))
+            if (player.Trade.State == TradeComponent.TradeState.Ok)
             {
                 player.Trade.State = TradeComponent.TradeState.Confirm;
-
-                WorldPacketFactory.SendTradeLastConfirmOk(player, player.Id);
-                WorldPacketFactory.SendTradeLastConfirmOk(target, player.Id);
-            }
-            else if (IsTradeState(target, TradeComponent.TradeState.Confirm))
-            {
-                FinalizeTrade(player, target);
-            }
-        }
-
-        /// <summary>
-        /// Get the specified entity from the player's context
-        /// Throw if cannot find it
-        /// </summary>
-        /// <exception cref="RhisisSystemException"></exception>
-        /// <param name="player"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private static IPlayerEntity GetEntityFromContextOf(IEntity player, uint id) =>
-            player.Context.FindEntity<IPlayerEntity>(id) ??
-            throw new RhisisSystemException($"Can't find entity of id {id}");
-
-        private static bool IsTrading(IPlayerEntity entity) =>
-            entity.Trade.TargetId != 0;
-
-        private static bool IsNotTrading(IPlayerEntity entity) =>
-            entity.Trade.TargetId == 0;
-
-        private static bool IsTradeState(IPlayerEntity player, TradeComponent.TradeState state) =>
-            player.Trade.State == state;
-
-        private static bool IsNotTradeState(IPlayerEntity player, TradeComponent.TradeState state) =>
-            player.Trade.State != state;
-
-        private static void ResetTrade(IPlayerEntity player) =>
-            player.Trade = new TradeComponent();
-
-        /// <summary>
-        /// Remove pending gold and send it back
-        /// </summary>
-        /// <param name="player"></param>
-        private static void RefundPlayer(IPlayerEntity player)
-        {
-            player.PlayerData.Gold += player.Trade.Gold;
-            player.Trade.Gold = 0;
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
-        }
-
-        private static void CancelTrade(IPlayerEntity player, int mode = 0)
-        {
-            RefundPlayer(player);
-            ResetTrade(player);
-            WorldPacketFactory.SendTradeCancel(player, player.Id, mode);
-        }
-
-        private static void CancelTrade(IPlayerEntity player, IPlayerEntity target, int mode = 0)
-        {
-            CancelTrade(player, mode);
-            CancelTrade(target, mode);
-        }
-
-        /// <summary>
-        /// Check if player has enough money and if target can receive it
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        private static TradeComponent.TradeConfirm CheckTradeGold(IPlayerEntity player, IPlayerEntity target)
-        {
-            var playerTradeGold = player.Trade.Gold;
-            var targetTradeGold = target.Trade.Gold;
-            var playerGold = player.PlayerData.Gold;
-            var targetGold = target.PlayerData.Gold;
-
-            if (playerGold < playerTradeGold ||
-                targetGold < targetTradeGold ||
-                targetGold + playerTradeGold < 0 ||
-                playerGold + targetTradeGold < 0)
-                return TradeComponent.TradeConfirm.Error;
-
-            return TradeComponent.TradeConfirm.Ok;
-        }
-
-        /// <summary>
-        /// Process gold check & transfer
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        private static bool FinalizeTradeGold(IPlayerEntity player, IPlayerEntity target)
-        {
-            if (player.Trade.Gold == 0 && target.Trade.Gold == 0)
-            {
-                return true;
+                _tradePacketFactory.SendTradeLastConfirmOk(player, player.Id);
+                _tradePacketFactory.SendTradeLastConfirmOk(target, player.Id);
             }
 
-            var tradeResultConfirm = CheckTradeGold(player, target);
-            if (tradeResultConfirm == TradeComponent.TradeConfirm.Error)
+            if (player.Trade.State == TradeComponent.TradeState.Confirm && target.Trade.State == TradeComponent.TradeState.Confirm)
             {
-                CancelTrade(player, target);
+                if (!FinalizeTradeGold(player, target) || !FinalizeTradeItems(player, target))
+                {
+                    _logger.LogWarning($"Can't finalize trade between {player} and {target}");
+                    CancelTradeAndRefund(player);
+                    CancelTradeAndRefund(target);
+                    return;
+                }
+
+                // TODO : Save traders
+
+                player.Trade.Reset();
+                target.Trade.Reset();
+                _tradePacketFactory.SendTradeConsent(player);
+                _tradePacketFactory.SendTradeConsent(target);
+            }
+        }
+
+        /// <summary>
+        /// Gets a player entity from the current player's spawn list using the given target object id.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="targetObjectId">Target object id.</param>
+        /// <exception cref="ArgumentNullException">If the player has not been found.</exception>
+        /// <returns>Player entity if found; throws <see cref="ArgumentNullException"/> otherwise.</returns>
+        private IPlayerEntity GetTargetEntity(IPlayerEntity player, uint targetObjectId)
+        {
+            var target = player.FindEntity<IPlayerEntity>(targetObjectId);
+
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target), $"Cannot find target entity with id '{targetObjectId}'.");
+            }
+
+            return target;
+        }
+
+        /// <summary>
+        /// Throws an <see cref="InvalidOperationException"/> if the player is already trading.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="isTrading"></param>
+        /// <exception cref="InvalidOperationException">Player is already trading.</exception>
+        private void ThrowIfPlayerTrade(IPlayerEntity player, bool isTrading)
+        {
+            if (player.Trade.IsTrading == isTrading)
+            {
+                throw new InvalidOperationException($"Player '{player.Object.Name}' is {(!isTrading ? "not" : "already")} trading.");
+            }
+        }
+
+        /// <summary>
+        /// Check if the item to trade is valid.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="itemToTrade">Item to trade.</param>
+        /// <param name="errorText">Output error text if item is not valid.</param>
+        /// <returns>True if item is valid; false otherwise.</returns>
+        private bool IsTradeItemValid(IPlayerEntity player, Item itemToTrade, out DefineText errorText)
+        {
+            errorText = DefineText.TID_BLANK;
+
+            if (itemToTrade.ExtraUsed != 0)
+            {
+                errorText = DefineText.TID_GAME_CANNOTTRADE_ITEM;
                 return false;
             }
 
-            player.PlayerData.Gold += target.Trade.Gold;
-            target.PlayerData.Gold += player.Trade.Gold;
+            if (player.Inventory.IsItemEquiped(itemToTrade))
+            {
+                errorText = DefineText.TID_GAME_CANNOTTRADE_ITEM;
+                return false;
+            }
+
             return true;
         }
 
         /// <summary>
-        /// Transfer items
+        /// Cancels the trade and refund the player.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        private static void ProcessItemTransfer(IPlayerEntity player, IPlayerEntity target)
+        /// <param name="player">Current player.</param>
+        /// <param name="mode">Cancel mode.</param>
+        private void CancelTradeAndRefund(IPlayerEntity player, int mode = 0)
         {
-            for (var i = 0; i < MaxTrade; ++i)
-            {
-                var item = player.Trade.Items.Items[i];
-                if (item == null || item.Slot == -1)
-                {
-                    continue;
-                }
+            _playerDataSystem.IncreaseGold(player, player.Trade.Gold);
+            player.Trade.Reset();
 
-                var newItem = item.Clone();
-                newItem.CreatorId = -1;
-
-                if (item.Data.IsStackable)
-                {
-                    var futureQuantity = item.Quantity - item.ExtraUsed;
-                    if (futureQuantity < 0)
-                    {
-                        continue;
-                    }
-
-                    if (futureQuantity == 0)
-                    {
-                        player.Inventory.Items.Remove(item);
-                    }
-                    
-                    item.Quantity = futureQuantity;
-                    newItem.Quantity = item.ExtraUsed;
-                    item.ExtraUsed = 0;
-                    newItem.ExtraUsed = 0;
-
-                    target.Inventory.CreateItem(newItem);
-                }
-                else
-                {
-                    player.Inventory.Items.Remove(item);
-                    item.ExtraUsed = 0;
-                    
-                    target.Inventory.CreateItem(newItem);
-                }
-            }
+            _tradePacketFactory.SendTradeCancel(player, mode);
         }
 
         /// <summary>
-        /// Process items check & transfer
+        /// Finalize the gold trade.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
+        /// <param name="player">Current player.</param>
+        /// <param name="target">Target.</param>
         /// <returns></returns>
-        private static bool FinalizeTradeItems(IPlayerEntity player, IPlayerEntity target)
+        private bool FinalizeTradeGold(IPlayerEntity player, IPlayerEntity target)
         {
-            if (player.Trade.ItemCount > 0 &&
-                (!target.Inventory.HasAvailableSlots() ||
-                 (InventorySystem.InventorySize - target.Inventory.GetItemCount()) < player.Trade.ItemCount))
-            {
-                CancelTrade(player, target);
-                return false;
-            }
+            if (player.Trade.Gold == 0 && target.Trade.Gold == 0)
+                return true;
 
-            if (target.Trade.ItemCount > 0 &&
-                (!player.Inventory.HasAvailableSlots() ||
-                 (InventorySystem.InventorySize - player.Inventory.GetItemCount()) < target.Trade.ItemCount))
+            int playerTradeGold = player.Trade.Gold;
+            int targetTradeGold = target.Trade.Gold;
+            int playerGold = player.PlayerData.Gold;
+            int targetGold = target.PlayerData.Gold;
+
+            if (playerGold < playerTradeGold || playerGold + targetTradeGold < 0 ||
+                targetGold < targetTradeGold || targetGold + playerTradeGold < 0)
+                return false;
+
+            player.PlayerData.Gold += targetTradeGold;
+            target.PlayerData.Gold += playerTradeGold;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Finalize the item trade.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="target">Target.</param>
+        /// <returns></returns>
+        private bool FinalizeTradeItems(IPlayerEntity player, IPlayerEntity target)
+        {
+            if (!CheckIfPlayerHasEnoughPlace(player, target) && !CheckIfPlayerHasEnoughPlace(target, player))
             {
-                CancelTrade(player, target);
+                CancelTradeAndRefund(player);
+                CancelTradeAndRefund(target);
                 return false;
             }
 
             ProcessItemTransfer(player, target);
             ProcessItemTransfer(target, player);
+
             return true;
         }
 
         /// <summary>
-        /// Start the trade process and finalize it
+        /// Checks if the player has enough place in his inventory.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        private static void FinalizeTrade(IPlayerEntity player, IPlayerEntity target)
+        /// <param name="player">Current player.</param>
+        /// <param name="target">Target trader.</param>
+        /// <returns>True if player has enough space; false otherwise.</returns>
+        private bool CheckIfPlayerHasEnoughPlace(IPlayerEntity player, IPlayerEntity target)
         {
-            if (!FinalizeTradeGold(player, target) ||
-                !FinalizeTradeItems(player, target))
+            if (player.Trade.ItemCount > 0 &&
+                   (!target.Inventory.HasAvailableSlots() ||
+                    (InventorySystem.InventorySize - target.Inventory.GetItemCount()) < player.Trade.ItemCount))
             {
-                Logger.Warn($"Can't finalize trade between {player.Object.Name} and {target.Object.Name}");
-                CancelTrade(player, target);
-                return;
+                return false;
             }
 
-            // TODO : Save traders
-            
-            ResetTrade(player);
-            ResetTrade(target);
-            WorldPacketFactory.SendTradeConsent(player);
-            WorldPacketFactory.SendTradeConsent(target);
+            return true;
+        }
+
+        /// <summary>
+        /// Transfers the items between traders.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="target">Target trader.</param>
+        private void ProcessItemTransfer(IPlayerEntity player, IPlayerEntity target)
+        {
+            for (int i = 0; i < MaxTrade; i++)
+            {
+                Item item = player.Trade.Items.ElementAt(i);
+
+                if (item == null || item.Slot == -1)
+                    continue;
+
+                Item newItem = item.Clone();
+                int tradeQuantity = item.ExtraUsed;
+                int futureQuantity = Math.Max(item.Quantity - tradeQuantity, 0);
+
+                if (futureQuantity <= 0)
+                {
+                    _inventorySystem.DeleteItem(player, item.Index, item.ExtraUsed, sendToPlayer: false);
+                }
+
+                _inventorySystem.CreateItem(target, newItem, tradeQuantity, sendToPlayer: false);
+
+                if (futureQuantity > 0)
+                {
+                    item.Quantity = futureQuantity;
+                    item.ExtraUsed = 0;
+                }
+            }
         }
     }
 }

@@ -1,44 +1,32 @@
 ﻿using System;
-using Ether.Network.Packets;
+using Rhisis.Core.Data;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
     /// <summary>
-    /// Defines the <see cref="UseSkillPacket"/> structure.
+    /// Packet structure received from the client when the player uses a skill.
     /// </summary>
-    public struct UseSkillPacket : IEquatable<UseSkillPacket>
+    public class UseSkillPacket : IPacketDeserializer
     {
+        public ushort Type { get; private set; }
 
-        public ushort Type { get; set; }
+        public ushort SkillIndex { get; private set; }
 
-        public ushort Id { get; set; }
+        public uint TargetObjectId { get; private set; }
 
-        public uint ObjectId { get; set; }
+        public SkillUseType UseType { get; private set; }
 
-        public int UseSkill { get; set; }
+        public bool Control { get; private set; }
 
-        public bool Control { get; set; }
-
-        /// <summary>
-        /// Creates a new <see cref="UseSkillPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public UseSkillPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Type = packet.Read<ushort>();
-            this.Id = packet.Read<ushort>();
-            this.ObjectId = packet.Read<uint>();
-            this.UseSkill = packet.Read<int>();
-            this.Control = packet.Read<int>() == 1;
-        }
-
-        /// <summary>
-        /// Compares two <see cref="UseSkillPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="UseSkillPacket"/></param>
-        public bool Equals(UseSkillPacket other)
-        {
-            return this.Type == other.Type && this.Id == other.Id && this.ObjectId == other.ObjectId && this.UseSkill == other.UseSkill && this.Control == other.Control;
+            Type = packet.Read<ushort>();
+            SkillIndex = packet.Read<ushort>();
+            TargetObjectId = packet.Read<uint>();
+            UseType = (SkillUseType)packet.Read<int>();
+            Control = Convert.ToBoolean(packet.Read<int>());
         }
     }
 }

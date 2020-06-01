@@ -41,11 +41,11 @@ namespace Rhisis.Core.Resources.Dyo
         {
             base.Read(reader);
 
-            this.Name = this.ConvertToString(reader.ReadBytes(64));
-            this.DialogName = this.ConvertToString(reader.ReadBytes(32));
-            this.CharacterKey = this.ConvertToString(reader.ReadBytes(32));
-            this.Belligerence = reader.ReadInt32();
-            this.ExtraFlag = reader.ReadInt32();
+            Name = ConvertToString(reader.ReadBytes(64));
+            DialogName = ConvertToString(reader.ReadBytes(32));
+            CharacterKey = ConvertToString(reader.ReadBytes(32));
+            Belligerence = reader.ReadInt32();
+            ExtraFlag = reader.ReadInt32();
         }
 
         /// <summary>

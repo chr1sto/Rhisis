@@ -1,41 +1,24 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="PlayerAnglePacket"/> structure.
-    /// </summary>
-    public struct PlayerAnglePacket : IEquatable<PlayerAnglePacket>
+    public class PlayerAnglePacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the Angle.
         /// </summary>
-        public float Angle { get; }
+        public float Angle { get; private set; }
 
         /// <summary>
         /// Gets the X angle.
         /// </summary>
-        public float AngleX { get; set; }
+        public float AngleX { get; private set; }
 
-        /// <summary>
-        /// Creates a new <see cref="PlayerAnglePacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public PlayerAnglePacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Angle = packet.Read<float>();
-            this.AngleX = packet.Read<float>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="PlayerAnglePacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="PlayerAnglePacket"/></param>
-        public bool Equals(PlayerAnglePacket other)
-        {
-            return this.Angle == other.Angle &&
-                   this.AngleX == other.AngleX;
+            Angle = packet.Read<float>();
+            AngleX = packet.Read<float>();
         }
     }
 }

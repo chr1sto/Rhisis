@@ -1,19 +1,18 @@
-﻿using Ether.Network.Packets;
-using System;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    public struct DialogPacket : IEquatable<DialogPacket>
+    public class DialogPacket : IPacketDeserializer
     {
         /// <summary>
         /// Gets the dialog owner object id.
         /// </summary>
-        public uint ObjectId { get; }
+        public uint ObjectId { get; private set; }
 
         /// <summary>
         /// Gets the dialog key.
         /// </summary>
-        public string Key { get; }
+        public string Key { get; private set; }
 
         /// <summary>
         /// Gets the first parameter.
@@ -21,46 +20,32 @@ namespace Rhisis.Network.Packets.World
         /// <remarks>
         /// Figure out what this value is.
         /// </remarks>
-        public int Param { get; }
+        public int Param { get; private set; }
 
         /// <summary>
         /// Gets the dialog quest id.
         /// </summary>
-        public int QuestId { get; }
+        public int QuestId { get; private set; }
 
         /// <summary>
         /// Gets the quest mover id.
         /// </summary>
-        public uint MoverId { get; }
+        public uint MoverId { get; private set; }
 
         /// <summary>
         /// Gets the quest player id.
         /// </summary>
-        public uint PlayerId { get; }
-
-        /// <summary>
-        /// Creates a new <see cref="DialogPacket"/> instance.
-        /// </summary>
-        /// <param name="packet"></param>
-        public DialogPacket(INetPacketStream packet)
-        {
-            this.ObjectId = packet.Read<uint>();
-            this.Key = packet.Read<string>();
-            this.Param = packet.Read<int>();
-            this.QuestId = packet.Read<int>();
-            this.MoverId = packet.Read<uint>();
-            this.PlayerId = packet.Read<uint>();
-        }
+        public uint PlayerId { get; private set; }
 
         /// <inheritdoc />
-        public bool Equals(DialogPacket other)
+        public void Deserialize(INetPacketStream packet)
         {
-            return this.ObjectId == other.ObjectId
-                && this.Key == other.Key
-                && this.Param == other.Param
-                && this.QuestId == other.QuestId
-                && this.MoverId == other.MoverId
-                && this.PlayerId == other.PlayerId;
+            ObjectId = packet.Read<uint>();
+            Key = packet.Read<string>();
+            Param = packet.Read<int>();
+            QuestId = packet.Read<int>();
+            MoverId = packet.Read<uint>();
+            PlayerId = packet.Read<uint>();
         }
     }
 }

@@ -1,347 +1,511 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
-using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
+using Rhisis.Database;
+using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
-using Rhisis.World.Systems.Drop.EventArgs;
-using Rhisis.World.Systems.Inventory.EventArgs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Systems.Inventory
 {
-    [System(SystemType.Notifiable)]
-    public class InventorySystem : ISystem
+    /// <summary>
+    /// Implements the flyff inventory system management.
+    /// </summary>
+    [Injectable(ServiceLifetime.Transient)]
+    public sealed class InventorySystem : IInventorySystem
     {
-        public static readonly int RightWeaponSlot = 52;
-        public static readonly int EquipOffset = 42;
-        public static readonly int MaxItems = 73;
-        public static readonly int InventorySize = EquipOffset;
-        public static readonly int MaxHumanParts = MaxItems - EquipOffset;
+        public const int LeftWeaponSlot = EquipOffset + (int)ItemPartType.LeftWeapon;
+        public const int RightWeaponSlot = EquipOffset + (int)ItemPartType.RightWeapon;
+        public const int BulletSlot = EquipOffset + (int)ItemPartType.Bullet;
+        public const int EquipOffset = 42;
+        public const int MaxItems = 73;
+        public const int InventorySize = EquipOffset;
+        public const int MaxHumanParts = MaxItems - EquipOffset;
         public static readonly Item Hand = new Item(11, 1, -1, RightWeaponSlot);
 
-        private readonly ILogger Logger;
+        private readonly ILogger<InventorySystem> _logger;
+        private readonly IRhisisDatabase _database;
+        private readonly IItemFactory _itemFactory;
+        private readonly IInventoryPacketFactory _inventoryPacketFactory;
+        private readonly IInventoryItemUsage _inventoryItemUsage;
+        private readonly IDropSystem _dropSystem;
+        private readonly ITextPacketFactory _textPacketFactory;
 
-        /// <inheritdoc />
-        public WorldEntityType Type => WorldEntityType.Player;
+        /// <summary>
+        /// Gets the initialization order of the inventory system when creating a new player.
+        /// </summary>
+        public int Order => 0;
 
         /// <summary>
         /// Creates a new <see cref="InventorySystem"/> instance.
         /// </summary>
-        public InventorySystem()
+        /// <param name="logger">Logger.</param>
+        /// <param name="database">Rhisis database.</param>
+        /// <param name="itemFactory">Item factory.</param>
+        /// <param name="inventoryPacketFactory">Inventory packet factory.</param>
+        /// <param name="inventoryItemUsage">Inventory item usage system.</param>
+        /// <param name="dropSystem">Drop system.</param>
+        /// <param name="textPacketFactory">Text packet factory.</param>
+        public InventorySystem(ILogger<InventorySystem> logger, IRhisisDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
         {
-            this.Logger = DependencyContainer.Instance.Resolve<ILogger<InventorySystem>>();
+            _logger = logger;
+            _database = database;
+            _itemFactory = itemFactory;
+            _inventoryPacketFactory = inventoryPacketFactory;
+            _inventoryItemUsage = inventoryItemUsage;
+            _dropSystem = dropSystem;
+            _textPacketFactory = textPacketFactory;
         }
 
         /// <inheritdoc />
-        public void Execute(IEntity entity, SystemEventArgs e)
+        public void Initialize(IPlayerEntity player)
         {
-            if (!(entity is IPlayerEntity player))
-                return;
-            
-            if (!e.CheckArguments())
+            IEnumerable<Item> items = _database.Items
+                .Where(x => x.CharacterId == player.PlayerData.Id && !x.IsDeleted)
+                .OrderBy(x => x.ItemSlot)
+                .Select(x => _itemFactory.CreateItem(x));
+
+            player.Inventory.Initialize(items);
+        }
+
+        /// <inheritdoc />
+        public void Save(IPlayerEntity player)
+        {
+            DbCharacter character = _database.Characters.Include(x => x.Items).FirstOrDefault(x => x.Id == player.PlayerData.Id);
+            IEnumerable<DbItem> itemsToDelete = (from dbItem in character.Items
+                                                 let inventoryItem = player.Inventory.GetItem(x => x.DbId == dbItem.Id)
+                                                 where !dbItem.IsDeleted && inventoryItem == null
+                                                 select dbItem).ToList();
+
+            foreach (DbItem dbItem in itemsToDelete)
             {
-                Logger.LogError("Cannot execute inventory action: {0} due to invalid arguments.", e.GetType());
-                return;
+                dbItem.IsDeleted = true;
+
+                _database.Items.Update(dbItem);
             }
 
-            switch (e)
+            // Add or update items
+            foreach (Item item in player.Inventory)
             {
-                case InventoryInitializeEventArgs inventoryInitializeEvent:
-                    this.InitializeInventory(player, inventoryInitializeEvent);
-                    break;
-                case InventoryMoveEventArgs inventoryMoveEvent:
-                    this.MoveItem(player, inventoryMoveEvent);
-                    break;
-                case InventoryEquipEventArgs inventoryEquipEvent:
-                    this.EquipItem(player, inventoryEquipEvent);
-                    break;
-                case InventoryCreateItemEventArgs inventoryCreateItemEvent:
-                    this.CreateItem(player, inventoryCreateItemEvent);
-                    break;
-                case InventoryDropItemEventArgs inventoryDropItemEvent:
-                    this.DropItem(player, inventoryDropItemEvent);
+                if (item == null || item.Id == Item.Empty)
+                {
+                    continue;
+                }
+
+                DbItem dbItem = character.Items.FirstOrDefault(x => x.Id == item.DbId && !x.IsDeleted);
+
+                if (dbItem != null && dbItem.Id != 0)
+                {
+                    dbItem.CharacterId = player.PlayerData.Id;
+                    dbItem.ItemId = item.Id;
+                    dbItem.ItemCount = item.Quantity;
+                    dbItem.ItemSlot = item.Slot;
+                    dbItem.Refine = item.Refine;
+                    dbItem.Element = (byte)item.Element;
+                    dbItem.ElementRefine = item.ElementRefine;
+
+                    _database.Items.Update(dbItem);
+                }
+                else
+                {
+                    dbItem = new DbItem
+                    {
+                        CharacterId = player.PlayerData.Id,
+                        CreatorId = item.CreatorId,
+                        ItemId = item.Id,
+                        ItemCount = item.Quantity,
+                        ItemSlot = item.Slot,
+                        Refine = item.Refine,
+                        Element = (byte)item.Element,
+                        ElementRefine = item.ElementRefine
+                    };
+
+                    _database.Items.Add(dbItem);
+                }
+            }
+
+            _database.SaveChanges();
+        }
+
+        /// <inheritdoc />
+        public int CreateItem(IPlayerEntity player, ItemDescriptor item, int quantity, int creatorId = -1, bool sendToPlayer = true)
+        {
+            Item itemToCreate = _itemFactory.CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine, creatorId);
+            itemToCreate.Quantity = quantity;
+
+            IEnumerable<ItemCreationResult> creationResult = player.Inventory.AddItem(itemToCreate);
+
+            if (creationResult.Any())
+            {
+                if (sendToPlayer)
+                {
+                    foreach (ItemCreationResult itemResult in creationResult)
+                    {
+                        if (itemResult.ActionType == ItemCreationActionType.Add)
+                        {
+                            _inventoryPacketFactory.SendItemCreation(player, itemResult.Item);
+                        }
+                        else if (itemResult.ActionType == ItemCreationActionType.Update)
+                        {
+                            _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemResult.Item.Index, itemResult.Item.Quantity);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
+            }
+
+            return creationResult.Sum(x => x.Item.Quantity);
+        }
+
+        /// <inheritdoc />
+        public int DeleteItem(IPlayerEntity player, int itemUniqueId, int quantity, bool sendToPlayer = true)
+        {
+            if (quantity <= 0)
+            {
+                return 0;
+            }
+
+            Item itemToDelete = player.Inventory.GetItemAtIndex(itemUniqueId);
+
+            if (itemToDelete == null)
+            {
+                throw new ArgumentNullException(nameof(itemToDelete), $"Cannot find item with unique id: '{itemUniqueId}' in '{player.Object.Name}''s inventory.");
+            }
+
+            return DeleteItem(player, itemToDelete, quantity, sendToPlayer);
+        }
+
+        /// <inheritdoc />
+        public int DeleteItem(IPlayerEntity player, Item itemToDelete, int quantity, bool sendToPlayer = true)
+        {
+            int quantityToDelete = Math.Min(itemToDelete.Quantity, quantity);
+
+            itemToDelete.Quantity -= quantityToDelete;
+
+            if (sendToPlayer)
+            {
+                _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemToDelete.Index, itemToDelete.Quantity);
+            }
+
+            if (itemToDelete.Quantity <= 0)
+            {
+                itemToDelete.Reset();
+            }
+
+            return quantityToDelete;
+        }
+
+        /// <inheritdoc />
+        public void MoveItem(IPlayerEntity player, byte sourceSlot, byte destinationSlot, bool sendToPlayer = true)
+        {
+            if (sourceSlot < 0 || sourceSlot >= MaxItems)
+            {
+                throw new InvalidOperationException("Source slot is out of inventory range.");
+            }
+
+            if (destinationSlot < 0 || destinationSlot >= MaxItems)
+            {
+                throw new InvalidOperationException("Destination slot is out of inventory range.");
+            }
+
+            if (sourceSlot == destinationSlot)
+            {
+                throw new InvalidOperationException("Cannot move an item to the same slot.");
+            }
+
+            Item sourceItem = player.Inventory.GetItemAtSlot(sourceSlot);
+
+            if (sourceItem == null)
+            {
+                throw new InvalidOperationException("Source item not found");
+            }
+
+            Item destinationItem = player.Inventory.GetItemAtSlot(destinationSlot);
+
+            if (destinationItem != null && sourceItem.Id == destinationItem.Id && sourceItem.Data.IsStackable)
+            {
+                int newQuantity = sourceItem.Quantity + destinationItem.Quantity;
+
+                if (newQuantity > destinationItem.Data.PackMax)
+                {
+                    destinationItem.Quantity = destinationItem.Data.PackMax;
+                    sourceItem.Quantity = newQuantity - sourceItem.Data.PackMax;
+
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, sourceItem.Index, sourceItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.Index, destinationItem.Quantity);
+                }
+                else
+                {
+                    destinationItem.Quantity = newQuantity;
+                    DeleteItem(player, sourceItem.Index, sourceItem.Quantity);
+                    _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, destinationItem.Index, destinationItem.Quantity);
+                }
+            }
+            else
+            {
+                player.Inventory.Swap(sourceSlot, destinationSlot);
+
+                if (sendToPlayer)
+                {
+                    _inventoryPacketFactory.SendItemMove(player, sourceSlot, destinationSlot);
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public bool EquipItem(IPlayerEntity player, int itemUniqueId, int equipPart)
+        {
+            Item itemToEquip = player.Inventory.GetItemAtIndex(itemUniqueId);
+
+            if (itemToEquip == null)
+            {
+                throw new ArgumentNullException(nameof(itemToEquip), $"Cannot find item with unique id: '{itemUniqueId}' in {player.Object.Name} inventory.");
+            }
+
+            bool isItemEquiped = player.Inventory.IsItemEquiped(itemToEquip);
+
+            if (isItemEquiped)
+            {
+                if (player.Inventory.Unequip(itemToEquip))
+                {
+                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, false);
+
+                    _logger.LogDebug($"Unequip {itemToEquip} to slot {itemToEquip.Slot}");
+                }
+            }
+            else
+            {
+                if (!IsItemEquipable(player, itemToEquip))
+                {
+                    return false;
+                }
+
+                Item equipedItem = player.Inventory.GetEquipedItem(itemToEquip.Data.Parts);
+
+                if (equipedItem != null)
+                {
+                    _logger.LogDebug($"Unequip {equipedItem} and equip {itemToEquip}");
+
+                    if (player.Inventory.Unequip(equipedItem))
+                    {
+                        _logger.LogDebug($"Unequip {equipedItem} to slot {equipedItem.Slot}");
+                    }
+                }
+
+                ItemPartType destinationPart = itemToEquip.Data.Parts;
+                // TODO: check dual weapon
+
+                if (player.Inventory.Equip(itemToEquip, destinationPart))
+                {
+                    _inventoryPacketFactory.SendItemEquip(player, itemToEquip, (int)itemToEquip.Data.Parts, true);
+
+                    _logger.LogDebug($"Equip {itemToEquip}");
+                }
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public void UseItem(IPlayerEntity player, int itemUniqueId, int part)
+        {
+            Item itemToUse = player.Inventory.GetItemAtIndex(itemUniqueId);
+
+            if (itemToUse == null)
+            {
+                throw new ArgumentNullException(nameof(itemToUse), $"Cannot find item with unique id: '{itemUniqueId}' in {player.Object.Name} inventory.");
+            }
+
+            if (part >= 0)
+            {
+                if (part >= MaxHumanParts)
+                {
+                    throw new InvalidOperationException($"Invalid equipement part.");
+                }
+
+                if (!player.Battle.IsFighting)
+                {
+                    EquipItem(player, itemUniqueId, part);
+                }
+            }
+            else
+            {
+                if (itemToUse.Data.IsUseable && itemToUse.Quantity > 0)
+                {
+                    _logger.LogTrace($"{player.Object.Name} want to use {itemToUse.Data.Name}.");
+
+                    if (player.Inventory.ItemHasCoolTime(itemToUse) && !player.Inventory.CanUseItemWithCoolTime(itemToUse))
+                    {
+                        _logger.LogDebug($"Player '{player.Object.Name}' cannot use item {itemToUse.Data.Name}: CoolTime.");
+                        return;
+                    }
+
+                    switch (itemToUse.Data.ItemKind2)
+                    {
+                        case ItemKind2.REFRESHER:
+                        case ItemKind2.POTION:
+                        case ItemKind2.FOOD:
+                            _inventoryItemUsage.UseFoodItem(player, itemToUse);
+                            break;
+                        case ItemKind2.MAGIC:
+                            _inventoryItemUsage.UseMagicItem(player, itemToUse);
+                            break;
+                        case ItemKind2.SYSTEM:
+                            UseSystemItem(player, itemToUse);
+                            break;
+                        case ItemKind2.GMTEXT:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.GENERAL:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.BUFF:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.BUFF2:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.AIRFUEL:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.FURNITURE:
+                        case ItemKind2.PAPERING:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.GUILDHOUSE_FURNITURE:
+                        case ItemKind2.GUILDHOUSE_NPC:
+                        case ItemKind2.GUILDHOUSE_PAPERING:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.GUILDHOUES_COMEBACK:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                        case ItemKind2.BLINKWING:
+                            _inventoryItemUsage.UseBlinkwingItem(player, itemToUse);
+                            break;
+                        default:
+                            _logger.LogDebug($"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            _textPacketFactory.SendSnoop(player, $"Item usage for {itemToUse.Data.ItemKind2} is not implemented.");
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public void UseSystemItem(IPlayerEntity player, Item systemItem)
+        {
+            switch (systemItem.Data.ItemKind3)
+            {
+                case ItemKind3.SCROLL:
+                    UseScrollItem(player, systemItem);
                     break;
                 default:
-                    Logger.LogWarning("Unknown inventory action type: {0} for player {1}", e.GetType(), entity.Object.Name);
+                    _logger.LogDebug($"Item usage for {systemItem.Data.ItemKind3} is not implemented.");
+                    _textPacketFactory.SendSnoop(player, $"Item usage for {systemItem.Data.ItemKind3} is not implemented.");
                     break;
             }
         }
 
-        /// <summary>
-        /// Initialize the player's inventory.
-        /// </summary>
-        /// <param name="player">Current player</param>
-        /// <param name="e"></param>
-        private void InitializeInventory(IPlayerEntity player, InventoryInitializeEventArgs e)
+        /// <inheritdoc />
+        public void UseScrollItem(IPlayerEntity player, Item scrollItem)
         {
-            player.Inventory = new ItemContainerComponent(MaxItems, InventorySize);
-            var inventory = player.Inventory;
-
-            if (e.Items != null)
+            switch (scrollItem.Data.Id)
             {
-                foreach (Database.Entities.DbItem item in e.Items)
-                {
-                    int uniqueId = inventory.Items[item.ItemSlot].UniqueId;
-
-                    inventory.Items[item.ItemSlot] = new Item(item)
-                    {
-                        UniqueId = uniqueId,
-                    };
-                }
-            }
-
-            for (int i = EquipOffset; i < MaxItems; ++i)
-            {
-                if (inventory.Items[i].Id == -1)
-                    inventory.Items[i].UniqueId = -1;
+                case DefineItem.II_SYS_SYS_SCR_PERIN:
+                    _inventoryItemUsage.UsePerin(player, scrollItem);
+                    break;
+                default:
+                    _logger.LogDebug($"Item usage for {scrollItem.Data.Id} is not implemented.");
+                    _textPacketFactory.SendSnoop(player, $"Item usage for {scrollItem.Data.Id} is not implemented.");
+                    break;
             }
         }
 
-        /// <summary>
-        /// Move an item.
-        /// </summary>
-        /// <param name="player"></param>
-        private void MoveItem(IPlayerEntity player, InventoryMoveEventArgs e)
+        /// <inhertidoc />
+        public void DropItem(IPlayerEntity player, int itemUniqueId, int quantity)
         {
-            var sourceSlot = e.SourceSlot;
-            var destinationSlot = e.DestinationSlot;
-            List<Item> items = player.Inventory.Items;
+            Item itemToDrop = player.Inventory.GetItemAtIndex(itemUniqueId);
 
-            if (sourceSlot >= MaxItems || destinationSlot >= MaxItems)
-                return;
-
-            if (items[sourceSlot].Id == -1 || items[sourceSlot].UniqueId == -1 || items[destinationSlot].UniqueId == -1)
-                return;
-            
-            Item sourceItem = items[sourceSlot];
-            Item destItem = items[destinationSlot];
-            
-            Logger.LogDebug("Moving item from {0} to {1}", sourceSlot, destinationSlot);
-
-            if (sourceItem.Id == destItem.Id && sourceItem.Data.IsStackable)
+            if (itemToDrop == null)
             {
-                // TODO: stack items
+                throw new ArgumentNullException(nameof(itemToDrop), $"Cannot find item with unique id: '{itemUniqueId}' in {player.Object.Name} inventory.");
             }
-            else
+
+            if (itemToDrop.Slot >= EquipOffset)
             {
-                sourceItem.Slot = destinationSlot;
-
-                if (destItem.Slot != -1)
-                    destItem.Slot = sourceSlot;
-
-                items.Swap(sourceSlot, destinationSlot);
-                WorldPacketFactory.SendItemMove(player, sourceSlot, destinationSlot);
+                throw new InvalidOperationException($"Cannot drop an equiped item.");
             }
+
+            int quantityToDrop = Math.Min(quantity, itemToDrop.Quantity);
+
+            if (quantityToDrop <= 0)
+            {
+                throw new InvalidOperationException("Cannot drop a zero or negative quantit.");
+            }
+
+            _dropSystem.DropItem(player, itemToDrop, owner: null, quantity: quantityToDrop);
+            DeleteItem(player, itemUniqueId, quantityToDrop);
         }
 
         /// <summary>
-        /// Equips an item.
+        /// Check if the given item is equipable by a player.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="e"></param>
-        private void EquipItem(IPlayerEntity player, InventoryEquipEventArgs e)
+        /// <param name="player">Player trying to equip an item.</param>
+        /// <param name="item">Item to equip.</param>
+        /// <returns>True if the player can equip the item; false otherwise.</returns>
+        private bool IsItemEquipable(IPlayerEntity player, Item item)
         {
-            var uniqueId = e.UniqueId;
-            var part = e.Part;
-
-            Logger.LogDebug("UniqueId: {0} | Part: {1}", uniqueId, part);
-
-            Item item = player.Inventory.GetItem(uniqueId);
-            if (item == null)
-                return;
-
-            bool equip = part == -1;
-
-            Logger.LogDebug("Equip item: {0}", equip.ToString());
-
-            if (equip)
+            if (item.Data.ItemSex != int.MaxValue && item.Data.ItemSex != player.VisualAppearance.Gender)
             {
-                Logger.LogDebug("Item: {0}", item.ToString());
-
-                // TODO: check if the player fits the item requirements
-                if (item.Data.ItemKind1 == ItemKind1.ARMOR && item.Data.ItemSex != player.VisualAppearance.Gender)
-                {
-                    Logger.LogDebug("Wrong sex for armor");
-                    // TODO: Send invalid sex error
-                    return;
-                }
-
-                if (player.Object.Level < item.Data.LimitLevel)
-                {
-                    Logger.LogDebug("Player level to low");
-                    // TODO: Send low level error
-                    return;
-                }
-
-                // TODO: SPECIAL: double weapon for blades...
-
-                int sourceSlot = item.Slot;
-                int equipedItemSlot = item.Data.Parts + EquipOffset;
-                Item equipedItem = player.Inventory[equipedItemSlot];
-                
-                if (equipedItem != null && equipedItem.Slot != -1)
-                {
-                    this.UnequipItem(player, equipedItem);
-                }
-
-                // Move item
-                item.Slot = equipedItemSlot;
-                player.Inventory.Items.Swap(sourceSlot, equipedItemSlot);
-
-                WorldPacketFactory.SendItemEquip(player, item, item.Data.Parts, true);
-            }
-            else
-            {
-                this.UnequipItem(player, item);
-            }
-        }
-
-        /// <summary>
-        /// Unequip an item.
-        /// </summary>
-        /// <param name="player">Player entity</param>
-        /// <param name="item">Item to unequip</param>
-        private void UnequipItem(IPlayerEntity player, Item item)
-        {
-            int sourceSlot = item.Slot;
-            int availableSlot = player.Inventory.GetAvailableSlot();
-            Logger.LogDebug("Available slot: {0}", availableSlot);
-
-            if (availableSlot < 0)
-            {
-                Logger.LogDebug("No available slots.");
-                WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                return;
+                _logger.LogTrace("Wrong sex for armor");
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGSEX, item.Data.Name);
+                return false;
             }
 
-            if (item.Id > 0 && item.IsEquipped())
+            if (player.Object.Level < item.Data.LimitLevel)
             {
-                int parts = Math.Abs(sourceSlot - EquipOffset);
-
-                item.Slot = availableSlot;
-                player.Inventory.Items.Swap(sourceSlot, availableSlot);
-
-                WorldPacketFactory.SendItemEquip(player, item, parts, false);
-            }
-        }
-
-        /// <summary>
-        /// Create a new item.
-        /// </summary>
-        /// <param name="player">Player entity</param>
-        /// <param name="e"></param>
-        private void CreateItem(IPlayerEntity player, InventoryCreateItemEventArgs e)
-        {
-            ItemData itemData = e.ItemData;
-
-            if (itemData.IsStackable)
-            {
-                int quantity = Math.Min(e.Quantity, itemData.PackMax);
-
-                for (int i = 0; i < EquipOffset; i++)
-                {
-                    Item inventoryItem = player.Inventory.Items[i];
-
-                    if (inventoryItem == null)
-                        continue;
-
-                    if (inventoryItem.Id == e.ItemId)
-                    {
-                        if (inventoryItem.Quantity + quantity > itemData.PackMax)
-                        {
-                            inventoryItem.Quantity = itemData.PackMax;
-                            quantity -= itemData.PackMax - inventoryItem.Quantity;
-                        }
-                        else
-                        {
-                            inventoryItem.Quantity += quantity;
-                            quantity = 0;
-                        }
-
-                        WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
-                    }
-                }
-
-                if (quantity > 0)
-                {
-                    if (!player.Inventory.HasAvailableSlots())
-                        WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                    else
-                    {
-                        var item = new Item(e.ItemId, quantity, -1);
-
-                        if (player.Inventory.CreateItem(item))
-                            WorldPacketFactory.SendItemCreation(player, item);
-                        else
-                        {
-                            Logger.LogError("Inventory: Failed to create item.");
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (var i = 0; i < e.Quantity; i++)
-                {
-                    int availableSlot = player.Inventory.GetAvailableSlot();
-
-                    if (availableSlot < 0)
-                    {
-                        WorldPacketFactory.SendDefinedText(player, DefineText.TID_GAME_LACKSPACE);
-                        break;
-                    }
-
-                    var newItem = new Item(e.ItemId, 1, e.CreatorId)
-                    {
-                        Slot = availableSlot,
-                        UniqueId = player.Inventory.Items[availableSlot].UniqueId,
-                    };
-
-                    player.Inventory.Items[availableSlot] = newItem;
-                    WorldPacketFactory.SendItemCreation(player, newItem);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Drops an item from the inventory to the ground.
-        /// </summary>
-        /// <param name="player">Player entity.</param>
-        /// <param name="e">Drop item event arguments.</param>
-        private void DropItem(IPlayerEntity player, InventoryDropItemEventArgs e)
-        {
-            Item inventoryItem = player.Inventory.GetItem(e.UniqueItemId);
-
-            if (inventoryItem == null)
-            {
-                Logger.LogWarning($"Cannot find item with unique Id: {e.UniqueItemId}");
-                return;
+                _logger.LogTrace("Player level to low");
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REQLEVEL, item.Data.LimitLevel.ToString());
+                return false;
             }
 
-            int quantityToDrop = Math.Min(e.Quantity, inventoryItem.Quantity);
-            if (quantityToDrop < 0)
+            if (!player.PlayerData.JobData.IsAnteriorJob(item.Data.ItemJob))
             {
-                Logger.LogError($"{player.Object.Name} tried to drop a negative quantity.");
-                return;
+                _logger.LogTrace($"Player {player} tried to equip '{item.Data.Name}', but doesn't have the required job: '{item.Data.ItemJob}'.");
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGJOB);
+                return false;
             }
 
-            Item itemToDrop = inventoryItem.Clone();
-            itemToDrop.Quantity = quantityToDrop;
-            player.NotifySystem<DropSystem>(new DropItemEventArgs(itemToDrop));
+            Item equipedItem = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon);
 
-            inventoryItem.Quantity -= quantityToDrop;
-            if (inventoryItem.Quantity <= 0)
-                inventoryItem.Reset();
+            if (item.Data.ItemKind3 == ItemKind3.ARROW && (equipedItem == null || equipedItem.Data.ItemKind3 != ItemKind3.BOW))
+            {
+                _logger.LogTrace($"Player {player} tried to equip arrows without having a bow equiped.");
+                return false;
+            }
 
-            WorldPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, inventoryItem.UniqueId, inventoryItem.Quantity);
+            return true;
         }
     }
 }

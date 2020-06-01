@@ -6,6 +6,8 @@ namespace Rhisis.Core.Resources.Include
 {
     public class Instruction : IStatement, IDisposable
     {
+        private readonly char[] EscapeCharacters = new[] { '"' };
+
         private readonly ICollection<object> _parameters;
 
         /// <summary>
@@ -16,7 +18,7 @@ namespace Rhisis.Core.Resources.Include
         /// <summary>
         /// Gets the instruction's parameters.
         /// </summary>
-        public IReadOnlyCollection<object> Parameters => this._parameters as IReadOnlyCollection<object>;
+        public IReadOnlyCollection<object> Parameters => _parameters as IReadOnlyCollection<object>;
 
         /// <summary>
         /// Gets the statement type.
@@ -38,8 +40,8 @@ namespace Rhisis.Core.Resources.Include
         /// <param name="parameters">Parameters</param>
         public Instruction(string name, ICollection<object> parameters)
         {
-            this.Name = name;
-            this._parameters = parameters;
+            Name = name;
+            _parameters = parameters;
         }
 
         /// <summary>
@@ -49,17 +51,46 @@ namespace Rhisis.Core.Resources.Include
         internal void AddParameter(object parameter)
         {
             if (parameter.ToString() != ",")
-                this._parameters.Add(parameter);
+                _parameters.Add(parameter);
+        }
+
+        /// <summary>
+        /// Gets the parameter at the given index and convert it into the given generic type.
+        /// </summary>
+        /// <typeparam name="T">Target type.</typeparam>
+        /// <param name="parameterIndex">Instruction parameter index.</param>
+        /// <returns></returns>
+        public T GetParameter<T>(int parameterIndex)
+        {
+            if (parameterIndex < 0 || parameterIndex >= Parameters.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(parameterIndex), "The instruction parameter index is out of range.");
+            }
+
+            object parameter = Parameters.ElementAtOrDefault(parameterIndex);
+
+            if (parameter is string)
+                parameter = parameter.ToString().Trim(EscapeCharacters);
+
+            if (typeof(T).IsEnum)
+            {
+                if (Enum.TryParse(typeof(T), parameter.ToString(), out object value))
+                    return (T)value;
+            }
+
+            Type targetType = typeof(T);
+
+            return (T)Convert.ChangeType(parameter, Nullable.GetUnderlyingType(targetType) ?? targetType);
         }
         
         /// <inheritdoc />
         public void Dispose()
         {
-            if (this._parameters.Any())
-                this._parameters.Clear();
+            if (_parameters.Any())
+                _parameters.Clear();
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.Name}({string.Join(", ", this.Parameters)})";
+        public override string ToString() => $"{Name}({string.Join(", ", Parameters)})";
     }
 }

@@ -1,4 +1,4 @@
-﻿using Rhisis.World.Game.Core;
+﻿using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Game.Components
 {
@@ -12,19 +12,19 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets or sets the following target.
         /// </summary>
-        public IEntity Target { get; set; }
+        public IWorldEntity Target { get; set; }
 
         /// <summary>
         /// Gets or sets if the object is following another.
         /// </summary>
-        public bool IsFollowing => this.Target != null;
+        public bool IsFollowing => Target != null;
 
         /// <summary>
         /// Creates a new <see cref="FollowComponent"/> instance.
         /// </summary>
         public FollowComponent()
         {
-            this.Reset();
+            Reset();
         }
 
         /// <summary>
@@ -32,8 +32,8 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         public void Reset()
         {
-            this.Target = null;
-            this.FollowDistance = 1f;
+            Target = null;
+            FollowDistance = 1f;
         }
     }
 }

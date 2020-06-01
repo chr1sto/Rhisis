@@ -35,9 +35,9 @@ for (int i = 0; i < serverCount; ++i)
     [int] serverId
     [string] serverName
     [string] host ip
-    [int] 0 // need to figure out what this is
-    [int] 0 // number of people connected ?
-    [int] 1 // ??
+    [int] 0 // b18, need to figure out what this is
+    [int] 0 // number of people connected
+    [int] 1 // enabled
     [int] worldCapacity // Just for world servers ??
 }
 ```

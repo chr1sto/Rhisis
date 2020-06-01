@@ -1,71 +1,103 @@
-﻿using Ether.Network.Packets;
-using System;
+﻿using Rhisis.Core.Data;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.Cluster
 {
-    public struct CreatePlayerPacket : IEquatable<CreatePlayerPacket>
+    public class CreatePlayerPacket : IPacketDeserializer
     {
-        public string Username { get; }
+        /// <summary>
+        /// Gets the account username.
+        /// </summary>
+        public string Username { get; private set; }
 
-        public string Password { get; }
+        /// <summary>
+        /// Gets the account password.
+        /// </summary>
+        public string Password { get; private set; }
 
-        public int Slot { get; }
+        /// <summary>
+        /// Gets the character slot.
+        /// </summary>
+        public int Slot { get; private set; }
 
-        public string Name { get; }
+        /// <summary>
+        /// Gets the character name.
+        /// </summary>
+        public string CharacterName { get; private set; }
 
-        public int FaceId { get; }
+        /// <summary>
+        /// Gets the character face id.
+        /// </summary>
+        public int FaceId { get; private set; }
 
-        public int CostumeId { get; }
+        /// <summary>
+        /// Gets the character costume id.
+        /// </summary>
+        /// <remarks>
+        /// This field is not used in FLYFF.
+        /// </remarks>
+        public int CostumeId { get; private set; }
 
-        public int SkinSet { get; }
+        /// <summary>
+        /// Gets the character skin set id.
+        /// </summary>
+        /// <remarks>
+        /// This field is not used in FLYFF.
+        /// </remarks>
+        public int SkinSet { get; private set; }
 
-        public int HairMeshId { get; }
+        /// <summary>
+        /// Gets the character hair model (3D mesh) id.
+        /// </summary>
+        public int HairMeshId { get; private set; }
 
-        public uint HairColor { get; }
+        /// <summary>
+        /// Gets the character haid color.
+        /// </summary>
+        public uint HairColor { get; private set; }
 
-        public byte Gender { get; }
+        /// <summary>
+        /// Gets the character gender.
+        /// </summary>
+        public byte Gender { get; private set; }
 
-        public int Job { get; }
+        /// <summary>
+        /// Gets the character begin job.
+        /// </summary>
+        public DefineJob.Job Job { get; private set; }
 
-        public int HeadMesh { get; }
+        /// <summary>
+        /// Gets the character head model (3D mesh) id.
+        /// </summary>
+        public int HeadMesh { get; private set; }
 
-        public int BankPassword { get; }
+        /// <summary>
+        /// Gets the character bank password.
+        /// </summary>
+        public int BankPassword { get; private set; }
 
-        public int AuthenticationKey { get; }
+        /// <summary>
+        /// Gets the character authentication key.
+        /// </summary>
+        public int AuthenticationKey { get; private set; }
 
-        public CreatePlayerPacket(INetPacketStream packet)
+        /// <inheritdoc/>
+        public void Deserialize(INetPacketStream packet)
         {
-            this.Username = packet.Read<string>();
-            this.Password = packet.Read<string>();
-            this.Slot = packet.Read<byte>();
-            this.Name = packet.Read<string>();
-            this.FaceId = packet.Read<byte>();
-            this.CostumeId = packet.Read<byte>();
-            this.SkinSet = packet.Read<byte>();
-            this.HairMeshId = packet.Read<byte>();
-            this.HairColor = packet.Read<uint>();
-            this.Gender = packet.Read<byte>();
-            this.Job = packet.Read<byte>();
-            this.HeadMesh = packet.Read<byte>();
-            this.BankPassword = packet.Read<int>();
-            this.AuthenticationKey = packet.Read<int>();
-        }
-
-        public bool Equals(CreatePlayerPacket other)
-        {
-            return this.Username == other.Username &&
-                this.Password == other.Password &&
-                this.Slot == other.Slot &&
-                this.Name == other.Name &&
-                this.FaceId == other.FaceId &&
-                this.CostumeId == other.CostumeId &&
-                this.SkinSet == other.SkinSet &&
-                this.HairMeshId == other.HairMeshId &&
-                this.HairColor == other.HairColor &&
-                this.Gender == other.Gender &&
-                this.HeadMesh == other.HeadMesh &&
-                this.BankPassword == other.BankPassword &&
-                this.AuthenticationKey == other.AuthenticationKey;
+            Username = packet.Read<string>();
+            Password = packet.Read<string>();
+            Slot = packet.Read<byte>();
+            CharacterName = packet.Read<string>();
+            FaceId = packet.Read<byte>();
+            CostumeId = packet.Read<byte>();
+            SkinSet = packet.Read<byte>();
+            HairMeshId = packet.Read<byte>();
+            HairColor = packet.Read<uint>();
+            Gender = packet.Read<byte>();
+            Job = (DefineJob.Job)packet.Read<byte>();
+            HeadMesh = packet.Read<byte>();
+            BankPassword = packet.Read<int>();
+            AuthenticationKey = packet.Read<int>();
         }
     }
 }

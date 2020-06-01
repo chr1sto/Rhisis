@@ -54,13 +54,13 @@ namespace Rhisis.Core.Resources
         /// <param name="revivalKey">World revival key.</param>
         public WldFileInformations(int width, int length, int mpu, bool isIndoor, bool canFly, int revivalMapId, string revivalKey)
         {
-            this.Width = width;
-            this.Length = length;
-            this.MPU = mpu;
-            this.Indoor = isIndoor;
-            this.Fly = canFly;
-            this.RevivalMapId = revivalMapId;
-            this.RevivalKey = revivalKey;
+            Width = width;
+            Length = length;
+            MPU = mpu;
+            Indoor = isIndoor;
+            Fly = canFly;
+            RevivalMapId = revivalMapId;
+            RevivalKey = revivalKey;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Rhisis.Core.Resources
         /// <param name="other">Other <see cref="WldFileInformations"/>.</param>
         /// <returns>True if the same; false otherwise.</returns>
         public bool Equals(WldFileInformations other) 
-            => (this.Width, this.Length, this.MPU, this.Indoor, this.Fly, this.RevivalMapId, this.RevivalKey) ==
+            => (Width, Length, MPU, Indoor, Fly, RevivalMapId, RevivalKey) ==
                (other.Width, other.Length, other.MPU, other.Indoor, other.Fly, other.RevivalMapId, other.RevivalKey);
     }
 }

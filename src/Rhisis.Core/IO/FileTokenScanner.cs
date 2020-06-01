@@ -26,9 +26,9 @@ namespace Rhisis.Core.IO
         /// <param name="splitRegex"></param>
         public FileTokenScanner(string filePath, string splitRegex)
         {
-            this._currentTokenIndex = 0;
-            this._filePath = filePath;
-            this._splitRegex = splitRegex;
+            _currentTokenIndex = 0;
+            _filePath = filePath;
+            _splitRegex = splitRegex;
         }
 
         /// <summary>
@@ -36,14 +36,14 @@ namespace Rhisis.Core.IO
         /// </summary>
         public void Read()
         {
-            this._currentTokenIndex = 0;
+            _currentTokenIndex = 0;
 
-            using (var fileStream = new FileStream(this._filePath, FileMode.Open, FileAccess.Read))
+            using (var fileStream = new FileStream(_filePath, FileMode.Open, FileAccess.Read))
             using (var reader = new StreamReader(fileStream))
             {
                 string fileContent = reader.ReadToEnd();
                 string[] splitFileContent = fileContent.Split(SplitCharacters, StringSplitOptions.RemoveEmptyEntries);
-                this._comments = new string[splitFileContent.Length];
+                _comments = new string[splitFileContent.Length];
 
                 for (var i = 0; i < splitFileContent.Length; ++i)
                 {
@@ -51,13 +51,13 @@ namespace Rhisis.Core.IO
 
                     if (string.IsNullOrEmpty(line) || line.StartsWith(SingleLineComment))
                     {
-                        this._comments[i] = splitFileContent[i];
+                        _comments[i] = splitFileContent[i];
                         splitFileContent[i] = string.Empty;
                         continue;
                     }
 
                     if (line.Contains(SingleLineComment))
-                        splitFileContent[i] = line.Remove(line.IndexOf(SingleLineComment, StringComparison.Ordinal));
+                        splitFileContent[i] = line.Remove(line.IndexOf(SingleLineComment, StringComparison.Ordinal)).Trim();
 
                     if (line.Contains(MultiLineCommentBegin))
                     {
@@ -84,9 +84,9 @@ namespace Rhisis.Core.IO
                 
                 fileContent = string.Join(" ", tokens);
 
-                string[] parts = Regex.Split(fileContent, this._splitRegex);
+                string[] parts = Regex.Split(fileContent, _splitRegex);
 
-                this._tokens = (from x in parts
+                _tokens = (from x in parts
                                 let y = x.Trim()
                                 where !string.IsNullOrEmpty(y)
                                 select y).ToArray();
@@ -99,7 +99,7 @@ namespace Rhisis.Core.IO
         /// <returns></returns>
         public string GetToken()
         {
-            return this._currentTokenIndex + 1 > this._tokens.Count() ? null : this._tokens[this._currentTokenIndex++];
+            return _currentTokenIndex + 1 > _tokens.Count() ? null : _tokens[_currentTokenIndex++];
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Rhisis.Core.IO
         /// <returns></returns>
         public string GetPreviousToken()
         {
-            return this._currentTokenIndex <= 0 ? null : this._tokens[this._currentTokenIndex - 2];
+            return _currentTokenIndex <= 0 ? null : _tokens[_currentTokenIndex - 2];
         }
 
         /// <summary>
@@ -118,10 +118,10 @@ namespace Rhisis.Core.IO
         /// <returns></returns>
         public bool NextTokenIs(string token)
         {
-            if (this._currentTokenIndex > this._tokens.Count())
+            if (_currentTokenIndex > _tokens.Count())
                 return false;
 
-            return string.Equals(this._tokens[this._currentTokenIndex + 1], token, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(_tokens[_currentTokenIndex + 1], token, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Rhisis.Core.IO
         /// <returns></returns>
         public bool CurrentTokenIs(string token)
         {
-            return this._tokens[this._currentTokenIndex] == token;
+            return _tokens[_currentTokenIndex] == token;
         }
 
         /// <summary>
@@ -141,8 +141,8 @@ namespace Rhisis.Core.IO
         /// <returns></returns>
         public string GetCommentAtLine(int position)
         {
-            if (position >= 0 && position < this._comments.Length)
-                return this._comments[position];
+            if (position >= 0 && position < _comments.Length)
+                return _comments[position];
 
             return null;
         }
@@ -152,7 +152,7 @@ namespace Rhisis.Core.IO
         /// </summary>
         public void Dispose()
         {
-            this._tokens = null;
+            _tokens = null;
         }
     }
 }

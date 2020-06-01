@@ -1,18 +1,37 @@
-﻿using Ether.Network.Packets;
-using NLog;
-using Rhisis.Core.Exceptions;
-using Rhisis.Network;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Network.Packets;
+using Rhisis.World.Client;
+using Sylver.HandlerInvoker;
+using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.World.Handlers
 {
-    public static class SnapshotHandler
+    [Handler]
+    public class SnapshotHandler
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<SnapshotHandler> _logger;
+        private readonly IHandlerInvoker _handlerInvoker;
 
-        [PacketHandler(PacketType.SNAPSHOT)]
-        public static void OnSnapshot(WorldClient client, INetPacketStream packet)
+        /// <summary>
+        /// Creates a new <see cref="SnapshotHandler"/> instance.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
+        /// <param name="handlerInvoker">Handler invoker.</param>
+        public SnapshotHandler(ILogger<SnapshotHandler> logger, IHandlerInvoker handlerInvoker)
+        {
+            _logger = logger;
+            _handlerInvoker = handlerInvoker;
+        }
+
+        /// <summary>
+        /// Receives and handles a snapshot.
+        /// </summary>
+        /// <param name="serverClient">Client.</param>
+        /// <param name="packet">Incoming packet with snapshots.</param>
+        [HandlerAction(PacketType.SNAPSHOT)]
+        public void OnSnapshot(IWorldServerClient serverClient, INetPacketStream packet)
         {
             var snapshotCount = packet.Read<byte>();
 
@@ -24,25 +43,20 @@ namespace Rhisis.World.Handlers
                 {
                     var snapshotHeader = (SnapshotType)snapshotHeaderNumber;
 
-                    switch (snapshotHeader)
-                    {
-                        case SnapshotType.DESTPOS:
-                            MovementHandler.OnSnapshotSetDestPosition(client, packet);
-                            break;
+                    _handlerInvoker.Invoke(snapshotHeader, serverClient, packet);
 
-                        default: throw new RhisisPacketException("Unknow snapshot handler");
-                    }
                 }
-                catch (RhisisPacketException)
+                catch (ArgumentNullException)
                 {
                     if (Enum.IsDefined(typeof(SnapshotType), snapshotHeaderNumber))
-                        Logger.Warn("Unimplemented World packet {0} (0x{1})", Enum.GetName(typeof(PacketType), snapshotHeaderNumber), snapshotHeaderNumber.ToString("X4"));
+                        _logger.LogWarning("Received an unimplemented World snapshot {0} (0x{1}) from {2}.", Enum.GetName(typeof(SnapshotType), snapshotHeaderNumber), snapshotHeaderNumber.ToString("X4"), serverClient.Socket.RemoteEndPoint);
                     else
-                        Logger.Warn("Unknow World packet 0x{0}", snapshotHeaderNumber.ToString("X4"));
+                        _logger.LogWarning("[SECURITY] Received an unknown World snapshot 0x{0} from {1}.", snapshotHeaderNumber.ToString("X4"), serverClient.Socket.RemoteEndPoint);
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-                    Logger.Error("An error occured during the execution of snapshot: 0x{0}", snapshotHeaderNumber.ToString("X4"));
+                    _logger.LogError(exception, $"An error occured while handling a world snapshot.");
+                    _logger.LogDebug(exception.InnerException?.StackTrace);
                 }
 
                 snapshotCount--;

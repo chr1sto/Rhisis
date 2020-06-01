@@ -12,7 +12,7 @@ namespace Rhisis.World.Game.Components
         
         public Vector3 DestinationPosition { get; set; }
 
-        public bool HasArrived { get; set; }
+        public bool HasArrived => DestinationPosition.IsZero();
 
         public float Speed { get; set; }
 
@@ -22,13 +22,11 @@ namespace Rhisis.World.Game.Components
 
         public bool ReturningToOriginalPosition { get; set; }
 
-        public bool IsMovingWithKeyboard { get; set; }
-
         public MovableComponent()
         {
-            this.DestinationPosition = new Vector3();
-            this.BeginPosition = new Vector3();
-            this.SpeedFactor = 1f;
+            DestinationPosition = new Vector3();
+            BeginPosition = new Vector3();
+            SpeedFactor = 1f;
         }
     }
 }

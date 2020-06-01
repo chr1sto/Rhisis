@@ -1,10 +1,22 @@
-﻿using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core;
+﻿using Rhisis.Core.Structures.Game;
+using Rhisis.World.Game.Behaviors;
+using Rhisis.World.Game.Components;
+using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Game.Entities
 {
-    public interface ILivingEntity : IEntity, IMovableEntity
+    public interface ILivingEntity : IWorldEntity, IMovableEntity
     {
+        /// <summary>
+        /// Gets a value that indicates if the living entity is dead.
+        /// </summary>
+        bool IsDead { get; }
+
+        /// <summary>
+        /// Gets or sets the living entity mover data.
+        /// </summary>
+        MoverData Data { get; set; }
+
         /// <summary>
         /// Gets or sets the interaction component.
         /// </summary>
@@ -16,13 +28,18 @@ namespace Rhisis.World.Game.Entities
         BattleComponent Battle { get; set; }
 
         /// <summary>
-        /// Gets or sets the Health component.
+        /// Gets or sets the attribute component.
         /// </summary>
-        HealthComponent Health { get; set; }
+        AttributeComponent Attributes { get; set; }
 
         /// <summary>
-        /// Gets or sets the statistics component.
+        /// Gets or sets the living entity behavior.
         /// </summary>
-        StatisticsComponent Statistics { get; set; }
+        IBehavior Behavior { get; set; }
+
+        /// <summary>
+        /// Gets the default living entity hand item.
+        /// </summary>
+        Item Hand { get; }
     }
 }

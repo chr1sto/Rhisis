@@ -1,28 +1,36 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.Network.Packets
 {
-    public struct PingPacket : IEquatable<PingPacket>
+    /// <summary>
+    /// Represents the ping packet.
+    /// </summary>
+    public class PingPacket : IPacketDeserializer
     {
-        public int Time { get; }
+        /// <summary>
+        /// Gets the ping packet time.
+        /// </summary>
+        public virtual int Time { get; private set; }
 
-        public bool IsTimeOut { get; }
+        /// <summary>
+        /// Gets a value that indiciates that the ping packet has timeout.
+        /// </summary>
+        public virtual bool IsTimeOut { get; private set; }
 
-        public PingPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             try
             {
-                this.Time = packet.Read<int>();
-                this.IsTimeOut = false;
+                Time = packet.Read<int>();
+                IsTimeOut = false;
             }
             catch (Exception)
             {
-                this.Time = 0;
-                this.IsTimeOut = true;
+                Time = 0;
+                IsTimeOut = true;
             }
         }
-
-        public bool Equals(PingPacket other) => this.Time == other.Time && this.IsTimeOut == other.IsTimeOut;
     }
 }

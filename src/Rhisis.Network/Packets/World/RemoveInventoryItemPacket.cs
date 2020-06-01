@@ -1,40 +1,27 @@
-﻿using System;
-using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
-    /// <summary>
-    /// Defines the <see cref="RemoveInventoryItemPacket"/> structure.
-    /// </summary>
-    public struct RemoveInventoryItemPacket : IEquatable<RemoveInventoryItemPacket>
+    public class RemoveInventoryItemPacket : IPacketDeserializer
     {
         /// <summary>
-        /// Gets the item id.
+        /// Gets the unique item id.
         /// </summary>
-        public uint ItemId { get; set; }
+        public int ItemUniqueId { get; private set; }
 
         /// <summary>
-        /// Gets the quantity.
+        /// Gets the item quantity.
         /// </summary>
-        public int Quantity { get; set; }
+        public int ItemQuantity { get; private set; }
 
         /// <summary>
         /// Creates a new <see cref="RemoveInventoryItemPacket"/> object.
         /// </summary>
         /// <param name="packet">Incoming packet</param>
-        public RemoveInventoryItemPacket(INetPacketStream packet)
+        public void Deserialize(INetPacketStream packet)
         {
-            this.ItemId = packet.Read<uint>();
-            this.Quantity = packet.Read<int>();
-        }
-
-        /// <summary>
-        /// Compares two <see cref="RemoveInventoryItemPacket"/>.
-        /// </summary>
-        /// <param name="other">Other <see cref="RemoveInventoryItemPacket"/></param>
-        public bool Equals(RemoveInventoryItemPacket other)
-        {
-            return this.ItemId == other.ItemId && this.Quantity == other.Quantity;
+            ItemUniqueId = packet.Read<int>();
+            ItemQuantity = packet.Read<int>();
         }
     }
 }

@@ -39,10 +39,10 @@ namespace Rhisis.Core.Structures
         /// <param name="length">Length of the region</param>
         public Rectangle(int x, int z, int width, int length)
         {
-            this.X = x;
-            this.Z = z;
-            this.Width = width;
-            this.Length = length;
+            X = x;
+            Z = z;
+            Width = width;
+            Length = length;
         }
 
         /// <summary>
@@ -53,9 +53,9 @@ namespace Rhisis.Core.Structures
         {
             var position = new Vector3()
             {
-                X = RandomHelper.FloatRandom(this.X, this.X + this.Width),
+                X = RandomHelper.FloatRandom(X, X + Width),
                 Y = 0,
-                Z = RandomHelper.FloatRandom(this.Z, this.Z + this.Length)
+                Z = RandomHelper.FloatRandom(Z, Z + Length)
             };
 
             return position;
@@ -66,7 +66,7 @@ namespace Rhisis.Core.Structures
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public bool Contains(Vector3 position) => position.X >= this.X && position.X <= this.X + this.Width &&
-                                                  position.Z >= this.Z && position.Z <= this.Z + this.Length;
+        public bool Contains(Vector3 position) => position.X >= X && position.X <= X + Width &&
+                                                  position.Z >= Z && position.Z <= Z + Length;
     }
 }

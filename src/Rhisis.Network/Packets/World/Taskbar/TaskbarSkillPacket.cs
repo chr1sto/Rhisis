@@ -1,16 +1,16 @@
-﻿using Ether.Network.Packets;
+﻿using Sylver.Network.Data;
 using Rhisis.Core.Common;
 using Rhisis.Core.Common.Game.Structures;
-using System;
 using System.Collections.Generic;
 
 namespace Rhisis.Network.Packets.World.Taskbar
 {
-    public struct TaskbarSkillPacket : IEquatable<TaskbarSkillPacket>
+    public class TaskbarSkillPacket : IPacketDeserializer
     {
-        public List<Shortcut> Skills { get; }
+        public List<Shortcut> Skills { get; private set; }
 
-        public TaskbarSkillPacket(INetPacketStream packet)
+        /// <inheritdoc />
+        public void Deserialize(INetPacketStream packet)
         {
             Skills = new List<Shortcut>(new Shortcut[packet.Read<int>()]);
 
@@ -33,11 +33,6 @@ namespace Rhisis.Network.Packets.World.Taskbar
 
                 Skills[i] = new Shortcut(index, type, objId, objType, objIndex, userId, objData, text);
             }
-        }
-
-        public bool Equals(TaskbarSkillPacket other)
-        {
-            throw new NotImplementedException();
         }
     }
 }

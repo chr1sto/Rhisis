@@ -1,67 +1,52 @@
-﻿using Ether.Network.Packets;
-using Rhisis.Core.Common;
+﻿using Rhisis.Core.Common;
 using Rhisis.Core.Common.Game.Structures;
-using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Taskbar;
+using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.World.Game.Components
 {
-    public class TaskbarItemContainerComponent
+    public class TaskbarItemContainerComponent : ObjectContainerComponent<List<Shortcut>>
     {
-        public int MaxItemCapacity { get; }
+        /// <summary>
+        /// Gets the number of items in the item taskbar.
+        /// </summary>
+        public override int Count => Objects.Sum(x => x.Count(y => y != null && y.Type != ShortcutType.None));
 
+        /// <summary>
+        /// Gets the taskbar item max level capacity per slot.
+        /// </summary>
         public int MaxLevelCapacity { get; }
 
-        public List<List<Shortcut>> Shortcuts { get; }
-
-        public TaskbarItemContainerComponent(int maxItemCapacity, int maxLevelCapacity)
+        /// <summary>
+        /// Creates a new <see cref="TaskbarItemContainerComponent"/> instance.
+        /// </summary>
+        /// <param name="maxCapacity">Taskbar max capacity (number of slot levels)</param>
+        /// <param name="maxLevelCapacity">Taskbar max capacity per slot level.</param>
+        public TaskbarItemContainerComponent(int maxCapacity, int maxLevelCapacity)
+            : base(maxCapacity)
         {
-            MaxItemCapacity = maxItemCapacity;
             MaxLevelCapacity = maxLevelCapacity;
-            Shortcuts = new List<List<Shortcut>>(new List<Shortcut>[maxLevelCapacity]);
+            Objects = new List<List<Shortcut>>(new List<Shortcut>[maxCapacity]);
 
-            for(int i = 0; i < Shortcuts.Count; i++)
-                Shortcuts[i] = new List<Shortcut>(new Shortcut[maxItemCapacity]);
+            for (int i = 0; i < Objects.Count; i++)
+                Objects[i] = new List<Shortcut>(new Shortcut[maxLevelCapacity]);
         }
 
-        public void CreateShortcut(Shortcut shortcut, int slotLevelIndex)
-        {
-            if (slotLevelIndex < 0 || slotLevelIndex >= TaskbarSystem.MaxTaskbarItemLevels)
-                return;
-
-            if (shortcut.SlotIndex < 0 || shortcut.SlotIndex >= TaskbarSystem.MaxTaskbarItems)
-                return;
-
-            Shortcuts[slotLevelIndex][shortcut.SlotIndex] = shortcut;
-        }
-
-        public void RemoveShortcut(int slotLevelIndex, int slotIndex)
-        {
-            if (slotLevelIndex < 0 || slotLevelIndex >= TaskbarSystem.MaxTaskbarItemLevels)
-                return;
-
-            if (slotIndex < 0 || slotIndex >= TaskbarSystem.MaxTaskbarItems)
-                return;
-
-            Shortcuts[slotLevelIndex][slotIndex] = null;
-        }
-
-        public int Count => Shortcuts.Sum(x => x.Count(y => y != null && y.Type != ShortcutType.None));
-
-        public void Serialize(INetPacketStream packet)
+        /// <inheritdoc />
+        public override void Serialize(INetPacketStream packet)
         {
             packet.Write(Count);
-            for(int level = 0; level < TaskbarSystem.MaxTaskbarItemLevels; level++)
+
+            for (int level = 0; level < MaxCapacity; level++)
             {
-                for(int slot = 0; slot < TaskbarSystem.MaxTaskbarItems; slot++)
+                for (int slot = 0; slot < MaxLevelCapacity; slot++)
                 {
-                    if(Shortcuts[level][slot] != null && Shortcuts[level][slot].Type != ShortcutType.None)
+                    if (Objects[level][slot] != null && Objects[level][slot].Type != ShortcutType.None)
                     {
                         packet.Write(level);
-                        Shortcuts[level][slot].Serialize(packet);
-                    }                    
+                        Objects[level][slot].Serialize(packet);
+                    }
                 }
             }
         }

@@ -1,68 +1,56 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Database;
-using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.PlayerData.EventArgs;
-using System.Linq;
+using System;
 
 namespace Rhisis.World.Systems.PlayerData
 {
-    [System(SystemType.Notifiable)]
-    public class PlayerDataSystem : ISystem
+    [Injectable]
+    public sealed class PlayerDataSystem : IPlayerDataSystem
     {
-        private static readonly ILogger Logger = DependencyContainer.Instance.Resolve<ILogger<PlayerDataSystem>>();
+        private readonly IMoverPacketFactory _moverPacketFactory;
+        private readonly ITextPacketFactory _textPacketFactory;
 
-        public WorldEntityType Type => WorldEntityType.Player;
-
-        public void Execute(IEntity entity, SystemEventArgs e)
+        /// <summary>
+        /// Creates a new <see cref="PlayerDataSystem"/> instance.
+        /// </summary>
+        /// <param name="moverPacketFactory">Mover packet factory.</param>
+        /// <param name="textPacketFactory">Text packet factory.</param>
+        public PlayerDataSystem(IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory)
         {
-            if (!(entity is IPlayerEntity playerEntity))
-                return;
-
-            if (!e.CheckArguments())
-            {
-                Logger.LogError($"Cannot execute player data action {e.GetType()} due to invalid arguments.");
-                return;
-            }
-
-            switch (e)
-            {
-                case QueryPlayerDataEventArgs queryPlayerDataEvent:
-                    GetPlayerData(playerEntity, queryPlayerDataEvent);
-                    break;
-                case QueryPlayerData2EventArgs queryPlayerData2Event:
-                    GetPlayerData(playerEntity, queryPlayerData2Event);
-                    break;
-            }
+            _moverPacketFactory = moverPacketFactory;
+            _textPacketFactory = textPacketFactory;
         }
 
-        private void GetPlayerData(IPlayerEntity player, QueryPlayerDataEventArgs e, bool send = true)
+        /// <inheritdoc />
+        public bool IncreaseGold(IPlayerEntity player, int goldAmount)
         {
-            var worldServer = DependencyContainer.Instance.Resolve<IWorldServer>();
-            var playerEntity = worldServer.GetPlayerEntityByCharacterId(e.PlayerId);
+            // We cast player gold to long because otherwise it would use Int32 arithmetic and would overflow
+            long gold = (long)player.PlayerData.Gold + goldAmount;
 
-            // Player is offline
-            if (playerEntity is null)
+            if (gold > int.MaxValue || gold < 0) // Check gold overflow
             {
-                var database = DependencyContainer.Instance.Resolve<IDatabase>();
-                var character = database.Characters.Get(x => x.Id == e.PlayerId);
-                WorldPacketFactory.SendPlayerData(player, e.PlayerId, character.Name, (byte)character.ClassId, (byte)character.Level, character.Gender, PlayerDataComponent.StartVersion, false, send);
+                _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_TOOMANYMONEY_USE_PERIN);
+                return false;
             }
-            else // Player is online
-                WorldPacketFactory.SendPlayerData(player, e.PlayerId, playerEntity.Object.Name, (byte)playerEntity.PlayerData.JobId, (byte)playerEntity.Object.Level, playerEntity.VisualAppearance.Gender, playerEntity.PlayerData.Version, true, send);
+            else
+            {
+                player.PlayerData.Gold = (int)gold;
+                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+            }
+
+            return true;
         }
 
-        private void GetPlayerData(IPlayerEntity player, QueryPlayerData2EventArgs e)
+        /// <inheritdoc />
+        public bool DecreaseGold(IPlayerEntity player, int goldAmount)
         {
-            for (int i = 0; i < e.Size; i++)
-            {
-                var args = new QueryPlayerDataEventArgs(e.PlayerDictionary.Keys.ElementAt(i), e.PlayerDictionary.Values.ElementAt(i));
-                GetPlayerData(player, args, i == e.Size - 1);
-            }
+            player.PlayerData.Gold = Math.Max(player.PlayerData.Gold - goldAmount, 0);
+
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+
+            return true;
         }
     }
 }

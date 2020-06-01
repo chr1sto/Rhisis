@@ -1,9 +1,7 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
-using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Loaders;
+using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using System.Collections.Generic;
 
@@ -59,6 +57,11 @@ namespace Rhisis.World.Game.Components
         public bool Spawned { get; set; }
 
         /// <summary>
+        /// Gets or sets if the mob can respawn.
+        /// </summary>
+        public bool AbleRespawn { get; set; }
+
+        /// <summary>
         /// Gets or sets the object's level.
         /// </summary>
         public int Level { get; set; }
@@ -66,17 +69,17 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets the list of the visible entities around.
         /// </summary>
-        public IList<IEntity> Entities { get; }
+        public IList<IWorldEntity> Entities { get; }
 
         /// <summary>
         /// Gets the current map instance.
         /// </summary>
-        public IMapInstance CurrentMap => DependencyContainer.Instance.Resolve<MapLoader>().GetMapById(this.MapId); // TODO: find better implementation
+        public IMapInstance CurrentMap { get; set; }
 
         /// <summary>
         /// Gets the current map layer.
         /// </summary>
-        public IMapLayer CurrentLayer => this.CurrentMap?.GetMapLayer(this.LayerId);
+        public IMapLayer CurrentLayer => CurrentMap?.GetMapLayer(LayerId);
 
         /// <summary>
         /// Gets or sets the moving flags.
@@ -89,20 +92,25 @@ namespace Rhisis.World.Game.Components
         public StateFlags MotionFlags { get; set; }
 
         /// <summary>
+        /// Gets or sets the object state mode.
+        /// </summary>
+        public StateMode StateMode { get; set; }
+
+        /// <summary>
         /// Creates and initializes a new <see cref="ObjectComponent"/>.
         /// </summary>
         public ObjectComponent()
         {
-            this.Position = new Vector3();
-            this.Entities = new List<IEntity>();
-            this.Size = DefaultObjectSize;
-            this.MovingFlags = ObjectState.OBJSTA_STAND;
+            Position = new Vector3();
+            Entities = new List<IWorldEntity>();
+            Size = DefaultObjectSize;
+            MovingFlags = ObjectState.OBJSTA_STAND;
         }
 
         /// <summary>
         /// To String
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $"Object: {this.Name}";
+        public override string ToString() => $"Object: {Name}";
     }
 }

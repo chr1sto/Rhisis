@@ -3,22 +3,16 @@ using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.IO;
-using Rhisis.World.Game.Core;
-using Rhisis.World.Game.Core.Systems;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Recovery.EventArgs;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.World.Systems.Recovery
 {
     /// <summary>
     /// Game system that manages all recoveries. HP, MP, FP, etc...
     /// </summary>
-    [System(SystemType.Notifiable)]
-    public sealed class RecoverySystem : ISystem
+    [Injectable]
+    public sealed class RecoverySystem : IRecoverySystem
     {
         /// <summary>
         /// Gets the number of seconds for next idle heal when the player is sitted.
@@ -31,79 +25,57 @@ namespace Rhisis.World.Systems.Recovery
         public const int NextIdleHealStand = 3;
 
         private readonly ILogger<RecoverySystem> _logger;
+        private readonly IMoverPacketFactory _moverPacketFactory;
 
-        /// <inheritdoc />
-        public WorldEntityType Type => WorldEntityType.Player;
-        
         /// <summary>
         /// Creates a new <see cref="RecoverySystem"/> instance.
         /// </summary>
-        public RecoverySystem()
+        /// <param name="logger">Logger.</param>
+        /// <param name="moverPacketFactory">Mover packet factory.</param>
+        public RecoverySystem(ILogger<RecoverySystem> logger, IMoverPacketFactory moverPacketFactory)
         {
-            this._logger = DependencyContainer.Instance.Resolve<ILogger<RecoverySystem>>();
+            _logger = logger;
+            _moverPacketFactory = moverPacketFactory;
         }
 
         /// <inheritdoc />
-        public void Execute(IEntity entity, SystemEventArgs args)
+        public void IdleRecevory(IPlayerEntity player, bool isSitted = false)
         {
-            if (!(entity is IPlayerEntity player))
-            {
-                this._logger.LogError($"Cannot execute Recovery System. {entity.Object.Name} is not a player.");
-                return;
-            }
-
-            if (!args.CheckArguments())
-            {
-                this._logger.LogError($"Cannot execute Recovery System action: {args.GetType()} due to invalid arguments.");
-                return;
-            }
-
-            switch (args)
-            {
-                case IdleRecoveryEventArgs e:
-                    this.IdleHeal(player, e);
-                    break;
-                default:
-                    this._logger.LogWarning($"Unknown recovery system action type: {args.GetType()} for player {entity.Object.Name}");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Process the idle heal.
-        /// </summary>
-        /// <param name="player">Player entity.</param>
-        /// <param name="e">Idle recovery event args.</param>
-        private void IdleHeal(IPlayerEntity player, IdleRecoveryEventArgs e)
-        {
-            int nextHealDelay = e.IsSitted ? NextIdleHealSit : NextIdleHealStand;
+            int nextHealDelay = isSitted ? NextIdleHealSit : NextIdleHealStand;
 
             player.Timers.NextHealTime = Time.TimeInSeconds() + nextHealDelay;
 
-            if (player.Health.IsDead)
+            if (player.IsDead)
+            {
                 return;
+            }
 
-            int maxHp = HealthFormulas.GetMaxOriginHp(player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.MaxHpFactor);
-            int maxMp = HealthFormulas.GetMaxOriginMp(player.Object.Level, player.Statistics.Intelligence, player.PlayerData.JobData.MaxMpFactor, true);
-            int maxFp = HealthFormulas.GetMaxOriginFp(player.Object.Level, player.Statistics.Stamina, player.Statistics.Dexterity, player.Statistics.Strength, player.PlayerData.JobData.MaxFpFactor, true);
-            int recoveryHp = HealthFormulas.GetHpRecovery(maxHp, player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.HpRecoveryFactor);
-            int recoveryMp = HealthFormulas.GetMpRecovery(maxMp, player.Object.Level, player.Statistics.Intelligence, player.PlayerData.JobData.MpRecoveryFactor);
-            int recoveryFp = HealthFormulas.GetFpRecovery(maxFp, player.Object.Level, player.Statistics.Stamina, player.PlayerData.JobData.FpRecoveryFactor);
+            int strength = player.Attributes[DefineAttributes.STR];
+            int stamina = player.Attributes[DefineAttributes.STA];
+            int dexterity = player.Attributes[DefineAttributes.DEX];
+            int intelligence = player.Attributes[DefineAttributes.INT];
 
-            player.Health.Hp += recoveryHp;
-            player.Health.Mp += recoveryMp;
-            player.Health.Fp += recoveryFp;
+            int maxHp = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);
+            int maxMp = HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, player.PlayerData.JobData.MaxMpFactor, true);
+            int maxFp = HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, player.PlayerData.JobData.MaxFpFactor, true);
+            int recoveryHp = HealthFormulas.GetHpRecovery(maxHp, player.Object.Level, stamina, player.PlayerData.JobData.HpRecoveryFactor);
+            int recoveryMp = HealthFormulas.GetMpRecovery(maxMp, player.Object.Level, intelligence, player.PlayerData.JobData.MpRecoveryFactor);
+            int recoveryFp = HealthFormulas.GetFpRecovery(maxFp, player.Object.Level, stamina, player.PlayerData.JobData.FpRecoveryFactor);
 
-            if (player.Health.Hp > maxHp)
-                player.Health.Hp = maxHp;
-            if (player.Health.Mp > maxMp)
-                player.Health.Mp = maxMp;
-            if (player.Health.Fp > maxFp)
-                player.Health.Fp = maxFp;
+            player.Attributes[DefineAttributes.HP] += recoveryHp;
+            player.Attributes[DefineAttributes.MP] += recoveryMp;
+            player.Attributes[DefineAttributes.FP] += recoveryFp;
 
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Health.Hp);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Health.Mp);
-            WorldPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Health.Fp);
+            if (player.Attributes[DefineAttributes.HP] > maxHp)
+                player.Attributes[DefineAttributes.HP] = maxHp;
+            if (player.Attributes[DefineAttributes.MP] > maxMp)
+                player.Attributes[DefineAttributes.MP] = maxMp;
+            if (player.Attributes[DefineAttributes.FP] > maxFp)
+                player.Attributes[DefineAttributes.FP] = maxFp;
+
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
+            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
         }
     }
 }
