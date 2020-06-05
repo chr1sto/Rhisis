@@ -1,7 +1,7 @@
-﻿using Rhisis.Core.Common.Game.Structures;
-using Rhisis.Network.Packets;
+﻿using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World.Taskbar;
 using Rhisis.World.Client;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems.Taskbar;
 using Sylver.HandlerInvoker.Attributes;
 
@@ -32,9 +32,11 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.ADDAPPLETTASKBAR)]
         public void OnAddTaskbarApplet(IWorldServerClient serverClient, AddTaskbarAppletPacket packet)
         {
-            var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, packet.ObjectId, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
+            int? shortcutItemIndex = packet.Type != Core.Common.ShortcutType.Item && packet.ObjectId == 0 ? null : (int?)packet.ObjectId;
 
-            _taskbarSystem.AddApplet(serverClient.Player, shortcutToAdd);
+            var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, shortcutItemIndex, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
+
+            _taskbarSystem.AddShortcutToAppletTaskbar(serverClient.Player, shortcutToAdd);
         }
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.REMOVEAPPLETTASKBAR)]
         public void OnRemoveTaskbarApplet(IWorldServerClient serverClient, RemoveTaskbarAppletPacket packet)
         {
-            _taskbarSystem.RemoveApplet(serverClient.Player, packet.SlotIndex);
+            _taskbarSystem.RemoveShortcutFromAppletTaskbar(serverClient.Player, packet.SlotIndex);
         }
 
         /// <summary>
@@ -56,9 +58,11 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.ADDITEMTASKBAR)]
         public void OnAddTaskbarItem(IWorldServerClient serverClient, AddTaskbarItemPacket packet)
         {
-            var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, packet.ObjectId, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
+            int? shortcutItemIndex = packet.Type != Core.Common.ShortcutType.Item && packet.ObjectId == 0 ? null : (int?)packet.ObjectId;
 
-            _taskbarSystem.AddItem(serverClient.Player, shortcutToAdd, packet.SlotLevelIndex);
+            var shortcutToAdd = new Shortcut(packet.SlotIndex, packet.Type, shortcutItemIndex, packet.ObjectType, packet.ObjectIndex, packet.UserId, packet.ObjectData, packet.Text);
+
+            _taskbarSystem.AddShortcutToItemTaskbar(serverClient.Player, shortcutToAdd, packet.SlotLevelIndex);
         }
 
         /// <summary>
@@ -69,7 +73,7 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.REMOVEITEMTASKBAR)]
         public void OnRemoveTaskbarItem(IWorldServerClient serverClient, RemoveTaskbarItemPacket packet)
         {
-            _taskbarSystem.RemoveItem(serverClient.Player, packet.SlotLevelIndex, packet.SlotIndex);
+            _taskbarSystem.RemoveShortcutFromItemTaskbar(serverClient.Player, packet.SlotLevelIndex, packet.SlotIndex);
         }
     }
 }

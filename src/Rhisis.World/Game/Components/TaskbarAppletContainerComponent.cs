@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Common.Game.Structures;
+using Rhisis.World.Game.Structures;
 using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;

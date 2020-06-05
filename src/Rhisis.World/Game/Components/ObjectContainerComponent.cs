@@ -47,7 +47,9 @@ namespace Rhisis.World.Game.Components
         public virtual bool IsSlotAvailable(int slotIndex)
         {
             if (slotIndex < 0 || slotIndex >= MaxCapacity)
+            {
                 return false;
+            }
 
             return Objects[slotIndex] == null;
         }

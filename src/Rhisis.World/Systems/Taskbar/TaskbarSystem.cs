@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
-using Rhisis.Core.Common.Game.Structures;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,24 +53,27 @@ namespace Rhisis.World.Systems.Taskbar
 
                 if (dbShortcut.Type == ShortcutType.Item)
                 {
-                    var item = player.Inventory.GetItem(x => x.Slot == dbShortcut.ObjectId);
+                    Item item = player.Inventory.GetItemAtSlot(dbShortcut.ObjectItemSlot.GetValueOrDefault(-1));
+                    
                     if (item is null)
+                    {
                         return;
+                    }
 
-                    shortcut = new Shortcut(dbShortcut.SlotIndex, dbShortcut.Type, (uint)item.Index, dbShortcut.ObjectType, dbShortcut.ObjectIndex, dbShortcut.UserId, dbShortcut.ObjectData, dbShortcut.Text);
+                    shortcut = new Shortcut(dbShortcut.Slot, dbShortcut.Type, item.Index, dbShortcut.ObjectType, dbShortcut.ObjectIndex, dbShortcut.UserId, dbShortcut.ObjectData, dbShortcut.Text);
                 }
                 else
                 {
-                    shortcut = new Shortcut(dbShortcut.SlotIndex, dbShortcut.Type, dbShortcut.ObjectId, dbShortcut.ObjectType, dbShortcut.ObjectIndex, dbShortcut.UserId, dbShortcut.ObjectData, dbShortcut.Text);
+                    shortcut = new Shortcut(dbShortcut.Slot, dbShortcut.Type, dbShortcut.ObjectItemSlot, dbShortcut.ObjectType, dbShortcut.ObjectIndex, dbShortcut.UserId, dbShortcut.ObjectData, dbShortcut.Text);
                 }
 
                 if (dbShortcut.TargetTaskbar == ShortcutTaskbarTarget.Applet)
                 {
-                    AddApplet(player, shortcut);
+                    AddShortcutToAppletTaskbar(player, shortcut);
                 }
                 else if (dbShortcut.TargetTaskbar == ShortcutTaskbarTarget.Item)
                 {
-                    AddItem(player, shortcut, dbShortcut.SlotLevelIndex.GetValueOrDefault(int.MaxValue));
+                    AddShortcutToItemTaskbar(player, shortcut, dbShortcut.SlotLevelIndex);
                 }
             }
         }
@@ -78,28 +81,46 @@ namespace Rhisis.World.Systems.Taskbar
         /// <inheritdoc />
         public void Save(IPlayerEntity player)
         {
-            DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == player.PlayerData.Id);
+            DbCharacter character = _database.Characters
+                .Include(x => x.TaskbarShortcuts)
+                .FirstOrDefault(x => x.Id == player.PlayerData.Id);
 
             character.TaskbarShortcuts.Clear();
 
-            foreach (var applet in player.Taskbar.Applets.Objects)
+            _database.SaveChanges();
+
+            foreach (Shortcut appletShortcut in player.Taskbar.Applets.Objects)
             {
-                if (applet == null)
-                    continue;
-
-                var dbApplet = new DbShortcut(ShortcutTaskbarTarget.Applet, applet.SlotIndex, applet.Type,
-                    applet.ObjectId, applet.ObjectType, applet.ObjectIndex, applet.UserId, applet.ObjectData, applet.Text);
-
-                if (applet.Type == ShortcutType.Item)
+                if (appletShortcut == null)
                 {
-                    var item = player.Inventory.GetItemAtIndex((int)applet.ObjectId);
-                    if (item is null)
-                        continue;
-
-                    dbApplet.ObjectId = (uint)item.Slot;
+                    continue;
                 }
 
-                character.TaskbarShortcuts.Add(dbApplet);
+                var dbApplet = new DbShortcut(ShortcutTaskbarTarget.Applet, 
+                    appletShortcut.Slot, 
+                    appletShortcut.Type,
+                    appletShortcut.ItemIndex, 
+                    appletShortcut.ObjectType, 
+                    appletShortcut.ObjectIndex, 
+                    appletShortcut.UserId, 
+                    appletShortcut.ObjectData, 
+                    appletShortcut.Text);
+
+                dbApplet.CharacterId = character.Id;
+
+                if (appletShortcut.Type == ShortcutType.Item && appletShortcut.ItemIndex.HasValue)
+                {
+                    Item inventoryItem = player.Inventory.GetItemAtIndex(appletShortcut.ItemIndex.Value);
+                    
+                    if (inventoryItem is null)
+                    {
+                        continue;
+                    }
+
+                    dbApplet.ObjectItemSlot = inventoryItem.Slot;
+                }
+
+                _database.TaskbarShortcuts.Add(dbApplet);
             }
 
 
@@ -107,73 +128,76 @@ namespace Rhisis.World.Systems.Taskbar
             {
                 for (int slot = 0; slot < player.Taskbar.Items.Objects[slotLevel].Count; slot++)
                 {
-                    var itemShortcut = player.Taskbar.Items.Objects[slotLevel][slot];
+                    Shortcut itemShortcut = player.Taskbar.Items.Objects[slotLevel][slot];
+                    
                     if (itemShortcut == null)
-                        continue;
-
-                    var dbItem = new DbShortcut(ShortcutTaskbarTarget.Item, slotLevel, itemShortcut.SlotIndex,
-                        itemShortcut.Type, itemShortcut.ObjectId, itemShortcut.ObjectType, itemShortcut.ObjectIndex,
-                        itemShortcut.UserId, itemShortcut.ObjectData, itemShortcut.Text);
-
-                    if (itemShortcut.Type == ShortcutType.Item)
                     {
-                        var item = player.Inventory.GetItemAtIndex((int)itemShortcut.ObjectId);
-                        if (item is null)
-                            continue;
-
-                        dbItem.ObjectId = (uint)item.Slot;
+                        continue;
                     }
 
-                    character.TaskbarShortcuts.Add(dbItem);
+                    var dbShortcut = new DbShortcut(ShortcutTaskbarTarget.Item, slotLevel, itemShortcut.Slot,
+                        itemShortcut.Type, itemShortcut.ItemIndex, itemShortcut.ObjectType, itemShortcut.ObjectIndex,
+                        itemShortcut.UserId, itemShortcut.ObjectData, itemShortcut.Text);
+
+                    dbShortcut.CharacterId = character.Id;
+
+                    if (itemShortcut.Type == ShortcutType.Item && itemShortcut.ItemIndex.HasValue)
+                    {
+                        Item item = player.Inventory.GetItemAtIndex(itemShortcut.ItemIndex.Value);
+                        
+                        if (item is null)
+                        {
+                            continue;
+                        }
+
+                        dbShortcut.ObjectItemSlot = item.Slot;
+                    }
+
+                    _database.TaskbarShortcuts.Add(dbShortcut);
                 }
-            }
-
-            foreach (var queueItem in player.Taskbar.Queue.Shortcuts)
-            {
-                if (queueItem == null)
-                    continue;
-
-                character.TaskbarShortcuts.Add(new DbShortcut(ShortcutTaskbarTarget.Queue, queueItem.SlotIndex,
-                    queueItem.Type, queueItem.ObjectId, queueItem.ObjectType, queueItem.ObjectIndex, queueItem.UserId,
-                    queueItem.ObjectData, queueItem.Text));
             }
 
             _database.SaveChanges();
         }
 
         /// <inheritdoc />
-        public void AddApplet(IPlayerEntity player, Shortcut shortcutToAdd)
+        public void AddShortcutToAppletTaskbar(IPlayerEntity player, Shortcut shortcutToAdd)
         {
-            if (shortcutToAdd.SlotIndex < 0 || shortcutToAdd.SlotIndex >= MaxTaskbarApplets)
+            if (shortcutToAdd.Slot < 0 || shortcutToAdd.Slot >= MaxTaskbarApplets)
+            {
                 return;
+            }
 
-            if (player.Taskbar.Applets.Objects[shortcutToAdd.SlotIndex] != null)
-                return;
+            player.Taskbar.Applets.Objects[shortcutToAdd.Slot] = shortcutToAdd;
 
-            player.Taskbar.Applets.Objects[shortcutToAdd.SlotIndex] = shortcutToAdd;
-
-            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Applet Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.SlotIndex, player.Object.Name);
+            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Applet Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.Slot, player.Object.Name);
         }
 
         /// <inheritdoc />
-        public void AddItem(IPlayerEntity player, Shortcut shortcutToAdd, int slotLevelIndex)
+        public void AddShortcutToItemTaskbar(IPlayerEntity player, Shortcut shortcutToAdd, int slotLevelIndex)
         {
             if (slotLevelIndex < 0 || slotLevelIndex >= MaxTaskbarItemLevels)
+            {
                 return;
+            }
 
-            if (shortcutToAdd.SlotIndex < 0 || shortcutToAdd.SlotIndex >= MaxTaskbarItems)
+            if (shortcutToAdd.Slot < 0 || shortcutToAdd.Slot >= MaxTaskbarItems)
+            {
                 return;
+            }
 
-            player.Taskbar.Items.Objects[slotLevelIndex][shortcutToAdd.SlotIndex] = shortcutToAdd;
+            player.Taskbar.Items.Objects[slotLevelIndex][shortcutToAdd.Slot] = shortcutToAdd;
 
-            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Item Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.SlotIndex, player.Object.Name);
+            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Item Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.Slot, player.Object.Name);
         }
 
         /// <inheritdoc />
-        public void RemoveApplet(IPlayerEntity player, int slotIndex)
+        public void RemoveShortcutFromAppletTaskbar(IPlayerEntity player, int slotIndex)
         {
             if (slotIndex < 0 || slotIndex >= MaxTaskbarApplets)
+            {
                 return;
+            }
 
             player.Taskbar.Applets.Objects[slotIndex] = null;
 
@@ -181,13 +205,17 @@ namespace Rhisis.World.Systems.Taskbar
         }
 
         /// <inheritdoc />
-        public void RemoveItem(IPlayerEntity player, int slotLevelIndex, int slotIndex)
+        public void RemoveShortcutFromItemTaskbar(IPlayerEntity player, int slotLevelIndex, int slotIndex)
         {
             if (slotLevelIndex < 0 || slotLevelIndex >= MaxTaskbarItemLevels)
+            {
                 return;
+            }
 
             if (slotIndex < 0 || slotIndex >= MaxTaskbarItems)
+            {
                 return;
+            }
 
             player.Taskbar.Items.Objects[slotLevelIndex][slotIndex] = null;
 

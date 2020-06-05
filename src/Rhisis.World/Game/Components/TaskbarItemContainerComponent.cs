@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Common.Game.Structures;
+using Rhisis.World.Game.Structures;
 using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +30,9 @@ namespace Rhisis.World.Game.Components
             Objects = new List<List<Shortcut>>(new List<Shortcut>[maxCapacity]);
 
             for (int i = 0; i < Objects.Count; i++)
+            {
                 Objects[i] = new List<Shortcut>(new Shortcut[maxLevelCapacity]);
+            }
         }
 
         /// <inheritdoc />

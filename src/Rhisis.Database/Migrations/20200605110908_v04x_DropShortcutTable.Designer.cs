@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rhisis.Database;
 
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(RhisisDatabaseContext))]
-    partial class RhisisDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20200605110908_v04x_DropShortcutTable")]
+    partial class v04x_DropShortcutTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,50 +263,6 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("quests");
                 });
 
-            modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
-                {
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("int");
-
-                    b.Property<sbyte>("Slot")
-                        .HasColumnType("TINYINT");
-
-                    b.Property<short>("SlotLevelIndex")
-                        .HasColumnType("SMALLINT");
-
-                    b.Property<short>("ObjectData")
-                        .HasColumnType("SMALLINT");
-
-                    b.Property<sbyte>("ObjectIndex")
-                        .HasColumnType("TINYINT");
-
-                    b.Property<short?>("ObjectItemSlot")
-                        .HasColumnType("SMALLINT");
-
-                    b.Property<sbyte>("ObjectType")
-                        .HasColumnType("TINYINT");
-
-                    b.Property<sbyte>("TargetTaskbar")
-                        .HasColumnType("TINYINT");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<sbyte>("Type")
-                        .HasColumnType("TINYINT");
-
-                    b.Property<short>("UserId")
-                        .HasColumnType("SMALLINT");
-
-                    b.HasKey("CharacterId", "Slot", "SlotLevelIndex");
-
-                    b.HasIndex("CharacterId", "Slot", "SlotLevelIndex")
-                        .IsUnique();
-
-                    b.ToTable("shortcuts");
-                });
-
             modelBuilder.Entity("Rhisis.Database.Entities.DbSkill", b =>
                 {
                     b.Property<int>("Id")
@@ -414,15 +372,6 @@ namespace Rhisis.Database.Migrations
                         .WithMany()
                         .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Rhisis.Database.Entities.DbShortcut", b =>
-                {
-                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
-                        .WithMany("TaskbarShortcuts")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
