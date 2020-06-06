@@ -37,42 +37,17 @@ namespace Rhisis.World.Systems.Death
         }
 
         /// <inheritdoc />
-        public void ResurectLodelight(IPlayerEntity player)
+        public void ResurectToLodelight(IPlayerEntity player)
         {
-            IMapRevivalRegion revivalRegion = player.Object.CurrentMap.GetNearRevivalRegion(player.Object.Position);
+            IMapRevivalRegion revivalRegion = GetNearestRevivalRegion(player);
 
             if (revivalRegion == null)
             {
-                _logger.LogError($"Cannot find any revival region for map '{player.Object.CurrentMap.Name}'.");
                 return;
             }
 
-            decimal recoveryRate = _gameResources.Penalities.GetRevivalPenality(player.Object.Level) / 100;
-            var jobData = player.PlayerData.JobData;
-
-            int strength = player.Attributes[DefineAttributes.STR];
-            int stamina = player.Attributes[DefineAttributes.STA];
-            int dexterity = player.Attributes[DefineAttributes.DEX];
-            int intelligence = player.Attributes[DefineAttributes.INT];
-
-            player.Attributes[DefineAttributes.HP] = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, jobData.MaxHpFactor) * recoveryRate);
-            player.Attributes[DefineAttributes.MP] = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, jobData.MaxMpFactor, true) * recoveryRate);
-            player.Attributes[DefineAttributes.FP] = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, jobData.MaxFpFactor, true) * recoveryRate);
-
-            if (player.Object.MapId != revivalRegion.MapId)
-            {
-                IMapInstance revivalMap = _mapManager.GetMap(revivalRegion.MapId);
-
-                if (revivalMap == null)
-                {
-                    _logger.LogError($"Cannot find revival map with id '{revivalRegion.MapId}'.");
-                    // TODO: disconnect client
-                    //player.Connection.Server.DisconnectClient(player.Connection.Id);
-                    return;
-                }
-
-                revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
-            }
+            ApplyRevivalHealthPenality(player);
+            ApplyDeathPenality(player);
 
             _teleportSystem.Teleport(player, revivalRegion.MapId, revivalRegion.RevivalPosition.X, null, revivalRegion.RevivalPosition.Z);
 
@@ -81,22 +56,19 @@ namespace Rhisis.World.Systems.Death
             _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
             _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
             _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
-
-            ProcessDeathPenality(player);
         }
 
-        /// <summary>
-        /// Applies death penality if enabled.
-        /// </summary>
-        /// <param name="player">Death player entity.</param>
-        private void ProcessDeathPenality(IPlayerEntity player)
+        /// <inheritdoc />
+        public void ApplyDeathPenality(IPlayerEntity player, bool sendToPlayer = true)
         {
             if (_worldConfiguration.Death.DeathPenalityEnabled)
             {
                 decimal expLossPercent = _gameResources.Penalities.GetDecExpPenality(player.Object.Level);
 
                 if (expLossPercent <= 0)
+                {
                     return;
+                }
 
                 player.PlayerData.Experience -= player.PlayerData.Experience * (long)(expLossPercent / 100m);
                 player.PlayerData.DeathLevel = player.Object.Level;
@@ -116,8 +88,55 @@ namespace Rhisis.World.Systems.Death
                     }
                 }
 
-                _playerPacketFactory.SendPlayerExperience(player);
+                if (sendToPlayer)
+                {
+                    _playerPacketFactory.SendPlayerExperience(player);
+                }
             }
+        }
+
+        public void ApplyRevivalHealthPenality(IPlayerEntity player)
+        {
+            decimal recoveryRate = _gameResources.Penalities.GetRevivalPenality(player.Object.Level) / 100;
+            var jobData = player.PlayerData.JobData;
+
+            int strength = player.Attributes[DefineAttributes.STR];
+            int stamina = player.Attributes[DefineAttributes.STA];
+            int dexterity = player.Attributes[DefineAttributes.DEX];
+            int intelligence = player.Attributes[DefineAttributes.INT];
+
+            player.Attributes[DefineAttributes.HP] = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, jobData.MaxHpFactor) * recoveryRate);
+            player.Attributes[DefineAttributes.MP] = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, jobData.MaxMpFactor, true) * recoveryRate);
+            player.Attributes[DefineAttributes.FP] = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, jobData.MaxFpFactor, true) * recoveryRate);
+
+        }
+
+        public IMapRevivalRegion GetNearestRevivalRegion(IPlayerEntity player)
+        {
+            IMapRevivalRegion revivalRegion = player.Object.CurrentMap.GetNearRevivalRegion(player.Object.Position);
+
+            if (revivalRegion == null)
+            {
+                _logger.LogError($"Cannot find any revival region for map '{player.Object.CurrentMap.Name}'.");
+                return null;
+            }
+
+            if (player.Object.MapId != revivalRegion.MapId)
+            {
+                IMapInstance revivalMap = _mapManager.GetMap(revivalRegion.MapId);
+
+                if (revivalMap == null)
+                {
+                    _logger.LogError($"Cannot find revival map with id '{revivalRegion.MapId}'.");
+                    // TODO: disconnect client
+                    //player.Connection.Server.DisconnectClient(player.Connection.Id);
+                    return null;
+                }
+
+                revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
+            }
+
+            return revivalRegion;
         }
     }
 }

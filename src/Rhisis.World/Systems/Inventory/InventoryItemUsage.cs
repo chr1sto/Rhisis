@@ -154,7 +154,8 @@ namespace Rhisis.World.Systems.Inventory
 
             player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(blinkwing.Data.SkillReadyType), () =>
             {
-                _teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ, teleportEvent.Angle);
+                player.Object.Angle = teleportEvent.Angle;
+                _teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ);
                 _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
                 DecreaseItem(player, blinkwing);
