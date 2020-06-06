@@ -39,7 +39,7 @@ namespace Rhisis.World.Game.Chat
                     throw new ArgumentException($"The player doesn't exist or is not connected.", nameof(parameters));
                 }
                 
-                _teleportSystem.Teleport(playerToSummon, player.Object.MapId, player.Object.Position.X, player.Object.Position.Y, player.Object.Position.Z, player.Object.Angle);
+                _teleportSystem.Teleport(playerToSummon, player.Object.MapId, player.Object.Position.X, player.Object.Position.Y, player.Object.Position.Z);
                 _logger.LogTrace($"{playerToSummon.Object.Name} is summoned by {player.Object.Name}.");
             }
             else 

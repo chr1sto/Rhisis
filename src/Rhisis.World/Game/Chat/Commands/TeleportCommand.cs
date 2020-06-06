@@ -51,7 +51,7 @@ namespace Rhisis.World.Game.Chat
                 default: throw new ArgumentException("Too many or not enough arguments.");
             }
 
-            _teleportSystem.Teleport(player, destinationMapId, destinationPosition.X, destinationPosition.Y, destinationPosition.Z, player.Object.Angle);
+            _teleportSystem.Teleport(player, destinationMapId, destinationPosition.X, destinationPosition.Y, destinationPosition.Z);
         }
     }
 }

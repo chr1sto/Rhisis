@@ -141,7 +141,7 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            _deathSystem.ResurectLodelight(serverClient.Player);
+            _deathSystem.ResurectToLodelight(serverClient.Player);
         }
     }
 }

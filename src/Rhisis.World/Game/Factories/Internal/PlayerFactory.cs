@@ -136,8 +136,6 @@ namespace Rhisis.World.Game.Factories.Internal
                 service.Initialize(player);
             }
 
-            mapLayer.AddEntity(player);
-
             return player;
         }
 

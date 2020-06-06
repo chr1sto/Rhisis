@@ -39,7 +39,7 @@ namespace Rhisis.World.Systems.Teleport
         }
 
         /// <inheritdoc />
-        public void Teleport(IPlayerEntity player, int mapId, float x, float? y, float z, float angle = 0)
+        public void Teleport(IPlayerEntity player, int mapId, float x, float? y, float z)
         {
             if (player.Object.MapId != mapId)
             {
@@ -60,17 +60,8 @@ namespace Rhisis.World.Systems.Teleport
 
                 _visibilitySystem.DespawnEntity(player);
                 player.Object.Spawned = false;
-                player.Object.CurrentMap = _mapManager.GetMap(destinationMap.Id);
-                player.Object.MapId = destinationMap.Id;
-                player.Object.LayerId = destinationMap.DefaultMapLayer.Id;
 
-                // TODO: get map height at x/z position
-                float positionY = y ?? 100;
-                player.Object.Position = new Vector3(x, positionY, z);
-                player.Object.MovingFlags = ObjectState.OBJSTA_STAND;
-                player.Moves.DestinationPosition.Reset();
-                player.Battle.Reset();
-                player.Follow.Reset();
+                ChangePosition(player, destinationMap, x, y, z);
 
                 _playerPacketFactory.SendPlayerReplace(player);
                 _worldSpawnPacketFactory.SendPlayerSpawn(player);
@@ -84,16 +75,37 @@ namespace Rhisis.World.Systems.Teleport
                     return;
                 }
 
-                // TODO: get map height at x/z position
-                float positionY = y ?? 100;
-                player.Object.Position = new Vector3(x, positionY, z);
-                player.Object.MovingFlags = ObjectState.OBJSTA_STAND;
-                player.Moves.DestinationPosition.Reset();
-                player.Battle.Reset();
-                player.Follow.Reset();
+                ChangePosition(player, player.Object.CurrentMap, x, y, z);
             }
+            
+            player.Moves.DestinationPosition.Reset();
+            player.Battle.Reset();
+            player.Follow.Reset();
 
             _playerPacketFactory.SendPlayerTeleport(player);
+        }
+
+        /// <inheritdoc />
+        public void ChangePosition(IPlayerEntity player, IMapInstance map, float x, float? y, float z)
+        {
+            if (map == null)
+            {
+                _logger.LogError($"Cannot change player position. Map is null.");
+                return;
+            }
+
+            if (player.Object.MapId != map.Id)
+            {
+                player.Object.CurrentMap = map;
+                player.Object.MapId = map.Id;
+                player.Object.LayerId = map.DefaultMapLayer.Id;
+            }
+
+            // TODO: get map height at x/z position
+            float positionY = y.GetValueOrDefault(100);
+
+            player.Object.Position = new Vector3(x, positionY, z);
+            player.Object.MovingFlags = ObjectState.OBJSTA_STAND;
         }
     }
 }

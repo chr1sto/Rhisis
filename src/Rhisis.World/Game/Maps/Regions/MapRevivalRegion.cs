@@ -1,8 +1,10 @@
 ﻿using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
+using System.Diagnostics;
 
 namespace Rhisis.World.Game.Maps.Regions
 {
+    [DebuggerDisplay("MapId: {MapId} ; Key = {Key}")]
     public class MapRevivalRegion : MapRegion, IMapRevivalRegion
     {
         /// <inheritdoc />
