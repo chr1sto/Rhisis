@@ -163,63 +163,54 @@ namespace Rhisis.World.Systems.Taskbar
         /// <inheritdoc />
         public void AddShortcutToAppletTaskbar(IPlayerEntity player, Shortcut shortcutToAdd)
         {
-            if (shortcutToAdd.Slot < 0 || shortcutToAdd.Slot >= MaxTaskbarApplets)
+            if (player.Taskbar.Applets.Add(shortcutToAdd, shortcutToAdd.Slot))
             {
-                return;
+                _logger.LogTrace("Created Shortcut of type {0} on slot {1} for player {2} on the Applet Taskbar", 
+                    Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.Slot, player.Object.Name);
             }
-
-            player.Taskbar.Applets.Objects[shortcutToAdd.Slot] = shortcutToAdd;
-
-            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Applet Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.Slot, player.Object.Name);
+            else
+            {
+                _logger.LogWarning($"Failed to add shortcut '{shortcutToAdd.Type}' to player's '{player}' applet taskbar.");
+            }
         }
 
         /// <inheritdoc />
         public void AddShortcutToItemTaskbar(IPlayerEntity player, Shortcut shortcutToAdd, int slotLevelIndex)
         {
-            if (slotLevelIndex < 0 || slotLevelIndex >= MaxTaskbarItemLevels)
+            if (player.Taskbar.Items.Add(shortcutToAdd, slotLevelIndex, shortcutToAdd.Slot))
             {
-                return;
+                _logger.LogTrace($"Created shortcut on item taskbar at level {slotLevelIndex} and slot {shortcutToAdd.Slot} for player {player}.");
             }
-
-            if (shortcutToAdd.Slot < 0 || shortcutToAdd.Slot >= MaxTaskbarItems)
+            else
             {
-                return;
+                _logger.LogWarning($"Failed to add shortcut '{shortcutToAdd.Type}' to player '{player}' at level {slotLevelIndex} and slot {shortcutToAdd.Slot} on item taskbar.");
             }
-
-            player.Taskbar.Items.Objects[slotLevelIndex][shortcutToAdd.Slot] = shortcutToAdd;
-
-            _logger.LogDebug("Created Shortcut of type {0} on slot {1} for player {2} on the Item Taskbar", Enum.GetName(typeof(ShortcutType), shortcutToAdd.Type), shortcutToAdd.Slot, player.Object.Name);
         }
 
         /// <inheritdoc />
         public void RemoveShortcutFromAppletTaskbar(IPlayerEntity player, int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex >= MaxTaskbarApplets)
+            if (player.Taskbar.Applets.RemoveAt(slotIndex))
             {
-                return;
+                _logger.LogTrace($"Shortcut removed from slot {slotIndex} on the applet taskbar of player '{player}'.");
             }
-
-            player.Taskbar.Applets.Objects[slotIndex] = null;
-
-            _logger.LogDebug("Removed Shortcut on slot {0} of player {1} on the Applet Taskbar", slotIndex, player.Object.Name);
+            else
+            {
+                _logger.LogWarning($"Failed to remove shortcut from slot {slotIndex} on applet taskbar of player '{player}'.");
+            }
         }
 
         /// <inheritdoc />
         public void RemoveShortcutFromItemTaskbar(IPlayerEntity player, int slotLevelIndex, int slotIndex)
         {
-            if (slotLevelIndex < 0 || slotLevelIndex >= MaxTaskbarItemLevels)
+            if (player.Taskbar.Items.RemoveAt(slotLevelIndex, slotIndex))
             {
-                return;
+                _logger.LogTrace($"Shortcut removed from level {slotLevelIndex} and slot {slotIndex} on items taskbar of player '{player}'.");
             }
-
-            if (slotIndex < 0 || slotIndex >= MaxTaskbarItems)
+            else
             {
-                return;
+                _logger.LogWarning($"Failed to remove shortcut from level {slotLevelIndex} and slot {slotIndex} on items taskbar of player '{player}'.");
             }
-
-            player.Taskbar.Items.Objects[slotLevelIndex][slotIndex] = null;
-
-            _logger.LogDebug($"Removed Shortcut on slot {slotLevelIndex}-{slotIndex} of player {player.Object.Name} on the Item Taskbar");
         }
     }
 }
