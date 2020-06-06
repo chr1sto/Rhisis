@@ -201,7 +201,12 @@ namespace Rhisis.World.Systems.Inventory
 
             if (itemToDelete.Quantity <= 0)
             {
-                itemToDelete.Reset();
+                if (player.Inventory.IsItemEquiped(itemToDelete))
+                {
+                    player.Inventory.Unequip(itemToDelete);
+                }
+
+                player.Inventory.RemoveItem(itemToDelete);
             }
 
             return quantityToDelete;
