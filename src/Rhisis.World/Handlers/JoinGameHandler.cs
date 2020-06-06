@@ -96,7 +96,7 @@ namespace Rhisis.World.Handlers
                 _teleportSystem.ChangePosition(serverClient.Player, map, revivalRegion.X, null, revivalRegion.Z);
             }
 
-            client.Player.Object.CurrentLayer.AddEntity(serverClient.Player);
+            serverClient.Player.Object.CurrentLayer.AddEntity(serverClient.Player);
 
             _worldSpawnPacketFactory.SendPlayerSpawn(serverClient.Player);
             serverClient.Player.Object.Spawned = true;
