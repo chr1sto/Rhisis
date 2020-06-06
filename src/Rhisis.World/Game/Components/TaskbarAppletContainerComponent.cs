@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Common.Game.Structures;
+using Rhisis.World.Game.Structures;
 using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace Rhisis.World.Game.Components
         public TaskbarAppletContainerComponent(int maxCapacity)
             : base(maxCapacity)
         {
-            Objects = new List<Shortcut>(new Shortcut[maxCapacity]);
+            _objects = new List<Shortcut>(new Shortcut[maxCapacity]);
         }
 
         /// <inheritdoc />

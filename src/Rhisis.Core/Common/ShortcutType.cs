@@ -15,19 +15,4 @@
         Emoticon,
         LordSkill
     }
-
-    public enum ShortcutObjectType : uint
-    {
-        Item,
-        Card,
-        Cube,
-        Pet
-    }
-
-    public enum ShortcutTaskbarTarget
-    {
-        Applet,
-        Item,
-        Queue
-    }
 }

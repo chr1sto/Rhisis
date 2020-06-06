@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Common.Game.Structures;
+using Rhisis.World.Game.Structures;
 using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +30,7 @@ namespace Rhisis.World.Game.Components
                 return;
 
             for (int i = 0; i < shortcuts.Count; i++)
-                Shortcuts[i] = shortcuts.FirstOrDefault(x => x.SlotIndex == i);
+                Shortcuts[i] = shortcuts.FirstOrDefault(x => x.Slot == i);
         }
 
         public int Count => Shortcuts.Count(x => x != null && x.Type != ShortcutType.None);
