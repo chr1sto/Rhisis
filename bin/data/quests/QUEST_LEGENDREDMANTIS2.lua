@@ -20,6 +20,9 @@ QUEST_LEGENDREDMANTIS2 = {
 			{ id = 'MI_REDMANTIS1', quantity = 10 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_REDYSPAWN', monster_id = 'MI_REDMANTIS1', probability = '1500000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001143',

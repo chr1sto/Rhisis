@@ -21,6 +21,10 @@ QUEST_RBIDENTITY = {
 			{ id = 'MI_RBANG2', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_RBSYMBOL', monster_id = 'MI_RBANG1', probability = '500000000' },
+		{ item_id = 'II_SYS_SYS_QUE_RBSYMBOL', monster_id = 'MI_RBANG2', probability = '1000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001076',

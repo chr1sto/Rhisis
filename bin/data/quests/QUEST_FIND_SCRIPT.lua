@@ -21,6 +21,17 @@ QUEST_FIND_SCRIPT = {
 			{ id = 'II_SYS_SYS_QUE_SCRIPT', quantity = 6, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{
+			item_id = 'II_SYS_SYS_QUE_SCRIPT',
+			probability = '200000000',
+			monsters = {
+				'MI_STEAMWALKER1',
+				'MI_STEAMWALKER2',
+				'MI_STEAMWALKER3'
+			}
+		},
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000870',

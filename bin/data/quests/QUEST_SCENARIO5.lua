@@ -14,6 +14,10 @@ QUEST_SCENARIO5 = {
 	},
 	end_conditions = {
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_GUARDIEYE', monster_id = 'MI_ELDERGUARD3', probability = '900000000' },
+		{ item_id = 'II_SYS_SYS_QUE_AMPERE', monster_id = 'MI_VOLT3', probability = '270000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000250',

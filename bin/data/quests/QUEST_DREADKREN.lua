@@ -24,6 +24,9 @@ QUEST_DREADKREN = {
 			{ id = 'MI_GANGARD', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_BKDREAD2', monster_id = 'MI_GANGARD', probability = '1000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001223',

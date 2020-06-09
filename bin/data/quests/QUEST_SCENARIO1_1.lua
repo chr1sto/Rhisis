@@ -17,6 +17,9 @@ QUEST_SCENARIO1_1 = {
 			{ id = 'II_SYS_SYS_QUE_ASTROPAPER', quantity = 1, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_TARINROOT', monster_id = 'MI_FEFERN3', probability = '2000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000017',

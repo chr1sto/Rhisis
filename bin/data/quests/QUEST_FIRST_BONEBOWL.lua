@@ -22,6 +22,18 @@ QUEST_FIRST_BONEBOWL = {
 			{ id = 'II_SYS_SYS_QUE_BLKHER', quantity = 5, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{
+			item_id = 'II_SYS_SYS_QUE_BLKMAR',
+			probability = '800000000',
+			monsters = {
+				'MI_TOMBSTONEBEARER1',
+				'MI_TOMBSTONEBEARER2',
+				'MI_TOMBSTONEBEARER3',
+				'MI_TOMBSTONEBEARER4'
+			}
+		},
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000979',

@@ -17,6 +17,9 @@ QUEST_SCENARIO5_3 = {
 			{ id = 'II_SYS_SYS_QUE_BOMBTIMER', quantity = 5, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_BOMBTIMER', monster_id = 'MI_CARRIERBOMB3', probability = '100000000' },
+	},
 	dialogs = {
 		begin = nil,
 		begin_yes = nil,

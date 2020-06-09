@@ -17,6 +17,9 @@ QUEST_SCENARIO5_2 = {
 			{ id = 'II_SYS_SYS_QUE_MONGTEAR', quantity = 5, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_MONGTEAR', monster_id = 'MI_GREEMONG3', probability = '100000000' },
+	},
 	dialogs = {
 		begin = nil,
 		begin_yes = nil,

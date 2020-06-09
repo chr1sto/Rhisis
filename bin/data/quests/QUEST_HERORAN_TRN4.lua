@@ -23,6 +23,9 @@ QUEST_HERORAN_TRN4 = {
 			{ id = 'MI_PRANKSTER2', quantity = 8 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_BKHEROL', monster_id = 'MI_PRANKSTER2', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000605',

@@ -17,6 +17,9 @@ QUEST_SCENARIO3_3 = {
 			{ id = 'II_SYS_SYS_QUE_FPUMPKINHEAD', quantity = 50, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_FPUMPKINHEAD', monster_id = 'MI_MRPUMPKIN3', probability = '1500000000' },
+	},
 	dialogs = {
 		begin = nil,
 		begin_yes = nil,

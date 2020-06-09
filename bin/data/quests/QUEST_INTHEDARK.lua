@@ -20,6 +20,9 @@ QUEST_INTHEDARK = {
 			{ id = 'MI_IBLGUARDER', quantity = 4 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_IBLGUAMARK', monster_id = 'MI_IBLGUARDER', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_DUNGEONANDPK_INC_000606',

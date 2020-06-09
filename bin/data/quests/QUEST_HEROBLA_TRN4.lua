@@ -23,6 +23,9 @@ QUEST_HEROBLA_TRN4 = {
 			{ id = 'MI_SHAKALPION', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_TEARDARK', monster_id = 'MI_SHAKALPION', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001460',

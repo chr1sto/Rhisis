@@ -29,10 +29,10 @@ namespace Rhisis.Scripting.Quests
             {
                 Items = items.Values.ToArray<LuaTable>().Select(lua => new QuestItem
                 {
-                    Id = lua.Get<string>("id"),
-                    Quantity = lua.Get<int>("quantity"),
-                    Sex = lua.Get<GenderType>("sex"),
-                    Remove = lua.Get<bool>("remove")
+                    Id = lua.GetValue<string>("id"),
+                    Quantity = lua.GetValue<int>("quantity"),
+                    Sex = lua.GetValue<GenderType>("sex"),
+                    Remove = lua.GetValue<bool>("remove")
                 }).ToList();
             }
 
@@ -40,8 +40,8 @@ namespace Rhisis.Scripting.Quests
             {
                 Monsters = monsters.Values.ToArray<LuaTable>().Select(lua => new QuestMonster
                 {
-                    Id = lua.Get<string>("id"),
-                    Amount = lua.Get<int>("quantity")
+                    Id = lua.GetValue<string>("id"),
+                    Amount = lua.GetValue<int>("quantity")
                 }).ToList();
             }
 
@@ -49,11 +49,11 @@ namespace Rhisis.Scripting.Quests
             {
                 Patrols = patrols.Values.ToArray<LuaTable>().Select(lua => new QuestPatrol
                 {
-                    MapId = lua.Get<string>("map"),
-                    Left = lua.Get<int>("left"),
-                    Top = lua.Get<int>("top"),
-                    Right = lua.Get<int>("right"),
-                    Bottom = lua.Get<int>("bottom")
+                    MapId = lua.GetValue<string>("map"),
+                    Left = lua.GetValue<int>("left"),
+                    Top = lua.GetValue<int>("top"),
+                    Right = lua.GetValue<int>("right"),
+                    Bottom = lua.GetValue<int>("bottom")
                 }).ToList();
             }
         }

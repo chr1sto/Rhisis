@@ -21,6 +21,10 @@ QUEST_SPECHILD = {
 			{ id = 'MI_MIA3', quantity = 5 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_MIAREPORT', monster_id = 'MI_MIA2', probability = '1800000000' },
+		{ item_id = 'II_SYS_SYS_QUE_MIAREPORT', monster_id = 'MI_MIA3', probability = '2100000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001097',

@@ -17,6 +17,12 @@ QUEST_DOLL_MIA = {
 			{ id = 'II_SYS_SYS_QUE_JINDOLL', quantity = 1, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_JINDOLL', monster_id = 'MI_MIA1', probability = '800000000' },
+		{ item_id = 'II_SYS_SYS_QUE_JINDOLL', monster_id = 'MI_MIA2', probability = '700000000' },
+		{ item_id = 'II_SYS_SYS_QUE_JINDOLL', monster_id = 'MI_MIA3', probability = '650000000' },
+		{ item_id = 'II_SYS_SYS_QUE_JINDOLL', monster_id = 'MI_MIA4', probability = '600000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001039',

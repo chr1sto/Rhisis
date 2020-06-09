@@ -59,6 +59,16 @@
         public const string Reskill = "reskill";
 
         public const string SkillPoints = "skillPoints";
+
+        public const string Drops = "drops";
+
+        public const string ItemId = "item_id";
+
+        public const string MonsterId = "monster_id";
+
+        public const string Probability = "probability";
+
+        public const string Quantity = "quantity";
     }
 
     public class QuestScriptHooksConstants

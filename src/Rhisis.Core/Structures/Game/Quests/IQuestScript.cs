@@ -45,6 +45,11 @@ namespace Rhisis.Core.Structures.Game.Quests
         IQuestEndConditions EndConditions { get; }
 
         /// <summary>
+        /// Gets the quest item drops.
+        /// </summary>
+        IEnumerable<QuestItemDrop> Drops { get; }
+
+        /// <summary>
         /// Gets the quest introduction/begin dialogs.
         /// </summary>
         IEnumerable<string> BeginDialogs { get; }

@@ -17,6 +17,19 @@ QUEST_SCE_CAVEDISCOVERY1 = {
 			{ id = 'II_SYS_SYS_QUE_SPLITPIECE01', quantity = 1, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{
+			item_id = 'II_SYS_SYS_QUE_SPLITPIECE01',
+			probability = '1500000000',
+			monsters = {
+				'MI_SKELGRIFFIN',
+				'MI_SKELLEADER',
+				'MI_SKELSPAIN',
+				'MI_SKELSHAMEN',
+				'MI_SKELRIDER'
+			}
+		},
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000653',

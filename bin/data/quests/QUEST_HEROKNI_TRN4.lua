@@ -23,6 +23,9 @@ QUEST_HEROKNI_TRN4 = {
 			{ id = 'MI_WHEELEM2', quantity = 8 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_SOULSTONE', monster_id = 'MI_WHEELEM2', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001398',

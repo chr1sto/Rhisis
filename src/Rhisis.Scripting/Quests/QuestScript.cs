@@ -35,6 +35,9 @@ namespace Rhisis.Scripting.Quests
         public IQuestEndConditions EndConditions { get; }
 
         /// <inheritdoc />
+        public IEnumerable<QuestItemDrop> Drops { get; }
+
+        /// <inheritdoc />
         public IEnumerable<string> BeginDialogs { get; }
 
         /// <inheritdoc />
@@ -60,9 +63,9 @@ namespace Rhisis.Scripting.Quests
         {
             Id = questId;
             Name = questName;
-            Title = luaScriptTable.Get<string>(QuestScriptConstants.Title);
-            StartCharacter = luaScriptTable.Get<string>(QuestScriptConstants.StartCharacter);
-            EndCharacter = luaScriptTable.Get<string>(QuestScriptConstants.EndCharacter);
+            Title = luaScriptTable.GetValue<string>(QuestScriptConstants.Title);
+            StartCharacter = luaScriptTable.GetValue<string>(QuestScriptConstants.StartCharacter);
+            EndCharacter = luaScriptTable.GetValue<string>(QuestScriptConstants.EndCharacter);
 
             if (string.IsNullOrEmpty(EndCharacter))
             {
@@ -72,6 +75,7 @@ namespace Rhisis.Scripting.Quests
             Rewards = new QuestRewards(luaScriptTable, ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
             StartRequirements = new QuestStartRequirements(ScriptTable[QuestScriptConstants.StartRequirements] as LuaTable);
             EndConditions = new QuestEndConditions(ScriptTable[QuestScriptConstants.EndConditions] as LuaTable);
+            Drops = LoadQuestItemDrops(ScriptTable[QuestScriptConstants.Drops] as LuaTable);
 
             if (ScriptTable[QuestScriptConstants.Dialogs] is LuaTable dialogsTable)
             {
@@ -90,5 +94,54 @@ namespace Rhisis.Scripting.Quests
         /// <param name="path"></param>
         /// <returns></returns>
         private IEnumerable<string> GetDialogs(LuaTable table, string path) => (table[path] as LuaTable)?.Values.ToArray<string>();
+
+        /// <summary>
+        /// Loads the quest item drops.
+        /// </summary>
+        /// <param name="table">Main lua table.</param>
+        /// <returns>Collection of <see cref="QuestItemDrop"/> objects.</returns>
+        private IEnumerable<QuestItemDrop> LoadQuestItemDrops(LuaTable table)
+        {
+            var questItemDrops = new List<QuestItemDrop>();
+
+            if (table != null)
+            {
+                IEnumerable<LuaTable> values = table.Values.ToArray<LuaTable>().AsEnumerable();
+
+                foreach (LuaTable dropItem in values)
+                {
+                    IEnumerable<string> monsterIds;
+
+                    if (dropItem[QuestScriptConstants.Monsters] is LuaTable dropItemMonstersTable && dropItemMonstersTable.Values.Count > 0)
+                    {
+                        monsterIds = dropItemMonstersTable.Values.ToArray<string>().AsEnumerable();
+                    }
+                    else
+                    {
+                        monsterIds = new[]
+                        {
+                            dropItem.GetValue<string>(QuestScriptConstants.MonsterId)
+                        };
+                    }
+
+                    string itemId = dropItem.GetValue<string>(QuestScriptConstants.ItemId);
+                    long probability = dropItem.GetValue<long>(QuestScriptConstants.Probability);
+                    int quantity = dropItem.GetValueOrDefault<int>(QuestScriptConstants.Quantity, 1);
+
+                    foreach (string monsterId in monsterIds)
+                    {
+                        questItemDrops.Add(new QuestItemDrop
+                        {
+                            ItemId = itemId,
+                            MonsterId = monsterId,
+                            Probability = probability,
+                            Quantity = quantity
+                        });
+                    }
+                }
+            }
+
+            return questItemDrops;
+        }
     }
 }

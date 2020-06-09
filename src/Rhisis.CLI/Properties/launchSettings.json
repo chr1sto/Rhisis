@@ -2,7 +2,7 @@
   "profiles": {
     "Rhisis.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "database initialize",
+      "commandLineArgs": "resources quest convert data/res/dataSub1/propQuest*.inc -o data/quests/",
       "workingDirectory": "../../bin"
     }
   }

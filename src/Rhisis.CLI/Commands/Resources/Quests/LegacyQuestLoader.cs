@@ -55,12 +55,16 @@ namespace Rhisis.CLI.Commands.Game.Quests
             foreach (IStatement questStatement in questIncludeFile.Statements)
             {
                 if (!(questStatement is Block questBlock))
+                {
                     continue;
+                }
 
                 QuestData quest = CreateQuest(questBlock);
 
                 if (IsQuestValid(quest))
+                {
                     _quests.Add(quest);
+                }
             }
         }
 
@@ -90,8 +94,10 @@ namespace Rhisis.CLI.Commands.Game.Quests
 
                 LoadEndConditions(quest, questSettingsBlock);
                 LoadQuestRewards(quest, questSettingsBlock);
+                LoadQuestDrops(quest, questSettingsBlock);
             }
 
+            LoadQuestStates(quest, questBlock);
             LoadQuestDialogs(quest, questBlock);
             SetQuestJobChange(quest);
 
@@ -181,6 +187,44 @@ namespace Rhisis.CLI.Commands.Game.Quests
                 quest.DeclinedDialogs = dialogs.Where(x => x.Key == QuestDialogKeys.QSAY_BEGIN_NO).Select(x => x.Value).ToArray();
                 quest.FailureDialogs = dialogs.Where(x => x.Key >= QuestDialogKeys.QSAY_END_FAILURE1 && x.Key <= QuestDialogKeys.QSAY_END_FAILURE3).Select(x => x.Value).ToArray();
                 quest.CompletedDialogs = dialogs.Where(x => x.Key >= QuestDialogKeys.QSAY_END_COMPLETE1 && x.Key <= QuestDialogKeys.QSAY_END_COMPLETE3).Select(x => x.Value).ToArray();
+            }
+        }
+
+        private void LoadQuestDrops(QuestData quest, Block questBlock)
+        {
+            IEnumerable<Instruction> questItemInstructions = questBlock.GetInstructions("QuestItem");
+
+            if (questItemInstructions.Any())
+            {
+                IEnumerable<QuestItemDrop> questItemDrops = questItemInstructions.Select(x => new QuestItemDrop
+                {
+                    MonsterId = x.GetParameter<string>(0),
+                    ItemId = x.GetParameter<string>(1),
+                    Probability = x.GetParameter<long>(2),
+                    Quantity = x.GetParameter<int>(3)
+                });
+
+                if (quest.QuestItemDrops == null)
+                {
+                    quest.QuestItemDrops = Enumerable.Empty<QuestItemDrop>();
+                }
+
+                quest.QuestItemDrops = quest.QuestItemDrops.Concat(questItemDrops);
+            }
+        }
+
+        private void LoadQuestStates(QuestData quest, Block questBlock)
+        {
+            IEnumerable<int> questStates = Enum.GetValues(typeof(QuestStateType)).Cast<int>();
+
+            foreach (int questStateId in questStates)
+            {
+                IStatement beginState = questBlock.GetBlockByName($"state {questStateId}");
+
+                if (beginState != null && beginState is Block beginStateBlock)
+                {
+                    LoadQuestDrops(quest, beginStateBlock);
+                }
             }
         }
 

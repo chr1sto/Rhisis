@@ -17,6 +17,9 @@ QUEST_SCENARIO1_3 = {
 			{ id = 'II_SYS_SYS_QUE_SPRINGPIECE', quantity = 1, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_BIGBLUE', monster_id = 'MI_WAGSAAC3', probability = '1500000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000060',

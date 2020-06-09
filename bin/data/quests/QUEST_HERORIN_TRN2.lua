@@ -20,6 +20,9 @@ QUEST_HERORIN_TRN2 = {
 			{ id = 'MI_REN', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_MARKEIEN', monster_id = 'MI_REN', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001553',

@@ -17,6 +17,18 @@ QUEST_SCE_HARMONINFIND3 = {
 			{ id = 'II_SYS_SYS_QUE_TODRINHEART', quantity = 10, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{
+			item_id = 'II_SYS_SYS_QUE_TODRINHEART',
+			probability = '1500000000',
+			monsters = {
+				'MI_Toadrin01',
+				'MI_Toadrin02',
+				'MI_Toadrin03',
+				'MI_Toadrin04'
+			}
+		},
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000540',

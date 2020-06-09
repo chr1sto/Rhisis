@@ -21,6 +21,9 @@ QUEST_HEROKNI_TRN2 = {
 			{ id = 'MI_KIDLER', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_PROVGOLDHELM', monster_id = 'MI_KIDLER', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001374',

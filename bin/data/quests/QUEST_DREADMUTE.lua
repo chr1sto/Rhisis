@@ -24,6 +24,9 @@ QUEST_DREADMUTE = {
 			{ id = 'MI_HADESEOR', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_BKDREAD3', monster_id = 'MI_HADESEOR', probability = '1000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001237',

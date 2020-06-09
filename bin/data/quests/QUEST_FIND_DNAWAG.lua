@@ -17,6 +17,18 @@ QUEST_FIND_DNAWAG = {
 			{ id = 'II_SYS_SYS_QUE_DNAWAG', quantity = 10, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{
+			item_id = 'II_SYS_SYS_QUE_DNAWAG',
+			probability = '750000000',
+			monsters = {
+				'MI_WAGSAAC1',
+				'MI_WAGSAAC2',
+				'MI_WAGSAAC3',
+				'MI_WAGSAAC4'
+			}
+		},
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000958',

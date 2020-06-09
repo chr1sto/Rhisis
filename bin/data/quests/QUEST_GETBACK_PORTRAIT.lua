@@ -17,6 +17,9 @@ QUEST_GETBACK_PORTRAIT = {
 			{ id = 'II_SYS_SYS_QUE_RADIPORT', quantity = 1, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_RADIPORT', monster_id = 'MI_RBANG1', probability = '700000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000936',

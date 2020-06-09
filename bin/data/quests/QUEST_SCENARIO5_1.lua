@@ -17,6 +17,9 @@ QUEST_SCENARIO5_1 = {
 			{ id = 'II_SYS_SYS_QUE_SYCALE', quantity = 5, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_SYCALE', monster_id = 'MI_SYLIACA3', probability = '100000000' },
+	},
 	dialogs = {
 		begin = nil,
 		begin_yes = nil,

@@ -17,6 +17,9 @@ QUEST_SCENARIO3_1 = {
 			{ id = 'II_SYS_SYS_QUE_BATPOLIS', quantity = 50, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_BATPOLIS', monster_id = 'MI_FLYBAT3', probability = '1500000000' },
+	},
 	dialogs = {
 		begin = nil,
 		begin_yes = nil,

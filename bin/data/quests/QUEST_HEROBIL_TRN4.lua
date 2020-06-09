@@ -23,6 +23,9 @@ QUEST_HEROBIL_TRN4 = {
 			{ id = 'MI_STEAMWALKER2', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_MPOSTERSKILL', monster_id = 'MI_STEAMWALKER2', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001518',

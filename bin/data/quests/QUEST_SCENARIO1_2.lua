@@ -17,6 +17,9 @@ QUEST_SCENARIO1_2 = {
 			{ id = 'II_SYS_SYS_QUE_RATTOOTH', quantity = 50, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_SHININGST', monster_id = 'MI_NYANGNYANG2', probability = '2000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000036',

@@ -17,6 +17,9 @@ QUEST_FIND_REDBANGT = {
 			{ id = 'II_SYS_SYS_QUE_REDBANGHEAD', quantity = 1, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_REDBANGHEAD', monster_id = 'MI_RBANG1', probability = '500000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000821',

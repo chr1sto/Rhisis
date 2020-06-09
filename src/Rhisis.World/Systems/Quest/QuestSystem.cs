@@ -1,9 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.Resources;
+using Rhisis.Core.Structures.Configuration.Models;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.Core.Structures.Game.Quests;
@@ -13,6 +18,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Experience;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Job;
@@ -45,12 +51,14 @@ namespace Rhisis.World.Systems.Quest
         private readonly ILogger<QuestSystem> _logger;
         private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
+        private readonly WorldConfiguration _worldConfiguration;
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IInventorySystem _inventorySystem;
         private readonly IExperienceSystem _experienceSystem;
         private readonly IJobSystem _jobSystem;
         private readonly IStatisticsSystem _statisticsSystem;
         private readonly ISkillSystem _skillSystem;
+        private readonly IDropSystem _dropSystem;
         private readonly IQuestPacketFactory _questPacketFactory;
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
@@ -58,20 +66,22 @@ namespace Rhisis.World.Systems.Quest
         /// <inheritdoc />
         public int Order => 3;
 
-        public QuestSystem(ILogger<QuestSystem> logger, IRhisisDatabase database, IGameResources gameResources,
+        public QuestSystem(ILogger<QuestSystem> logger, IRhisisDatabase database, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration,
             IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IJobSystem jobSystem,
-            IStatisticsSystem statisticsSystem, ISkillSystem skillSystem,
+            IStatisticsSystem statisticsSystem, ISkillSystem skillSystem, IDropSystem dropSystem,
             IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
         {
             _logger = logger;
             _database = database;
             _gameResources = gameResources;
+            _worldConfiguration = worldServerConfiguration.Value;
             _playerDataSystem = playerDataSystem;
             _inventorySystem = inventorySystem;
             _experienceSystem = experienceSystem;
             _jobSystem = jobSystem;
             _statisticsSystem = statisticsSystem;
             _skillSystem = skillSystem;
+            _dropSystem = dropSystem;
             _questPacketFactory = questPacketFactory;
             _npcDialogPacketFactory = npcDialogPacketFactory;
             _textPacketFactory = textPacketFactory;
@@ -332,17 +342,49 @@ namespace Rhisis.World.Systems.Quest
 
                 bool updateQuest = false;
 
-                if (actionType == QuestActionType.KillMonster && questScript.EndConditions.Monsters != null && questScript.EndConditions.Monsters.Any())
+                if (actionType == QuestActionType.KillMonster)
                 {
                     int killedMonsterId = Convert.ToInt32(values.ElementAtOrDefault(0));
                     short killedAmount = Convert.ToInt16(values.ElementAtOrDefault(1));
 
-                    QuestMonster monsterToKill = questScript.EndConditions.Monsters.FirstOrDefault(x => _gameResources.GetDefinedValue(x.Id) == killedMonsterId);
-
-                    if (quest.Monsters.ContainsKey(killedMonsterId) && quest.Monsters[killedMonsterId] < monsterToKill.Amount)
+                    if (questScript.EndConditions.Monsters != null && questScript.EndConditions.Monsters.Any())
                     {
-                        quest.Monsters[killedMonsterId] += killedAmount;
-                        updateQuest = true;
+                        QuestMonster monsterToKill = questScript.EndConditions.Monsters.FirstOrDefault(x => _gameResources.GetDefinedValue(x.Id) == killedMonsterId);
+
+                        if (quest.Monsters.ContainsKey(killedMonsterId) && quest.Monsters[killedMonsterId] < monsterToKill.Amount)
+                        {
+                            quest.Monsters[killedMonsterId] += killedAmount;
+                            updateQuest = true;
+                        }
+                    }
+
+                    IEnumerable<QuestItemDrop> questItemDrops = questScript.Drops.Where(x => _gameResources.GetDefinedValue(x.MonsterId) == killedMonsterId);
+
+                    if (questItemDrops.Any())
+                    {
+                        foreach (QuestItemDrop questItem in questItemDrops)
+                        {
+                            long dropChance = RandomHelper.LongRandom(0, DropSystem.MaxDropChance);
+
+                            if (dropChance < questItem.Probability * _worldConfiguration.Rates.Drop)
+                            {
+                                int itemId = _gameResources.GetDefinedValue(questItem.ItemId);
+                                var itemToCreate = new Item(itemId);
+
+                                int createdQuantity = _inventorySystem.CreateItem(player, itemToCreate, questItem.Quantity, player.PlayerData.Id);
+
+                                if (createdQuantity > 0)
+                                {
+                                    ItemData itemData = _gameResources.Items.GetValueOrDefault(itemId);
+
+                                    _textPacketFactory.SendDefinedText(player, DefineText.TID_EVE_REAPITEM, $"\"{itemData?.Name ?? "[undefined]"}\"");
+                                }
+                                else
+                                {
+                                    _dropSystem.DropItem(player, itemToCreate, player, questItem.Quantity);
+                                }
+                            }
+                        }
                     }
                 }
 

@@ -20,6 +20,9 @@ QUEST_HERORAN_TRN2 = {
 			{ id = 'MI_RUBO', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_LTHYNAN', monster_id = 'MI_RUBO', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000582',

@@ -24,6 +24,9 @@ QUEST_DREADBIG = {
 			{ id = 'MI_ORGANIGOR', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_BKDREAD1', monster_id = 'MI_ORGANIGOR', probability = '1000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001209',

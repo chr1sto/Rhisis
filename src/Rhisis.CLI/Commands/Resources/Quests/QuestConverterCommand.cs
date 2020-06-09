@@ -1,4 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Rhisis.Core.Data;
 using Rhisis.Core.Structures.Game.Quests;
 using Rhisis.Scripting.Quests;
@@ -80,6 +81,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
             WriteStartRequirements(writer, quest);
             WriteRewards(writer, quest);
             WriteEndConditions(writer, quest);
+            WriteDrops(writer, quest);
             WriteDialogs(writer, quest);
             WriteAtLevel(writer, 0, "}", includeComma: false);
 
@@ -245,6 +247,96 @@ namespace Rhisis.CLI.Commands.Game.Quests
             }
 
             WriteAtLevel(writer, 1, $"}}");
+        }
+
+        /// <summary>
+        /// Writes a "drops" section to the given LUA stream file.
+        /// </summary>
+        /// <param name="writer">Stream writer.</param>
+        /// <param name="quest">Current quest.</param>
+        private void WriteDrops(StreamWriter writer, QuestData quest)
+        {
+            if (quest.QuestItemDrops != null && quest.QuestItemDrops.Any())
+            {
+                WriteAtLevel(writer, 1, $"{QuestScriptConstants.Drops} = {{", includeComma: false);
+
+                var questItemDropGroups = quest.QuestItemDrops.GroupBy(x => new { x.ItemId, x.Probability, x.Quantity });
+
+                foreach (var questItemDropGroup in questItemDropGroups)
+                {
+                    var builder = new StringBuilder();
+
+                    if (questItemDropGroup.Count() > 1)
+                    {
+                        QuestItemDrop questItem = new QuestItemDrop
+                        {
+                            ItemId = questItemDropGroup.Key.ItemId,
+                            Probability = questItemDropGroup.Key.Probability,
+                            Quantity = questItemDropGroup.Key.Quantity
+                        };
+                        IEnumerable<string> monsters = questItemDropGroup.Select(x => x.MonsterId);
+
+                        builder.AppendLine("{");
+                        builder.AppendLine($"\t\t\t{QuestScriptConstants.ItemId} = '{questItem.ItemId}',");
+                        builder.AppendLine($"\t\t\t{QuestScriptConstants.Probability} = '{questItem.Probability}',");
+                        builder.AppendLine($"\t\t\t{QuestScriptConstants.Monsters} = {{");
+
+                        for (int i = 0; i < monsters.Count(); i++)
+                        {
+                            builder.Append($"\t\t\t\t'{monsters.ElementAt(i)}'");
+
+                            if (i != monsters.Count() - 1)
+                            {
+                                builder.AppendLine(",");
+                            }
+                            else
+                            {
+                                builder.AppendLine("");
+                            }
+                        }
+                        foreach (string monsterId in monsters)
+                        {
+                        }
+
+                        builder.AppendLine("\t\t\t}");
+                        builder.Append("\t\t}");
+                    }
+                    else
+                    {
+                        QuestItemDrop questItem = questItemDropGroup.FirstOrDefault();
+
+                        if (questItem != null)
+                        {
+                            builder.Append("{ ");
+                            builder.Append($"{QuestScriptConstants.ItemId} = '{questItem.ItemId}'");
+                            builder.Append(", ");
+                            builder.Append($"{QuestScriptConstants.MonsterId} = '{questItem.MonsterId}'");
+                            builder.Append(", ");
+                            builder.Append($"{QuestScriptConstants.Probability} = '{questItem.Probability}'");
+
+                            if (questItem.Quantity > 1)
+                            {
+                                builder.Append(", ");
+                                builder.Append($"{QuestScriptConstants.Probability} = '{questItem.Quantity}'");
+                            }
+
+                            builder.Append(" }");
+                        }
+                    }
+
+                    WriteAtLevel(writer, 2, builder.ToString());
+                }
+
+                //foreach (QuestItemDrop questItem in quest.QuestItemDrops)
+                //{
+                //    WriteAtLevel(writer, 2, $"{{ {QuestScriptConstants.ItemId } = '{questItem.ItemId}', " +
+                //        $"{QuestScriptConstants.MonsterId } = '{questItem.MonsterId}', " +
+                //        $"{QuestScriptConstants.Probability} = {questItem.Probability}, " +
+                //        $"{QuestScriptConstants.Quantity} = {questItem.Quantity} }}");
+                //}
+
+                WriteAtLevel(writer, 1, $"}}");
+            }
         }
 
         /// <summary>

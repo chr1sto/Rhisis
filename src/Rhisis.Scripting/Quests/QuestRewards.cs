@@ -63,12 +63,12 @@ namespace Rhisis.Scripting.Quests
             {
                 if (gold is LuaTable goldRangeTable)
                 {
-                    _minGold = goldRangeTable.Get<int>(QuestScriptConstants.Min);
-                    _maxGold = goldRangeTable.Get<int>(QuestScriptConstants.Max);
+                    _minGold = goldRangeTable.GetValue<int>(QuestScriptConstants.Min);
+                    _maxGold = goldRangeTable.GetValue<int>(QuestScriptConstants.Max);
                 }
                 else
                 {
-                    _gold = questRewardsLuaTable.Get<int>(QuestScriptConstants.Gold);
+                    _gold = questRewardsLuaTable.GetValue<int>(QuestScriptConstants.Gold);
                 }
             }
 
@@ -78,12 +78,12 @@ namespace Rhisis.Scripting.Quests
             {
                 if (experience is LuaTable experienceRangeTable)
                 {
-                    _minExperience = experienceRangeTable.Get<long>(QuestScriptConstants.Min);
-                    _maxExperience = experienceRangeTable.Get<long>(QuestScriptConstants.Max);
+                    _minExperience = experienceRangeTable.GetValue<long>(QuestScriptConstants.Min);
+                    _maxExperience = experienceRangeTable.GetValue<long>(QuestScriptConstants.Max);
                 }
                 else
                 {
-                    _experience = questRewardsLuaTable.Get<long>(QuestScriptConstants.Experience);
+                    _experience = questRewardsLuaTable.GetValue<long>(QuestScriptConstants.Experience);
                 }
             }
 
@@ -91,21 +91,21 @@ namespace Rhisis.Scripting.Quests
             {
                 Items = items.Values.ToArray<LuaTable>().Select(lua => new QuestItem
                 {
-                    Id = lua.Get<string>("id"),
-                    Quantity = lua.Get<int>("quantity"),
-                    Sex = lua.Get<GenderType>("sex"),
-                    Refine = lua.Get<byte>("refine"),
-                    Element = lua.Get<ElementType>("element"),
-                    ElementRefine = lua.Get<byte>("element_refine")
+                    Id = lua.GetValue<string>("id"),
+                    Quantity = lua.GetValue<int>("quantity"),
+                    Sex = lua.GetValue<GenderType>("sex"),
+                    Refine = lua.GetValue<byte>("refine"),
+                    Element = lua.GetValue<ElementType>("element"),
+                    ElementRefine = lua.GetValue<byte>("element_refine")
                 }).ToList();
             }
 
-            _rewardJob = questRewardsLuaTable.Get<DefineJob.Job>(QuestScriptConstants.Job);
+            _rewardJob = questRewardsLuaTable.GetValue<DefineJob.Job>(QuestScriptConstants.Job);
             _rewardJobFunction = mainLuaTable[QuestScriptHooksConstants.ChangeJobReward] as LuaFunction;
 
-            Restat = questRewardsLuaTable.Get<bool>(QuestScriptConstants.Restat);
-            Reskill = questRewardsLuaTable.Get<bool>(QuestScriptConstants.Reskill);
-            SkillPoints = questRewardsLuaTable.Get<ushort>(QuestScriptConstants.SkillPoints);
+            Restat = questRewardsLuaTable.GetValue<bool>(QuestScriptConstants.Restat);
+            Reskill = questRewardsLuaTable.GetValue<bool>(QuestScriptConstants.Reskill);
+            SkillPoints = questRewardsLuaTable.GetValue<ushort>(QuestScriptConstants.SkillPoints);
         }
 
         /// <inheritdoc />

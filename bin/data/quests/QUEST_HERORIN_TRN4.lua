@@ -23,6 +23,9 @@ QUEST_HERORIN_TRN4 = {
 			{ id = 'MI_HUNTERX', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_DEWEIEN', monster_id = 'MI_HUNTERX', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001576',

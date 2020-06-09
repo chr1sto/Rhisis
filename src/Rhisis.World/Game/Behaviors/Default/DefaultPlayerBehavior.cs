@@ -13,6 +13,8 @@ using Rhisis.World.Systems.Mobility;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.Quest;
 using Rhisis.World.Systems.Recovery;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Behaviors
 {
@@ -102,7 +104,6 @@ namespace Rhisis.World.Game.Behaviors
         {
             if (killedEntity is IMonsterEntity deadMonster)
             {
-                // Give experience
                 _experienceSystem.GiveExeperience(_player, deadMonster.Data.Experience * _worldConfiguration.Rates.Experience);
 
                 // Quest check

@@ -21,6 +21,9 @@ QUEST_HEROELE_TRN5 = {
 			{ id = 'MI_GUARDMON1', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_VENHEART', monster_id = 'MI_GUARDMON1', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_001699',

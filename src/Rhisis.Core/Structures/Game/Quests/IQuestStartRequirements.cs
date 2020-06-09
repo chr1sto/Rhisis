@@ -25,4 +25,9 @@ namespace Rhisis.Core.Structures.Game.Quests
         /// </summary>
         string PreviousQuestId { get; }
     }
+
+    public interface IQuestDrops
+    {
+
+    }
 }

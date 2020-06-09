@@ -114,5 +114,10 @@ namespace Rhisis.Core.Structures.Game.Quests
         /// Gets or sets the required patrols areas to finish the quest.
         /// </summary>
         public IEnumerable<QuestPatrol> EndQuestPatrols { get; set; }
+
+        /// <summary>
+        /// Gets or sets a collection of droppable items during the current quest.
+        /// </summary>
+        public IEnumerable<QuestItemDrop> QuestItemDrops { get; set; }
     }
 }

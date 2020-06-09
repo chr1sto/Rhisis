@@ -17,6 +17,9 @@ QUEST_SCE_QUESTIONDAILY4 = {
 			{ id = 'II_SYS_SYS_QUE_FIGHTERBOX', quantity = 1, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_FIGHTERBOX', monster_id = 'MI_SKELFIGHTER', probability = '1500000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000635',

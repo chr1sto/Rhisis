@@ -17,6 +17,18 @@ QUEST_VOCMER_TRN1 = {
 			{ id = 'II_GEN_GEM_GEM_TWINKLESTONE', quantity = 5, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{
+			item_id = 'II_GEN_GEM_GEM_TWINKLESTONE',
+			probability = '3000000000',
+			monsters = {
+				'MI_AIBATT1',
+				'MI_AIBATT2',
+				'MI_AIBATT3',
+				'MI_AIBATT4'
+			}
+		},
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000686',

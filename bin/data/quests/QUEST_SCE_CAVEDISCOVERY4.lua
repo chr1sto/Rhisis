@@ -17,6 +17,9 @@ QUEST_SCE_CAVEDISCOVERY4 = {
 			{ id = 'II_SYS_SYS_QUE_THREEBOOK01', quantity = 1, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_THREEBOOK01', monster_id = 'MI_SKELDEVIL', probability = '1500000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_SCENARIO_INC_000679',

@@ -17,6 +17,9 @@ QUEST_SCENARIO3_6 = {
 			{ id = 'II_SYS_SYS_QUE_CARDRIN', quantity = 50, sex = 'Any', remove = false },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_CARDRIN', monster_id = 'MI_REDMANTIS3', probability = '1500000000' },
+	},
 	dialogs = {
 		begin = nil,
 		begin_yes = nil,

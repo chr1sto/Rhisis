@@ -17,6 +17,18 @@ QUEST_VOCASS_TRN1 = {
 			{ id = 'II_GEN_GEM_GEM_FORFORM', quantity = 5, sex = 'Any', remove = true },
 		},
 	},
+	drops = {
+		{
+			item_id = 'II_GEN_GEM_GEM_FORFORM',
+			probability = '3000000000',
+			monsters = {
+				'MI_MUSHPANG1',
+				'MI_MUSHPANG2',
+				'MI_MUSHPANG3',
+				'MI_MUSHPANG4'
+			}
+		},
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000736',

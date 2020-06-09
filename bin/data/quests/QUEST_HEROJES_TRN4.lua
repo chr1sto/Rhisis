@@ -23,6 +23,9 @@ QUEST_HEROJES_TRN4 = {
 			{ id = 'MI_SISIF', quantity = 1 },
 		},
 	},
+	drops = {
+		{ item_id = 'II_SYS_SYS_QUE_HEROSOUL01', monster_id = 'MI_SISIF', probability = '3000000000' },
+	},
 	dialogs = {
 		begin = {
 			'IDS_PROPQUEST_INC_000547',
