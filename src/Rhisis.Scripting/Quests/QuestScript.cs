@@ -110,6 +110,12 @@ namespace Rhisis.Scripting.Quests
 
                 foreach (LuaTable dropItem in values)
                 {
+                    if (dropItem[QuestScriptConstants.ItemId] == null || dropItem[QuestScriptConstants.Probability] == null ||
+                        (dropItem[QuestScriptConstants.Monsters] == null && dropItem[QuestScriptConstants.MonsterId] == null))
+                    {
+                        continue;
+                    }
+
                     IEnumerable<string> monsterIds;
 
                     if (dropItem[QuestScriptConstants.Monsters] is LuaTable dropItemMonstersTable && dropItemMonstersTable.Values.Count > 0)
