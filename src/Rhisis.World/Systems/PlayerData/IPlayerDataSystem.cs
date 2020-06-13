@@ -19,5 +19,11 @@ namespace Rhisis.World.Systems.PlayerData
         /// <param name="goldAmount">Gold amount to decrease.</param>
         /// <returns>Returns true if the gold has been decreased; false otherwhise.</returns>
         bool DecreaseGold(IPlayerEntity player, int goldAmount);
+        
+        /// <summary>
+        /// Calculates the player defense based on the equiped items.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        void CalculateDefense(IPlayerEntity player);
     }
 }

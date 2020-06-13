@@ -1,8 +1,11 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.World.Systems.PlayerData
 {
@@ -51,6 +54,40 @@ namespace Rhisis.World.Systems.PlayerData
             _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
 
             return true;
+        }
+
+        /// <inheritdoc />
+        public void CalculateDefense(IPlayerEntity player)
+        {
+            var defenseMin = 0;
+            var defenseMax = 0;
+            IEnumerable<Item> equipedItems = player.Inventory.GetEquipedItems();
+
+            if (equipedItems.Any())
+            {
+                foreach (Item equipedItem in equipedItems)
+                {
+                    if (equipedItem == null || (equipedItem != null && equipedItem.Id == -1))
+                    {
+                        continue;
+                    }
+
+                    if (equipedItem.Data.ItemKind2 == ItemKind2.ARMOR || equipedItem.Data.ItemKind2 == ItemKind2.ARMORETC)
+                    {
+                        int refineValue = equipedItem.Refine > 0 ? (int)Math.Pow(equipedItem.Refine, 1.5f) : 0;
+                        const float itemMultiplier = 1; // TODO: implement GetItemMultiplier() on the Item class of the Rhisis Domain.
+
+                        defenseMin += (int)(equipedItem.Data.AbilityMin * itemMultiplier) + refineValue;
+                        defenseMax += (int)(equipedItem.Data.AbilityMax * itemMultiplier) + refineValue;
+                    }
+                }
+            }
+
+            defenseMin += player.Attributes[DefineAttributes.ABILITY_MIN];
+            defenseMax += player.Attributes[DefineAttributes.ABILITY_MAX];
+
+            player.PlayerData.DefenseMin = defenseMin;
+            player.PlayerData.DefenseMax = defenseMax;
         }
     }
 }

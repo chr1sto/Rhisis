@@ -94,9 +94,18 @@ namespace Rhisis.Cluster.Client
             catch (ArgumentNullException)
             {
                 if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-                    _logger.LogWarning("Received an unimplemented Cluster packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                {
+                    _logger.LogTrace("Received an unimplemented Cluster packet {0} (0x{1}) from {2}.", 
+                        Enum.GetName(typeof(PacketType), packetHeaderNumber), 
+                        packetHeaderNumber.ToString("X4"), 
+                        Socket.RemoteEndPoint);
+                }
                 else
-                    _logger.LogWarning("[SECURITY] Received an unknown Cluster packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                {
+                    _logger.LogTrace("[SECURITY] Received an unknown Cluster packet 0x{0} from {1}.", 
+                        packetHeaderNumber.ToString("X4"), 
+                        Socket.RemoteEndPoint);
+                }
             }
             catch (Exception exception)
             {

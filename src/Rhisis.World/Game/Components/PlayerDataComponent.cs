@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Game;
 using System;
 
@@ -77,5 +78,28 @@ namespace Rhisis.World.Game.Components
         /// Gets or sets the player level when it dies.
         /// </summary>
         public int DeathLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the player's minimal defense.
+        /// </summary>
+        public int DefenseMin { get; set; }
+
+        /// <summary>
+        /// Gets or sets the player's maximum defense.
+        /// </summary>
+        public int DefenseMax { get; set; }
+
+        /// <summary>
+        /// Gets the player's defense.
+        /// </summary>
+        public int Defense
+        {
+            get
+            {
+                int defenseDelta = DefenseMax - DefenseMin;
+
+                return DefenseMin + (defenseDelta > 0 ? RandomHelper.Random(0, defenseDelta) : 0);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Systems.Inventory;
+using Rhisis.World.Systems.PlayerData;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.World.Handlers
@@ -15,16 +16,19 @@ namespace Rhisis.World.Handlers
     {
         private readonly ILogger<InventoryHandler> _logger;
         private readonly IInventorySystem _inventorySystem;
+        private readonly IPlayerDataSystem _playerDataSystem;
 
         /// <summary>
         /// Creates a new <see cref="InventoryHandler"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="inventorySystem">Inventory System.</param>
-        public InventoryHandler(ILogger<InventoryHandler> logger, IInventorySystem inventorySystem)
+        /// <param name="playerDataSystem">Player data system.</param>
+        public InventoryHandler(ILogger<InventoryHandler> logger, IInventorySystem inventorySystem, IPlayerDataSystem playerDataSystem)
         {
             _logger = logger;
             _inventorySystem = inventorySystem;
+            _playerDataSystem = playerDataSystem;
         }
 
         /// <summary>
@@ -47,6 +51,7 @@ namespace Rhisis.World.Handlers
         public void OnDoEquip(IWorldServerClient serverClient, EquipItemPacket packet)
         {
             _inventorySystem.EquipItem(serverClient.Player, packet.UniqueId, packet.Part);
+            _playerDataSystem.CalculateDefense(serverClient.Player);
         }
 
         /// <summary>
@@ -86,6 +91,7 @@ namespace Rhisis.World.Handlers
             }
 
             _inventorySystem.UseItem(serverClient.Player, packet.UniqueItemId, packet.Part);
+            _playerDataSystem.CalculateDefense(serverClient.Player);
         }
     }
 }

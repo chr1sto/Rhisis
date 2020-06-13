@@ -49,24 +49,35 @@ namespace Rhisis.World.Systems.Battle.Arbiters
             }
 
             var defense = 0;
-            var isGenericAttack = attackResult.Flags.HasFlag(AttackFlags.AF_GENERIC);
+            bool isGenericAttack = attackResult.Flags.HasFlag(AttackFlags.AF_GENERIC);
 
             if (Attacker.Type == WorldEntityType.Player && Defender.Type == WorldEntityType.Player)
+            {
                 isGenericAttack = true;
+            }
 
             if (isGenericAttack)
             {
                 var factor = 1f;
 
                 if (Defender is IPlayerEntity player)
+                {
                     factor = player.PlayerData.JobData.DefenseFactor;
+                }
 
-                var stamina = Defender.Attributes[DefineAttributes.STA];
-                var level = Defender.Object.Level;
+                int defenderArmorDefense = Defender switch
+                {
+                    IPlayerEntity p => p.PlayerData.Defense,
+                    IMonsterEntity m => m.Data.NaturalArmor,
+                    _ => 0
+                };
+
+                int stamina = Defender.Attributes[DefineAttributes.STA];
+                int level = Defender.Object.Level;
 
                 defense = (int)((level * 2 + stamina / 2) / 2.8f - 4 + (stamina - 14) * factor);
-                // TODO: add defense armor
-                // TODO: add DST_ADJDEF
+                defense += defenderArmorDefense / 4;
+                defense += Defender.Attributes[DefineAttributes.ADJDEF];
 
                 defense = Math.Max(defense, 0);
             }
@@ -116,25 +127,32 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <returns>Player's defense.</returns>
         private int GetPlayerDefense(IPlayerEntity defenderPlayer, AttackFlags flags)
         {
-            var defense = 0;
+            int defense;
+            int level = defenderPlayer.Object.Level;
+            int stamina = defenderPlayer.Attributes[DefineAttributes.STA];
+            int dexterity = defenderPlayer.Attributes[DefineAttributes.DEX];
 
             if (Attacker.Type == WorldEntityType.Player)
             {
                 if (flags.HasFlag(AttackFlags.AF_MAGIC))
                 {
-                    defense = (int)(defenderPlayer.Attributes[DefineAttributes.INT] * 9.04f + defenderPlayer.Object.Level * 35.98f);
+                    defense = (int)(defenderPlayer.Attributes[DefineAttributes.INT] * 9.04f + level * 35.98f);
                 }
                 else
                 {
-                    // TODO: GetDefenseByItem()
+                    int armorDefense = defenderPlayer.PlayerData.Defense + defenderPlayer.Attributes[DefineAttributes.ADJDEF];
+
+                    defense = (int)((armorDefense * 2.3f) + ((level + (stamina / 2) + dexterity) / 2.8f) - 4 + level * 2);
                 }
             }
             else
             {
-                // TODO: GetDefenseByItem()
+                int armorDefense = defenderPlayer.PlayerData.Defense / 4 + defenderPlayer.Attributes[DefineAttributes.ADJDEF];
+
+                defense = (int)(armorDefense + ((level + (stamina / 2) + dexterity) / 2.8f) - 4 + level * 2);
             }
 
-            return Math.Max(0, defense);
+            return Math.Max(defense, 0);
         }
 
         /// <summary>
