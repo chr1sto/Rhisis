@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Helpers;
 using System;
+using System.Numerics;
 
 namespace Rhisis.Core.Structures
 {
@@ -96,6 +97,24 @@ namespace Rhisis.Core.Structures
         public bool IsInCircle(Vector3 otherPosition, float circleRadius)
         {
             return Math.Pow(otherPosition.X - X, 2) + Math.Pow(otherPosition.Z - Z, 2) < Math.Pow(circleRadius, 2);
+        }
+
+        /// <summary>
+        /// Checks if the current position is in a given range.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        public bool IsInRange(Vector3 otherPosition, float range)
+        {
+            Vector3 distance = this - otherPosition;
+            distance.Y = 0;
+
+            if (distance.SquaredLength > range * range)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

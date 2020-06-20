@@ -71,6 +71,12 @@ namespace Rhisis.World.Systems.Battle
                 attackResult = attackArbiter.CalculateDamages();
             }
 
+            if (defender is IMonsterEntity monster && monster.Moves.ReturningToOriginalPosition)
+            {
+                attackResult.Damages = 0;
+                attackResult.Flags = AttackFlags.AF_MISS;
+            }
+
             if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS) || attackResult.Damages <= 0)
             {
                 _battlePacketFactory.SendAddDamage(defender, attacker, attackResult.Flags, attackResult.Damages);
