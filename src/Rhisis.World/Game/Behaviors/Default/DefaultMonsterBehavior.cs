@@ -70,7 +70,7 @@ namespace Rhisis.World.Game.Behaviors
             }
             else
             {
-                ProcessMonsterMovements(_monster);
+                ProcessMonsterMovements();
             }
 
             _mobilitySystem.CalculatePosition(_monster);
@@ -90,14 +90,12 @@ namespace Rhisis.World.Game.Behaviors
 
                 if (_monster.Moves.ReturningToOriginalPosition)
                 {
-                    Console.WriteLine($"{_monster} arrived from return to begin");
                     _monster.Moves.ReturningToOriginalPosition = false;
                     _monster.Attributes[DefineAttributes.HP] = _monster.Data.AddHp;
                     _moverPacketFactory.SendUpdateAttributes(_monster, DefineAttributes.HP, _monster.Attributes[DefineAttributes.HP]);
                 }
                 if (_monster.Moves.SpeedFactor >= 2f)
                 {
-                    Console.WriteLine($"{_monster} resets speed factor");
                     SetSpeedFactor(1f);
                 }
             }
@@ -171,9 +169,9 @@ namespace Rhisis.World.Game.Behaviors
         /// Update monster moves.
         /// </summary>
         /// <param name="monster"></param>
-        private void ProcessMonsterMovements(IMonsterEntity monster)
+        private void ProcessMonsterMovements()
         {
-            if (monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND) && monster.Timers.NextMoveTime < Time.TimeInSeconds())
+            if (_monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND) && _monster.Timers.NextMoveTime < Time.TimeInSeconds())
             {
                 MoveToRandomPosition();
             }
@@ -218,6 +216,9 @@ namespace Rhisis.World.Game.Behaviors
             }
         }
 
+        /// <summary>
+        /// Makes the monster return to its begin position.
+        /// </summary>
         private void ReturnToBeginPosition()
         {
             _monster.Moves.ReturningToOriginalPosition = true;
@@ -227,17 +228,28 @@ namespace Rhisis.World.Game.Behaviors
             MoveToPosition(_monster.Object.BeginPosition);
         }
 
+        /// <summary>
+        /// Sets the monster speed factor.
+        /// </summary>
+        /// <param name="speedFactor"></param>
         private void SetSpeedFactor(float speedFactor)
         {
             _monster.Moves.SpeedFactor = speedFactor;
             _moverPacketFactory.SendSpeedFactor(_monster, _monster.Moves.SpeedFactor);
         }
 
+        /// <summary>
+        /// Makes the monster move to a random position inside its region.
+        /// </summary>
         private void MoveToRandomPosition()
         {
             MoveToPosition(_monster.Region.GetRandomPosition());
         }
 
+        /// <summary>
+        /// Movaes the monster to a given position.
+        /// </summary>
+        /// <param name="destinationPosition"></param>
         private void MoveToPosition(Vector3 destinationPosition)
         {
             _monster.Object.MovingFlags &= ~ObjectState.OBJSTA_STAND;

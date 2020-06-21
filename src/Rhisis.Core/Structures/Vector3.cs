@@ -1,6 +1,5 @@
 ﻿using Rhisis.Core.Helpers;
 using System;
-using System.Numerics;
 
 namespace Rhisis.Core.Structures
 {
