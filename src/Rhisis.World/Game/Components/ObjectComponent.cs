@@ -37,6 +37,11 @@ namespace Rhisis.World.Game.Components
         public Vector3 Position { get; set; }
 
         /// <summary>
+        /// Gets or sets the monster begin position.
+        /// </summary>
+        public Vector3 BeginPosition { get; set; }
+
+        /// <summary>
         /// Gets or sets the object orientation angle.
         /// </summary>
         public float Angle { get; set; }

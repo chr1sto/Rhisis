@@ -23,6 +23,12 @@ namespace Rhisis.Core.Helpers
         }
 
         /// <summary>
+        /// Gets a random floating number.
+        /// </summary>
+        /// <returns></returns>
+        public static float FloatRandom() => (float)MersenneTwister.NextDouble();
+
+        /// <summary>
         /// Do a random between floats
         /// </summary>
         /// <param name="f1"></param>

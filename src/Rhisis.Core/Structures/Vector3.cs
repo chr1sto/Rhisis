@@ -99,6 +99,24 @@ namespace Rhisis.Core.Structures
         }
 
         /// <summary>
+        /// Checks if the current position is in a given range.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        public bool IsInRange(Vector3 otherPosition, float range)
+        {
+            Vector3 distance = this - otherPosition;
+            distance.Y = 0;
+
+            if (distance.SquaredLength > range * range)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Check if this <see cref="Vector3"/> intersects a <see cref="Rectangle"/>.
         /// </summary>
         /// <param name="rectangle"></param>

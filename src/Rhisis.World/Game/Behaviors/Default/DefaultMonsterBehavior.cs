@@ -13,6 +13,7 @@ using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.Mobility;
+using System;
 using System.Linq;
 
 namespace Rhisis.World.Game.Behaviors
@@ -23,7 +24,7 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Monster, isDefault: true)]
     public class DefaultMonsterBehavior : IBehavior
     {
-        private const float MovingRange = 40f;
+        private const float MovingRange = 30f;
 
         private readonly IMonsterEntity _monster;
         private readonly WorldConfiguration _worldConfiguration;
@@ -58,16 +59,18 @@ namespace Rhisis.World.Game.Behaviors
         {
             if (!_monster.Object.Spawned || _monster.IsDead)
             {
+                _monster.Follow.Reset();
+                _monster.Battle.Reset();
                 return;
             }
 
             if (_monster.Battle.IsFighting)
             {
-                ProcessMonsterFight(_monster);
+                ProcessMonsterFight();
             }
             else
             {
-                ProcessMonsterMovements(_monster);
+                ProcessMonsterMovements();
             }
 
             _mobilitySystem.CalculatePosition(_monster);
@@ -78,7 +81,23 @@ namespace Rhisis.World.Game.Behaviors
         {
             if (!_monster.Battle.IsFighting)
             {
-                _monster.Timers.NextMoveTime = Time.TimeInSeconds() + RandomHelper.LongRandom(5, 10);
+                long nextMoveTime = _monster.Moves.ReturningToOriginalPosition ? 
+                    RandomHelper.LongRandom(1, 3) : 
+                    RandomHelper.LongRandom(5, 10);
+
+                _monster.Timers.NextMoveTime = Time.TimeInSeconds() + nextMoveTime;
+                _monster.Object.BeginPosition.Copy(_monster.Object.Position);
+
+                if (_monster.Moves.ReturningToOriginalPosition)
+                {
+                    _monster.Moves.ReturningToOriginalPosition = false;
+                    _monster.Attributes[DefineAttributes.HP] = _monster.Data.AddHp;
+                    _moverPacketFactory.SendUpdateAttributes(_monster, DefineAttributes.HP, _monster.Attributes[DefineAttributes.HP]);
+                }
+                if (_monster.Moves.SpeedFactor >= 2f)
+                {
+                    SetSpeedFactor(1f);
+                }
             }
         }
 
@@ -150,31 +169,11 @@ namespace Rhisis.World.Game.Behaviors
         /// Update monster moves.
         /// </summary>
         /// <param name="monster"></param>
-        private void ProcessMonsterMovements(IMonsterEntity monster)
+        private void ProcessMonsterMovements()
         {
-            if (monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND))
+            if (_monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_STAND) && _monster.Timers.NextMoveTime < Time.TimeInSeconds())
             {
-                if (monster.Timers.NextMoveTime < Time.TimeInSeconds())
-                {
-                    monster.Object.MovingFlags &= ~ObjectState.OBJSTA_STAND;
-                    monster.Object.MovingFlags |= ObjectState.OBJSTA_FMOVE;
-                    monster.Moves.DestinationPosition.Copy(monster.Region.GetRandomPosition());
-                    monster.Object.Angle = Vector3.AngleBetween(monster.Object.Position, monster.Moves.DestinationPosition);
-
-                    _moverPacketFactory.SendDestinationPosition(monster);
-                    _moverPacketFactory.SendDestinationAngle(monster, false);
-                }
-                else if (monster.Moves.ReturningToOriginalPosition)
-                {
-                    monster.Attributes[DefineAttributes.HP] = monster.Data.AddHp;
-                    _moverPacketFactory.SendUpdateAttributes(monster, DefineAttributes.HP, monster.Attributes[DefineAttributes.HP]);
-                    monster.Moves.ReturningToOriginalPosition = false;
-                }
-                else if (monster.Moves.SpeedFactor >= 2f)
-                {
-                    monster.Moves.SpeedFactor = 1f;
-                    _moverPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
-                }
+                MoveToRandomPosition();
             }
         }
 
@@ -182,40 +181,84 @@ namespace Rhisis.World.Game.Behaviors
         /// Process the monster's fight.
         /// </summary>
         /// <param name="monster"></param>
-        private void ProcessMonsterFight(IMonsterEntity monster)
+        private void ProcessMonsterFight()
         {
-            if (monster.Battle.Target.IsDead)
+            if (_monster.Follow.IsFollowing)
             {
-                monster.Follow.Reset();
-                monster.Battle.Reset();
-                return;
-            }
-
-            if (monster.Follow.IsFollowing)
-            {
-                if (monster.Moves.SpeedFactor != 2f)
+                if (_monster.Moves.SpeedFactor != 2f)
                 {
-                    monster.Moves.SpeedFactor = 2;
-                    _moverPacketFactory.SendSpeedFactor(monster, monster.Moves.SpeedFactor);
+                    SetSpeedFactor(2f);
                 }
 
-                if (monster.Object.Position.IsInCircle(monster.Follow.Target.Object.Position, monster.Follow.FollowDistance))
+                if (_monster.Object.Position.IsInCircle(_monster.Follow.Target.Object.Position, _monster.Follow.FollowDistance))
                 {
-                    if (monster.Timers.NextAttackTime <= Time.TimeInMilliseconds())
+                    if (_monster.Timers.NextAttackTime <= Time.TimeInMilliseconds())
                     {
-                        _battleSystem.MeleeAttack(monster, monster.Battle.Target, ObjectMessageType.OBJMSG_ATK1, monster.Data.AttackSpeed);
-                        monster.Timers.NextAttackTime = (long)(Time.TimeInMilliseconds() + monster.Data.ReAttackDelay);
+                        _battleSystem.MeleeAttack(_monster, _monster.Battle.Target, ObjectMessageType.OBJMSG_ATK1, _monster.Data.AttackSpeed);
+                        _monster.Timers.NextAttackTime = (long)(Time.TimeInMilliseconds() + _monster.Data.ReAttackDelay);
                     }
                 }
                 else
                 {
-                    _followSystem.Follow(monster, monster.Battle.Target);
+                    if (_monster.Object.Position.IsInRange(_monster.Object.BeginPosition, MovingRange))
+                    {
+                        _followSystem.Follow(_monster, _monster.Battle.Target);
+                    }
+                    else
+                    {
+                        ReturnToBeginPosition();
+                    }
                 }
             }
             else
             {
-                _followSystem.Follow(monster, monster.Battle.Target);
+                _followSystem.Follow(_monster, _monster.Battle.Target);
             }
+        }
+
+        /// <summary>
+        /// Makes the monster return to its begin position.
+        /// </summary>
+        private void ReturnToBeginPosition()
+        {
+            _monster.Moves.ReturningToOriginalPosition = true;
+            _monster.Battle.Reset();
+            _monster.Follow.Reset();
+            SetSpeedFactor(2.66f);
+            MoveToPosition(_monster.Object.BeginPosition);
+        }
+
+        /// <summary>
+        /// Sets the monster speed factor.
+        /// </summary>
+        /// <param name="speedFactor"></param>
+        private void SetSpeedFactor(float speedFactor)
+        {
+            _monster.Moves.SpeedFactor = speedFactor;
+            _moverPacketFactory.SendSpeedFactor(_monster, _monster.Moves.SpeedFactor);
+        }
+
+        /// <summary>
+        /// Makes the monster move to a random position inside its region.
+        /// </summary>
+        private void MoveToRandomPosition()
+        {
+            MoveToPosition(_monster.Region.GetRandomPosition());
+        }
+
+        /// <summary>
+        /// Movaes the monster to a given position.
+        /// </summary>
+        /// <param name="destinationPosition"></param>
+        private void MoveToPosition(Vector3 destinationPosition)
+        {
+            _monster.Object.MovingFlags &= ~ObjectState.OBJSTA_STAND;
+            _monster.Object.MovingFlags |= ObjectState.OBJSTA_FMOVE;
+            _monster.Moves.DestinationPosition.Copy(destinationPosition);
+            _monster.Object.Angle = Vector3.AngleBetween(_monster.Object.Position, _monster.Moves.DestinationPosition);
+
+            _moverPacketFactory.SendDestinationPosition(_monster);
+            _moverPacketFactory.SendDestinationAngle(_monster, false);
         }
     }
 }

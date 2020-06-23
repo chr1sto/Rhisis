@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
+using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;

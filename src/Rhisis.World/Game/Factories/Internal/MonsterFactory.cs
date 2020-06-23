@@ -66,6 +66,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 Speed = moverData.Speed
             };
 
+            monster.Object.BeginPosition = monster.Object.Position.Clone();
             monster.Data = moverData;
             monster.Region = region;
             monster.Attributes[DefineAttributes.HP] = moverData.AddHp;

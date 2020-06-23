@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Structures.Game;
-using Rhisis.World.Game.Maps.Regions;
+﻿using Rhisis.World.Game.Maps.Regions;
 
 namespace Rhisis.World.Game.Entities
 {
