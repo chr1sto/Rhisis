@@ -5,6 +5,7 @@ using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace Rhisis.World.Game.Components
 {
@@ -73,7 +74,19 @@ namespace Rhisis.World.Game.Components
                 return false;
             }
 
-            Swap(sourceSlot, destinationSlot);
+            for (int i = 0; i < MaxCapacity; i++)
+            {
+                if (_items[i].Id == Empty && _items[i].Slot == Empty)
+                {
+                    _itemsMask[destinationSlot] = _itemsMask[sourceSlot];
+                    _itemsMask[sourceSlot] = i;
+
+                    _items[_itemsMask[sourceSlot]].Slot = sourceSlot;
+                    _items[_itemsMask[destinationSlot]].Slot = destinationSlot;
+
+                    return true;
+                }
+            }
 
             return true;
         }
@@ -92,13 +105,32 @@ namespace Rhisis.World.Game.Components
                 return false;
             }
 
-            int availableSlot = GetAvailableSlot();
+            int itemIndex = _itemsMask[slot];
 
-            if (availableSlot != Empty)
+            if (itemIndex < 0 || itemIndex >= MaxCapacity)
             {
-                Swap(slot, availableSlot);
-                
-                return true;
+                return false;
+            }
+
+            for (int i = 0; i < MaxStorageCapacity; i++)
+            {
+                int emptyItemIndex = _itemsMask[i];
+
+                if (emptyItemIndex < 0 || emptyItemIndex >= MaxCapacity)
+                {
+                    return false;
+                }
+
+                if (_items[emptyItemIndex].Id == Empty)
+                {
+                    _items[emptyItemIndex].Slot = Empty;
+                    _itemsMask[slot] = Empty;
+
+                    _items[itemIndex].Slot = i;
+                    _itemsMask[i] = itemIndex;
+
+                    return true;
+                }
             }
 
             return false;
