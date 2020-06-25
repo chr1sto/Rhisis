@@ -24,6 +24,7 @@ namespace Rhisis.World.Systems.Follow
         public void Follow(ILivingEntity livingEntity, IWorldEntity targetEntity, float distance = 1f)
         {
             livingEntity.Follow.Target = targetEntity;
+            livingEntity.Follow.FollowDistance = distance;
             livingEntity.Moves.DestinationPosition.Copy(targetEntity.Object.Position);
             livingEntity.Object.MovingFlags &= ~ObjectState.OBJSTA_STAND;
             livingEntity.Object.MovingFlags |= ObjectState.OBJSTA_FMOVE;

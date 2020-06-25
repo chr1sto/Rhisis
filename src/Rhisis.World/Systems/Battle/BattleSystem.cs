@@ -115,7 +115,7 @@ namespace Rhisis.World.Systems.Battle
         }
 
         /// <inheritdoc />
-        public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower)
+        public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower, int projectileId)
         {
             var projectile = new MagicProjectileInfo(attacker, defender, magicAttackPower, onArrived: () =>
             {
@@ -123,13 +123,13 @@ namespace Rhisis.World.Systems.Battle
 
                 DamageTarget(attacker, defender, magicAttackArbiter, ObjectMessageType.OBJMSG_ATK_MAGIC1);
             });
-            int projectileId = _projectileSystem.CreateProjectile(projectile);
 
+            _projectileSystem.CreateProjectile(projectileId, projectile);
             _battlePacketFactory.SendMagicAttack(attacker, ObjectMessageType.OBJMSG_ATK_MAGIC1, defender.Id, magicAttackPower, projectileId);
         }
 
         /// <inheritdoc />
-        public void RangeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int power)
+        public void RangeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int power, int projectileId)
         {
             if (attacker is IPlayerEntity player)
             {
@@ -156,8 +156,8 @@ namespace Rhisis.World.Systems.Battle
                 
                 DamageTarget(attacker, defender, attackArbiter, attackType);
             });
-            int projectileId = _projectileSystem.CreateProjectile(projectile);
 
+            _projectileSystem.CreateProjectile(projectileId, projectile);
             _battlePacketFactory.SendRangeAttack(attacker, ObjectMessageType.OBJMSG_ATK_RANGE1, defender.Id, power, projectileId);
         }
 

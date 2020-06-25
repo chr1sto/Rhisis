@@ -71,25 +71,25 @@ namespace Rhisis.World.Handlers
 
             if (projectile != null)
             {
-                bool isProjectileValid = true;
+                bool isProjectileValid = packet.AttackerId == serverClient.Player.Id;
 
                 if (projectile.Type == AttackFlags.AF_MAGIC && projectile is MagicProjectileInfo magicProjectile)
                 {
-                    isProjectileValid = packet.AttackerId == serverClient.Player.Id && packet.MagicPower == magicProjectile.MagicPower;
+                    isProjectileValid = isProjectileValid && packet.MagicPower == magicProjectile.MagicPower;
                 }
                 else if (projectile.Type == AttackFlags.AF_MAGICSKILL && projectile is MagicSkillProjectileInfo magicSkillProjectile)
                 {
-                    isProjectileValid = packet.AttackerId == serverClient.Player.Id && packet.SkillId == magicSkillProjectile.Skill.SkillId;
+                    isProjectileValid = isProjectileValid && packet.SkillId == magicSkillProjectile.Skill.SkillId;
                 }
-                else if (projectile.Type == AttackFlags.AF_RANGE)
+                else if (projectile.Type.HasFlag(AttackFlags.AF_RANGE) && projectile is RangeArrowProjectileInfo arrowProjectile)
                 {
-                    // TODO
-                    isProjectileValid = false;
+                    isProjectileValid = isProjectileValid && packet.DamagePower == arrowProjectile.Power;
                 }
 
                 if (isProjectileValid)
                 {
                     projectile.OnArrived?.Invoke();
+                    _projectileSystem.RemoveProjectile(serverClient.Player, packet.Id);
                 }
                 else
                 {

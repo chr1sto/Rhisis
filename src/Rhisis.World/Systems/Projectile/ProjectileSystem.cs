@@ -8,10 +8,9 @@ namespace Rhisis.World.Systems.Projectile
     public class ProjectileSystem : IProjectileSystem
     {
         /// <inheritdoc />
-        public int CreateProjectile(ProjectileInfo projectile)
+        public int CreateProjectile(int projectileId, ProjectileInfo projectile)
         {
             ILivingEntity livingEntity = projectile.Owner;
-            int projectileId = livingEntity.Battle.LastProjectileId++;
 
             livingEntity.Battle.Projectiles.Add(projectileId, projectile);
 

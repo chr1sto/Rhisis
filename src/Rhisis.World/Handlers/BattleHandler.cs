@@ -76,7 +76,13 @@ namespace Rhisis.World.Handlers
                 _logger.LogWarning($"Magic attack power cannot be less than 0.");
             }
 
-            _battleSystem.MagicAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower));
+            if (packet.ProjectileId < 0)
+            {
+                _logger.LogError($"{serverClient.Player} Invalid projectile id.");
+                return;
+            }
+
+            _battleSystem.MagicAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower), packet.ProjectileId);
         }
 
         /// <summary>
@@ -100,7 +106,13 @@ namespace Rhisis.World.Handlers
                 _logger.LogWarning($"Range attack power cannot be less than 0.");
             }
 
-            _battleSystem.RangeAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.Power));
+            if (packet.ProjectileId < 0)
+            {
+                _logger.LogError($"{serverClient.Player} Invalid projectile id.");
+                return;
+            }
+
+            _battleSystem.RangeAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.Power), packet.ProjectileId + 1);
         }
     }
 }

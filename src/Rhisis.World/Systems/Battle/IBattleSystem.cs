@@ -34,7 +34,8 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="defender">Defender.</param>
         /// <param name="attackType">Attack type.</param>
         /// <param name="magicAttackPower">Magic attack power.</param>
-        void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower);
+        /// <param name="projectileId">Magic projectile id.</param>
+        void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower, int projectileId);
 
         /// <summary>
         /// Process a range attack on an ennemy.
@@ -43,6 +44,7 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="defender">Defender.</param>
         /// <param name="attackType">Attack type.</param>
         /// <param name="power">Range attack power.</param>
-        void RangeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int power);
+        /// <param name="projectileId">Projectile id.</param>
+        void RangeAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int power, int projectileId);
     }
 }
