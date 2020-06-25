@@ -82,7 +82,7 @@ namespace Rhisis.World.Handlers
                 return;
             }
 
-            _battleSystem.MagicAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower), packet.ProjectileId);
+            _battleSystem.MagicAttack(serverClient.Player, target, packet.AttackMessage, Math.Max(0, packet.MagicPower), packet.ProjectileId + 1);
         }
 
         /// <summary>
