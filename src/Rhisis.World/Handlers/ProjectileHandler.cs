@@ -83,18 +83,19 @@ namespace Rhisis.World.Handlers
                 }
                 else if (projectile.Type.HasFlag(AttackFlags.AF_RANGE) && projectile is RangeArrowProjectileInfo arrowProjectile)
                 {
-                    isProjectileValid = isProjectileValid && packet.DamagePower == arrowProjectile.Power;
+                    isProjectileValid = isProjectileValid && packet.MagicPower == arrowProjectile.Power;
                 }
 
                 if (isProjectileValid)
                 {
                     projectile.OnArrived?.Invoke();
-                    _projectileSystem.RemoveProjectile(serverClient.Player, packet.Id);
                 }
                 else
                 {
                     _logger.LogError($"Invalid projectile information for player '{serverClient.Player}'.");
                 }
+
+                _projectileSystem.RemoveProjectile(serverClient.Player, packet.Id);
             }
             else
             {
