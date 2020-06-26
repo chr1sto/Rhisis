@@ -152,7 +152,7 @@ namespace Rhisis.World.Systems.Battle
 
             var projectile = new RangeArrowProjectileInfo(attacker, defender, power, onArrived: () =>
             {
-                IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender);
+                IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE, power);
                 
                 DamageTarget(attacker, defender, attackArbiter, attackType);
             });

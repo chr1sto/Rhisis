@@ -14,15 +14,21 @@ namespace Rhisis.World.Systems.Battle.Arbiters
     {
         public const int MinimalHitRate = 20;
         public const int MaximalHitRate = 96;
+        private readonly AttackFlags _attackFlags;
+        private readonly int _attackPower;
 
         /// <summary>
         /// Creates a new <see cref="MeleeAttackArbiter"/> instance.
         /// </summary>
         /// <param name="attacker">Attacker entity</param>
         /// <param name="defender">Defender entity</param>
-        public MeleeAttackArbiter(ILivingEntity attacker, ILivingEntity defender)
+        /// <param name="attackFlags">Default attack flags.</param>
+        /// <param name="attackPower">Attack power.</param>
+        public MeleeAttackArbiter(ILivingEntity attacker, ILivingEntity defender, AttackFlags attackFlags = AttackFlags.AF_GENERIC, int attackPower = 0)
             : base(attacker, defender)
         {
+            _attackFlags = attackFlags;
+            _attackPower = attackPower;
         }
 
         /// <inheritdoc />
@@ -34,7 +40,9 @@ namespace Rhisis.World.Systems.Battle.Arbiters
             };
 
             if (attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+            {
                 return attackResult;
+            }
 
             if (Attacker is IPlayerEntity player)
             {
@@ -68,6 +76,12 @@ namespace Rhisis.World.Systems.Battle.Arbiters
             }
 
             attackResult.Damages = RandomHelper.Random(attackResult.AttackMin, attackResult.AttackMax);
+
+            if (attackResult.Flags.HasFlag(AttackFlags.AF_RANGE))
+            {
+                attackResult.Damages = (int)(attackResult.Damages * GetChargeAttackMultiplier());
+            }
+
             attackResult.Damages -= GetDefenderDefense(attackResult);
 
             if (attackResult.Damages > 0)
@@ -116,7 +130,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
 
             hitRate = MathHelper.Clamp(hitRate, MinimalHitRate, MaximalHitRate);
 
-            return RandomHelper.Random(0, 100) < hitRate ? AttackFlags.AF_GENERIC : AttackFlags.AF_MISS;
+            return RandomHelper.Random(0, 100) < hitRate ? _attackFlags : AttackFlags.AF_MISS;
         }
 
         /// <summary>
@@ -222,6 +236,28 @@ namespace Rhisis.World.Systems.Battle.Arbiters
             }
 
             return canFly && knockbackChance;
+        }
+
+        /// <summary>
+        /// Gets range attack charge multiplier.
+        /// </summary>
+        /// <returns></returns>
+        private float GetChargeAttackMultiplier()
+        {
+            if (!_attackFlags.HasFlag(AttackFlags.AF_RANGE))
+            {
+                return 1f;
+            }
+
+            return _attackPower switch
+            {
+                0 => 1.0f,
+                1 => 1.2f,
+                2 => 1.5f,
+                3 => 1.8f,
+                4 => 2.2f,
+                _ => 1.0f
+            };
         }
     }
 }
