@@ -5,6 +5,7 @@ using Rhisis.Core.Structures;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Follow;
 using System;
 
 namespace Rhisis.World.Systems.Mobility
@@ -14,10 +15,12 @@ namespace Rhisis.World.Systems.Mobility
     {
         private const float ArrivalRangeRadius = 1f;
         private readonly float _updateRate = MapInstance.UpdateRate / MapInstance.FrameRate;
+        private readonly IFollowSystem _followSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
-        public MobilitySystem(IMoverPacketFactory moverPacketFactory)
+        public MobilitySystem(IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory)
         {
+            _followSystem = followSystem;
             _moverPacketFactory = moverPacketFactory;
         }
 
@@ -45,9 +48,7 @@ namespace Rhisis.World.Systems.Mobility
                 }
                 else
                 {
-                    entity.Moves.DestinationPosition.Copy(entity.Follow.Target.Object.Position);
-                    entity.Object.MovingFlags &= ~ObjectState.OBJSTA_STAND;
-                    entity.Object.MovingFlags |= ObjectState.OBJSTA_FMOVE;
+                    _followSystem.Follow(entity, entity.Follow.Target, entity.Follow.FollowDistance);
                 }
             }
 

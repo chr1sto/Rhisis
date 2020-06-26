@@ -517,7 +517,7 @@ namespace Rhisis.World.Systems.Skills
                 ExecuteSkill(caster, target, skill, reduceCasterPoints: false);
             });
 
-            _projectileSystem.CreateProjectile(projectile);
+            //_projectileSystem.CreateProjectile(projectile);
             _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
 
             caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>

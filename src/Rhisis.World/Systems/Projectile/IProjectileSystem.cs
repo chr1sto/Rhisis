@@ -11,9 +11,10 @@ namespace Rhisis.World.Systems.Projectile
         /// <summary>
         /// Creates a new projectile.
         /// </summary>
+        /// <param name="projectileId">Projectile id.</param>
         /// <param name="projectile">Projectile information.</param>
         /// <returns>Projectile id.</returns>
-        int CreateProjectile(ProjectileInfo projectile);
+        int CreateProjectile(int projectileId, ProjectileInfo projectile);
 
         /// <summary>
         /// Removes a projectile from the given living entity projectile's collection.
