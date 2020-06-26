@@ -160,14 +160,24 @@ namespace Rhisis.CLI.Commands.Game.Quests
             }
 
             // Load items
-            IEnumerable<Instruction> questRewardItems = settingsBlock.GetInstructions("SetEndRewardItem").Concat(settingsBlock.GetInstructions("SetEndRewardItemWithAbilityOption"));
+            IEnumerable<Instruction> questRewardItems = settingsBlock.GetInstructions("SetEndRewardItem");
             quest.RewardItems = questRewardItems.Select(x => new QuestItem
             {
                 Sex = x.GetParameter<GenderType>(0),
                 Id = x.GetParameter<string>(3),
                 Quantity = x.GetParameter<int>(4),
-                Refine = x.Parameters.Count > 5 ? x.GetParameter<byte>(5) : default
             }).ToList();
+
+            IEnumerable<Instruction> questRewardItemsWithRefine = settingsBlock.GetInstructions("SetEndRewardItemWithAbilityOption");
+            IEnumerable<QuestItem> questItemsWithRefine = questRewardItemsWithRefine.Select(x => new QuestItem
+            {
+                Sex = x.GetParameter<GenderType>(0),
+                Id = x.GetParameter<string>(3),
+                Quantity = x.GetParameter<int>(4),
+                Refine = x.GetParameter<byte>(5)
+            });
+
+            quest.RewardItems = quest.RewardItems.Concat(questItemsWithRefine);
         }
 
         private void LoadQuestDialogs(QuestData quest, Block questBlock)
