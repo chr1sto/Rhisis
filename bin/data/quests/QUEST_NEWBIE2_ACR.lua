@@ -12,8 +12,8 @@ QUEST_NEWBIE2_ACR = {
 		gold = 0,
 		exp = 0,
 		items = {
-			{ id = 'II_SYS_SYS_EVE_BXMACROBAT45', quantity = 1, sex = 'Male', refine = 2 },
-			{ id = 'II_SYS_SYS_EVE_BXFACROBAT45', quantity = 1, sex = 'Female', refine = 2 },
+			{ id = 'II_SYS_SYS_EVE_BXMACROBAT45', quantity = 1, sex = 'Male' },
+			{ id = 'II_SYS_SYS_EVE_BXFACROBAT45', quantity = 1, sex = 'Female' },
 		},
 	},
 	end_conditions = {

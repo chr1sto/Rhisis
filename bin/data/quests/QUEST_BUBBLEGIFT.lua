@@ -12,8 +12,8 @@ QUEST_BUBBLEGIFT = {
 		gold = 0,
 		exp = 0,
 		items = {
-			{ id = 'II_SYS_SYS_SCR_BXMKOREAN04', quantity = 1, sex = 'Male', refine = 2 },
-			{ id = 'II_SYS_SYS_SCR_BXFKOREAN04', quantity = 1, sex = 'Female', refine = 2 },
+			{ id = 'II_SYS_SYS_SCR_BXMKOREAN04', quantity = 1, sex = 'Male' },
+			{ id = 'II_SYS_SYS_SCR_BXFKOREAN04', quantity = 1, sex = 'Female' },
 		},
 	},
 	end_conditions = {
