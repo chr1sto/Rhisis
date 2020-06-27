@@ -43,7 +43,7 @@ namespace Rhisis.World.Systems.Drop
             newItem.Drop.Item.Quantity = quantity;
             newItem.Object.Position = Vector3.GetRandomPositionInCircle(entity.Object.Position, DropCircleRadius);
 
-            if (newItem.Drop.HasOwner)
+            if (newItem.Drop.Owner != null)
             {
                 newItem.Drop.OwnershipTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.OwnershipTime;
                 newItem.Drop.DespawnTime = Time.TimeInSeconds() + _worldServerConfiguration.Drops.DespawnTime;
