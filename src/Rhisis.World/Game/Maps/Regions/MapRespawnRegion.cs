@@ -15,21 +15,24 @@ namespace Rhisis.World.Game.Maps.Regions
 
         public int Count { get; private set; }
 
+        public float Height { get; private set; }
+
         public IList<IWorldEntity> Entities { get; private set; }
 
-        public MapRespawnRegion(int x, int z, int width, int length, int time, WorldObjectType type, int modelId, int count) 
+        public MapRespawnRegion(int x, int z, int width, int length, int time, float height, WorldObjectType type, int modelId, int count) 
             : base(x, z, width, length)
         {
             ModelId = modelId;
             Time = time;
             ObjectType = type;
             Count = count;
+            Height = height;
             Entities = new List<IWorldEntity>();
         }
 
         public override object Clone()
         {
-            var region = new MapRespawnRegion(X, Z, Width, Length, Time, ObjectType, ModelId, Count)
+            var region = new MapRespawnRegion(X, Z, Width, Length, Time, Height, ObjectType, ModelId, Count)
             {
                 IsActive = IsActive
             };
@@ -39,8 +42,8 @@ namespace Rhisis.World.Game.Maps.Regions
 
         public static IMapRespawnRegion FromRgnElement(RgnRespawn7 region)
         {
-            return new MapRespawnRegion(region.Left, region.Top, region.Right - region.Left, region.Bottom - region.Top, 
-                region.Time, (WorldObjectType)region.Type, region.Model, region.Count);
+            return new MapRespawnRegion(region.Left, region.Top, region.Right - region.Left, region.Bottom - region.Top,
+                region.Time, region.Position.Y, (WorldObjectType)region.Type, region.Model, region.Count);
         }
     }
 }

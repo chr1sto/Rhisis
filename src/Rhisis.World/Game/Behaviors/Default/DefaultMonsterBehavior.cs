@@ -260,6 +260,12 @@ namespace Rhisis.World.Game.Behaviors
                 randomPosition = _monster.Region.GetRandomPosition();
             }
 
+            if (_monster.Data.IsFlying)
+            {
+                // TODO: calculate with world height.
+                randomPosition.Y = _monster.Region.Height + RandomHelper.Random(0, 6);
+            }
+
             MoveToPosition(randomPosition);
         }
 

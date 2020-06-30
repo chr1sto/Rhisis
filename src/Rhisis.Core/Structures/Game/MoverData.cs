@@ -191,6 +191,12 @@ namespace Rhisis.Core.Structures.Game
         public float EarthResistance { get; set; }
 
         /// <summary>
+        /// Gets or sets a boolean value that indicates if the mover is flying or not.
+        /// </summary>
+        [DataMember(Name = "bFlying")]
+        public bool IsFlying { get; set; }
+
+        /// <summary>
         /// Gets or sets the minimal amount of gold dropped when the mover dies.
         /// </summary>
         [IgnoreDataMember]
