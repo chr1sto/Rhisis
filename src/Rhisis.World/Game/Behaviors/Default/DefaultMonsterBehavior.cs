@@ -24,7 +24,7 @@ namespace Rhisis.World.Game.Behaviors
     [Behavior(BehaviorType.Monster, isDefault: true)]
     public class DefaultMonsterBehavior : IBehavior
     {
-        private const float MovingRange = 30f;
+        private const float MovingRange = 40f;
 
         private readonly IMonsterEntity _monster;
         private readonly WorldConfiguration _worldConfiguration;
@@ -104,8 +104,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <inheritdoc />
         public void OnTargetKilled(ILivingEntity killedEntity)
         {
-            _monster.Battle.Reset();
-            _monster.Follow.Reset();
+            ReturnToBeginPosition();
         }
 
         /// <inheritdoc />
@@ -175,6 +174,17 @@ namespace Rhisis.World.Game.Behaviors
             {
                 MoveToRandomPosition();
             }
+
+            if (_monster.Object.MovingFlags.HasFlag(ObjectState.OBJSTA_FMOVE))
+            {
+                if (_monster.Moves.ReturningToOriginalPosition)
+                {
+                    if (_monster.Object.Position.IsInCircle(_monster.Moves.BeginPosition, 3.0f))
+                    {
+                        SetSpeedFactor(1f);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -243,7 +253,14 @@ namespace Rhisis.World.Game.Behaviors
         /// </summary>
         private void MoveToRandomPosition()
         {
-            MoveToPosition(_monster.Region.GetRandomPosition());
+            Vector3 randomPosition = _monster.Region.GetRandomPosition();
+
+            while (_monster.Object.Position.GetDistance2D(randomPosition) > 10f)
+            {
+                randomPosition = _monster.Region.GetRandomPosition();
+            }
+
+            MoveToPosition(randomPosition);
         }
 
         /// <summary>
