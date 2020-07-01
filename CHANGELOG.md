@@ -8,6 +8,38 @@ This is the changelog of the Rhisis project. All notable changes to this project
 
 ## [Released]
 
+## [0.4.7](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.7) - 2020-07-01
+
+### Features
+
+- ![world] Add ranged charged attack ([#448](https://github.com/Eastrall/Rhisis/pull/448))
+- ![world] Add flying monster support ([#458](https://github.com/Eastrall/Rhisis/pull/458))
+
+### Fixes
+
+- ![world] Fix projectiles ([#446](https://github.com/Eastrall/Rhisis/pull/446))
+- ![world] Fix mover drops ([#446](https://github.com/Eastrall/Rhisis/pull/446))
+- ![world] Fix quest item reward refines ([#450](https://github.com/Eastrall/Rhisis/pull/450))
+- ![world] Fix temporary drop despawn ([#452](https://github.com/Eastrall/Rhisis/pull/452))
+- ![world] Fix monster AI when returning to original position ([#456](https://github.com/Eastrall/Rhisis/pull/456))
+
+### Resources
+
+- ![world] Remove food items from food shops ([#453](https://github.com/Eastrall/Rhisis/pull/453))
+
+
+## [0.4.6](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.6) - 2020-06-24
+
+### Features
+
+- ![world] Add defense calculation and reduce monster damages during fights ([#440](https://github.com/Eastrall/Rhisis/pull/440))
+- ![world] Monsters return to their original position after getting far away from their original position ([#442](https://github.com/Eastrall/Rhisis/pull/442))
+
+### Fixes
+
+- ![world] Fix equip/unequip item algorithm ([#444](https://github.com/Eastrall/Rhisis/pull/444))
+
+
 ## [0.4.5](https://github.com/Eastrall/Rhisis/releases/tag/v0.4.5) - 2020-06-07
 
 ### Fixes
